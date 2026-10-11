@@ -1,0 +1,71 @@
+
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
+import type { Session, User } from '@supabase/supabase-js'
+import { supabase } from '@/services/supabase'
+
+type AuthSubscription = ReturnType<
+  typeof supabase.auth.onAuthStateChange
+>['data']['subscription']
+
+export const useAuthStore = defineStore('auth', () => {
+  const session = ref<Session | null>(null)
+  const user = ref<User | null>(null)
+  const isInitialized = ref(false)
+
+  let authSubscription: AuthSubscription | null = null
+  let initializationPromise: Promise<void> | null = null
+
+  async function initialize(): Promise<void> {
+    if (isInitialized.value) return
+    if (initializationPromise) return initializationPromise
+
+    initializationPromise = initializeSession()
+
+    try {
+      await initializationPromise
+    } finally {
+      initializationPromise = null
+    }
+  }
+
+  async function initializeSession(): Promise<void> {
+    const { data, error } = await supabase.auth.getSession()
+
+    if (error) throw error
+
+    session.value = data.session
+    user.value = data.session?.user ?? null
+
+    const { data: authData } = supabase.auth.onAuthStateChange(
+      (_event, newSession) => {
+        session.value = newSession
+        user.value = newSession?.user ?? null
+      },
+    )
+
+    authSubscription = authData.subscription
+    isInitialized.value = true
+  }
+
+  async function logout(): Promise<void> {
+    const { error } = await supabase.auth.signOut()
+
+    if (error) throw error
+  }
+
+  function stopListening(): void {
+    authSubscription?.unsubscribe()
+    authSubscription = null
+    isInitialized.value = false
+  }
+
+  return {
+    session,
+    user,
+    isInitialized,
+    initialize,
+    logout,
+    stopListening,
+  }
+})

@@ -1,8 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '@/features/auth/stores/authStore'
 import HomeView from '@/views/public/HomeView.vue'
 import RidesView from '@/views/public/RidesView.vue'
 import RideDetailView from '@/views/public/RideDetailView.vue'
 import RegisterView from '@/views/public/RegisterView.vue'
+import ProfileView from '@/views/private/ProfileView.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -41,7 +43,41 @@ const router = createRouter({
       name: 'forgot-password',
       component: () => import('@/views/public/ForgotPasswordView.vue'),
     },
+    {
+    path: '/profile',
+    name: 'profile',
+    component: ProfileView,
+    meta: { requiresAuth: true },
+  },
   ],
 })
 
+
+router.beforeEach(async (to) => {
+  const authStore = useAuthStore()
+
+  if (!authStore.isInitialized) {
+    try {
+      await authStore.initialize()
+    } catch {
+      if (to.meta.requiresAuth) {
+        return {
+          name: 'login',
+          query: { redirect: to.fullPath },
+        }
+      }
+
+      return true
+    }
+  }
+
+  if (to.meta.requiresAuth && !authStore.user) {
+    return {
+      name: 'login',
+      query: { redirect: to.fullPath },
+    }
+  }
+
+  return true
+})
 export default router

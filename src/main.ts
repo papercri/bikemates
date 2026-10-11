@@ -1,14 +1,31 @@
+
 import { createApp } from 'vue'
 import { createHead } from '@unhead/vue/client'
+import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
-import { createPinia } from 'pinia'
+import { useAuthStore } from '@/features/auth/stores/authStore'
 import './assets/main.css'
 
-const app = createApp(App)
+async function bootstrap(): Promise<void> {
+  const app = createApp(App)
+  const pinia = createPinia()
 
-app.use(createPinia())
-app.use(router)
-app.use(createHead())
+  app.use(pinia)
+  app.use(createHead())
 
-app.mount('#app')
+  const authStore = useAuthStore(pinia)
+
+  try {
+    await authStore.initialize()
+  } catch (error: unknown) {
+    console.error('No se pudo inicializar la autenticación.', error)
+  }
+
+  app.use(router)
+  await router.isReady()
+
+  app.mount('#app')
+}
+
+void bootstrap()
