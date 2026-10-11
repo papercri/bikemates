@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '@/views/HomeView.vue'
-import RidesView from '@/views/RidesView.vue'
-import RideDetailView from '@/views/RideDetailView.vue'
-import RegisterView from '@/views/RegisterView.vue'
+import HomeView from '@/views/public/HomeView.vue'
+import RidesView from '@/views/public/RidesView.vue'
+import RideDetailView from '@/views/public/RideDetailView.vue'
+import RegisterView from '@/views/public/RegisterView.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -29,17 +29,17 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: () => import('@/views/LoginView.vue'),
+      component: () => import('@/views/public/LoginView.vue'),
     },
     {
       path: '/reset-password',
       name: 'reset-password',
-      component: () => import('@/views/ResetPasswordView.vue'),
+      component: () => import('@/views/public/ResetPasswordView.vue'),
     },
     {
       path: '/forgot-password',
       name: 'forgot-password',
-      component: () => import('@/views/ForgotPasswordView.vue'),
+      component: () => import('@/views/public/ForgotPasswordView.vue'),
     },
   ],
 })
