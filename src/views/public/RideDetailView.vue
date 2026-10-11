@@ -59,9 +59,9 @@ const ride = computed(() => {
 })
 
 const levelDotStyles: Record<Ride['level'], string> = {
-  'Iniciación': 'bg-trail',
-  'Intermedio': 'bg-route',
-  'Avanzado': 'bg-ink',
+  Iniciación: 'bg-trail',
+  Intermedio: 'bg-route',
+  Avanzado: 'bg-ink',
 }
 </script>
 
@@ -132,12 +132,7 @@ const levelDotStyles: Record<Ride['level'], string> = {
             <dl class="grid grid-cols-2 border-t border-line sm:grid-cols-3">
               <div class="border-r border-line p-5 sm:p-6">
                 <dt class="flex items-center gap-1.5 text-sm text-graphite">
-                  <svg
-                    viewBox="0 0 16 16"
-                    class="h-4 w-4"
-                    aria-hidden="true"
-                    focusable="false"
-                  >
+                  <svg viewBox="0 0 16 16" class="h-4 w-4" aria-hidden="true" focusable="false">
                     <path
                       d="M2 8 H12 M9 5 L12.5 8 L9 11"
                       fill="none"
@@ -160,12 +155,7 @@ const levelDotStyles: Record<Ride['level'], string> = {
 
               <div class="border-r border-line p-5 sm:p-6">
                 <dt class="flex items-center gap-1.5 text-sm text-graphite">
-                  <svg
-                    viewBox="0 0 16 16"
-                    class="h-4 w-4"
-                    aria-hidden="true"
-                    focusable="false"
-                  >
+                  <svg viewBox="0 0 16 16" class="h-4 w-4" aria-hidden="true" focusable="false">
                     <path
                       d="M1.5 13 L5.5 5 L8 9.5 L10.5 4 L14.5 13 Z"
                       fill="none"

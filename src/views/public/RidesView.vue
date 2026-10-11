@@ -52,9 +52,9 @@ const filteredRides = computed(() => {
 })
 
 const levelChipStyles: Record<RideLevel, string> = {
-  'Iniciación': 'bg-trail/15 text-trail-ink before:bg-trail',
-  'Intermedio': 'bg-route/15 text-route-ink before:bg-route',
-  'Avanzado': 'bg-ink/10 text-ink before:bg-ink',
+  Iniciación: 'bg-trail/15 text-trail-ink before:bg-trail',
+  Intermedio: 'bg-route/15 text-route-ink before:bg-route',
+  Avanzado: 'bg-ink/10 text-ink before:bg-ink',
 }
 </script>
 

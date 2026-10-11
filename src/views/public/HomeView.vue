@@ -146,10 +146,7 @@ useHead({
                 <path d="M5 13 L10 13 L13 5.5 L17.5 5.5 L21 13" />
                 <path d="M10 13 L13 5.5" />
                 <circle cx="10" cy="13" r="1.4" fill="var(--color-trail)" stroke="none" />
-                <path
-                  d="M12 5 L15 2.2 L17.2 1.2"
-                  stroke="var(--color-ink)"
-                />
+                <path d="M12 5 L15 2.2 L17.2 1.2" stroke="var(--color-ink)" />
                 <circle cx="18.8" cy="0.8" r="1.9" fill="var(--color-ink)" stroke="none" />
                 <path d="M14.6 3 L17 6.2 L16.2 9.5 L13.2 12.5" />
                 <path d="M12.4 5.4 L14.8 8.8 L11.6 12.2" />
@@ -232,8 +229,22 @@ useHead({
                 aria-hidden="true"
                 focusable="false"
               >
-                <circle cx="11" cy="11" r="4.5" fill="none" stroke="currentColor" stroke-width="2" />
-                <circle cx="22" cy="13" r="3.5" fill="none" stroke="currentColor" stroke-width="2" />
+                <circle
+                  cx="11"
+                  cy="11"
+                  r="4.5"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                />
+                <circle
+                  cx="22"
+                  cy="13"
+                  r="3.5"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                />
                 <path
                   d="M3 27 C 3 21, 7 18, 11 18 C 15 18, 19 21, 19 27"
                   fill="none"

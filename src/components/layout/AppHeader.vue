@@ -37,12 +37,7 @@ async function handleLogout(): Promise<void> {
         class="flex shrink-0 items-center gap-2.5 text-xl font-bold tracking-tight text-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-trail"
         aria-label="BikeMates, página de inicio"
       >
-        <svg
-          viewBox="0 0 44 28"
-          class="h-7 w-11 shrink-0"
-          aria-hidden="true"
-          focusable="false"
-        >
+        <svg viewBox="0 0 44 28" class="h-7 w-11 shrink-0" aria-hidden="true" focusable="false">
           <path
             d="M2 22 L12 8 L18 15 L26 4 L42 22"
             fill="none"
