@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { Session, User } from '@supabase/supabase-js'
 import { supabase } from '@/services/supabase'
+import { requestAccountDeletion } from '../services/authService'
 
 type AuthSubscription = ReturnType<
   typeof supabase.auth.onAuthStateChange
@@ -53,7 +54,16 @@ export const useAuthStore = defineStore('auth', () => {
 
     if (error) throw error
   }
+async function deleteAccount(): Promise<void> {
+  await requestAccountDeletion()
 
+  try {
+    await supabase.auth.signOut({ scope: 'local' })
+  } finally {
+    session.value = null
+    user.value = null
+  }
+}
   function stopListening(): void {
     authSubscription?.unsubscribe()
     authSubscription = null
@@ -61,11 +71,12 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   return {
-    session,
+     session,
     user,
     isInitialized,
     initialize,
     logout,
+    deleteAccount,
     stopListening,
   }
 })

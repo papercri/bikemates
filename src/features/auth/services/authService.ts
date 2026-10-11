@@ -6,6 +6,7 @@ interface RegisterCredentials {
   password: string
 }
 
+
 export async function registerUser(credentials: RegisterCredentials) {
   const { data, error } = await supabase.auth.signUp({
     email: credentials.email.trim(),
@@ -19,6 +20,10 @@ export async function registerUser(credentials: RegisterCredentials) {
 
   if (error) {
     throw error
+  }
+
+  if (data.user && data.user.identities?.length === 0) {
+    throw new Error('Email ya registrado. Por favor, inicia sesión o utiliza otro correo electrónico.')
   }
 
   return data
@@ -53,6 +58,15 @@ export async function requestPasswordReset(email: string, redirectTo: string): P
 export async function updatePassword(newPassword: string): Promise<void> {
   const { error } = await supabase.auth.updateUser({
     password: newPassword,
+  })
+
+  if (error) {
+    throw error
+  }
+}
+export async function requestAccountDeletion(): Promise<void> {
+  const { error } = await supabase.functions.invoke('delete-account', {
+    method: 'POST',
   })
 
   if (error) {
