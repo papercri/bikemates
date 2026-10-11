@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import AppHeader from '@/components/layout/AppHeader.vue'
+import ElevationSparkline from '@/components/ui/ElevationSparkline.vue'
 
 type RideLevel = 'Iniciación' | 'Intermedio' | 'Avanzado'
 
@@ -49,27 +50,33 @@ const filteredRides = computed(() => {
 
   return rides.value.filter((ride) => ride.level === selectedLevel.value)
 })
+
+const levelChipStyles: Record<RideLevel, string> = {
+  'Iniciación': 'bg-trail/15 text-trail-ink before:bg-trail',
+  'Intermedio': 'bg-route/15 text-route-ink before:bg-route',
+  'Avanzado': 'bg-ink/10 text-ink before:bg-ink',
+}
 </script>
 
 <template>
-  <div class="min-h-screen bg-slate-950 text-white">
+  <div class="min-h-screen bg-snow text-ink">
     <AppHeader />
 
     <main class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       <div>
-        <p class="text-sm font-semibold uppercase tracking-widest text-cyan-400">
+        <p class="text-sm font-semibold uppercase tracking-widest text-trail-ink">
           Descubre tu próxima salida
         </p>
 
         <h1 class="mt-3 text-3xl font-bold sm:text-4xl">Explorar rutas</h1>
 
-        <p class="mt-3 text-slate-400">
+        <p class="mt-3 text-graphite">
           Encuentra una ruta adaptada a tu nivel y disfruta pedaleando en compañía.
         </p>
       </div>
 
       <section class="mt-8" aria-labelledby="filter-title">
-        <h2 id="filter-title" class="mb-3 text-sm font-semibold text-slate-300">
+        <h2 id="filter-title" class="mb-3 text-sm font-semibold text-graphite">
           Filtrar por nivel
         </h2>
 
@@ -79,11 +86,11 @@ const filteredRides = computed(() => {
             :key="level"
             type="button"
             :aria-pressed="selectedLevel === level"
-            class="rounded-full border px-4 py-2 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400"
+            class="rounded-full border px-4 py-2 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
             :class="
               selectedLevel === level
-                ? 'border-cyan-400 bg-cyan-400 text-slate-950'
-                : 'border-slate-700 text-slate-300 hover:border-cyan-400'
+                ? 'border-trail bg-trail font-semibold text-ink'
+                : 'border-line bg-canvas text-graphite hover:border-trail hover:text-ink'
             "
             @click="selectedLevel = level"
           >
@@ -93,7 +100,7 @@ const filteredRides = computed(() => {
       </section>
 
       <section class="mt-8" aria-label="Listado de rutas">
-        <p class="mb-4 text-sm text-slate-400" aria-live="polite">
+        <p class="mb-4 text-sm text-graphite" aria-live="polite">
           {{ filteredRides.length }}
           {{ filteredRides.length === 1 ? 'ruta encontrada' : 'rutas encontradas' }}
         </p>
@@ -102,43 +109,75 @@ const filteredRides = computed(() => {
           <article
             v-for="ride in filteredRides"
             :key="ride.id"
-            class="rounded-xl border border-slate-800 bg-slate-900 p-6"
+            class="group overflow-hidden rounded-card border border-line bg-canvas shadow-card transition-shadow duration-300 hover:shadow-lg"
           >
-            <span class="text-sm text-cyan-400">
-              {{ ride.location }}
-            </span>
-
-            <h2 class="mt-3 text-xl font-semibold">
-              {{ ride.title }}
-            </h2>
-
-            <dl class="mt-5 grid grid-cols-2 gap-4">
-              <div>
-                <dt class="text-sm text-slate-400">Distancia</dt>
-                <dd class="mt-1 font-semibold">{{ ride.distanceKm }} km</dd>
+            <div class="relative bg-snow">
+              <ElevationSparkline
+                :distance-km="ride.distanceKm"
+                :elevation-m="ride.elevationM"
+                class="absolute inset-x-0 bottom-0"
+              />
+              <div class="relative flex items-start justify-between gap-3 px-6 pt-5">
+                <span class="text-sm font-medium text-trail-ink">
+                  {{ ride.location }}
+                </span>
+                <span
+                  class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold before:h-1.5 before:w-1.5 before:rounded-full before:content-['']"
+                  :class="levelChipStyles[ride.level]"
+                >
+                  {{ ride.level }}
+                </span>
               </div>
-
-              <div>
-                <dt class="text-sm text-slate-400">Desnivel</dt>
-                <dd class="mt-1 font-semibold">{{ ride.elevationM }} m</dd>
-              </div>
-            </dl>
-
-            <div class="mt-5 border-t border-slate-800 pt-4">
-              <span class="rounded-full bg-slate-800 px-3 py-1 text-sm text-slate-300">
-                {{ ride.level }}
-              </span>
             </div>
-            <RouterLink
-              :to="{ name: 'ride-detail', params: { id: ride.id } }"
-              class="mt-5 inline-block font-semibold text-cyan-400 hover:text-cyan-300"
-            >
-              Ver detalles
-            </RouterLink>
+
+            <div class="p-6 pt-4">
+              <h2 class="text-xl font-semibold">
+                {{ ride.title }}
+              </h2>
+
+              <div class="mt-4 flex items-end gap-6">
+                <div class="flex items-baseline gap-1">
+                  <span class="font-mono text-4xl font-bold leading-none tracking-tight">
+                    {{ ride.distanceKm }}
+                  </span>
+                  <span class="pb-0.5 text-sm font-semibold text-graphite">km</span>
+                </div>
+
+                <div class="flex items-baseline gap-1">
+                  <span class="pb-0.5 text-sm font-semibold text-graphite">+</span>
+                  <span class="font-mono text-xl font-bold leading-none tracking-tight">
+                    {{ ride.elevationM }}
+                  </span>
+                  <span class="pb-0.5 text-sm font-semibold text-graphite">m</span>
+                </div>
+              </div>
+
+              <RouterLink
+                :to="{ name: 'ride-detail', params: { id: ride.id } }"
+                class="mt-5 inline-flex items-center gap-1.5 font-semibold text-trail-ink transition-colors hover:text-trail-dark"
+              >
+                Ver detalles
+                <svg
+                  viewBox="0 0 16 16"
+                  class="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path
+                    d="M3 8 h9 M8.5 3.5 L13 8 L8.5 12.5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </RouterLink>
+            </div>
           </article>
         </div>
 
-        <p v-if="filteredRides.length === 0" class="mt-6 text-slate-400">
+        <p v-if="filteredRides.length === 0" class="mt-6 text-graphite">
           No hay rutas disponibles para este nivel.
         </p>
       </section>

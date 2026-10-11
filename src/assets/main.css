@@ -1,1 +1,55 @@
 @import 'tailwindcss';
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/jetbrains-mono';
+
+@theme {
+  --color-canvas: #ffffff;
+  --color-snow: #f8f9fa;
+  --color-surface: #f1f3f5;
+  --color-line: #e9ecef;
+
+  --color-ink: #1a1d20;
+  --color-graphite: #6c757d;
+
+  --color-trail: #22c55e;
+  --color-trail-deep: #10b981;
+  --color-trail-ink: #15803d;
+  --color-trail-dark: #166534;
+  --color-route: #f97316;
+  --color-route-ink: #c2410c;
+
+  --animate-trail-dash: trail-dash 24s linear infinite;
+
+  @keyframes trail-dash {
+    to {
+      stroke-dashoffset: -140;
+    }
+  }
+
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, monospace;
+
+  --radius-card: 1.25rem;
+  --radius-btn: 0.875rem;
+
+  --shadow-card: 0 1px 2px rgb(26 29 32 / 0.04), 0 8px 24px rgb(26 29 32 / 0.06);
+}
+
+@layer base {
+  body {
+    @apply bg-snow font-sans text-ink antialiased;
+  }
+
+  a[href],
+  button:not(:disabled),
+  summary,
+  label[for] {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  input:disabled,
+  select:disabled {
+    cursor: not-allowed;
+  }
+}

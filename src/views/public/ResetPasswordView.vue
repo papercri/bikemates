@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import AppHeader from '@/components/layout/AppHeader.vue'
+import RidgeStrip from '@/components/ui/RidgeStrip.vue'
 import { supabase } from '@/services/supabase'
 import { updatePassword } from '@/features/auth/services/authService'
 
@@ -66,14 +67,17 @@ async function handleSubmit(): Promise<void> {
 </script>
 
 <template>
-  <div class="min-h-screen bg-slate-950 text-white">
+  <div class="min-h-screen bg-snow text-ink">
     <AppHeader />
 
     <main class="mx-auto max-w-lg px-4 py-12 sm:px-6">
-      <section class="rounded-2xl border border-slate-800 bg-slate-900 p-6 sm:p-8">
-        <h1 class="text-3xl font-bold">Nueva contraseña</h1>
+      <section class="overflow-hidden rounded-card border border-line bg-canvas shadow-card">
+        <RidgeStrip />
 
-        <p class="mt-3 text-slate-400">
+        <div class="p-6 pt-4 sm:p-8 sm:pt-5">
+          <h1 class="text-3xl font-bold">Nueva contraseña</h1>
+
+        <p class="mt-3 text-graphite">
           Introduce una nueva contraseña para tu cuenta de BikeMates.
         </p>
 
@@ -87,7 +91,7 @@ async function handleSubmit(): Promise<void> {
               type="password"
               autocomplete="new-password"
               required
-              class="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30"
+              class="w-full rounded-btn border border-line bg-canvas px-4 py-3 text-ink outline-none transition-colors placeholder:text-graphite focus:border-trail focus:ring-2 focus:ring-trail/25"
               placeholder="Mínimo 8 caracteres"
             />
           </div>
@@ -103,27 +107,28 @@ async function handleSubmit(): Promise<void> {
               type="password"
               autocomplete="new-password"
               required
-              class="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30"
+              class="w-full rounded-btn border border-line bg-canvas px-4 py-3 text-ink outline-none transition-colors placeholder:text-graphite focus:border-trail focus:ring-2 focus:ring-trail/25"
               placeholder="Repite la nueva contraseña"
             />
           </div>
 
-          <p v-if="errorMessage" role="alert" class="text-sm text-red-400">
+          <p v-if="errorMessage" role="alert" class="text-sm text-red-600">
             {{ errorMessage }}
           </p>
 
-          <p v-if="successMessage" role="status" class="text-sm text-emerald-400">
+          <p v-if="successMessage" role="status" class="text-sm text-trail-ink">
             {{ successMessage }}
           </p>
 
           <button
             type="submit"
             :disabled="isSubmitting"
-            class="w-full rounded-lg bg-cyan-400 px-5 py-3 font-semibold text-slate-950 hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-60"
+            class="w-full rounded-btn bg-trail px-5 py-3 font-semibold text-ink transition-colors hover:bg-trail-deep disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
           >
             {{ isSubmitting ? 'Actualizando…' : 'Guardar nueva contraseña' }}
           </button>
         </form>
+        </div>
       </section>
     </main>
   </div>

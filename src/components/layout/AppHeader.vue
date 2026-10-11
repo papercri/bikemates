@@ -1,4 +1,3 @@
-
 <script setup lang="ts">
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
@@ -21,8 +20,7 @@ async function handleLogout(): Promise<void> {
     await authStore.logout()
     await router.replace('/')
   } catch {
-    logoutError.value =
-      'No se ha podido cerrar la sesión. Inténtalo de nuevo.'
+    logoutError.value = 'No se ha podido cerrar la sesión. Inténtalo de nuevo.'
   } finally {
     isLoggingOut.value = false
   }
@@ -30,43 +28,64 @@ async function handleLogout(): Promise<void> {
 </script>
 
 <template>
-  <header class="border-b border-slate-800 bg-slate-950 text-white">
+  <header class="border-b border-line bg-canvas text-ink">
     <div
       class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8"
     >
       <RouterLink
         to="/"
-        class="shrink-0 text-xl font-bold tracking-tight text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-400"
+        class="flex shrink-0 items-center gap-2.5 text-xl font-bold tracking-tight text-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-trail"
         aria-label="BikeMates, página de inicio"
       >
-        Bike<span class="text-cyan-400">Mates</span>
+        <svg
+          viewBox="0 0 44 28"
+          class="h-7 w-11 shrink-0"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path
+            d="M2 22 L12 8 L18 15 L26 4 L42 22"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            opacity="0.2"
+          />
+          <g
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="10" cy="20" r="5.5" />
+            <circle cx="32" cy="20" r="5.5" />
+            <path d="M10 20 L17 20 L20 10 L27 10 L32 20" />
+            <path d="M17 20 L20 10" />
+          </g>
+          <circle cx="17" cy="20" r="1.6" fill="var(--color-trail)" />
+        </svg>
+        <span>Bike<span class="text-trail-ink">Mates</span></span>
       </RouterLink>
 
       <nav aria-label="Navegación principal" class="hidden items-center gap-6 sm:flex">
-        <RouterLink
-          to="/rides"
-          class="text-sm text-slate-300 transition-colors hover:text-white"
-        >
+        <RouterLink to="/rides" class="text-sm text-graphite transition-colors hover:text-ink">
           Explorar rutas
         </RouterLink>
 
-        <RouterLink
-          to="/community"
-          class="text-sm text-slate-300 transition-colors hover:text-white"
-        >
+        <RouterLink to="/community" class="text-sm text-graphite transition-colors hover:text-ink">
           Comunidad
         </RouterLink>
       </nav>
 
       <div class="flex items-center gap-3">
-        <span v-if="!isInitialized" class="text-sm text-slate-300">
-          Comprobando sesión…
-        </span>
+        <span v-if="!isInitialized" class="text-sm text-graphite"> Comprobando sesión… </span>
 
         <template v-else-if="user">
           <RouterLink
             to="/profile"
-            class="rounded-lg border border-slate-700 px-4 py-2 text-sm font-medium text-white transition-colors hover:border-cyan-400 hover:text-cyan-400 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-400"
+            class="rounded-btn border border-line px-4 py-2 text-sm font-medium text-ink transition-colors hover:border-trail hover:text-trail-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-trail"
           >
             Mi perfil
           </RouterLink>
@@ -75,7 +94,7 @@ async function handleLogout(): Promise<void> {
             type="button"
             :disabled="isLoggingOut"
             @click="handleLogout"
-            class="rounded-lg bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-cyan-400 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
+            class="rounded-btn bg-trail px-4 py-2 text-sm font-semibold text-ink transition-colors hover:bg-trail-deep focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink disabled:cursor-not-allowed disabled:opacity-60"
           >
             {{ isLoggingOut ? 'Cerrando sesión…' : 'Cerrar sesión' }}
           </button>
@@ -84,14 +103,14 @@ async function handleLogout(): Promise<void> {
         <template v-else>
           <RouterLink
             to="/login"
-            class="shrink-0 rounded-lg border border-slate-700 px-4 py-2 text-sm font-medium text-white transition-colors hover:border-cyan-400 hover:text-cyan-400 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-400"
+            class="shrink-0 rounded-btn border border-line px-4 py-2 text-sm font-medium text-ink transition-colors hover:border-trail hover:text-trail-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-trail"
           >
             Iniciar sesión
           </RouterLink>
 
           <RouterLink
             to="/register"
-            class="hidden rounded-lg bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-cyan-400 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-400 sm:inline-flex"
+            class="hidden rounded-btn bg-trail px-4 py-2 text-sm font-semibold text-ink transition-colors hover:bg-trail-deep focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink sm:inline-flex"
           >
             Registrarse
           </RouterLink>
@@ -99,7 +118,7 @@ async function handleLogout(): Promise<void> {
       </div>
     </div>
 
-    <p v-if="logoutError" role="alert" class="px-4 pb-3 text-sm text-red-400 sm:px-6">
+    <p v-if="logoutError" role="alert" class="px-4 pb-3 text-sm text-red-600 sm:px-6">
       {{ logoutError }}
     </p>
   </header>

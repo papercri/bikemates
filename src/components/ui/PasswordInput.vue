@@ -1,0 +1,78 @@
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+
+const model = defineModel<string>({ required: true })
+
+defineProps<{
+  id: string
+  name?: string
+  autocomplete?: string
+  placeholder?: string
+  required?: boolean
+  ariaInvalid?: boolean
+  ariaDescribedby?: string
+}>()
+
+const visible = ref(false)
+const inputType = computed(() => (visible.value ? 'text' : 'password'))
+</script>
+
+<template>
+  <div class="relative">
+    <input
+      :id="id"
+      v-model="model"
+      :name="name"
+      :type="inputType"
+      :autocomplete="autocomplete"
+      :required="required"
+      :aria-invalid="ariaInvalid"
+      :aria-describedby="ariaDescribedby"
+      class="w-full rounded-btn border border-line bg-canvas py-3 pl-4 pr-12 text-ink outline-none transition-colors placeholder:text-graphite focus:border-trail focus:ring-2 focus:ring-trail/25"
+      :placeholder="placeholder"
+    />
+
+    <button
+      type="button"
+      class="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-r-btn text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-trail"
+      :aria-label="visible ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+      :aria-pressed="visible"
+      @click="visible = !visible"
+    >
+      <svg
+        v-if="!visible"
+        viewBox="0 0 24 24"
+        class="h-5 w-5"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z" />
+        <circle cx="12" cy="12" r="3" />
+      </svg>
+
+      <svg
+        v-else
+        viewBox="0 0 24 24"
+        class="h-5 w-5"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path d="M3 3l18 18" />
+        <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" />
+        <path
+          d="M9.9 5.2A10.8 10.8 0 0 1 12 5c6 0 9.5 7 9.5 7a18.5 18.5 0 0 1-2.7 3.6M6.7 6.8C3.8 8.7 2.5 12 2.5 12S6 19 12 19c1.4 0 2.7-.3 3.9-.8"
+        />
+      </svg>
+    </button>
+  </div>
+</template>
