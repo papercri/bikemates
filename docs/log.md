@@ -1,5 +1,24 @@
 # Registro de cambios
 
+## 2026-10-12 — Ampliación de tests unitarios
+
+Sin cambios de comportamiento: solo tests.
+
+- Nuevos:
+  - `src/design-system/utils/cn.spec.ts`: unión de clases y descarte de valores falsy.
+  - `src/design-system/utils/variants.spec.ts`: `createVariant` (base, variantes por defecto, selección parcial, compound variants, entradas `undefined` y clases falsy).
+  - `src/features/rides/constants/rideLevels.spec.ts`: niveles, colores de badge y clases de punto, con cobertura exacta del dominio `RideLevel`.
+  - `src/features/auth/services/authService.spec.ts`: `registerUser`, `loginUser`, `requestPasswordReset`, `updatePassword` y `requestAccountDeletion` con Supabase mockeado (trim de credenciales, correo ya registrado, propagación de errores).
+  - `src/components/ui/__tests__/`: `Alert` (roles ARIA), `Badge` (combinaciones variant/color + dot), `Button` (type, loading/disabled, block, variante `link` sin padding, `to`/`href`), `Card` (elemento, superficie `danger`, `interactive`), `Input` (v-model, atributos de validación, `trailing`), `Typography` (elemento, variant, tone).
+  - `src/components/forms/__tests__/PasswordInput.spec.ts`: tipo por defecto, toggle accesible (`aria-label`/`aria-pressed`), sincronía del modelo.
+  - `src/components/rides/__tests__/ElevationSparkline.spec.ts`: viewBox por variante, `aria-hidden`, polilínea y path de área deterministas.
+  - `src/components/rides/__tests__/RideCard.spec.ts`: título, localización, cifras, badge por nivel y enlace a `ride-detail`.
+- Ampliado `src/utils/validators/registerValidator.spec.ts`: ramas no cubiertas (vacío/espacios, caracteres de control, límites de longitud, todos los errores a la vez, trim del nombre). Reformatado con Prettier.
+
+### Verificación
+
+- `npm run test:unit -- --run` (106/106), `npm run type-check`, `npx eslint .`, `npx oxlint .`, Prettier check: en verde.
+
 ## 2026-10-12 — Footer global, página de privacidad y 404
 
 - Nuevo `AppFooter` (`src/components/layout/AppFooter.vue`): copyright centrado con año dinámico y texto `xs` (`© {year} BikeMates · Comparte rutas. Comparte kilómetros. · by Cristiana Sollini`, con "Cristiana Sollini" enlazado a https://frontend-ux.website/ en `_blank` + `rel="noopener noreferrer"`) y enlace a "Política de privacidad" en línea propia.
