@@ -73,11 +73,29 @@ export async function updatePassword(newPassword: string): Promise<void> {
   }
 }
 export async function requestAccountDeletion(): Promise<void> {
-  const { error } = await supabase.functions.invoke('delete-account', {
+  /* const { error } = await supabase.functions.invoke('delete-account', {
     method: 'POST',
   })
 
   if (error) {
     throw error
-  }
+  } */
+
+
+const { data, error } = await supabase.functions.invoke('delete-account', {
+  method: 'POST',
+})
+
+if (error) {
+  console.error('Error al eliminar la cuenta:', {
+    message: error.message,
+    name: error.name,
+    context: error.context,
+  })
+
+  throw error
+}
+
+console.info('Respuesta de eliminación:', data)
+
 }
