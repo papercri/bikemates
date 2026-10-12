@@ -1,12 +1,11 @@
-
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
 
 const mocks = vi.hoisted(() => ({
-  getSession: vi.fn(),
-  onAuthStateChange: vi.fn(),
-  signOut: vi.fn(),
-  unsubscribe: vi.fn(),
+  getSession: vi.fn<() => Promise<{ data: { session: null }; error: null }>>(),
+  onAuthStateChange: vi.fn<() => { data: { subscription: { unsubscribe: () => void } } }>(),
+  signOut: vi.fn<() => Promise<{ error: Error | null }>>(),
+  unsubscribe: vi.fn<() => void>(),
 }))
 
 vi.mock('@/services/supabase', () => ({

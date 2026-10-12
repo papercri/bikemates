@@ -2,6 +2,9 @@
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
+import BrandLogo from '@/components/common/BrandLogo.vue'
+import Alert from '@/components/ui/Alert.vue'
+import Button from '@/components/ui/Button.vue'
 import { useAuthStore } from '@/features/auth/stores/authStore'
 
 const authStore = useAuthStore()
@@ -37,30 +40,7 @@ async function handleLogout(): Promise<void> {
         class="flex shrink-0 items-center gap-2.5 text-xl font-bold tracking-tight text-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-trail"
         aria-label="BikeMates, página de inicio"
       >
-        <svg viewBox="0 0 44 28" class="h-7 w-11 shrink-0" aria-hidden="true" focusable="false">
-          <path
-            d="M2 22 L12 8 L18 15 L26 4 L42 22"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            opacity="0.2"
-          />
-          <g
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.8"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <circle cx="10" cy="20" r="5.5" />
-            <circle cx="32" cy="20" r="5.5" />
-            <path d="M10 20 L17 20 L20 10 L27 10 L32 20" />
-            <path d="M17 20 L20 10" />
-          </g>
-          <circle cx="17" cy="20" r="1.6" fill="var(--color-trail)" />
-        </svg>
+        <BrandLogo />
         <span>Bike<span class="text-trail-ink">Mates</span></span>
       </RouterLink>
 
@@ -78,43 +58,25 @@ async function handleLogout(): Promise<void> {
         <span v-if="!isInitialized" class="text-sm text-graphite"> Comprobando sesión… </span>
 
         <template v-else-if="user">
-          <RouterLink
-            to="/profile"
-            class="rounded-btn border border-line px-4 py-2 text-sm font-medium text-ink transition-colors hover:border-trail hover:text-trail-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-trail"
-          >
-            Mi perfil
-          </RouterLink>
+          <Button to="/profile" variant="outline" size="sm">Mi perfil</Button>
 
-          <button
-            type="button"
-            :disabled="isLoggingOut"
-            @click="handleLogout"
-            class="rounded-btn bg-trail px-4 py-2 text-sm font-semibold text-ink transition-colors hover:bg-trail-deep focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink disabled:cursor-not-allowed disabled:opacity-60"
-          >
+          <Button variant="primary" size="sm" :loading="isLoggingOut" @click="handleLogout">
             {{ isLoggingOut ? 'Cerrando sesión…' : 'Cerrar sesión' }}
-          </button>
+          </Button>
         </template>
 
         <template v-else>
-          <RouterLink
-            to="/login"
-            class="shrink-0 rounded-btn border border-line px-4 py-2 text-sm font-medium text-ink transition-colors hover:border-trail hover:text-trail-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-trail"
-          >
-            Iniciar sesión
-          </RouterLink>
+          <Button to="/login" variant="outline" size="sm" class="shrink-0"> Iniciar sesión </Button>
 
-          <RouterLink
-            to="/register"
-            class="hidden rounded-btn bg-trail px-4 py-2 text-sm font-semibold text-ink transition-colors hover:bg-trail-deep focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink sm:inline-flex"
-          >
+          <Button to="/register" variant="primary" size="sm" class="hidden sm:inline-flex">
             Registrarse
-          </RouterLink>
+          </Button>
         </template>
       </div>
     </div>
 
-    <p v-if="logoutError" role="alert" class="px-4 pb-3 text-sm text-red-600 sm:px-6">
+    <Alert v-if="logoutError" class="px-4 pb-3 sm:px-6">
       {{ logoutError }}
-    </p>
+    </Alert>
   </header>
 </template>

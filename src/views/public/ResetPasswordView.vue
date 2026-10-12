@@ -1,10 +1,13 @@
-
 <script setup lang="ts">
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
-import AppHeader from '@/components/layout/AppHeader.vue'
-import RidgeStrip from '@/components/ui/RidgeStrip.vue'
+import AppPage from '@/components/layout/AppPage.vue'
+import AuthCard from '@/components/features/AuthCard.vue'
+import FormLabel from '@/components/forms/FormLabel.vue'
+import Alert from '@/components/ui/Alert.vue'
+import Button from '@/components/ui/Button.vue'
+import Input from '@/components/ui/Input.vue'
 import { useAuthStore } from '@/features/auth/stores/authStore'
 import { updatePassword } from '@/features/auth/services/authService'
 
@@ -33,8 +36,7 @@ async function handleSubmit(): Promise<void> {
   }
 
   if (!isRecoverySession.value) {
-    errorMessage.value =
-      'Debes acceder desde un enlace válido de recuperación enviado por email.'
+    errorMessage.value = 'Debes acceder desde un enlace válido de recuperación enviado por email.'
     return
   }
 
@@ -55,73 +57,51 @@ async function handleSubmit(): Promise<void> {
 }
 </script>
 
-
 <template>
-  <div class="min-h-screen bg-snow text-ink">
-    <AppHeader />
+  <AppPage size="narrow">
+    <AuthCard
+      title="Nueva contraseña"
+      description="Introduce una nueva contraseña para tu cuenta de BikeMates."
+    >
+      <form class="mt-8 space-y-5" novalidate @submit.prevent="handleSubmit">
+        <div>
+          <FormLabel id="password">Nueva contraseña</FormLabel>
 
-    <main class="mx-auto max-w-lg px-4 py-12 sm:px-6">
-      <section class="overflow-hidden rounded-card border border-line bg-canvas shadow-card">
-        <RidgeStrip />
-
-        <div class="p-6 pt-4 sm:p-8 sm:pt-5">
-          <h1 class="text-3xl font-bold">Nueva contraseña</h1>
-
-          <p class="mt-3 text-graphite">
-            Introduce una nueva contraseña para tu cuenta de BikeMates.
-          </p>
-        
-          <form class="mt-8 space-y-5" novalidate @submit.prevent="handleSubmit">
-            <div>
-              <label for="password" class="mb-2 block text-sm font-medium">
-                Nueva contraseña
-              </label>
-
-              <input
-                id="password"
-                v-model="password"
-                type="password"
-                autocomplete="new-password"
-                required
-                class="w-full rounded-btn border border-line bg-canvas px-4 py-3 text-ink outline-none transition-colors placeholder:text-graphite focus:border-trail focus:ring-2 focus:ring-trail/25"
-                placeholder="Mínimo 8 caracteres"
-              />
-            </div>
-
-            <div>
-              <label for="confirm-password" class="mb-2 block text-sm font-medium">
-                Confirmar nueva contraseña
-              </label>
-
-              <input
-                id="confirm-password"
-                v-model="confirmPassword"
-                type="password"
-                autocomplete="new-password"
-                required
-                class="w-full rounded-btn border border-line bg-canvas px-4 py-3 text-ink outline-none transition-colors placeholder:text-graphite focus:border-trail focus:ring-2 focus:ring-trail/25"
-                placeholder="Repite la nueva contraseña"
-              />
-            </div>
-
-            <p v-if="errorMessage" role="alert" class="text-sm text-red-600">
-              {{ errorMessage }}
-            </p>
-
-            <p v-if="successMessage" role="status" class="text-sm text-trail-ink">
-              {{ successMessage }}
-            </p>
-
-            <button
-              type="submit"
-              :disabled="isSubmitting"
-              class="w-full rounded-btn bg-trail px-5 py-3 font-semibold text-ink transition-colors hover:bg-trail-deep disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink "
-            >
-              {{ isSubmitting ? 'Actualizando…' : 'Guardar nueva contraseña' }}
-            </button>
-          </form>
+          <Input
+            id="password"
+            v-model="password"
+            type="password"
+            autocomplete="new-password"
+            required
+            placeholder="Mínimo 8 caracteres"
+          />
         </div>
-      </section>
-    </main>
-  </div>
+
+        <div>
+          <FormLabel id="confirm-password">Confirmar nueva contraseña</FormLabel>
+
+          <Input
+            id="confirm-password"
+            v-model="confirmPassword"
+            type="password"
+            autocomplete="new-password"
+            required
+            placeholder="Repite la nueva contraseña"
+          />
+        </div>
+
+        <Alert v-if="errorMessage">
+          {{ errorMessage }}
+        </Alert>
+
+        <Alert v-if="successMessage" variant="success">
+          {{ successMessage }}
+        </Alert>
+
+        <Button type="submit" block :loading="isSubmitting">
+          {{ isSubmitting ? 'Actualizando…' : 'Guardar nueva contraseña' }}
+        </Button>
+      </form>
+    </AuthCard>
+  </AppPage>
 </template>

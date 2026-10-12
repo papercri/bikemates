@@ -1,20 +1,16 @@
-
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { Session, User } from '@supabase/supabase-js'
 import { supabase } from '@/services/supabase'
 import { requestAccountDeletion } from '../services/authService'
 
-type AuthSubscription = ReturnType<
-  typeof supabase.auth.onAuthStateChange
->['data']['subscription']
+type AuthSubscription = ReturnType<typeof supabase.auth.onAuthStateChange>['data']['subscription']
 
 export const useAuthStore = defineStore('auth', () => {
   const session = ref<Session | null>(null)
   const user = ref<User | null>(null)
   const isInitialized = ref(false)
   const isRecoverySession = ref(false)
-
 
   let authSubscription: AuthSubscription | null = null
   let initializationPromise: Promise<void> | null = null
@@ -40,8 +36,7 @@ export const useAuthStore = defineStore('auth', () => {
     session.value = data.session
     user.value = data.session?.user ?? null
 
-    const { data: authData } = supabase.auth.onAuthStateChange(
-    (event, newSession) => {
+    const { data: authData } = supabase.auth.onAuthStateChange((event, newSession) => {
       session.value = newSession
       user.value = newSession?.user ?? null
 
@@ -52,44 +47,42 @@ export const useAuthStore = defineStore('auth', () => {
       if (event === 'SIGNED_OUT') {
         isRecoverySession.value = false
       }
-    },
-  )
+    })
 
     authSubscription = authData.subscription
     isInitialized.value = true
   }
 
-  
-async function logout(): Promise<void> {
-  const { error } = await supabase.auth.signOut()
+  async function logout(): Promise<void> {
+    const { error } = await supabase.auth.signOut()
 
-  if (error) {
-    throw error
-  }
+    if (error) {
+      throw error
+    }
 
-  // Sincronizamos explícitamente el estado de Pinia.
-  session.value = null
-  user.value = null
-  isRecoverySession.value = false
-}
-
-async function deleteAccount(): Promise<void> {
-  await requestAccountDeletion()
-
-  try {
-    await supabase.auth.signOut({ scope: 'local' })
-  } finally {
+    // Sincronizamos explícitamente el estado de Pinia.
     session.value = null
     user.value = null
     isRecoverySession.value = false
   }
-}
-function markRecoverySession(): void {
-  isRecoverySession.value = true
-}
-function clearRecoverySession(): void {
-  isRecoverySession.value = false
-}
+
+  async function deleteAccount(): Promise<void> {
+    await requestAccountDeletion()
+
+    try {
+      await supabase.auth.signOut({ scope: 'local' })
+    } finally {
+      session.value = null
+      user.value = null
+      isRecoverySession.value = false
+    }
+  }
+  function markRecoverySession(): void {
+    isRecoverySession.value = true
+  }
+  function clearRecoverySession(): void {
+    isRecoverySession.value = false
+  }
   function stopListening(): void {
     authSubscription?.unsubscribe()
     authSubscription = null
@@ -97,15 +90,15 @@ function clearRecoverySession(): void {
   }
 
   return {
-  session,
-  user,
-  isInitialized,
-  isRecoverySession,
-  initialize,
-  logout,
-  deleteAccount,
-   markRecoverySession,
-  stopListening,
-  clearRecoverySession,
+    session,
+    user,
+    isInitialized,
+    isRecoverySession,
+    initialize,
+    logout,
+    deleteAccount,
+    markRecoverySession,
+    stopListening,
+    clearRecoverySession,
   }
 })

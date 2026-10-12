@@ -1,4 +1,3 @@
-
 export interface RegisterForm {
   name: string
   email: string
@@ -14,6 +13,7 @@ export interface RegisterErrors {
 }
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+// oxlint-disable-next-line no-control-regex -- La detección de caracteres de control es intencional.
 const CONTROL_CHARACTERS = /[\u0000-\u001F\u007F]/
 
 export function validateRegisterForm(form: RegisterForm): RegisterErrors {

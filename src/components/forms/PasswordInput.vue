@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import Input from '@/components/ui/Input.vue'
 
 const model = defineModel<string>({ required: true })
 
@@ -19,17 +20,17 @@ const inputType = computed(() => (visible.value ? 'text' : 'password'))
 
 <template>
   <div class="relative">
-    <input
-      :id="id"
+    <Input
       v-model="model"
+      :id="id"
       :name="name"
       :type="inputType"
       :autocomplete="autocomplete"
+      :placeholder="placeholder"
       :required="required"
       :aria-invalid="ariaInvalid"
       :aria-describedby="ariaDescribedby"
-      class="w-full rounded-btn border border-line bg-canvas py-3 pl-4 pr-12 text-ink outline-none transition-colors placeholder:text-graphite focus:border-trail focus:ring-2 focus:ring-trail/25"
-      :placeholder="placeholder"
+      trailing
     />
 
     <button

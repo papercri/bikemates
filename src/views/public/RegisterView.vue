@@ -1,14 +1,22 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
+import AppPage from '@/components/layout/AppPage.vue'
+import AuthCard from '@/components/features/AuthCard.vue'
+import FormError from '@/components/forms/FormError.vue'
+import FormHelp from '@/components/forms/FormHelp.vue'
+import FormLabel from '@/components/forms/FormLabel.vue'
+import PasswordInput from '@/components/forms/PasswordInput.vue'
+import Alert from '@/components/ui/Alert.vue'
+import Button from '@/components/ui/Button.vue'
+import Input from '@/components/ui/Input.vue'
+import Typography from '@/components/ui/Typography.vue'
 import { registerUser } from '@/features/auth/services/authService'
 import {
   validateRegisterForm,
   type RegisterErrors,
   type RegisterForm,
 } from '@/utils/validators/registerValidator'
-import AppHeader from '@/components/layout/AppHeader.vue'
-import RidgeStrip from '@/components/ui/RidgeStrip.vue'
-import PasswordInput from '@/components/ui/PasswordInput.vue'
+
 const form = reactive<RegisterForm>({
   name: '',
   email: '',
@@ -30,6 +38,7 @@ function validateForm(): boolean {
 
   return Object.values(errors).every((error) => error === '')
 }
+
 const submitted = ref(false)
 const isSubmitting = ref(false)
 const submitError = ref('')
@@ -73,151 +82,117 @@ async function handleSubmit(): Promise<void> {
 </script>
 
 <template>
-  <div class="min-h-screen bg-snow text-ink">
-    <AppHeader />
+  <AppPage size="narrow">
+    <AuthCard
+      title="Únete a BikeMates"
+      description="Crea tu cuenta para conectar con otros ciclistas."
+    >
+      <form novalidate class="mt-8 space-y-5" @submit.prevent="handleSubmit">
+        <div>
+          <FormLabel id="name">Nombre</FormLabel>
 
-    <main class="mx-auto max-w-lg px-4 py-12 sm:px-6">
-      <section class="overflow-hidden rounded-card border border-line bg-canvas shadow-card">
-        <RidgeStrip />
+          <Input
+            id="name"
+            v-model="form.name"
+            name="name"
+            type="text"
+            autocomplete="name"
+            :aria-invalid="submitted && Boolean(errors.name)"
+            :aria-describedby="submitted && errors.name ? 'name-error' : undefined"
+            placeholder="Tu nombre"
+          />
 
-        <div class="p-6 pt-4 sm:p-8 sm:pt-5">
-          <h1 class="text-3xl font-bold">Únete a BikeMates</h1>
-
-          <p class="mt-3 text-graphite">Crea tu cuenta para conectar con otros ciclistas.</p>
-
-          <form novalidate @submit.prevent="handleSubmit" class="mt-8 space-y-5">
-            <div>
-              <label for="name" class="mb-2 block text-sm font-medium"> Nombre </label>
-
-              <input
-                id="name"
-                v-model="form.name"
-                name="name"
-                type="text"
-                autocomplete="name"
-                :aria-invalid="submitted && Boolean(errors.name)"
-                :aria-describedby="submitted && errors.name ? 'name-error' : undefined"
-                class="w-full rounded-btn border border-line bg-canvas px-4 py-3 text-ink outline-none transition-colors placeholder:text-graphite focus:border-trail focus:ring-2 focus:ring-trail/25"
-                placeholder="Tu nombre"
-              />
-
-              <p v-if="submitted && errors.name" id="name-error" class="mt-2 text-sm text-red-600">
-                {{ errors.name }}
-              </p>
-            </div>
-
-            <div>
-              <label for="email" class="mb-2 block text-sm font-medium"> Correo electrónico </label>
-
-              <input
-                id="email"
-                v-model="form.email"
-                name="email"
-                type="email"
-                autocomplete="email"
-                :aria-invalid="submitted && Boolean(errors.email)"
-                :aria-describedby="submitted && errors.email ? 'email-error' : undefined"
-                class="w-full rounded-btn border border-line bg-canvas px-4 py-3 text-ink outline-none transition-colors placeholder:text-graphite focus:border-trail focus:ring-2 focus:ring-trail/25"
-                placeholder="nombre@ejemplo.com"
-              />
-
-              <p
-                v-if="submitted && errors.email"
-                id="email-error"
-                class="mt-2 text-sm text-red-600"
-              >
-                {{ errors.email }}
-              </p>
-            </div>
-
-            <div>
-              <label for="password" class="mb-2 block text-sm font-medium"> Contraseña </label>
-
-              <PasswordInput
-                id="password"
-                v-model="form.password"
-                name="password"
-                autocomplete="new-password"
-                :aria-invalid="submitted && Boolean(errors.password)"
-                :aria-describedby="
-                  [
-                    'password-help',
-                    ...(submitted && errors.password ? ['password-error'] : []),
-                  ].join(' ')
-                "
-                placeholder="Mínimo 8 caracteres"
-              />
-
-              <p id="password-help" class="mt-2 text-sm text-graphite">
-                Utiliza al menos 8 caracteres.
-              </p>
-
-              <p
-                v-if="submitted && errors.password"
-                id="password-error"
-                class="mt-2 text-sm text-red-600"
-              >
-                {{ errors.password }}
-              </p>
-            </div>
-
-            <div>
-              <label for="confirm-password" class="mb-2 block text-sm font-medium">
-                Confirmar contraseña
-              </label>
-
-              <PasswordInput
-                id="confirm-password"
-                v-model="form.confirmPassword"
-                name="confirmPassword"
-                autocomplete="new-password"
-                :aria-invalid="submitted && Boolean(errors.confirmPassword)"
-                :aria-describedby="
-                  submitted && errors.confirmPassword ? 'confirm-password-error' : undefined
-                "
-                placeholder="Repite la contraseña"
-              />
-
-              <p
-                v-if="submitted && errors.confirmPassword"
-                id="confirm-password-error"
-                class="mt-2 text-sm text-red-600"
-              >
-                {{ errors.confirmPassword }}
-              </p>
-            </div>
-
-            <p
-              v-if="submitted && Object.values(errors).some((error) => error !== '')"
-              role="alert"
-              class="text-sm text-red-600"
-            >
-              Revisa los campos indicados.
-            </p>
-
-            <p v-if="successMessage" role="status" class="text-sm text-trail-ink">
-              {{ successMessage }}
-            </p>
-            <p v-if="submitError" role="alert" class="text-sm text-red-600">
-              {{ submitError }}
-            </p>
-            <button
-              type="submit"
-              :disabled="isSubmitting"
-              class="w-full rounded-btn bg-trail px-5 py-3 font-semibold text-ink transition-colors hover:bg-trail-deep disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
-            >
-              {{ isSubmitting ? 'Creando cuenta…' : 'Crear cuenta' }}
-            </button>
-          </form>
-
-          <p class="mt-6 text-center text-sm text-graphite">
-            ¿Ya tienes cuenta?
-            <RouterLink to="/login" class="font-medium text-trail-ink hover:text-trail-dark">
-              Inicia sesión
-            </RouterLink>
-          </p>
+          <FormError v-if="submitted && errors.name" id="name-error">
+            {{ errors.name }}
+          </FormError>
         </div>
-      </section>
-    </main>
-  </div>
+
+        <div>
+          <FormLabel id="email">Correo electrónico</FormLabel>
+
+          <Input
+            id="email"
+            v-model="form.email"
+            name="email"
+            type="email"
+            autocomplete="email"
+            :aria-invalid="submitted && Boolean(errors.email)"
+            :aria-describedby="submitted && errors.email ? 'email-error' : undefined"
+            placeholder="nombre@ejemplo.com"
+          />
+
+          <FormError v-if="submitted && errors.email" id="email-error">
+            {{ errors.email }}
+          </FormError>
+        </div>
+
+        <div>
+          <FormLabel id="password">Contraseña</FormLabel>
+
+          <PasswordInput
+            id="password"
+            v-model="form.password"
+            name="password"
+            autocomplete="new-password"
+            :aria-invalid="submitted && Boolean(errors.password)"
+            :aria-describedby="
+              ['password-help', ...(submitted && errors.password ? ['password-error'] : [])].join(
+                ' ',
+              )
+            "
+            placeholder="Mínimo 8 caracteres"
+          />
+
+          <FormHelp id="password-help">Utiliza al menos 8 caracteres.</FormHelp>
+
+          <FormError v-if="submitted && errors.password" id="password-error">
+            {{ errors.password }}
+          </FormError>
+        </div>
+
+        <div>
+          <FormLabel id="confirm-password">Confirmar contraseña</FormLabel>
+
+          <PasswordInput
+            id="confirm-password"
+            v-model="form.confirmPassword"
+            name="confirmPassword"
+            autocomplete="new-password"
+            :aria-invalid="submitted && Boolean(errors.confirmPassword)"
+            :aria-describedby="
+              submitted && errors.confirmPassword ? 'confirm-password-error' : undefined
+            "
+            placeholder="Repite la contraseña"
+          />
+
+          <FormError v-if="submitted && errors.confirmPassword" id="confirm-password-error">
+            {{ errors.confirmPassword }}
+          </FormError>
+        </div>
+
+        <Alert v-if="submitted && Object.values(errors).some((error) => error !== '')">
+          Revisa los campos indicados.
+        </Alert>
+
+        <Alert v-if="successMessage" variant="success">
+          {{ successMessage }}
+        </Alert>
+
+        <Alert v-if="submitError">
+          {{ submitError }}
+        </Alert>
+
+        <Button type="submit" block :loading="isSubmitting">
+          {{ isSubmitting ? 'Creando cuenta…' : 'Crear cuenta' }}
+        </Button>
+      </form>
+
+      <Typography as="p" variant="body-sm" tone="muted" class="mt-6 text-center">
+        ¿Ya tienes cuenta?
+        <RouterLink to="/login" class="font-medium text-trail-ink hover:text-trail-dark">
+          Inicia sesión
+        </RouterLink>
+      </Typography>
+    </AuthCard>
+  </AppPage>
 </template>
