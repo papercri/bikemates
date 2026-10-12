@@ -1,28 +1,16 @@
+
 <script setup lang="ts">
+import { ref } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import RidgeStrip from '@/components/ui/RidgeStrip.vue'
-import { supabase } from '@/services/supabase'
+import { useAuthStore } from '@/features/auth/stores/authStore'
 import { updatePassword } from '@/features/auth/services/authService'
 
-import { onUnmounted, ref } from 'vue'
-
-// Dentro de <script setup>
-const isRecoverySession = ref(false)
-
-const {
-  data: { subscription },
-} = supabase.auth.onAuthStateChange((event) => {
-  if (event === 'PASSWORD_RECOVERY') {
-    isRecoverySession.value = true
-  }
-})
-
-onUnmounted(() => {
-  subscription.unsubscribe()
-})
-
 const router = useRouter()
+const authStore = useAuthStore()
+const { isRecoverySession } = storeToRefs(authStore)
 
 const password = ref('')
 const confirmPassword = ref('')
@@ -44,19 +32,20 @@ async function handleSubmit(): Promise<void> {
     return
   }
 
+  if (!isRecoverySession.value) {
+    errorMessage.value =
+      'Debes acceder desde un enlace válido de recuperación enviado por email.'
+    return
+  }
+
   isSubmitting.value = true
 
   try {
-    if (!isRecoverySession.value) {
-      errorMessage.value = 'Debes acceder desde un enlace válido de recuperación enviado por email.'
-      return
-    }
-
     await updatePassword(password.value)
-
     successMessage.value = 'Contraseña actualizada correctamente.'
 
-    await router.replace('/login')
+    authStore.clearRecoverySession()
+    await router.replace({ name: 'login' })
   } catch {
     errorMessage.value =
       'No se ha podido actualizar la contraseña. Solicita un nuevo enlace e inténtalo otra vez.'
@@ -65,6 +54,7 @@ async function handleSubmit(): Promise<void> {
   }
 }
 </script>
+
 
 <template>
   <div class="min-h-screen bg-snow text-ink">
@@ -80,7 +70,7 @@ async function handleSubmit(): Promise<void> {
           <p class="mt-3 text-graphite">
             Introduce una nueva contraseña para tu cuenta de BikeMates.
           </p>
-
+        
           <form class="mt-8 space-y-5" novalidate @submit.prevent="handleSubmit">
             <div>
               <label for="password" class="mb-2 block text-sm font-medium">
@@ -125,7 +115,7 @@ async function handleSubmit(): Promise<void> {
             <button
               type="submit"
               :disabled="isSubmitting"
-              class="w-full rounded-btn bg-trail px-5 py-3 font-semibold text-ink transition-colors hover:bg-trail-deep disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
+              class="w-full rounded-btn bg-trail px-5 py-3 font-semibold text-ink transition-colors hover:bg-trail-deep disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink "
             >
               {{ isSubmitting ? 'Actualizando…' : 'Guardar nueva contraseña' }}
             </button>

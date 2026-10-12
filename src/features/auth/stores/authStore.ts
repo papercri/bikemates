@@ -13,6 +13,8 @@ export const useAuthStore = defineStore('auth', () => {
   const session = ref<Session | null>(null)
   const user = ref<User | null>(null)
   const isInitialized = ref(false)
+  const isRecoverySession = ref(false)
+
 
   let authSubscription: AuthSubscription | null = null
   let initializationPromise: Promise<void> | null = null
@@ -39,21 +41,38 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = data.session?.user ?? null
 
     const { data: authData } = supabase.auth.onAuthStateChange(
-      (_event, newSession) => {
-        session.value = newSession
-        user.value = newSession?.user ?? null
-      },
-    )
+    (event, newSession) => {
+      session.value = newSession
+      user.value = newSession?.user ?? null
+
+      if (event === 'PASSWORD_RECOVERY') {
+        isRecoverySession.value = true
+      }
+
+      if (event === 'SIGNED_OUT') {
+        isRecoverySession.value = false
+      }
+    },
+  )
 
     authSubscription = authData.subscription
     isInitialized.value = true
   }
 
-  async function logout(): Promise<void> {
-    const { error } = await supabase.auth.signOut()
+  
+async function logout(): Promise<void> {
+  const { error } = await supabase.auth.signOut()
 
-    if (error) throw error
+  if (error) {
+    throw error
   }
+
+  // Sincronizamos explícitamente el estado de Pinia.
+  session.value = null
+  user.value = null
+  isRecoverySession.value = false
+}
+
 async function deleteAccount(): Promise<void> {
   await requestAccountDeletion()
 
@@ -62,7 +81,14 @@ async function deleteAccount(): Promise<void> {
   } finally {
     session.value = null
     user.value = null
+    isRecoverySession.value = false
   }
+}
+function markRecoverySession(): void {
+  isRecoverySession.value = true
+}
+function clearRecoverySession(): void {
+  isRecoverySession.value = false
 }
   function stopListening(): void {
     authSubscription?.unsubscribe()
@@ -71,12 +97,15 @@ async function deleteAccount(): Promise<void> {
   }
 
   return {
-     session,
-    user,
-    isInitialized,
-    initialize,
-    logout,
-    deleteAccount,
-    stopListening,
+  session,
+  user,
+  isInitialized,
+  isRecoverySession,
+  initialize,
+  logout,
+  deleteAccount,
+   markRecoverySession,
+  stopListening,
+  clearRecoverySession,
   }
 })

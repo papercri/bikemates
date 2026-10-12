@@ -5,13 +5,17 @@ interface RegisterCredentials {
   email: string
   password: string
 }
-
+interface LoginCredentials {
+  email: string
+  password: string
+}
 
 export async function registerUser(credentials: RegisterCredentials) {
   const { data, error } = await supabase.auth.signUp({
     email: credentials.email.trim(),
     password: credentials.password,
     options: {
+      emailRedirectTo: `${window.location.origin}/auth/confirm`,
       data: {
         display_name: credentials.name.trim(),
       },
@@ -23,16 +27,14 @@ export async function registerUser(credentials: RegisterCredentials) {
   }
 
   if (data.user && data.user.identities?.length === 0) {
-    throw new Error('Email ya registrado. Por favor, inicia sesión o utiliza otro correo electrónico.')
+    throw new Error(
+      'Email ya registrado. Por favor, inicia sesión o utiliza otro correo electrónico.',
+    )
   }
 
   return data
 }
 
-interface LoginCredentials {
-  email: string
-  password: string
-}
 
 export async function loginUser(credentials: LoginCredentials) {
   const { data, error } = await supabase.auth.signInWithPassword({
@@ -47,8 +49,14 @@ export async function loginUser(credentials: LoginCredentials) {
   return data
 }
 
-export async function requestPasswordReset(email: string, redirectTo: string): Promise<void> {
-  const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo })
+export async function requestPasswordReset(
+  email: string,
+  redirectTo: string,
+): Promise<void> {
+  const { error } = await supabase.auth.resetPasswordForEmail(
+    email.trim(),
+    { redirectTo },
+  )
 
   if (error) {
     throw error

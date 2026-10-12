@@ -49,6 +49,11 @@ const router = createRouter({
     component: ProfileView,
     meta: { requiresAuth: true },
   },
+  {
+    path: '/auth/confirm',
+    name: 'email-confirmed',
+    component: () => import('@/views/public/EmailConfirmedView.vue'),
+  },
   ],
 })
 
