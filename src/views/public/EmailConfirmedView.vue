@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHead } from '@unhead/vue'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import AppFooter from '@/components/layout/AppFooter.vue'
@@ -9,6 +10,10 @@ import Card from '@/components/ui/Card.vue'
 import Typography from '@/components/ui/Typography.vue'
 import { supabase } from '@/services/supabase'
 import { useAuthStore } from '@/features/auth/stores/authStore'
+
+useHead({
+  title: 'Confirmación de correo | BikeMates',
+})
 
 const router = useRouter()
 

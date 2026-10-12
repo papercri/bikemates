@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHead } from '@unhead/vue'
 import { computed, ref } from 'vue'
 import AppPage from '@/components/layout/AppPage.vue'
 import RideCard from '@/components/rides/RideCard.vue'
@@ -7,6 +8,17 @@ import Typography from '@/components/ui/Typography.vue'
 import { mockRides } from '@/features/rides/data/mockRides'
 import { RIDE_LEVELS } from '@/features/rides/constants/rideLevels'
 import type { RideLevel } from '@/features/rides/types'
+
+useHead({
+  title: 'Explorar rutas | BikeMates',
+  meta: [
+    {
+      name: 'description',
+      content:
+        'Explora rutas en España por nivel: iniciación, intermedio y avanzado, con distancia y desnivel de cada salida.',
+    },
+  ],
+})
 
 const rides = ref(mockRides)
 

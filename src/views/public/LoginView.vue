@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHead } from '@unhead/vue'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import AppPage from '@/components/layout/AppPage.vue'
@@ -10,6 +11,10 @@ import Button from '@/components/ui/Button.vue'
 import Input from '@/components/ui/Input.vue'
 import Typography from '@/components/ui/Typography.vue'
 import { loginUser } from '@/features/auth/services/authService'
+
+useHead({
+  title: 'Iniciar sesión | BikeMates',
+})
 
 const router = useRouter()
 

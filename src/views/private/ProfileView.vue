@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHead } from '@unhead/vue'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import AppPage from '@/components/layout/AppPage.vue'
@@ -9,6 +10,11 @@ import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
 import Typography from '@/components/ui/Typography.vue'
 import { useAuthStore } from '@/features/auth/stores/authStore'
+
+useHead({
+  title: 'Mi perfil | BikeMates',
+  meta: [{ name: 'robots', content: 'noindex, nofollow' }],
+})
 
 type ProfileTab = 'details' | 'saved-rides' | 'published-rides'
 

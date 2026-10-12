@@ -1,5 +1,19 @@
 # Registro de cambios
 
+## 2026-10-12 — Favicon, títulos por página y README
+
+- `public/favicon.svg`: icono nuevo con la marca del logo (montaña + bicicleta + punto verde), sin texto y en colores fijos de tokens (`#1a1d20`, `#22c55e`, borde `#e9ecef`).
+- `index.html`: `lang="es"`, `<title>BikeMates</title>` (se elimina el título por defecto `Vite App`), favicon SVG en lugar del `/favicon.ico` inexistente y meta description de respaldo.
+- Títulos con `useHead` en todas las vistas que no tenían: `LoginView` (`Iniciar sesión | BikeMates`), `RegisterView` (`Crear cuenta | BikeMates`), `ForgotPasswordView`, `ResetPasswordView`, `EmailConfirmedView`, `RidesView` (`Explorar rutas | BikeMates`, con description) y `ProfileView` (`Mi perfil | BikeMates`).
+- `RideDetailView`: título dinámico con el nombre de la ruta y fallback `Ruta no encontrada | BikeMates`.
+- `ProfileView`: meta `robots: noindex, nofollow` (ruta privada).
+- `README.md` reescrito: descripción del proyecto, funcionalidades, stack, requisitos, setup, variables de entorno, scripts, rutas, arquitectura, design system, seguridad, tests y documentación.
+- Nuevo `.env.example` con `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` (placeholders seguros).
+
+### Verificación
+
+- `npm run test:unit -- --run` (106/106), `npm run type-check`, `npx eslint .`, `npx oxlint .`, Prettier check y `npm run build`: en verde. `dist/index.html` ya no contiene "Vite App" y sí `favicon.svg`.
+
 ## 2026-10-12 — Ampliación de tests unitarios
 
 Sin cambios de comportamiento: solo tests.

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHead } from '@unhead/vue'
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
@@ -10,6 +11,10 @@ import Button from '@/components/ui/Button.vue'
 import Input from '@/components/ui/Input.vue'
 import { useAuthStore } from '@/features/auth/stores/authStore'
 import { updatePassword } from '@/features/auth/services/authService'
+
+useHead({
+  title: 'Restablecer contraseña | BikeMates',
+})
 
 const router = useRouter()
 const authStore = useAuthStore()

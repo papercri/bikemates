@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHead } from '@unhead/vue'
 import { computed } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
 import AppPage from '@/components/layout/AppPage.vue'
@@ -24,6 +25,12 @@ const ride = computed(() => {
   }
 
   return mockRides.find((item) => item.id === id)
+})
+
+useHead({
+  title: computed(() =>
+    ride.value ? `${ride.value.title} | BikeMates` : 'Ruta no encontrada | BikeMates',
+  ),
 })
 </script>
 

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHead } from '@unhead/vue'
 import { ref } from 'vue'
 import AppPage from '@/components/layout/AppPage.vue'
 import AuthCard from '@/components/features/AuthCard.vue'
@@ -8,6 +9,10 @@ import Button from '@/components/ui/Button.vue'
 import Input from '@/components/ui/Input.vue'
 import Typography from '@/components/ui/Typography.vue'
 import { requestPasswordReset } from '@/features/auth/services/authService'
+
+useHead({
+  title: 'Recuperar contraseña | BikeMates',
+})
 
 const email = ref('')
 const isSubmitting = ref(false)

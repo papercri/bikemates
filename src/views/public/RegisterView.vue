@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useHead } from '@unhead/vue'
 import { reactive, ref } from 'vue'
 import AppPage from '@/components/layout/AppPage.vue'
 import AuthCard from '@/components/features/AuthCard.vue'
@@ -16,6 +17,10 @@ import {
   type RegisterErrors,
   type RegisterForm,
 } from '@/utils/validators/registerValidator'
+
+useHead({
+  title: 'Crear cuenta | BikeMates',
+})
 
 const form = reactive<RegisterForm>({
   name: '',
