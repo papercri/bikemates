@@ -33,7 +33,7 @@ src/
   components/
     ui/                   # primitivos: Button, Input, Card, Badge, Alert, Typography, EmptyState
     forms/                # PasswordInput, FormLabel, FormHelp, FormError
-    layout/               # AppHeader, AppPage (shell de página)
+    layout/               # AppHeader, AppFooter, AppPage (shell de página)
     common/               # BrandLogo, RidgeStrip
     features/             # AuthCard
     rides/                # RideCard, ElevationSparkline
@@ -44,3 +44,19 @@ src/
 - Las vistas (`src/views/`) componen primitivos y concentran la orquestación; el acceso a datos está en `src/features/*/services` y `src/services/`.
 
 Ver `docs/log.md` para el historial de cambios.
+
+## Rutas
+
+| Ruta                | Vista                       | Acceso      |
+| ------------------- | --------------------------- | ----------- |
+| `/`                 | HomeView                    | público     |
+| `/rides`            | RidesView                   | público     |
+| `/rides/:id`        | RideDetailView              | público     |
+| `/register`         | RegisterView                | público     |
+| `/login`            | LoginView                   | público     |
+| `/forgot-password`  | ForgotPasswordView          | público     |
+| `/reset-password`   | ResetPasswordView           | público     |
+| `/auth/confirm`     | EmailConfirmedView          | público     |
+| `/privacy`          | PrivacyView                 | público     |
+| `/profile`          | ProfileView                 | autenticado |
+| cualquier otra      | NotFoundView (404, noindex) | público     |

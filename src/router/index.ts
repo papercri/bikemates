@@ -5,6 +5,7 @@ import RidesView from '@/views/public/RidesView.vue'
 import RideDetailView from '@/views/public/RideDetailView.vue'
 import RegisterView from '@/views/public/RegisterView.vue'
 import ProfileView from '@/views/private/ProfileView.vue'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -44,19 +45,28 @@ const router = createRouter({
       component: () => import('@/views/public/ForgotPasswordView.vue'),
     },
     {
-    path: '/profile',
-    name: 'profile',
-    component: ProfileView,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: '/auth/confirm',
-    name: 'email-confirmed',
-    component: () => import('@/views/public/EmailConfirmedView.vue'),
-  },
+      path: '/profile',
+      name: 'profile',
+      component: ProfileView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/auth/confirm',
+      name: 'email-confirmed',
+      component: () => import('@/views/public/EmailConfirmedView.vue'),
+    },
+    {
+      path: '/privacy',
+      name: 'privacy',
+      component: () => import('@/views/public/PrivacyView.vue'),
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'not-found',
+      component: () => import('@/views/public/NotFoundView.vue'),
+    },
   ],
 })
-
 
 router.beforeEach(async (to) => {
   const authStore = useAuthStore()
@@ -85,4 +95,5 @@ router.beforeEach(async (to) => {
 
   return true
 })
+
 export default router

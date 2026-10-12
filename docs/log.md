@@ -1,5 +1,21 @@
 # Registro de cambios
 
+## 2026-10-12 — Footer global, página de privacidad y 404
+
+- Nuevo `AppFooter` (`src/components/layout/AppFooter.vue`): copyright centrado con año dinámico y texto `xs` (`© {year} BikeMates · Comparte rutas. Comparte kilómetros. · by Cristiana Sollini`, con "Cristiana Sollini" enlazado a https://frontend-ux.website/ en `_blank` + `rel="noopener noreferrer"`) y enlace a "Política de privacidad" en línea propia.
+- `AppPage` incluye el footer: todas las vistas con shell lo heredan.
+- `EmailConfirmedView` ahora muestra `AppHeader` y `AppFooter` (era la única vista sin header).
+- Nueva ruta `/privacy` (`PrivacyView`) con contenido de compromiso de privacidad, `useHead` (título + descripción) y contacto por `mailto`. Contenedor `detail` (max-w-4xl) y texto `body-sm`, enlaces en gris.
+- Nueva ruta catch-all `/:pathMatch(.*)*` → `NotFoundView` (404) con `EmptyState` centrado, CTAs al inicio y a rutas, y meta `robots: noindex`.
+- Test unitario de `AppFooter` (año dinámico + enlace de privacidad).
+- `AppPage` con sticky footer (`flex min-h-screen flex-col` + `main` con `flex-1`).
+- Footer centrado, texto `xs`, "Cristiana Sollini" enlazado a https://frontend-ux.website/ (`_blank` + `rel="noopener noreferrer"`) en gris.
+- Header sin el enlace "Comunidad" (ruta inexistente).
+
+### Verificación
+
+- `npm run type-check`, `npx eslint .`, `npx oxlint .`, `npx vitest run` (16/16), `npm run build`: en verde.
+
 ## 2026-10-12 — Refactorización del Design System
 
 Refactor interna del frontend para unificar la UI sin cambiar el comportamiento de la aplicación.

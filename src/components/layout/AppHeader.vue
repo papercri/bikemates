@@ -48,10 +48,6 @@ async function handleLogout(): Promise<void> {
         <RouterLink to="/rides" class="text-sm text-graphite transition-colors hover:text-ink">
           Explorar rutas
         </RouterLink>
-
-        <RouterLink to="/community" class="text-sm text-graphite transition-colors hover:text-ink">
-          Comunidad
-        </RouterLink>
       </nav>
 
       <div class="flex items-center gap-3">

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import AppFooter from '@/components/layout/AppFooter.vue'
 import AppHeader from '@/components/layout/AppHeader.vue'
 
 const props = withDefaults(
@@ -28,18 +29,25 @@ const spacingClasses: Record<string, string> = {
 }
 
 const mainClasses = computed(() =>
-  ['mx-auto px-4 sm:px-6 lg:px-8', sizeClasses[props.size], spacingClasses[props.spacing]]
+  [
+    'mx-auto w-full px-4 sm:px-6 lg:px-8',
+    'flex-1',
+    sizeClasses[props.size],
+    spacingClasses[props.spacing],
+  ]
     .filter(Boolean)
     .join(' '),
 )
 </script>
 
 <template>
-  <div class="min-h-screen bg-snow text-ink">
+  <div class="flex min-h-screen flex-col bg-snow text-ink">
     <AppHeader />
 
     <main :class="mainClasses">
       <slot />
     </main>
+
+    <AppFooter />
   </div>
 </template>
