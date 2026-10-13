@@ -38,6 +38,14 @@
 @layer base {
   body {
     @apply bg-snow font-sans text-ink antialiased;
+    text-rendering: optimizeLegibility;
+    box-sizing: border-box;
+  }
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+
   }
 
   a[href],
