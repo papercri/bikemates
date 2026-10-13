@@ -103,7 +103,7 @@ src/
     ui/                    # primitivos: Button, Input, Card, Badge, Alert, Typography, EmptyState
     forms/                 # PasswordInput, FormLabel, FormHelp, FormError
     layout/                # AppHeader, AppFooter, AppPage (shell de página)
-    common/                # BrandLogo, RidgeStrip
+    svg/                   # SVGs extraídos: BrandLogo, RidgeStrip, CyclistScene, RidgeDivider, HeroBackdrop, Icon*
     features/              # AuthCard
     rides/                 # RideCard, ElevationSparkline
   features/
@@ -122,6 +122,7 @@ Separación de responsabilidades: las vistas orquestan, los componentes presenta
 ## Design System
 
 - Los componentes visuales viven en `src/components/` y no contienen lógica de negocio.
+- Los SVG decorativos e iconográficos viven en `src/components/svg/` como componentes propios (`CyclistScene`, `RidgeDivider`, `HeroBackdrop`, `Icon*`); las vistas y componentes solo los componen.
 - Los tokens (colores, radios, sombras, tipografías) se definen una sola vez en `src/assets/main.css`.
 - Los primitivos exponen variantes homogéneas (`variant`, `size`, `tone`, `loading`, `block`, `dot`…) construidas con `createVariant`, sin dependencias externas.
 - Los componentes de UI reciben datos por props y emiten eventos; el estado compartido vive en Pinia (`authStore`).
@@ -135,7 +136,7 @@ Separación de responsabilidades: las vistas orquestan, los componentes presenta
 
 ## Calidad y tests
 
-- **Unit**: `npm run test:unit` — 106 tests en 17 archivos (design system, validadores, servicio de autenticación, store de sesión y primitivos de UI).
+- **Unit**: `npm run test:unit` — 110 tests en 19 archivos (design system, validadores, servicio de autenticación, store de sesión, primitivos de UI e iconos SVG).
 - **E2E**: `npm run test:e2e` — Playwright (configurado en `playwright.config.ts`).
 - Gates antes de dar por completa una tarea: `npm run test:unit -- --run`, `npm run type-check`, `npx eslint .`, `npx oxlint .`, Prettier y, cuando toca, `npm run build`.
 

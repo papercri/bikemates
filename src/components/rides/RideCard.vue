@@ -4,6 +4,7 @@ import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
 import Typography from '@/components/ui/Typography.vue'
 import ElevationSparkline from '@/components/rides/ElevationSparkline.vue'
+import IconArrow from '@/components/svg/IconArrow.vue'
 import { RIDE_LEVEL_BADGE_COLORS } from '@/features/rides/constants/rideLevels'
 import type { Ride } from '@/features/rides/types'
 
@@ -60,21 +61,7 @@ defineProps<{
 
       <Button :to="{ name: 'ride-detail', params: { id: ride.id } }" variant="link" class="mt-5">
         Ver detalles
-        <svg
-          viewBox="0 0 16 16"
-          class="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5"
-          aria-hidden="true"
-          focusable="false"
-        >
-          <path
-            d="M3 8 h9 M8.5 3.5 L13 8 L8.5 12.5"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        </svg>
+        <IconArrow class="transition-transform duration-200 group-hover:translate-x-0.5" />
       </Button>
     </div>
   </Card>

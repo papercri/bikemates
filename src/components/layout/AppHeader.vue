@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
-import BrandLogo from '@/components/common/BrandLogo.vue'
+import BrandLogo from '@/components/svg/BrandLogo.vue'
 import Alert from '@/components/ui/Alert.vue'
 import Button from '@/components/ui/Button.vue'
 import { useAuthStore } from '@/features/auth/stores/authStore'

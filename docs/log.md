@@ -1,5 +1,25 @@
 # Registro de cambios
 
+## 2026-10-13 — SVGs extraídos a componentes (`src/components/svg/`)
+
+Sin cambios de comportamiento: el marcado SVG pasa de vistas/componentes a componentes propios.
+
+- Nueva carpeta `src/components/svg/` con todos los SVG de la aplicación:
+  - `CyclistScene` (ilustración del hero), `HeroBackdrop` (líneas de fondo del hero) y `RidgeDivider` (crestas al pie del hero), extraídos de `HomeView`.
+  - `IconRoutes`, `IconCyclists`, `IconMeetup` (tarjetas de features del hero), `IconDistance`, `IconElevation`, `IconLevel` (datos de `RideDetailView`).
+  - `IconArrow` (`direction: 'left' | 'right'`, paths compartidos) usado por el enlace "Volver a las rutas" y por `RideCard`.
+  - `IconEye` (`hidden: boolean`) usado por `PasswordInput` para el toggle de visibilidad.
+- `BrandLogo` y `RidgeStrip` movidos de `src/components/common/` (carpeta eliminada) a `src/components/svg/`; solo cambian las rutas de import en `AppHeader`, `AuthCard` y `ProfileView`.
+- Los iconos fijan su tamaño por defecto (`h-8 w-8`, `h-4 w-4`, `h-3.5 w-3.5`, `h-5 w-5`) y `aria-hidden`/`focusable`; el caller aporta color, margen y transiciones (las clases se fusionan por fallthrough).
+- Animación del sendero del hero: el `<style scoped>` de `HomeView` (que pisaba `motion-safe:animate-trail-dash` con `!important`) pasa a `CyclistScene` como clase propia `.trail-animated` dentro de `@media (prefers-reduced-motion: no-preference)`. Mismo resultado visual y ahora también se respeta `prefers-reduced-motion` (antes la animación seguía activa con movimiento reducido).
+- `README.md`: estructura y design system actualizados (carpeta `svg/`).
+- Nuevos tests: `src/components/svg/__tests__/IconArrow.spec.ts` y `IconEye.spec.ts`.
+
+### Verificación
+
+- `npm run type-check`, `npx vitest run` (110/110), `npm run lint` (oxlint + eslint), `npm run build` y `prettier --check`: en verde.
+- Render montado en jsdom para confirmar que las clases del caller se fusionan con las del icono (fallthrough) y que `CyclistScene` mantiene la clase de animación.
+
 ## 2026-10-12 — Favicon, títulos por página y README
 
 - `public/favicon.svg`: icono nuevo con la marca del logo (montaña + bicicleta + punto verde), sin texto y en colores fijos de tokens (`#1a1d20`, `#22c55e`, borde `#e9ecef`).
