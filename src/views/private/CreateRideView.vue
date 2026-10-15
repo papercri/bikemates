@@ -1,85 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import { useHead } from '@unhead/vue'
-import { useRouter } from 'vue-router'
+import { RouterLink } from 'vue-router'
 
 import AppPage from '@/components/layout/AppPage.vue'
 import Typography from '@/components/ui/Typography.vue'
 import RideForm from '@/features/rides/components/RideForm.vue'
 
-import { createRide } from '@/features/rides/services/rideService'
-import { buildRideInput, createEmptyRideFormValues } from '@/features/rides/utils/rideFormMapping'
-import { deleteRideImage, uploadRideImage } from '@/features/rides/services/rideImageService'
-
-import type { CreateRideInput, RideFormSubmission } from '@/features/rides/types'
-
-const router = useRouter()
-
-const isSubmitting = ref(false)
-const errorMessage = ref<string | null>(null)
-
-const initialValues = createEmptyRideFormValues({
-  bikeType: 'gravel',
-  level: 'Intermedio',
-  distanceKm: '30',
-  elevationM: '300',
-  durationMinutes: '120',
-})
-
-async function handleSubmit(payload: RideFormSubmission): Promise<void> {
-  if (isSubmitting.value) return
-
-  errorMessage.value = null
-
-  const { values, image } = payload
-
-  // Defensa adicional antes de construir el objeto de persistencia.
-  // La validación completa de los campos pertenece a RideForm.vue.
-  const rideInput = buildRideInput(values, null)
-
-  if (!rideInput) {
-    errorMessage.value = 'Selecciona un punto de encuentro válido.'
-    return
-  }
-
-  const input: CreateRideInput = { ...rideInput, status: 'published' }
-
-  isSubmitting.value = true
-
-  let uploadedImagePath: string | null = null
-  let rideCreated = false
-
-  try {
-    if (image) {
-      uploadedImagePath = await uploadRideImage(image)
-      input.imagePath = uploadedImagePath
-    }
-
-    const ride = await createRide(input)
-    rideCreated = true
-
-    await router.push({
-      name: 'ride-detail',
-      params: { id: ride.id },
-    })
-  } catch (error: unknown) {
-    if (uploadedImagePath && !rideCreated) {
-      try {
-        await deleteRideImage(uploadedImagePath)
-      } catch {
-        // Conservamos el error original.
-      }
-    }
-
-    errorMessage.value = rideCreated
-      ? 'La ruta se ha publicado, pero no se ha podido abrir su página.'
-      : error instanceof Error
-        ? error.message
-        : 'No se ha podido publicar la ruta.'
-  } finally {
-    isSubmitting.value = false
-  }
-}
+import { createEmptyRideFormValues } from '@/features/rides/utils/rideFormMapping'
+import { useRideCreator } from '@/features/rides/composables/useRideCreator'
+import type { RideFormSubmission } from '@/features/rides/types'
 
 useHead({
   title: 'Crear ruta | BikeMates',
@@ -91,6 +20,20 @@ useHead({
     { name: 'robots', content: 'noindex, nofollow' },
   ],
 })
+
+const initialValues = createEmptyRideFormValues({
+  bikeType: 'gravel',
+  level: 'Intermedio',
+  distanceKm: '30',
+  elevationM: '300',
+  durationMinutes: '120',
+})
+
+const { isSubmitting, errorMessage, createPublishedRide } = useRideCreator()
+
+async function handleSubmit(payload: RideFormSubmission): Promise<void> {
+  await createPublishedRide(payload)
+}
 </script>
 
 <template>

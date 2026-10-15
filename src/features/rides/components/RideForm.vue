@@ -219,7 +219,7 @@ function handleSubmit(): void {
       </div>
 
       <div>
-        <FormLabel id="durationMinutes">Duración estimada (min)" </FormLabel>
+        <FormLabel id="durationMinutes">Duración estimada (min)</FormLabel>
         <Input
           id="durationMinutes"
           v-model="form.durationMinutes"

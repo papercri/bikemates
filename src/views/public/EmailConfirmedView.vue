@@ -1,75 +1,22 @@
 <script setup lang="ts">
 import { useHead } from '@unhead/vue'
-import { onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
 import AppFooter from '@/components/layout/AppFooter.vue'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import Alert from '@/components/ui/Alert.vue'
 import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
 import Typography from '@/components/ui/Typography.vue'
-import {
-  EXPIRED_LINK_MESSAGE,
-  getEmailLinkErrorMessage,
-  parseEmailLinkParams,
-} from '@/features/auth/utils/emailLinkParams'
-import { isEmailConfirmed, verifyRecoveryToken } from '@/features/auth/services/authService'
-import { useAuthStore } from '@/features/auth/stores/authStore'
+import { useEmailLinkConfirmation } from '@/features/auth/composables/useEmailLinkConfirmation'
 
 useHead({
   title: 'Confirmación de correo | BikeMates',
 })
 
-const router = useRouter()
-
-const isProcessing = ref(true)
-const isConfirmed = ref(false)
-const errorMessage = ref('')
-const authStore = useAuthStore()
-
-onMounted(async () => {
-  try {
-    const link = parseEmailLinkParams(window.location.search, window.location.hash)
-
-    if (link.kind === 'error') {
-      errorMessage.value = getEmailLinkErrorMessage(link.code)
-      return
-    }
-
-    if (link.kind === 'recovery') {
-      if (!link.tokenHash) {
-        errorMessage.value = 'El enlace de recuperación no contiene un token válido.'
-        return
-      }
-
-      const verified = await verifyRecoveryToken(link.tokenHash)
-
-      if (!verified) {
-        errorMessage.value = EXPIRED_LINK_MESSAGE
-        return
-      }
-
-      authStore.markRecoverySession()
-
-      await router.replace({ name: 'reset-password' })
-      return
-    }
-
-    // La confirmación de registro utiliza la redirección
-    // procesada por el cliente de Supabase.
-    const confirmed = await isEmailConfirmed()
-
-    if (confirmed) {
-      isConfirmed.value = true
-    } else {
-      errorMessage.value = 'No se ha podido confirmar el email. Comprueba el enlace recibido.'
-    }
-  } catch {
-    errorMessage.value = 'Se ha producido un error al verificar el enlace. Inténtalo de nuevo.'
-  } finally {
-    isProcessing.value = false
-  }
-})
+// El procesamiento del enlace vive en el composable; aquí solo se pinta.
+const { isProcessing, isConfirmed, errorMessage } = useEmailLinkConfirmation(
+  window.location.search,
+  window.location.hash,
+)
 </script>
 
 <template>

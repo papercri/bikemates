@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useHead } from '@unhead/vue'
 
@@ -7,20 +7,9 @@ import RideForm from '@/features/rides/components/RideForm.vue'
 import AppPage from '@/components/layout/AppPage.vue'
 import Typography from '@/components/ui/Typography.vue'
 
-import type { Ride, RideFormSubmission } from '@/features/rides/types'
-
-import { getRideForEdit, updateRide } from '@/features/rides/services/rideService'
-import {
-  buildRideInput,
-  createEmptyRideFormValues,
-  mapRideToFormValues,
-} from '@/features/rides/utils/rideFormMapping'
-
-import {
-  deleteRideImage,
-  getRideImageUrl,
-  uploadRideImage,
-} from '@/features/rides/services/rideImageService'
+import { getRideImageUrl } from '@/features/rides/services/rideImageService'
+import { useRideEditor } from '@/features/rides/composables/useRideEditor'
+import type { RideFormSubmission } from '@/features/rides/types'
 
 useHead({
   title: 'Editar ruta | BikeMates',
@@ -33,104 +22,21 @@ useHead({
 })
 
 const route = useRoute()
+// Solo para el botón "Volver" del cabecero; el guardado vive en el composable.
 const router = useRouter()
 
-const ride = ref<Ride | null>(null)
-const isLoading = ref(true)
-const isSubmitting = ref(false)
-const errorMessage = ref<string | null>(null)
-
-const initialValues = ref(createEmptyRideFormValues())
-
-async function loadRide(): Promise<void> {
+const rideId = computed(() => {
   const id = route.params.id
+  return typeof id === 'string' ? id : null
+})
 
-  if (typeof id !== 'string' || !id) {
-    errorMessage.value = 'El identificador de la ruta no es válido.'
-    isLoading.value = false
-    return
-  }
-
-  try {
-    const loadedRide = await getRideForEdit(id)
-
-    ride.value = loadedRide
-    initialValues.value = mapRideToFormValues(loadedRide)
-  } catch (error: unknown) {
-    console.error('Error al cargar la ruta:', error)
-    errorMessage.value =
-      'No se ha podido cargar la ruta. Comprueba que existe y que tienes permiso para editarla.'
-  } finally {
-    isLoading.value = false
-  }
-}
+const { ride, isLoading, isSubmitting, errorMessage, initialValues, saveRide } = useRideEditor(
+  rideId.value,
+)
 
 async function handleSubmit(payload: RideFormSubmission): Promise<void> {
-  if (isSubmitting.value || !ride.value) return
-
-  isSubmitting.value = true
-  errorMessage.value = null
-
-  let uploadedImagePath: string | null = null
-  let updateCompleted = false
-
-  const currentRide = ride.value
-
-  try {
-    if (payload.image) {
-      uploadedImagePath = await uploadRideImage(payload.image)
-    }
-
-    let imagePath = currentRide.imagePath
-
-    if (uploadedImagePath) {
-      imagePath = uploadedImagePath
-    } else if (payload.removeCurrentImage) {
-      imagePath = null
-    }
-
-    const input = buildRideInput(payload.values, imagePath)
-
-    if (!input) {
-      errorMessage.value = 'Selecciona un punto de encuentro válido.'
-      return
-    }
-
-    await updateRide(currentRide.id, input)
-    updateCompleted = true
-
-    const imageChanged = currentRide.imagePath !== imagePath
-
-    if (imageChanged && currentRide.imagePath) {
-      try {
-        await deleteRideImage(currentRide.imagePath)
-      } catch (error: unknown) {
-        console.error('No se ha podido eliminar la imagen anterior:', error)
-      }
-    }
-
-    await router.push({
-      name: 'ride-detail',
-      params: { id: currentRide.id },
-    })
-  } catch (error: unknown) {
-    console.error('Error al actualizar la ruta:', error)
-
-    if (!updateCompleted && uploadedImagePath) {
-      try {
-        await deleteRideImage(uploadedImagePath)
-      } catch (cleanupError: unknown) {
-        console.error('No se ha podido limpiar la nueva imagen:', cleanupError)
-      }
-    }
-
-    errorMessage.value = 'No se han podido guardar los cambios. Inténtalo de nuevo.'
-  } finally {
-    isSubmitting.value = false
-  }
+  await saveRide(payload)
 }
-
-onMounted(loadRide)
 </script>
 
 <template>
