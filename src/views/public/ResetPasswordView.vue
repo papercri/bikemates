@@ -11,6 +11,7 @@ import Button from '@/components/ui/Button.vue'
 import Input from '@/components/ui/Input.vue'
 import { useAuthStore } from '@/features/auth/stores/authStore'
 import { updatePassword } from '@/features/auth/services/authService'
+import { useAuthForm } from '@/features/auth/composables/useAuthForm'
 
 useHead({
   title: 'Restablecer contraseña | BikeMates',
@@ -22,13 +23,16 @@ const { isRecoverySession } = storeToRefs(authStore)
 
 const password = ref('')
 const confirmPassword = ref('')
-const isSubmitting = ref(false)
-const errorMessage = ref('')
-const successMessage = ref('')
+const {
+  isSubmitting,
+  errorMessage,
+  successMessage,
+  clearMessages,
+  submit,
+} = useAuthForm()
 
 async function handleSubmit(): Promise<void> {
-  errorMessage.value = ''
-  successMessage.value = ''
+  clearMessages()
 
   if (password.value.length < 8) {
     errorMessage.value = 'La contraseña debe tener al menos 8 caracteres.'
@@ -45,20 +49,13 @@ async function handleSubmit(): Promise<void> {
     return
   }
 
-  isSubmitting.value = true
-
-  try {
+  await submit(async () => {
     await updatePassword(password.value)
     successMessage.value = 'Contraseña actualizada correctamente.'
 
     authStore.clearRecoverySession()
     await router.replace({ name: 'login' })
-  } catch {
-    errorMessage.value =
-      'No se ha podido actualizar la contraseña. Solicita un nuevo enlace e inténtalo otra vez.'
-  } finally {
-    isSubmitting.value = false
-  }
+  }, 'No se ha podido actualizar la contraseña. Solicita un nuevo enlace e inténtalo otra vez.')
 }
 </script>
 

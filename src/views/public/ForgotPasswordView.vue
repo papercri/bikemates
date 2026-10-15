@@ -9,37 +9,35 @@ import Button from '@/components/ui/Button.vue'
 import Input from '@/components/ui/Input.vue'
 import Typography from '@/components/ui/Typography.vue'
 import { requestPasswordReset } from '@/features/auth/services/authService'
+import { useAuthForm } from '@/features/auth/composables/useAuthForm'
 
 useHead({
   title: 'Recuperar contraseña | BikeMates',
 })
 
 const email = ref('')
-const isSubmitting = ref(false)
-const errorMessage = ref('')
-const successMessage = ref('')
+const {
+  isSubmitting,
+  errorMessage,
+  successMessage,
+  clearMessages,
+  submit,
+} = useAuthForm()
 
 async function handleSubmit(): Promise<void> {
-  errorMessage.value = ''
-  successMessage.value = ''
+  clearMessages()
 
   if (!email.value.trim()) {
     errorMessage.value = 'Introduce tu correo electrónico.'
     return
   }
 
-  isSubmitting.value = true
-
-  try {
+  await submit(async () => {
     await requestPasswordReset(email.value, `${window.location.origin}/reset-password`)
 
     successMessage.value =
       'Si la dirección está registrada, recibirás un correo con las instrucciones para recuperar tu contraseña.'
-  } catch {
-    errorMessage.value = 'No se ha podido procesar la solicitud. Inténtalo de nuevo más tarde.'
-  } finally {
-    isSubmitting.value = false
-  }
+  }, 'No se ha podido procesar la solicitud. Inténtalo de nuevo más tarde.')
 }
 </script>
 

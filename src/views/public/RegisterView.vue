@@ -12,6 +12,7 @@ import Button from '@/components/ui/Button.vue'
 import Input from '@/components/ui/Input.vue'
 import Typography from '@/components/ui/Typography.vue'
 import { registerUser } from '@/features/auth/services/authService'
+import { useAuthForm } from '@/features/auth/composables/useAuthForm'
 import {
   validateRegisterForm,
   type RegisterErrors,
@@ -45,44 +46,38 @@ function validateForm(): boolean {
 }
 
 const submitted = ref(false)
-const isSubmitting = ref(false)
-const submitError = ref('')
-const successMessage = ref('')
+const { isSubmitting, errorMessage: submitError, successMessage, clearMessages, submit } =
+  useAuthForm()
 
 async function handleSubmit(): Promise<void> {
   submitted.value = true
-  submitError.value = ''
-  successMessage.value = ''
+  clearMessages()
 
   if (!validateForm()) {
     return
   }
 
-  isSubmitting.value = true
+  await submit(
+    async () => {
+      const data = await registerUser({
+        name: form.name,
+        email: form.email,
+        password: form.password,
+      })
 
-  try {
-    const data = await registerUser({
-      name: form.name,
-      email: form.email,
-      password: form.password,
-    })
-
-    if (data.user && !data.session) {
-      successMessage.value = 'Cuenta creada. Revisa tu correo para confirmar tu dirección.'
-    } else if (data.user && data.session) {
-      successMessage.value = 'Registro completado. Ya tienes una sesión activa.'
-    } else {
-      successMessage.value = 'Solicitud procesada. Comprueba tu correo para continuar.'
-    }
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      submitError.value = error.message
-    } else {
-      submitError.value = 'No se ha podido completar el registro. Inténtalo de nuevo.'
-    }
-  } finally {
-    isSubmitting.value = false
-  }
+      if (data.user && !data.session) {
+        successMessage.value = 'Cuenta creada. Revisa tu correo para confirmar tu dirección.'
+      } else if (data.user && data.session) {
+        successMessage.value = 'Registro completado. Ya tienes una sesión activa.'
+      } else {
+        successMessage.value = 'Solicitud procesada. Comprueba tu correo para continuar.'
+      }
+    },
+    (error) =>
+      error instanceof Error
+        ? error.message
+        : 'No se ha podido completar el registro. Inténtalo de nuevo.',
+  )
 }
 </script>
 
