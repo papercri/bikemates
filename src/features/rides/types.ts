@@ -1,4 +1,3 @@
-
 export type RideLevel = 'Iniciación' | 'Intermedio' | 'Avanzado'
 
 export type BikeType = 'road' | 'mtb' | 'gravel' | 'urban' | 'other'
@@ -8,7 +7,7 @@ export type RideAudience = 'everyone' | 'women' | 'men' | 'lgbt'
 export type RideStatus = 'draft' | 'published' | 'cancelled' | 'completed'
 
 export interface Ride {
-  id: string 
+  id: string
   organizerId: string
   title: string
   description: string
@@ -29,7 +28,6 @@ export interface Ride {
   createdAt: string
   updatedAt: string
 }
-
 
 export interface CreateRideInput {
   title: string

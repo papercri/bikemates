@@ -1,4 +1,3 @@
-
 <script setup lang="ts" generic="T extends string">
 withDefaults(
   defineProps<{

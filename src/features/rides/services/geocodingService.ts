@@ -44,15 +44,12 @@ export async function searchPlaces(
     countrycodes: 'es',
   })
 
-  const response = await fetch(
-    `https://nominatim.openstreetmap.org/search?${params.toString()}`,
-    {
-      headers: {
-        Accept: 'application/json',
-      },
-      signal,
+  const response = await fetch(`https://nominatim.openstreetmap.org/search?${params.toString()}`, {
+    headers: {
+      Accept: 'application/json',
     },
-  )
+    signal,
+  })
 
   if (!response.ok) {
     throw new Error('No se han podido buscar lugares. Inténtalo de nuevo.')
@@ -65,31 +62,31 @@ export async function searchPlaces(
   }
 
   return results.flatMap((item: unknown): GeocodingResult[] => {
-        
     if (!isNominatimResult(item)) {
-    return []
+      return []
     }
 
     const latitude = Number(item.lat)
     const longitude = Number(item.lon)
 
     if (
-    !Number.isFinite(latitude) ||
-    !Number.isFinite(longitude) ||
-    latitude < -90 ||
-    latitude > 90 ||
-    longitude < -180 ||
-    longitude > 180
+      !Number.isFinite(latitude) ||
+      !Number.isFinite(longitude) ||
+      latitude < -90 ||
+      latitude > 90 ||
+      longitude < -180 ||
+      longitude > 180
     ) {
-    return []
+      return []
     }
 
-    return [{
-    id: String(item.place_id),
-    label: item.display_name,
-    latitude,
-    longitude,
-    }]
-
+    return [
+      {
+        id: String(item.place_id),
+        label: item.display_name,
+        latitude,
+        longitude,
+      },
+    ]
   })
 }

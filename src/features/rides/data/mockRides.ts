@@ -1,4 +1,3 @@
-
 import type { Ride } from '../types'
 
 export const mockRides: Ride[] = [
@@ -33,7 +32,7 @@ export const mockRides: Ride[] = [
       'Un recorrido accesible junto al mar, ideal para disfrutar de una salida tranquila.',
     startsAt: '2027-05-16T10:00:00+02:00',
     meetingPoint: 'Badalona',
-    latitude: 41.4500,
+    latitude: 41.45,
     longitude: 2.2474,
     bikeType: 'urban',
     level: 'Iniciación',
@@ -52,8 +51,7 @@ export const mockRides: Ride[] = [
     id: 'mock-ride-3',
     organizerId: 'mock-user-3',
     title: 'Desafío del Montseny',
-    description:
-      'Una ruta exigente con bastante desnivel para ciclistas que buscan un reto.',
+    description: 'Una ruta exigente con bastante desnivel para ciclistas que buscan un reto.',
     startsAt: '2027-05-17T08:00:00+02:00',
     meetingPoint: 'Sant Celoni',
     latitude: 41.6892,
