@@ -12,10 +12,14 @@ import { validateRideForm } from '@/features/rides/validators/rideFormValidator'
 import { useRideImagePicker } from '@/features/rides/composables/useRideImagePicker'
 
 import MeetingPointPicker from '@/features/rides/components/MeetingPointPicker.vue'
-import FormLabel from '@/components/ui/FormLabel.vue'
+import Alert from '@/components/ui/Alert.vue'
 import Button from '@/components/ui/Button.vue'
+import FormLabel from '@/components/ui/FormLabel.vue'
 import FormSelect from '@/components/ui/FormSelect.vue'
 import Input from '@/components/ui/Input.vue'
+import Textarea from '@/components/ui/Textarea.vue'
+import { RIDE_AUDIENCES, RIDE_AUDIENCE_LABELS, RIDE_BIKE_TYPES, RIDE_BIKE_TYPE_LABELS } from '@/features/rides/constants/rideOptions'
+import { RIDE_LEVELS } from '@/features/rides/constants/rideLevels'
 
 const props = defineProps<{
   initialValues: RideFormValues
@@ -106,38 +110,36 @@ function handleSubmit(): void {
         maxlength="100"
         aria-describedby="title-help"
       />
-      <p id="title-help" class="mt-1 text-xs text-[#6C757D]">
+      <p id="title-help" class="mt-1 text-xs text-graphite">
         Entre 5 y 100 caracteres.
       </p>
     </div>
 
     <div>
       <FormLabel id="description">Descripción</FormLabel>
-      <textarea
+      <Textarea
         id="description"
         v-model="form.description"
         name="description"
-        rows="4"
-        minlength="10"
-        maxlength="3000"
+        :rows="4"
+        :minlength="10"
+        :maxlength="3000"
         required
-        class="w-full rounded-2xl border border-[#DEE2E6] bg-white px-4 py-3 text-sm text-[#1A1D20] placeholder:text-[#6C757D] focus:outline-none focus:ring-2 focus:ring-[#22C55E]"
         placeholder="Describe el recorrido, el terreno y qué deben llevar los participantes..."
       />
-      <p class="mt-1 text-right text-xs text-[#6C757D]">
+      <p class="mt-1 text-right text-xs text-graphite">
         {{ form.description.length }}/3000
       </p>
     </div>
 
     <div>
       <FormLabel id="startsAt">Fecha y hora de salida</FormLabel>
-      <input
+      <Input
         id="startsAt"
         v-model="form.startsAt"
         name="startsAt"
         type="datetime-local"
         required
-        class="w-full rounded-2xl border border-[#DEE2E6] bg-white px-4 py-3 text-sm text-[#1A1D20] focus:outline-none focus:ring-2 focus:ring-[#22C55E]"
       />
     </div>
 
@@ -151,7 +153,7 @@ function handleSubmit(): void {
         accept="image/jpeg,image/png,image/webp,image/avif"
         aria-describedby="image-help"
         :aria-invalid="Boolean(imageError)"
-        class="block w-full text-sm text-[#6C757D] file:mr-3 file:rounded-xl file:border-0 file:bg-[#F1F3F5] file:px-4 file:py-2 file:font-medium file:text-[#1A1D20]"
+        class="block w-full text-sm text-graphite file:mr-3 file:rounded-xl file:border-0 file:bg-surface file:px-4 file:py-2 file:font-medium file:text-ink"
         @change="handleImageChange"
       />
 
@@ -175,11 +177,11 @@ function handleSubmit(): void {
         </Button>
       </div>
 
-      <p v-if="imageError" role="alert" class="mt-2 text-sm text-red-600">
+      <Alert v-if="imageError" class="mt-2">
         {{ imageError }}
-      </p>
+      </Alert>
 
-      <p id="image-help" class="mt-2 text-xs text-[#6C757D]">
+      <p id="image-help" class="mt-2 text-xs text-graphite">
         JPEG, PNG, WebP o AVIF. Máximo 5 MB.
       </p>
     </div>
@@ -191,7 +193,7 @@ function handleSubmit(): void {
         @select="handlePlaceSelect"
       />
 
-      <p v-if="form.meetingPoint" class="mt-2 text-sm text-[#6C757D]">
+      <p v-if="form.meetingPoint" class="mt-2 text-sm text-graphite">
         Punto seleccionado: {{ form.meetingPoint }}
       </p>
     </div>
@@ -205,20 +207,18 @@ function handleSubmit(): void {
           name="bikeType"
           required
         >
-          <option value="road">Carretera</option>
-          <option value="mtb">MTB</option>
-          <option value="gravel">Gravel</option>
-          <option value="urban">Urbana</option>
-          <option value="other">Otra</option>
+          <option v-for="bikeType in RIDE_BIKE_TYPES" :key="bikeType" :value="bikeType">
+            {{ RIDE_BIKE_TYPE_LABELS[bikeType] }}
+          </option>
         </FormSelect>
       </div>
 
       <div>
         <FormLabel id="level">Nivel</FormLabel>
         <FormSelect id="level" v-model="form.level" name="level" required>
-          <option value="Iniciación">Iniciación</option>
-          <option value="Intermedio">Intermedio</option>
-          <option value="Avanzado">Avanzado</option>
+          <option v-for="level in RIDE_LEVELS" :key="level" :value="level">
+            {{ level }}
+          </option>
         </FormSelect>
       </div>
 
@@ -279,10 +279,9 @@ function handleSubmit(): void {
         name="audience"
         required
       >
-        <option value="everyone">Todo el mundo</option>
-        <option value="women">Mujeres</option>
-        <option value="men">Hombres</option>
-        <option value="lgbt">Comunidad LGBT+</option>
+        <option v-for="audience in RIDE_AUDIENCES" :key="audience" :value="audience">
+          {{ RIDE_AUDIENCE_LABELS[audience] }}
+        </option>
       </FormSelect>
     </div>
 
@@ -296,21 +295,13 @@ function handleSubmit(): void {
       />
     </div>
 
-    <p
-      v-if="validationError"
-      role="alert"
-      class="rounded-xl bg-red-50 p-3 text-sm text-red-700"
-    >
+    <Alert v-if="validationError" boxed>
       {{ validationError }}
-    </p>
+    </Alert>
 
-    <p
-      v-if="errorMessage"
-      role="alert"
-      class="rounded-xl bg-red-50 p-3 text-sm text-red-700"
-    >
+    <Alert v-if="errorMessage" boxed>
       {{ errorMessage }}
-    </p>
+    </Alert>
 
     <Button
       type="submit"

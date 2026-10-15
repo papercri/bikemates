@@ -15,9 +15,9 @@ import EmptyState from '@/components/ui/EmptyState.vue'
 import Typography from '@/components/ui/Typography.vue'
 import { getRideById } from '@/features/rides/services/rideService'
 import { RIDE_LEVEL_BADGE_COLORS } from '@/features/rides/constants/rideLevels'
+import { RIDE_BIKE_TYPE_LABELS } from '@/features/rides/constants/rideOptions'
 import type { Ride } from '@/features/rides/types'
 import RideMap from '@/features/rides/components/RideMap.vue'
-import type { BikeType } from '@/features/rides/types'
 import { useAuthStore } from '@/features/auth/stores/authStore'
 
 const route = useRoute()
@@ -28,13 +28,6 @@ const isOrganizer = computed(
     ride.value !== null &&
     authStore.user?.id === ride.value.organizerId,
 )
-const BIKE_TYPE_LABELS: Record<BikeType, string> = {
-  road: 'Carretera',
-  mtb: 'MTB',
-  gravel: 'Gravel',
-  urban: 'Urbana',
-  other: 'Otra',
-}
 const ride = ref<Ride | null>(null)
 const isLoading = ref(true)
 const errorMessage = ref<string | null>(null)
@@ -129,7 +122,7 @@ function formatRideDate(dateString: string): string {
           </Badge>
 
           <Badge variant="muted">
-            {{ BIKE_TYPE_LABELS[ride.bikeType] }}
+            {{ RIDE_BIKE_TYPE_LABELS[ride.bikeType] }}
           </Badge>
         </div>
 

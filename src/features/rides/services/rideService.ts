@@ -5,22 +5,12 @@ import type {
   UpdateRideInput,
   Ride,
 } from '../types'
-
-function isBikeType(value: string): value is Ride['bikeType'] {
-  return ['road', 'mtb', 'gravel', 'urban', 'other'].includes(value)
-}
-
-function isRideLevel(value: string): value is Ride['level'] {
-  return ['Iniciación', 'Intermedio', 'Avanzado'].includes(value)
-}
-
-function isRideAudience(value: string): value is Ride['audience'] {
-  return ['everyone', 'women', 'men', 'lgbt'].includes(value)
-}
-
-function isRideStatus(value: string): value is Ride['status'] {
-  return ['draft', 'published', 'cancelled', 'completed'].includes(value)
-}
+import {
+  isBikeType,
+  isRideAudience,
+  isRideLevel,
+  isRideStatus,
+} from '../validators/rideValueGuards'
 
 function mapRide(data: {
   id: string
