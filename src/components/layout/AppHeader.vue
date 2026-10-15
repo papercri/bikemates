@@ -76,3 +76,21 @@ async function handleLogout(): Promise<void> {
     </Alert>
   </header>
 </template>
+<template v-else-if="user">
+  <Button to="/rides/create" variant="primary" size="sm">
+    Publicar ruta
+  </Button>
+
+  <Button to="/profile" variant="outline" size="sm" class="hidden sm:inline-flex">
+    Mi perfil
+  </Button>
+
+  <Button
+    variant="outline"
+    size="sm"
+    :loading="isLoggingOut"
+    @click="handleLogout"
+  >
+    {{ isLoggingOut ? 'Cerrando sesión…' : 'Cerrar sesión' }}
+  </Button>
+</template>

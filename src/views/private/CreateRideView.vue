@@ -264,7 +264,7 @@ async function handleSubmit(): Promise<void> {
       try {
         await deleteRideImage(uploadedImagePath)
       } catch {
-        // Conservamos el error principal si falla la limpieza del archivo.
+        // Conservamos el error original.
       }
     }
 
@@ -296,37 +296,30 @@ useHead({
     <div class="mx-auto max-w-3xl">
       <RouterLink
         :to="{ name: 'rides' }"
-        class="inline-flex items-center gap-2 text-sm font-medium text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-trail"
+        class="inline-flex items-center gap-1.5 text-sm font-medium text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-trail"
       >
         <span aria-hidden="true">←</span>
         Volver a las rutas
       </RouterLink>
 
-      <header class="mb-5 mt-4">
+      <header class="mb-4 mt-3">
         <Typography variant="eyebrow" tone="accent">
           Comunidad BikeMates
         </Typography>
-
-        <Typography as="h1" variant="display" class="mt-2">
+        <Typography as="h1" variant="heading-xl" class="mt-1">
           Publica una ruta
         </Typography>
-
-        <Typography tone="muted" class="mt-2 max-w-2xl">
-          Comparte tu próximo recorrido, define el punto de encuentro y encuentra
-          ciclistas con quienes disfrutar de la ruta.
+        <Typography variant="body-sm" tone="muted" class="mt-1 max-w-2xl">
+          Organiza tu próxima salida y encuentra ciclistas con quienes pedalear.
         </Typography>
       </header>
 
-      <form novalidate class="space-y-4" @submit.prevent="handleSubmit">
-        <!-- Información general -->
-        <Card as="section">
-          <div class="space-y-4 p-4 sm:p-5">
+      <form novalidate class="space-y-3" @submit.prevent="handleSubmit">
+       
+          <div class="space-y-3 p-3 sm:p-4">
             <div>
               <Typography as="h2" variant="heading-sm">
                 Información de la ruta
-              </Typography>
-              <Typography variant="body-sm" tone="muted" class="mt-1">
-                Nombre, descripción y horario de salida.
               </Typography>
             </div>
 
@@ -337,17 +330,7 @@ useHead({
                 v-model="form.title"
                 name="title"
                 placeholder="Ej. Gravel por Montserrat"
-                ariaDescribedby="ride-title-help"
               />
-              <Typography
-                id="ride-title-help"
-                as="p"
-                variant="caption"
-                tone="muted"
-                class="mt-1"
-              >
-                Entre 5 y 100 caracteres.
-              </Typography>
             </div>
 
             <div>
@@ -356,13 +339,13 @@ useHead({
                 id="ride-description"
                 v-model="form.description"
                 name="description"
-                rows="3"
+                rows="2"
                 maxlength="3000"
-                class="w-full resize-y rounded-btn border border-line bg-canvas px-4 py-3 text-ink outline-none transition-colors placeholder:text-graphite focus:border-trail focus:ring-2 focus:ring-trail/25"
-                placeholder="Describe el recorrido, el ritmo previsto y qué conviene llevar."
+                class="w-full resize-y rounded-btn border border-line bg-canvas px-3 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-graphite focus:border-trail focus:ring-2 focus:ring-trail/25"
+                placeholder="Recorrido, ritmo previsto y qué conviene llevar."
               />
               <Typography variant="caption" tone="muted" class="mt-1">
-                {{ form.description.length }}/3000 caracteres.
+                {{ form.description.length }}/3000 caracteres
               </Typography>
             </div>
 
@@ -373,61 +356,85 @@ useHead({
                 v-model="form.startsAt"
                 name="startsAt"
                 type="datetime-local"
-                class="w-full rounded-btn border border-line bg-canvas px-4 py-3 text-ink outline-none transition-colors focus:border-trail focus:ring-2 focus:ring-trail/25"
+                class="w-full rounded-btn border border-line bg-canvas px-3 py-2.5 text-sm text-ink outline-none transition-colors focus:border-trail focus:ring-2 focus:ring-trail/25"
               />
             </div>
           </div>
-        </Card>
-
-        <!-- Imagen de portada -->
-        <Card as="section">
-          <div class="space-y-3 p-4 sm:p-5">
-            <div>
+  
+          <div class="p-3 sm:p-4">
+            <div class="mb-3">
               <Typography as="h2" variant="heading-sm">
                 Imagen de portada
               </Typography>
-              <Typography variant="body-sm" tone="muted" class="mt-1">
-                Una imagen horizontal para representar tu recorrido.
+              <Typography variant="caption" tone="muted" class="mt-0.5">
+                Opcional · JPG, PNG, WebP o AVIF · Máximo 5 MB
               </Typography>
             </div>
 
-            <div class="overflow-hidden rounded-card border border-line bg-snow">
-              <img
+            
+            <div class="flex items-center gap-3">
+            <div
+                class="h-16 w-24 shrink-0 overflow-hidden rounded-lg border border-line bg-snow sm:h-18 sm:w-28"
+            >
+                <img
                 v-if="imagePreviewUrl"
                 :src="imagePreviewUrl"
                 alt="Vista previa de la imagen de portada"
-                class="aspect-[16/6] w-full object-cover"
-              />
+                class="h-full w-full object-cover"
+                />
 
-              <div
+                <div
                 v-else
-                class="flex aspect-[16/6] flex-col items-center justify-center gap-2 px-4 text-center"
-              >
-                <div class="rounded-full bg-canvas p-3 text-trail-ink">
-                  <svg
+                class="flex h-full items-center justify-center text-graphite"
+                >
+                <svg
                     aria-hidden="true"
-                    class="h-7 w-7"
+                    class="h-5 w-5"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
                     stroke-width="1.7"
                     stroke-linecap="round"
                     stroke-linejoin="round"
-                  >
+                >
                     <rect x="3" y="4" width="18" height="16" rx="2" />
                     <circle cx="8.5" cy="9" r="1.5" />
                     <path d="m21 15-5-5L5 20" />
-                  </svg>
+                </svg>
                 </div>
-
-                <Typography as="p" variant="heading-xs">
-                  Tu ruta, en imágenes
-                </Typography>
-                <Typography variant="body-sm" tone="muted">
-                  JPG, PNG, WebP o AVIF · Máximo 5 MB
-                </Typography>
-              </div>
             </div>
+
+            <div class="min-w-0 flex-1">
+                <Typography variant="body-sm">
+                Imagen de portada
+                </Typography>
+                <Typography variant="caption" tone="muted" class="mt-0.5">
+                Opcional · Máximo 5 MB
+                </Typography>
+
+                <div class="mt-2 flex flex-wrap items-center gap-2">
+                <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    @click="imageInput?.click()"
+                >
+                    {{ selectedImage ? 'Cambiar' : 'Elegir imagen' }}
+                </Button>
+
+                <Button
+                    v-if="selectedImage"
+                    type="button"
+                    variant="link"
+                    size="sm"
+                    @click="clearSelectedImage"
+                >
+                    Quitar
+                </Button>
+                </div>
+            </div>
+            </div>
+
 
             <input
               id="ride-image"
@@ -436,49 +443,22 @@ useHead({
               type="file"
               accept="image/jpeg,image/png,image/webp,image/avif"
               class="sr-only"
-              aria-describedby="ride-image-help"
               @change="handleImageChange"
             />
-
-            <div class="flex flex-wrap items-center gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                @click="imageInput?.click()"
-              >
-                {{ selectedImage ? 'Cambiar imagen' : 'Seleccionar imagen' }}
-              </Button>
-
-              <Button
-                v-if="selectedImage"
-                type="button"
-                variant="link"
-                @click="clearSelectedImage"
-              >
-                Quitar imagen
-              </Button>
-            </div>
-
-            <Typography id="ride-image-help" variant="caption" tone="muted">
-              La imagen se subirá al publicar. También puedes publicar sin
-              imagen.
-            </Typography>
 
             <FormError v-if="imageError">
               {{ imageError }}
             </FormError>
           </div>
-        </Card>
+     
 
-        <!-- Punto de encuentro -->
-        <Card as="section">
-          <div class="space-y-3 p-4 sm:p-5">
+          <div class="space-y-3 p-3 sm:p-4">
             <div>
               <Typography as="h2" variant="heading-sm">
                 Punto de encuentro
               </Typography>
-              <Typography variant="body-sm" tone="muted" class="mt-1">
-                Busca una dirección y selecciona el lugar exacto de salida.
+              <Typography variant="caption" tone="muted" class="mt-0.5">
+                Busca y selecciona un resultado para guardar las coordenadas.
               </Typography>
             </div>
 
@@ -486,31 +466,37 @@ useHead({
 
             <div
               v-if="hasSelectedLocation"
-              class="rounded-card border border-trail/30 bg-snow p-3"
+              class="flex items-start gap-2 rounded-xl border border-trail/30 bg-snow px-3 py-2"
             >
-              <Typography variant="label-xs" tone="accent">
-                Punto seleccionado
-              </Typography>
-              <Typography class="mt-1">
-                {{ form.meetingPoint }}
-              </Typography>
-              <Typography variant="caption" tone="muted" class="mt-1">
-                {{ form.latitude?.toFixed(5) }},
-                {{ form.longitude?.toFixed(5) }}
-              </Typography>
+              <svg
+                aria-hidden="true"
+                class="mt-0.5 h-4 w-4 shrink-0 text-trail-ink"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
+                <circle cx="12" cy="10" r="2.5" />
+              </svg>
+              <div class="min-w-0">
+                <Typography variant="body-sm" class="font-medium">
+                  {{ form.meetingPoint }}
+                </Typography>
+                <Typography variant="caption" tone="muted">
+                  {{ form.latitude?.toFixed(5) }},
+                  {{ form.longitude?.toFixed(5) }}
+                </Typography>
+              </div>
             </div>
           </div>
-        </Card>
-
-        <!-- Datos técnicos -->
-        <Card as="section">
-          <div class="space-y-4 p-4 sm:p-5">
+     
+          <div class="space-y-3 p-3 sm:p-4">
             <div>
               <Typography as="h2" variant="heading-sm">
                 Detalles técnicos
-              </Typography>
-              <Typography variant="body-sm" tone="muted" class="mt-1">
-                Facilita que otros ciclistas valoren la dificultad y duración.
               </Typography>
             </div>
 
@@ -566,7 +552,7 @@ useHead({
               </div>
 
               <div>
-                <FormLabel id="duration">Duración aproximada (minutos)</FormLabel>
+                <FormLabel id="duration">Duración (minutos)</FormLabel>
                 <Input
                   id="duration"
                   v-model="form.durationMinutes"
@@ -576,29 +562,18 @@ useHead({
               </div>
 
               <div>
-                <FormLabel id="max-participants">
-                  Máximo de participantes
-                </FormLabel>
+                <FormLabel id="max-participants">Máximo de participantes</FormLabel>
                 <Input
                   id="max-participants"
                   v-model="form.maxParticipants"
                   name="maxParticipants"
-                  placeholder="Opcional"
+                  placeholder="Sin límite"
                 />
               </div>
             </div>
           </div>
-        </Card>
-
-        <!-- Participación y enlace -->
-        <Card as="section">
-          <div class="space-y-4 p-4 sm:p-5">
-            <div>
-              <Typography as="h2" variant="heading-sm">
-                Participación y recorrido
-              </Typography>
-            </div>
-
+  
+          <div class="grid grid-cols-1 gap-3 p-3 sm:grid-cols-2 sm:p-4">
             <div>
               <FormLabel id="audience">¿A quién va dirigida?</FormLabel>
               <FormSelect
@@ -615,9 +590,7 @@ useHead({
             </div>
 
             <div>
-              <FormLabel id="wikiloc-url">
-                Enlace de Wikiloc (opcional)
-              </FormLabel>
+              <FormLabel id="wikiloc-url">Enlace de Wikiloc (opcional)</FormLabel>
               <Input
                 id="wikiloc-url"
                 v-model="form.wikilocUrl"
@@ -626,13 +599,13 @@ useHead({
               />
             </div>
           </div>
-        </Card>
+   
 
         <Alert v-if="errorMessage" variant="error" role="alert">
           {{ errorMessage }}
         </Alert>
 
-        <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+        <div class="flex flex-col-reverse gap-2 pb-2 sm:flex-row sm:justify-end">
           <Button
             type="button"
             variant="outline"

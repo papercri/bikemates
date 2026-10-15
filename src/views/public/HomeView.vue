@@ -10,6 +10,11 @@ import RidgeDivider from '@/components/svg/RidgeDivider.vue'
 import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
 import Typography from '@/components/ui/Typography.vue'
+import { storeToRefs } from 'pinia'
+import { useAuthStore } from '@/features/auth/stores/authStore'
+
+const authStore = useAuthStore()
+const { user, isInitialized } = storeToRefs(authStore)
 
 useHead({
   title: 'BikeMates | Encuentra ciclistas y rutas',
@@ -47,10 +52,28 @@ useHead({
           </Typography>
 
           <div class="mt-9 flex flex-col gap-3 sm:flex-row">
-            <Button to="/rides" size="lg">Explorar rutas</Button>
+          <Button to="/rides" size="lg">
+            Explorar rutas
+          </Button>
 
-            <Button to="/register" variant="outline" size="lg">Únete a BikeMates</Button>
-          </div>
+          <Button
+            v-if="isInitialized && user"
+            to="/rides/create"
+            variant="primary"
+            size="lg"
+          >
+            Publicar ruta
+          </Button>
+
+          <Button
+            v-else-if="isInitialized"
+            to="/register"
+            variant="outline"
+            size="lg"
+          >
+            Únete a BikeMates
+          </Button>
+        </div>
         </div>
 
         <div class="relative mx-auto w-full max-w-lg lg:max-w-none">

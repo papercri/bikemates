@@ -1,5 +1,5 @@
 
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends string">
 withDefaults(
   defineProps<{
     id: string
@@ -18,11 +18,11 @@ withDefaults(
   },
 )
 
-const model = defineModel<string>({ required: true })
+const model = defineModel<T>({ required: true })
 </script>
 
 <template>
-  <div class="relative w-full">
+  <div class="relative min-w-0">
     <select
       :id="id"
       v-model="model"
@@ -31,7 +31,7 @@ const model = defineModel<string>({ required: true })
       :disabled="disabled"
       :aria-invalid="ariaInvalid"
       :aria-describedby="ariaDescribedby"
-      class="w-full appearance-none rounded-btn border border-line bg-canvas py-3 pl-4 pr-10 text-ink outline-none transition-colors focus:border-trail focus:ring-2 focus:ring-trail/25 disabled:cursor-not-allowed disabled:opacity-50"
+      class="h-10 w-full appearance-none rounded-lg border border-line bg-canvas pl-3 pr-9 text-sm text-ink outline-none transition-colors hover:border-graphite/50 focus:border-trail focus:ring-2 focus:ring-trail/20 disabled:cursor-not-allowed disabled:opacity-50"
     >
       <slot />
     </select>
@@ -42,11 +42,11 @@ const model = defineModel<string>({ required: true })
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      stroke-width="2"
+      stroke-width="1.8"
       stroke-linecap="round"
       stroke-linejoin="round"
     >
-      <path d="m6 9 6 6 6-6" />
+      <path d="m7 10 5 5 5-5" />
     </svg>
   </div>
 </template>

@@ -90,7 +90,7 @@ onUnmounted(() => {
 
 <template>
   <section class="space-y-2">
-    <FormLabel id="meeting-point-search" margin="none">
+    <FormLabel id="meeting-point-search">
       Punto de encuentro
     </FormLabel>
 
