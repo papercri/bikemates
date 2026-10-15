@@ -8,7 +8,15 @@ import Alert from '@/components/ui/Alert.vue'
 import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
 import Typography from '@/components/ui/Typography.vue'
-import { supabase } from '@/services/supabase'
+import {
+  EXPIRED_LINK_MESSAGE,
+  getEmailLinkErrorMessage,
+  parseEmailLinkParams,
+} from '@/features/auth/utils/emailLinkParams'
+import {
+  isEmailConfirmed,
+  verifyRecoveryToken,
+} from '@/features/auth/services/authService'
 import { useAuthStore } from '@/features/auth/stores/authStore'
 
 useHead({
@@ -24,35 +32,23 @@ const authStore = useAuthStore()
 
 onMounted(async () => {
   try {
-    const params = new URLSearchParams(window.location.search)
-    const hashParams = new URLSearchParams(window.location.hash.slice(1))
+    const link = parseEmailLinkParams(window.location.search, window.location.hash)
 
-    const errorCode = params.get('error_code') ?? hashParams.get('error_code')
-
-    if (errorCode) {
-      errorMessage.value =
-        errorCode === 'otp_expired'
-          ? 'El enlace ha caducado o ya no es válido. Solicita uno nuevo.'
-          : 'No se ha podido verificar el enlace. Solicita uno nuevo.'
+    if (link.kind === 'error') {
+      errorMessage.value = getEmailLinkErrorMessage(link.code)
       return
     }
 
-    const type = params.get('type')
-    const tokenHash = params.get('token_hash')
-
-    if (type === 'recovery') {
-      if (!tokenHash) {
+    if (link.kind === 'recovery') {
+      if (!link.tokenHash) {
         errorMessage.value = 'El enlace de recuperación no contiene un token válido.'
         return
       }
 
-      const { error } = await supabase.auth.verifyOtp({
-        token_hash: tokenHash,
-        type: 'recovery',
-      })
+      const verified = await verifyRecoveryToken(link.tokenHash)
 
-      if (error) {
-        errorMessage.value = 'El enlace ha caducado o ya no es válido. Solicita uno nuevo.'
+      if (!verified) {
+        errorMessage.value = EXPIRED_LINK_MESSAGE
         return
       }
 
@@ -64,16 +60,9 @@ onMounted(async () => {
 
     // La confirmación de registro utiliza la redirección
     // procesada por el cliente de Supabase.
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.getSession()
+    const confirmed = await isEmailConfirmed()
 
-    if (error) {
-      throw error
-    }
-
-    if (session?.user.email_confirmed_at) {
+    if (confirmed) {
       isConfirmed.value = true
     } else {
       errorMessage.value = 'No se ha podido confirmar el email. Comprueba el enlace recibido.'

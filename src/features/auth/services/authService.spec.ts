@@ -27,6 +27,10 @@ const mocks = vi.hoisted(() => ({
     vi.fn<(email: string, options: { redirectTo: string }) => Promise<AuthResult<null>>>(),
   updateUser: vi.fn<(payload: { password: string }) => Promise<AuthResult<null>>>(),
   invoke: vi.fn<(name: string, options: { method: string }) => Promise<AuthResult<null>>>(),
+  verifyOtp: vi.fn<(payload: { token_hash: string; type: string }) => Promise<AuthResult<null>>>(),
+  getSession: vi.fn<
+    () => Promise<AuthResult<{ session: { user: { email_confirmed_at: string | null } } | null }>>
+  >(),
 }))
 
 vi.mock('@/services/supabase', () => ({
@@ -36,6 +40,8 @@ vi.mock('@/services/supabase', () => ({
       signInWithPassword: mocks.signInWithPassword,
       resetPasswordForEmail: mocks.resetPasswordForEmail,
       updateUser: mocks.updateUser,
+      verifyOtp: mocks.verifyOtp,
+      getSession: mocks.getSession,
     },
     functions: {
       invoke: mocks.invoke,
@@ -44,11 +50,13 @@ vi.mock('@/services/supabase', () => ({
 }))
 
 import {
+  isEmailConfirmed,
   loginUser,
   registerUser,
   requestAccountDeletion,
   requestPasswordReset,
   updatePassword,
+  verifyRecoveryToken,
 } from './authService'
 
 const credentials = {
@@ -159,6 +167,51 @@ describe('authService', () => {
       mocks.updateUser.mockResolvedValue({ data: null, error })
 
       await expect(updatePassword('123')).rejects.toThrow('weak password')
+    })
+  })
+
+  describe('verifyRecoveryToken', () => {
+    it('verifies the recovery token hash', async () => {
+      mocks.verifyOtp.mockResolvedValue({ data: null, error: null })
+
+      await expect(verifyRecoveryToken('abc123')).resolves.toBe(true)
+
+      expect(mocks.verifyOtp).toHaveBeenCalledWith({
+        token_hash: 'abc123',
+        type: 'recovery',
+      })
+    })
+
+    it('returns false when the link is no longer valid', async () => {
+      mocks.verifyOtp.mockResolvedValue({ data: null, error: new Error('expired') })
+
+      await expect(verifyRecoveryToken('abc123')).resolves.toBe(false)
+    })
+  })
+
+  describe('isEmailConfirmed', () => {
+    it('returns true when the session belongs to a confirmed email', async () => {
+      mocks.getSession.mockResolvedValue({
+        data: { session: { user: { email_confirmed_at: '2026-01-01' } } },
+        error: null,
+      })
+
+      await expect(isEmailConfirmed()).resolves.toBe(true)
+    })
+
+    it('returns false when the email is still unconfirmed', async () => {
+      mocks.getSession.mockResolvedValue({
+        data: { session: { user: { email_confirmed_at: null } } },
+        error: null,
+      })
+
+      await expect(isEmailConfirmed()).resolves.toBe(false)
+    })
+
+    it('throws the supabase error when the session cannot be read', async () => {
+      mocks.getSession.mockResolvedValue({ data: { session: null }, error: new Error('offline') })
+
+      await expect(isEmailConfirmed()).rejects.toThrow('offline')
     })
   })
 

@@ -65,6 +65,30 @@ export async function updatePassword(newPassword: string): Promise<void> {
     throw error
   }
 }
+
+/** Verifica un token de recuperación. Devuelve `false` si el enlace ya no es válido. */
+export async function verifyRecoveryToken(tokenHash: string): Promise<boolean> {
+  const { error } = await supabase.auth.verifyOtp({
+    token_hash: tokenHash,
+    type: 'recovery',
+  })
+
+  return !error
+}
+
+/** Indica si la sesión actual pertenece a un email ya confirmado. */
+export async function isEmailConfirmed(): Promise<boolean> {
+  const {
+    data: { session },
+    error,
+  } = await supabase.auth.getSession()
+
+  if (error) {
+    throw error
+  }
+
+  return Boolean(session?.user.email_confirmed_at)
+}
 export async function requestAccountDeletion(): Promise<void> {
   const { error } = await supabase.functions.invoke('delete-account', {
     method: 'POST',
