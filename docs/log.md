@@ -110,3 +110,40 @@ Refactor interna del frontend para unificar la UI sin cambiar el comportamiento 
 ### Verificación
 
 - `npm run type-check`, `npx eslint .`, `npx oxlint .`, `npx vitest run` (15/15), `npm run build`: en verde.
+
+## 2026-10-16 — Refactor de arquitectura y extracción de composables
+
+Refactor incremental sobre `refactor/architecture-cleanup` (12 commits), sin cambios de comportamiento salvo las alineaciones deliberadas del design system listadas más abajo.
+
+### Estructura
+
+- `src/router/` → `src/app/router/`; `src/components/svg/` → `src/components/icons/`.
+- `src/components/rides/` → `src/features/rides/components/`; `AuthCard` → `src/features/auth/components/`.
+- Primitivas de formulario (`FormLabel`, `FormError`, `FormHelp`, `PasswordInput`) de `components/forms/` a `src/components/ui/`.
+- `src/utils/validators/registerValidator.*` → `src/features/auth/validators/`.
+- 17 archivos con imports actualizados.
+
+### Design System
+
+- `Input` acepta `type="datetime-local"`; nuevo `Textarea` con las mismas clases que `Input`.
+- `Alert` con prop `boxed` (fondo rojo suave `rounded-xl`).
+- Token nuevo `--color-line-strong: #dee2e6`.
+- `RideForm` usa `Textarea`/`Input`/`Alert boxed` en lugar de estilos ad-hoc (radio 16→14px, borde `line`, foco del DS). `EditRideView` pasa a usar `AppPage` y `Typography` (gana header y footer).
+- Enlace de Wikiloc en `RideDetailView` unificado con `text-trail-ink` (antes `text-[#16A34A]`).
+
+### Lógica extraída a módulos puros y composables
+
+- `features/rides/validators/`: `rideFormValidator` (reglas por función), `rideImageValidator`, `rideValueGuards` (sin aserciones de tipo).
+- `features/rides/composables/`: `useRideImagePicker` (imagen + preview con revocación al desmontar), `usePlaceSearch` (búsqueda con `AbortController`), `useRideDetail`, `useRideList`.
+- `features/auth/composables/useAuthForm` (estado de envío compartido por Login/Register/Forgot/Reset).
+- `features/rides/utils/rideFormMapping` (form ↔ dominio, `buildRideInput` devuelve `null` sin coordenadas), `features/rides/constants/rideOptions`, `utils/dates` (`toLocalDateTime`, `formatRideDate`), `features/auth/utils/emailLinkParams`.
+- `EmailConfirmedView` usa `emailLinkParams`/`authService` en vez de importar el cliente Supabase directamente.
+
+### Decisiones
+
+- Hex → token solo cuando el valor coincide exacto (`#6C757D`→`graphite`, `#1A1D20`→`ink`, etc.); `#DEE2E6` se promovió a token `line-strong`.
+- Sin dependencias nuevas; verificación en verde: `vue-tsc --build`, `vitest` (179/179), `eslint`, `oxlint` y `vite build`.
+
+### Pendiente conocido
+
+- `RideForm.vue`: `<FormLabel id="durationMinutes">` tiene un `"` sobrante en el texto ("Duración estimada (min)") — cambio de contenido pendiente de decisión.
