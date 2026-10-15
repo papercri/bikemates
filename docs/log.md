@@ -147,3 +147,19 @@ Refactor incremental sobre `refactor/architecture-cleanup` (12 commits), sin cam
 ### Pendiente conocido
 
 - `RideForm.vue`: `<FormLabel id="durationMinutes">` tiene un `"` sobrante en el texto ("Duración estimada (min)") — cambio de contenido pendiente de decisión.
+
+## 2026-10-16 — Lógica de vistas extraída a composables
+
+- Nuevos composables con comentarios en castellano sencillo:
+  - `useRideCreator`: sube la imagen, crea la ruta publicada, redirige al detalle y
+    borra la imagen huérfana si la creación falla.
+  - `useRideEditor`: carga la ruta al montar y la guarda al enviar; el orden de la
+    imagen es importante (subir la nueva, guardar, y solo entonces borrar la anterior).
+  - `useEmailLinkConfirmation`: clasifica el enlace de Supabase, verifica el token de
+    recuperación y marca la sesión antes de saltar a la nueva contraseña.
+- `CreateRideView`, `EditRideView` y `EmailConfirmedView` quedan como orquestación pura:
+  montan el composable y pintan; sin acceso directo a servicios ni a `router` de guardado.
+- Arreglada la comilla sobrante en la etiqueta de duración del formulario de ruta.
+- Formato Prettier unificado en `src/`.
+- Verificación: `vue-tsc --build`, `vitest` (194/194), `eslint`, `oxlint`, `vite build` y
+  `prettier --check src` en verde.
