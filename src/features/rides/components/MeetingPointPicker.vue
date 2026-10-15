@@ -3,7 +3,7 @@
 import { onUnmounted, ref, watch } from 'vue'
 import Button from '@/components/ui/Button.vue'
 import Input from '@/components/ui/Input.vue'
-import FormLabel from '@/components/forms/FormLabel.vue'
+import FormLabel from '@/components/ui/FormLabel.vue'
 import { searchPlaces } from '@/features/rides/services/geocodingService'
 import type { GeocodingResult } from '@/features/rides/services/geocodingService'
 const props = defineProps<{

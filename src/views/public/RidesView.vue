@@ -2,7 +2,7 @@
 import { useHead } from '@unhead/vue'
 import { computed, onMounted, ref } from 'vue'
 import AppPage from '@/components/layout/AppPage.vue'
-import RideCard from '@/components/rides/RideCard.vue'
+import RideCard from '@/features/rides/components/RideCard.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import Typography from '@/components/ui/Typography.vue'
 import { getPublishedRides } from '@/features/rides/services/rideService'

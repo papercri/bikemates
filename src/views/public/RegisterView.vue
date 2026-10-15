@@ -2,11 +2,11 @@
 import { useHead } from '@unhead/vue'
 import { reactive, ref } from 'vue'
 import AppPage from '@/components/layout/AppPage.vue'
-import AuthCard from '@/components/features/AuthCard.vue'
-import FormError from '@/components/forms/FormError.vue'
-import FormHelp from '@/components/forms/FormHelp.vue'
-import FormLabel from '@/components/forms/FormLabel.vue'
-import PasswordInput from '@/components/forms/PasswordInput.vue'
+import AuthCard from '@/features/auth/components/AuthCard.vue'
+import FormError from '@/components/ui/FormError.vue'
+import FormHelp from '@/components/ui/FormHelp.vue'
+import FormLabel from '@/components/ui/FormLabel.vue'
+import PasswordInput from '@/components/ui/PasswordInput.vue'
 import Alert from '@/components/ui/Alert.vue'
 import Button from '@/components/ui/Button.vue'
 import Input from '@/components/ui/Input.vue'
@@ -16,7 +16,7 @@ import {
   validateRegisterForm,
   type RegisterErrors,
   type RegisterForm,
-} from '@/utils/validators/registerValidator'
+} from '@/features/auth/validators/registerValidator'
 
 useHead({
   title: 'Crear cuenta | BikeMates',

@@ -10,8 +10,8 @@ import type { GeocodingResult } from '@/features/rides/services/geocodingService
 
 import { validateRideImage } from '@/features/rides/services/rideImageService'
 
-import MeetingPointPicker from '@/components/rides/MeetingPointPicker.vue'
-import FormLabel from '@/components/forms/FormLabel.vue'
+import MeetingPointPicker from '@/features/rides/components/MeetingPointPicker.vue'
+import FormLabel from '@/components/ui/FormLabel.vue'
 import Button from '@/components/ui/Button.vue'
 import FormSelect from '@/components/ui/FormSelect.vue'
 import Input from '@/components/ui/Input.vue'

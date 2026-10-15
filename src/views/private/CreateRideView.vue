@@ -6,7 +6,7 @@ import { useRouter } from 'vue-router'
 
 import AppPage from '@/components/layout/AppPage.vue'
 import Typography from '@/components/ui/Typography.vue'
-import RideForm from '@/components/rides/RideForm.vue'
+import RideForm from '@/features/rides/components/RideForm.vue'
 
 import { createRide } from '@/features/rides/services/rideService'
 import {

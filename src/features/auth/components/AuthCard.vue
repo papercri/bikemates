@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import RidgeStrip from '@/components/svg/RidgeStrip.vue'
+import RidgeStrip from '@/components/icons/RidgeStrip.vue'
 import Card from '@/components/ui/Card.vue'
 import Typography from '@/components/ui/Typography.vue'
 

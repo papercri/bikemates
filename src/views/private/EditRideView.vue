@@ -4,7 +4,7 @@ import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useHead } from '@unhead/vue'
 
-import RideForm from '@/components/rides/RideForm.vue'
+import RideForm from '@/features/rides/components/RideForm.vue'
 
 import type {
   Ride,
