@@ -77,10 +77,18 @@ useHead({
       : 'Detalle de ruta | BikeMates',
   ),
 })
+function formatRideDate(dateString: string): string {
+  return new Intl.DateTimeFormat('es-ES', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(dateString))
+}
 </script>
 
 
-```vue
 <template>
   <AppPage size="detail">
     <RouterLink
@@ -123,6 +131,9 @@ useHead({
 
         <Typography as="h1" variant="heading-xl" class="mt-3 tracking-tight">
           {{ ride.title }}
+        </Typography>
+        <Typography class="mt-3" variant="body-sm" tone="muted">
+          {{ formatRideDate(ride.startsAt) }}
         </Typography>
 
         <Typography class="mt-5 leading-7" tone="muted">
@@ -245,4 +256,4 @@ useHead({
     </EmptyState>
   </AppPage>
 </template>
-```
+
