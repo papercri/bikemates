@@ -4,7 +4,6 @@ import RideCard from '../RideCard.vue'
 import Badge from '@/components/ui/Badge.vue'
 import { mockRides } from '@/features/rides/data/mockRides'
 
-
 const ride = mockRides[0]
 
 if (!ride) {

@@ -8,9 +8,3 @@ export const RIDE_LEVEL_BADGE_COLORS: Record<RideLevel, BadgeColor> = {
   Intermedio: 'route',
   Avanzado: 'ink',
 }
-
-export const RIDE_LEVEL_DOT_CLASSES: Record<RideLevel, string> = {
-  Iniciación: 'bg-trail',
-  Intermedio: 'bg-route',
-  Avanzado: 'bg-ink',
-}

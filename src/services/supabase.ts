@@ -8,4 +8,4 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Falta la configuración de Supabase.')
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey)

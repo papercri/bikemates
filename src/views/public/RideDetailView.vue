@@ -14,10 +14,7 @@ import Card from '@/components/ui/Card.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import Typography from '@/components/ui/Typography.vue'
 import { getRideById } from '@/features/rides/services/rideService'
-import {
-  RIDE_LEVEL_BADGE_COLORS,
-  //RIDE_LEVEL_DOT_CLASSES,
-} from '@/features/rides/constants/rideLevels'
+import { RIDE_LEVEL_BADGE_COLORS } from '@/features/rides/constants/rideLevels'
 import type { Ride } from '@/features/rides/types'
 import RideMap from '@/components/rides/RideMap.vue'
 import type { BikeType } from '@/features/rides/types'
