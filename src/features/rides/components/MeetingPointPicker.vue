@@ -1,92 +1,46 @@
 
 <script setup lang="ts">
-import { onUnmounted, ref, watch } from 'vue'
+import { watch } from 'vue'
 import Button from '@/components/ui/Button.vue'
-import Input from '@/components/ui/Input.vue'
 import FormLabel from '@/components/ui/FormLabel.vue'
-import { searchPlaces } from '@/features/rides/services/geocodingService'
+import Input from '@/components/ui/Input.vue'
+import { usePlaceSearch } from '@/features/rides/composables/usePlaceSearch'
 import type { GeocodingResult } from '@/features/rides/services/geocodingService'
+
 const props = defineProps<{
   initialValue?: string
 }>()
+
 const emit = defineEmits<{
   (event: 'select', place: GeocodingResult | null): void
 }>()
 
-const query = ref(props.initialValue ?? '')
-const results = ref<GeocodingResult[]>([])
-const selectedPlace = ref<GeocodingResult | null>(null)
-const isLoading = ref(false)
-const errorMessage = ref<string | null>(null)
+const {
+  query,
+  results,
+  selectedPlace,
+  isLoading,
+  errorMessage,
+  search,
+  selectPlace,
+  resetSelection,
+} = usePlaceSearch(props.initialValue ?? '')
 
-let controller: AbortController | null = null
-
+// Al editar la búsqueda a mano se descarta la selección anterior
+// y se avisa al formulario para que limpie las coordenadas.
 watch(query, (newQuery) => {
   if (newQuery === props.initialValue && !selectedPlace.value) return
 
   if (selectedPlace.value?.label === newQuery) return
 
-  controller?.abort()
-  selectedPlace.value = null
-  results.value = []
-  errorMessage.value = null
+  resetSelection()
   emit('select', null)
 })
-async function handleSearch(): Promise<void> {
-  const searchTerm = query.value.trim()
 
-  if (isLoading.value || searchTerm.length < 3) return
-
-  controller?.abort()
-  const searchController = new AbortController()
-  controller = searchController
-
-  isLoading.value = true
-  errorMessage.value = null
-  results.value = []
-
-  try {
-    const places = await searchPlaces(searchTerm, searchController.signal)
-
-    // Ignorar resultados de búsquedas canceladas o antiguas.
-    if (searchController.signal.aborted) return
-
-    results.value = places
-
-    if (places.length === 0) {
-      errorMessage.value = 'No se han encontrado lugares.'
-    }
-  } catch (error: unknown) {
-    if (
-      error instanceof Error &&
-      error.name === 'AbortError'
-    ) {
-      return
-    }
-
-    errorMessage.value =
-      error instanceof Error
-        ? error.message
-        : 'No se ha podido buscar el lugar.'
-  } finally {
-    if (controller === searchController) {
-      isLoading.value = false
-      controller = null
-    }
-  }
-}
-
-function selectPlace(place: GeocodingResult): void {
-  selectedPlace.value = place
-  query.value = place.label
-  results.value = []
-  errorMessage.value = null
+function handleSelectPlace(place: GeocodingResult): void {
+  selectPlace(place)
   emit('select', place)
 }
-
-onUnmounted(() => {
-  controller?.abort()
-})
 </script>
 
 <template>
@@ -115,7 +69,7 @@ onUnmounted(() => {
         size="md"
         :disabled="isLoading || query.trim().length < 3"
         :loading="isLoading"
-        @click="handleSearch"
+        @click="search"
       >
         {{ isLoading ? 'Buscando…' : 'Buscar' }}
       </Button>
@@ -142,7 +96,7 @@ onUnmounted(() => {
         <button
           type="button"
           class="w-full px-3 py-2.5 text-left text-sm text-ink transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-trail"
-          @click="selectPlace(place)"
+          @click="handleSelectPlace(place)"
         >
           {{ place.label }}
         </button>
