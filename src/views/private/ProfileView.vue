@@ -121,15 +121,14 @@ async function handleDeleteAccount(): Promise<void> {
         </Typography>
       </template>
 
-      <template v-else-if="tab.id === 'saved-rides'">
+  <!--     <template v-else-if="tab.id === 'saved-rides'">
         <Typography as="h2" variant="heading-sm">Rutas guardadas</Typography>
         <Typography class="mt-2" tone="muted">
           Aquí aparecerán las rutas que hayas guardado.
         </Typography>
-      </template>
-
+      </template> -->
       <template v-else>
-        <Typography as="h2" variant="heading-sm">Rutas publicadas</Typography>
+        <Typography as="h2" variant="heading-sm">Mis rutas</Typography>
         <Typography class="mt-2" tone="muted">
           Aquí aparecerán las rutas que hayas publicado.
         </Typography>

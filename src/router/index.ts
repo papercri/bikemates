@@ -71,6 +71,12 @@ const router = createRouter({
       component: () => import('@/views/private/CreateRideView.vue'),
       meta: { requiresAuth: true },
     },
+    {
+      path: '/rides/:id/edit',
+      name: 'ride-edit',
+      component: () => import('@/views/private/EditRideView.vue'),
+      meta: { requiresAuth: true },
+    },
   ],
 })
 

@@ -6,12 +6,14 @@ import Input from '@/components/ui/Input.vue'
 import FormLabel from '@/components/forms/FormLabel.vue'
 import { searchPlaces } from '@/features/rides/services/geocodingService'
 import type { GeocodingResult } from '@/features/rides/services/geocodingService'
-
+const props = defineProps<{
+  initialValue?: string
+}>()
 const emit = defineEmits<{
   (event: 'select', place: GeocodingResult | null): void
 }>()
 
-const query = ref('')
+const query = ref(props.initialValue ?? '')
 const results = ref<GeocodingResult[]>([])
 const selectedPlace = ref<GeocodingResult | null>(null)
 const isLoading = ref(false)
@@ -20,8 +22,8 @@ const errorMessage = ref<string | null>(null)
 let controller: AbortController | null = null
 
 watch(query, (newQuery) => {
-  // No borrar la selección cuando el propio componente
-  // actualiza el campo al seleccionar un resultado.
+  if (newQuery === props.initialValue && !selectedPlace.value) return
+
   if (selectedPlace.value?.label === newQuery) return
 
   controller?.abort()
@@ -30,7 +32,6 @@ watch(query, (newQuery) => {
   errorMessage.value = null
   emit('select', null)
 })
-
 async function handleSearch(): Promise<void> {
   const searchTerm = query.value.trim()
 

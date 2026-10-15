@@ -8,7 +8,7 @@ export type RideAudience = 'everyone' | 'women' | 'men' | 'lgbt'
 export type RideStatus = 'draft' | 'published' | 'cancelled' | 'completed'
 
 export interface Ride {
-  id: string | number
+  id: string 
   organizerId: string
   title: string
   description: string
@@ -49,3 +49,27 @@ export interface CreateRideInput {
   maxParticipants: number | null
   status: 'draft' | 'published'
 }
+export interface RideFormValues {
+  title: string
+  description: string
+  startsAt: string
+  meetingPoint: string
+  latitude: number | null
+  longitude: number | null
+  bikeType: BikeType
+  level: RideLevel
+  distanceKm: string
+  elevationM: string
+  durationMinutes: string
+  wikilocUrl: string
+  audience: RideAudience
+  maxParticipants: string
+}
+
+export interface RideFormSubmission {
+  values: RideFormValues
+  image: File | null
+  removeCurrentImage: boolean
+}
+
+export type UpdateRideInput = Omit<CreateRideInput, 'status'>

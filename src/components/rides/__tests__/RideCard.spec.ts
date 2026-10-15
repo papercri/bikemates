@@ -5,21 +5,24 @@ import Badge from '@/components/ui/Badge.vue'
 import { mockRides } from '@/features/rides/data/mockRides'
 import type { Ride } from '@/features/rides/types'
 
-function findRide(id: number): Ride {
-  const ride = mockRides.find((item) => item.id === id)
+function findRide(id: string): Ride {
+  const ride = mockRides[0]
 
   if (!ride) {
-    throw new Error(`Missing ride fixture with id ${id}`)
+    throw new Error('No ride fixtures available')
   }
 
   return ride
 }
+const ride = mockRides[0]
 
-const ride = findRide(1)
+if (!ride) {
+  throw new Error('No ride fixtures available')
+}
 
 function mountRideCard() {
   return mount(RideCard, {
-    props: { ride },
+    props: { ride: ride! },
     global: { stubs: { RouterLink: RouterLinkStub } },
   })
 }

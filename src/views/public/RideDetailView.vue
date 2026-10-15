@@ -22,8 +22,16 @@ import {
 import type { Ride } from '@/features/rides/types'
 import RideMap from '@/components/rides/RideMap.vue'
 import type { BikeType } from '@/features/rides/types'
+import { useAuthStore } from '@/features/auth/stores/authStore'
 
 const route = useRoute()
+const authStore = useAuthStore()
+
+const isOrganizer = computed(
+  () =>
+    ride.value !== null &&
+    authStore.user?.id === ride.value.organizerId,
+)
 const BIKE_TYPE_LABELS: Record<BikeType, string> = {
   road: 'Carretera',
   mtb: 'MTB',
@@ -204,6 +212,18 @@ function formatRideDate(dateString: string): string {
               </dd>
             </div>
           </dl>
+           <p class="text-center mb-4">
+            <a
+            v-if="ride.wikilocUrl"
+            :href="ride.wikilocUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-sm font-medium text-[#16A34A] hover:underline "
+            :aria-label="`Ver recorrido de ${ride.title} en Wikiloc`"
+          >
+            Ver recorrido en Wikiloc
+          </a>
+           </p> 
         </Card>
       </section>
 
@@ -237,12 +257,22 @@ function formatRideDate(dateString: string): string {
               <span class="sr-only">(se abre en una pestaña nueva)</span>
             </a>
           </div>
+        
         </Card>
       </section>
 
-      <div class="mt-8">
-        <Button to="/rides">Explorar más rutas</Button>
-      </div>
+      <div class="mt-8 flex flex-wrap gap-3">
+      <Button
+        v-if="isOrganizer"
+        :to="{ name: 'ride-edit', params: { id: ride.id } }"
+      >
+        Editar ruta
+      </Button>
+
+      <Button to="/rides" variant="outline">
+        Explorar más rutas
+      </Button>
+    </div>
     </template>
 
     <EmptyState

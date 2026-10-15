@@ -1,6 +1,10 @@
 
 import { supabase } from '@/services/supabase'
-import type { CreateRideInput, Ride } from '../types'
+import type {
+  CreateRideInput,
+  UpdateRideInput,
+  Ride,
+} from '../types'
 
 function isBikeType(value: string): value is Ride['bikeType'] {
   return ['road', 'mtb', 'gravel', 'urban', 'other'].includes(value)
@@ -142,3 +146,129 @@ export async function getRideById(id: string): Promise<Ride> {
 
   return mapRide(data)
 }
+export async function getRideForEdit(id: string): Promise<Ride> {
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser()
+
+  if (userError || !user) {
+    throw new Error('Debes iniciar sesión para editar una ruta.')
+  }
+
+  const { data, error } = await supabase
+    .from('rides')
+    .select('*')
+    .eq('id', id)
+    .eq('organizer_id', user.id)
+    .maybeSingle()
+
+  if (error) {
+    throw new Error(`No se pudo cargar la ruta: ${error.message}`)
+  }
+
+  if (!data) {
+    throw new Error('La ruta no existe o no tienes permiso para editarla.')
+  }
+
+  return mapRide(data)
+}
+export async function getMyRides(): Promise<Ride[]> {
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser()
+
+  if (userError || !user) {
+    throw new Error('Debes iniciar sesión para consultar tus rutas.')
+  }
+
+  const { data, error } = await supabase
+    .from('rides')
+    .select('*')
+    .eq('organizer_id', user.id)
+    .in('status', ['published', 'completed', 'cancelled'])
+    .order('starts_at', { ascending: true })
+
+  if (error) {
+    throw new Error(`No se pudieron cargar tus rutas: ${error.message}`)
+  }
+
+  return data.map(mapRide)
+}
+
+export async function deleteRide(id: string): Promise<void> {
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser()
+
+  if (userError || !user) {
+    throw new Error('Debes iniciar sesión para eliminar una ruta.')
+  }
+
+  const { data, error } = await supabase
+    .from('rides')
+    .delete()
+    .eq('id', id)
+    .eq('organizer_id', user.id)
+    .select('id')
+    .maybeSingle()
+
+  if (error) {
+    throw new Error(`No se pudo eliminar la ruta: ${error.message}`)
+  }
+
+  if (!data) {
+    throw new Error('La ruta no existe o no tienes permiso para eliminarla.')
+  }
+}
+
+export async function updateRide(
+  id: string,
+  input: UpdateRideInput,
+): Promise<Ride> {
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser()
+
+  if (userError || !user) {
+    throw new Error('Debes iniciar sesión para editar una ruta.')
+  }
+
+  const { data, error } = await supabase
+    .from('rides')
+    .update({
+      title: input.title,
+      description: input.description,
+      starts_at: input.startsAt,
+      meeting_point: input.meetingPoint,
+      latitude: input.latitude,
+      longitude: input.longitude,
+      bike_type: input.bikeType,
+      level: input.level,
+      distance_km: input.distanceKm,
+      elevation_m: input.elevationM,
+      duration_minutes: input.durationMinutes,
+      image_path: input.imagePath,
+      wikiloc_url: input.wikilocUrl,
+      audience: input.audience,
+      max_participants: input.maxParticipants,
+    })
+    .eq('id', id)
+    .eq('organizer_id', user.id)
+    .select()
+    .maybeSingle()
+
+  if (error) {
+    throw new Error(`No se pudo actualizar la ruta: ${error.message}`)
+  }
+
+  if (!data) {
+    throw new Error('La ruta no existe o no tienes permiso para editarla.')
+  }
+
+  return mapRide(data)
+}
+
