@@ -46,8 +46,13 @@ function validateForm(): boolean {
 }
 
 const submitted = ref(false)
-const { isSubmitting, errorMessage: submitError, successMessage, clearMessages, submit } =
-  useAuthForm()
+const {
+  isSubmitting,
+  errorMessage: submitError,
+  successMessage,
+  clearMessages,
+  submit,
+} = useAuthForm()
 
 async function handleSubmit(): Promise<void> {
   submitted.value = true

@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Ride } from '../types'
-import {
-  buildRideInput,
-  createEmptyRideFormValues,
-  mapRideToFormValues,
-} from './rideFormMapping'
+import { buildRideInput, createEmptyRideFormValues, mapRideToFormValues } from './rideFormMapping'
 
 function rideFixture(overrides: Partial<Ride> = {}): Ride {
   return {
@@ -55,9 +51,7 @@ describe('mapRideToFormValues', () => {
   })
 
   it('maps optional values to empty form fields', () => {
-    const values = mapRideToFormValues(
-      rideFixture({ wikilocUrl: null, maxParticipants: null }),
-    )
+    const values = mapRideToFormValues(rideFixture({ wikilocUrl: null, maxParticipants: null }))
 
     expect(values.wikilocUrl).toBe('')
     expect(values.maxParticipants).toBe('')

@@ -32,13 +32,11 @@ export async function uploadRideImage(file: File): Promise<string> {
 
   const filePath = `${user.id}/${crypto.randomUUID()}.${extension}`
 
-  const { error } = await supabase.storage
-    .from(BUCKET_NAME)
-    .upload(filePath, file, {
-      cacheControl: '3600',
-      contentType: file.type,
-      upsert: false,
-    })
+  const { error } = await supabase.storage.from(BUCKET_NAME).upload(filePath, file, {
+    cacheControl: '3600',
+    contentType: file.type,
+    upsert: false,
+  })
 
   if (error) {
     throw new Error('No se ha podido subir la imagen.')
@@ -48,9 +46,7 @@ export async function uploadRideImage(file: File): Promise<string> {
 }
 
 export async function deleteRideImage(filePath: string): Promise<void> {
-  const { error } = await supabase.storage
-    .from(BUCKET_NAME)
-    .remove([filePath])
+  const { error } = await supabase.storage.from(BUCKET_NAME).remove([filePath])
 
   if (error) {
     throw new Error('No se ha podido eliminar la imagen.')
@@ -58,9 +54,7 @@ export async function deleteRideImage(filePath: string): Promise<void> {
 }
 
 export function getRideImageUrl(filePath: string): string {
-  const { data } = supabase.storage
-    .from(BUCKET_NAME)
-    .getPublicUrl(filePath)
+  const { data } = supabase.storage.from(BUCKET_NAME).getPublicUrl(filePath)
 
   return data.publicUrl
 }

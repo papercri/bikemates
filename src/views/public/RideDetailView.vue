@@ -1,4 +1,3 @@
-
 <script setup lang="ts">
 import { useHead } from '@unhead/vue'
 import { computed } from 'vue'
@@ -34,13 +33,9 @@ const isOrganizer = computed(
   () => ride.value !== null && authStore.user?.id === ride.value.organizerId,
 )
 
-const durationHours = computed(() =>
-  ride.value ? Math.floor(ride.value.durationMinutes / 60) : 0,
-)
+const durationHours = computed(() => (ride.value ? Math.floor(ride.value.durationMinutes / 60) : 0))
 
-const durationMinutesRemainder = computed(() =>
-  ride.value ? ride.value.durationMinutes % 60 : 0,
-)
+const durationMinutesRemainder = computed(() => (ride.value ? ride.value.durationMinutes % 60 : 0))
 
 useHead({
   title: computed(() =>
@@ -48,7 +43,6 @@ useHead({
   ),
 })
 </script>
-
 
 <template>
   <AppPage size="detail">
@@ -102,10 +96,10 @@ useHead({
         </Typography>
 
         <Card class="mt-8 overflow-hidden">
-          <div class="flex items-center justify-between border-b border-line bg-snow px-5 py-3 sm:px-6">
-            <Typography as="h2" variant="label-xs" tone="muted">
-              Perfil del recorrido
-            </Typography>
+          <div
+            class="flex items-center justify-between border-b border-line bg-snow px-5 py-3 sm:px-6"
+          >
+            <Typography as="h2" variant="label-xs" tone="muted"> Perfil del recorrido </Typography>
             <Typography variant="caption" tone="muted">
               Desnivel acumulado
               <Typography as="span" variant="numeric-inline" class="text-ink">
@@ -143,9 +137,7 @@ useHead({
                 Desnivel
               </Typography>
               <dd class="mt-2 flex items-baseline gap-1">
-                <Typography as="span" variant="numeric-lg">
-                  +{{ ride.elevationM }}
-                </Typography>
+                <Typography as="span" variant="numeric-lg"> +{{ ride.elevationM }} </Typography>
                 <Typography as="span" variant="body-sm" tone="muted" class="font-semibold">
                   m
                 </Typography>
@@ -153,9 +145,7 @@ useHead({
             </div>
 
             <div class="col-span-2 border-t border-line p-5 sm:col-span-1 sm:border-t-0 sm:p-6">
-              <Typography as="dt" variant="body-sm" tone="muted">
-                Duración estimada
-              </Typography>
+              <Typography as="dt" variant="body-sm" tone="muted"> Duración estimada </Typography>
               <dd class="mt-2 font-semibold tabular-nums text-ink">
                 {{ durationHours }} h<span v-if="durationMinutesRemainder > 0">
                   {{ durationMinutesRemainder }} min
@@ -178,9 +168,7 @@ useHead({
       </section>
 
       <section class="mt-10" aria-labelledby="meeting-point-title">
-        <Typography as="h2" variant="heading-lg" class="mb-4">
-          Punto de encuentro
-        </Typography>
+        <Typography as="h2" variant="heading-lg" class="mb-4"> Punto de encuentro </Typography>
 
         <Card class="overflow-hidden">
           <RideMap
@@ -207,21 +195,15 @@ useHead({
               <span class="sr-only">(se abre en una pestaña nueva)</span>
             </a>
           </div>
-        
         </Card>
       </section>
 
       <div class="mt-8 flex flex-wrap gap-3">
-        <Button
-          v-if="isOrganizer"
-          :to="{ name: 'ride-edit', params: { id: ride.id } }"
-        >
+        <Button v-if="isOrganizer" :to="{ name: 'ride-edit', params: { id: ride.id } }">
           Editar ruta
         </Button>
 
-        <Button to="/rides" variant="outline">
-          Explorar más rutas
-        </Button>
+        <Button to="/rides" variant="outline"> Explorar más rutas </Button>
       </div>
     </template>
 
@@ -236,4 +218,3 @@ useHead({
     </EmptyState>
   </AppPage>
 </template>
-

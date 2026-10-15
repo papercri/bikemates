@@ -2,9 +2,7 @@ import { toLocalDateTime } from '@/utils/dates'
 import type { Ride, RideFormValues, UpdateRideInput } from '../types'
 
 /** Valores por defecto del formulario, con overrides para crear o editar. */
-export function createEmptyRideFormValues(
-  overrides: Partial<RideFormValues> = {},
-): RideFormValues {
+export function createEmptyRideFormValues(overrides: Partial<RideFormValues> = {}): RideFormValues {
   return {
     title: '',
     description: '',
@@ -40,8 +38,7 @@ export function mapRideToFormValues(ride: Ride): RideFormValues {
     durationMinutes: String(ride.durationMinutes),
     wikilocUrl: ride.wikilocUrl ?? '',
     audience: ride.audience,
-    maxParticipants:
-      ride.maxParticipants === null ? '' : String(ride.maxParticipants),
+    maxParticipants: ride.maxParticipants === null ? '' : String(ride.maxParticipants),
   }
 }
 
@@ -75,8 +72,6 @@ export function buildRideInput(
     imagePath,
     wikilocUrl: values.wikilocUrl.trim() || null,
     audience: values.audience,
-    maxParticipants: values.maxParticipants.trim()
-      ? Number(values.maxParticipants)
-      : null,
+    maxParticipants: values.maxParticipants.trim() ? Number(values.maxParticipants) : null,
   }
 }

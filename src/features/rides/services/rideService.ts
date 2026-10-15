@@ -1,10 +1,5 @@
-
 import { supabase } from '@/services/supabase'
-import type {
-  CreateRideInput,
-  UpdateRideInput,
-  Ride,
-} from '../types'
+import type { CreateRideInput, UpdateRideInput, Ride } from '../types'
 import {
   isBikeType,
   isRideAudience,
@@ -39,9 +34,9 @@ function mapRide(data: {
     !isRideLevel(data.level) ||
     !isRideAudience(data.audience) ||
     !isRideStatus(data.status)
-    ) {
+  ) {
     throw new Error('La ruta contiene valores no válidos.')
-}
+  }
 
   return {
     id: data.id,
@@ -214,10 +209,7 @@ export async function deleteRide(id: string): Promise<void> {
   }
 }
 
-export async function updateRide(
-  id: string,
-  input: UpdateRideInput,
-): Promise<Ride> {
+export async function updateRide(id: string, input: UpdateRideInput): Promise<Ride> {
   const {
     data: { user },
     error: userError,
@@ -261,4 +253,3 @@ export async function updateRide(
 
   return mapRide(data)
 }
-

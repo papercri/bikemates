@@ -28,9 +28,10 @@ const mocks = vi.hoisted(() => ({
   updateUser: vi.fn<(payload: { password: string }) => Promise<AuthResult<null>>>(),
   invoke: vi.fn<(name: string, options: { method: string }) => Promise<AuthResult<null>>>(),
   verifyOtp: vi.fn<(payload: { token_hash: string; type: string }) => Promise<AuthResult<null>>>(),
-  getSession: vi.fn<
-    () => Promise<AuthResult<{ session: { user: { email_confirmed_at: string | null } } | null }>>
-  >(),
+  getSession:
+    vi.fn<
+      () => Promise<AuthResult<{ session: { user: { email_confirmed_at: string | null } } | null }>>
+    >(),
 }))
 
 vi.mock('@/services/supabase', () => ({

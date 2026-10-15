@@ -41,15 +41,12 @@ function validateMeetingPoint(values: RideFormValues): string | null {
     longitude >= -180 &&
     longitude <= 180
 
-  return hasPlace && hasCoordinates
-    ? null
-    : 'Busca y selecciona un punto de encuentro válido.'
+  return hasPlace && hasCoordinates ? null : 'Busca y selecciona un punto de encuentro válido.'
 }
 
 function validateStartsAt(value: string): string | null {
   const date = new Date(value)
-  const isFuture =
-    value.length > 0 && !Number.isNaN(date.getTime()) && date.getTime() > Date.now()
+  const isFuture = value.length > 0 && !Number.isNaN(date.getTime()) && date.getTime() > Date.now()
 
   return isFuture ? null : 'Selecciona una fecha y hora futuras.'
 }
@@ -151,10 +148,7 @@ function validateImage(image: File | null): string | null {
  * Valida los valores del formulario de ruta en el mismo orden en que se
  * muestran los campos y devuelve el primer error encontrado, o `null` si es válido.
  */
-export function validateRideForm(
-  values: RideFormValues,
-  image: File | null = null,
-): string | null {
+export function validateRideForm(values: RideFormValues, image: File | null = null): string | null {
   return (
     validateTitle(values.title) ??
     validateDescription(values.description) ??

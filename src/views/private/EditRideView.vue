@@ -1,4 +1,3 @@
-
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -8,15 +7,9 @@ import RideForm from '@/features/rides/components/RideForm.vue'
 import AppPage from '@/components/layout/AppPage.vue'
 import Typography from '@/components/ui/Typography.vue'
 
-import type {
-  Ride,
-  RideFormSubmission,
-} from '@/features/rides/types'
+import type { Ride, RideFormSubmission } from '@/features/rides/types'
 
-import {
-  getRideForEdit,
-  updateRide,
-} from '@/features/rides/services/rideService'
+import { getRideForEdit, updateRide } from '@/features/rides/services/rideService'
 import {
   buildRideInput,
   createEmptyRideFormValues,
@@ -72,9 +65,7 @@ async function loadRide(): Promise<void> {
   }
 }
 
-async function handleSubmit(
-  payload: RideFormSubmission,
-): Promise<void> {
+async function handleSubmit(payload: RideFormSubmission): Promise<void> {
   if (isSubmitting.value || !ride.value) return
 
   isSubmitting.value = true
@@ -129,15 +120,11 @@ async function handleSubmit(
       try {
         await deleteRideImage(uploadedImagePath)
       } catch (cleanupError: unknown) {
-        console.error(
-          'No se ha podido limpiar la nueva imagen:',
-          cleanupError,
-        )
+        console.error('No se ha podido limpiar la nueva imagen:', cleanupError)
       }
     }
 
-    errorMessage.value =
-      'No se han podido guardar los cambios. Inténtalo de nuevo.'
+    errorMessage.value = 'No se han podido guardar los cambios. Inténtalo de nuevo.'
   } finally {
     isSubmitting.value = false
   }
@@ -159,9 +146,7 @@ onMounted(loadRide)
           Volver
         </button>
 
-        <Typography as="h1" variant="heading-md" class="tracking-tight">
-          Editar ruta
-        </Typography>
+        <Typography as="h1" variant="heading-md" class="tracking-tight"> Editar ruta </Typography>
 
         <Typography variant="body-sm" tone="muted" class="mt-2">
           Modifica los datos de tu salida ciclista.
@@ -198,9 +183,7 @@ onMounted(loadRide)
       >
         <RideForm
           :initial-values="initialValues"
-          :initial-image-url="
-            ride.imagePath ? getRideImageUrl(ride.imagePath) : null
-          "
+          :initial-image-url="ride.imagePath ? getRideImageUrl(ride.imagePath) : null"
           mode="edit"
           :is-submitting="isSubmitting"
           :error-message="errorMessage"

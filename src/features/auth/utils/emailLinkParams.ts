@@ -1,5 +1,4 @@
-export const EXPIRED_LINK_MESSAGE =
-  'El enlace ha caducado o ya no es válido. Solicita uno nuevo.'
+export const EXPIRED_LINK_MESSAGE = 'El enlace ha caducado o ya no es válido. Solicita uno nuevo.'
 
 export type EmailLinkParams =
   | { kind: 'error'; code: string }

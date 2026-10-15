@@ -1,4 +1,3 @@
-
 <script setup lang="ts">
 import { watch } from 'vue'
 import Button from '@/components/ui/Button.vue'
@@ -45,9 +44,7 @@ function handleSelectPlace(place: GeocodingResult): void {
 
 <template>
   <section class="space-y-2">
-    <FormLabel id="meeting-point-search">
-      Punto de encuentro
-    </FormLabel>
+    <FormLabel id="meeting-point-search"> Punto de encuentro </FormLabel>
 
     <div class="flex items-start gap-2">
       <div class="min-w-0 flex-1">
@@ -79,11 +76,7 @@ function handleSelectPlace(place: GeocodingResult): void {
       Busca un lugar y selecciona un resultado para guardar sus coordenadas.
     </p>
 
-    <p
-      v-if="errorMessage"
-      role="status"
-      class="text-sm text-red-700"
-    >
+    <p v-if="errorMessage" role="status" class="text-sm text-red-700">
       {{ errorMessage }}
     </p>
 
@@ -108,9 +101,7 @@ function handleSelectPlace(place: GeocodingResult): void {
       role="status"
       class="rounded-xl border border-trail/30 bg-trail/5 p-3"
     >
-      <p class="text-sm font-semibold text-ink">
-        Lugar seleccionado
-      </p>
+      <p class="text-sm font-semibold text-ink">Lugar seleccionado</p>
       <p class="mt-1 text-sm text-ink">
         {{ selectedPlace.label }}
       </p>
@@ -120,8 +111,6 @@ function handleSelectPlace(place: GeocodingResult): void {
       </p>
     </div>
 
-    <p class="text-xs text-graphite">
-      Datos geográficos © OpenStreetMap contributors.
-    </p>
+    <p class="text-xs text-graphite">Datos geográficos © OpenStreetMap contributors.</p>
   </section>
 </template>

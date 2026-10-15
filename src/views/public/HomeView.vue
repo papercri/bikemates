@@ -52,28 +52,16 @@ useHead({
           </Typography>
 
           <div class="mt-9 flex flex-col gap-3 sm:flex-row">
-          <Button to="/rides" size="lg">
-            Explorar rutas
-          </Button>
+            <Button to="/rides" size="lg"> Explorar rutas </Button>
 
-          <Button
-            v-if="isInitialized && user"
-            to="/rides/create"
-            variant="primary"
-            size="lg"
-          >
-            Publicar ruta
-          </Button>
+            <Button v-if="isInitialized && user" to="/rides/create" variant="primary" size="lg">
+              Publicar ruta
+            </Button>
 
-          <Button
-            v-else-if="isInitialized"
-            to="/register"
-            variant="outline"
-            size="lg"
-          >
-            Únete a BikeMates
-          </Button>
-        </div>
+            <Button v-else-if="isInitialized" to="/register" variant="outline" size="lg">
+              Únete a BikeMates
+            </Button>
+          </div>
         </div>
 
         <div class="relative mx-auto w-full max-w-lg lg:max-w-none">

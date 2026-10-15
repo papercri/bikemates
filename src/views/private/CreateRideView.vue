@@ -1,4 +1,3 @@
-
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useHead } from '@unhead/vue'
@@ -9,19 +8,10 @@ import Typography from '@/components/ui/Typography.vue'
 import RideForm from '@/features/rides/components/RideForm.vue'
 
 import { createRide } from '@/features/rides/services/rideService'
-import {
-  buildRideInput,
-  createEmptyRideFormValues,
-} from '@/features/rides/utils/rideFormMapping'
-import {
-  deleteRideImage,
-  uploadRideImage,
-} from '@/features/rides/services/rideImageService'
+import { buildRideInput, createEmptyRideFormValues } from '@/features/rides/utils/rideFormMapping'
+import { deleteRideImage, uploadRideImage } from '@/features/rides/services/rideImageService'
 
-import type {
-  CreateRideInput,
-  RideFormSubmission,
-} from '@/features/rides/types'
+import type { CreateRideInput, RideFormSubmission } from '@/features/rides/types'
 
 const router = useRouter()
 
@@ -36,9 +26,7 @@ const initialValues = createEmptyRideFormValues({
   durationMinutes: '120',
 })
 
-async function handleSubmit(
-  payload: RideFormSubmission,
-): Promise<void> {
+async function handleSubmit(payload: RideFormSubmission): Promise<void> {
   if (isSubmitting.value) return
 
   errorMessage.value = null
@@ -98,8 +86,7 @@ useHead({
   meta: [
     {
       name: 'description',
-      content:
-        'Publica una ruta ciclista y encuentra compañeros para pedalear.',
+      content: 'Publica una ruta ciclista y encuentra compañeros para pedalear.',
     },
     { name: 'robots', content: 'noindex, nofollow' },
   ],
@@ -118,13 +105,9 @@ useHead({
       </RouterLink>
 
       <header class="mb-4 mt-3">
-        <Typography variant="eyebrow" tone="accent">
-          Comunidad BikeMates
-        </Typography>
+        <Typography variant="eyebrow" tone="accent"> Comunidad BikeMates </Typography>
 
-        <Typography as="h1" variant="heading-xl" class="mt-1">
-          Publica una ruta
-        </Typography>
+        <Typography as="h1" variant="heading-xl" class="mt-1"> Publica una ruta </Typography>
 
         <Typography variant="body-sm" tone="muted" class="mt-1 max-w-2xl">
           Organiza tu próxima salida y encuentra ciclistas con quienes pedalear.

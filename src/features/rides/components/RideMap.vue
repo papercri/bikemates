@@ -24,14 +24,11 @@ onMounted(() => {
   }).setView([props.latitude, props.longitude], 13)
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution:
-      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     maxZoom: 19,
   }).addTo(map)
 
-  marker = L.marker([props.latitude, props.longitude])
-    .addTo(map)
-    .bindPopup(props.meetingPoint)
+  marker = L.marker([props.latitude, props.longitude]).addTo(map).bindPopup(props.meetingPoint)
 })
 
 watch(

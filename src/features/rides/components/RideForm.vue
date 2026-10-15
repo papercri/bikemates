@@ -1,11 +1,7 @@
-
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
 
-import type {
-  RideFormSubmission,
-  RideFormValues,
-} from '@/features/rides/types'
+import type { RideFormSubmission, RideFormValues } from '@/features/rides/types'
 import type { GeocodingResult } from '@/features/rides/services/geocodingService'
 
 import { validateRideForm } from '@/features/rides/validators/rideFormValidator'
@@ -18,7 +14,12 @@ import FormLabel from '@/components/ui/FormLabel.vue'
 import FormSelect from '@/components/ui/FormSelect.vue'
 import Input from '@/components/ui/Input.vue'
 import Textarea from '@/components/ui/Textarea.vue'
-import { RIDE_AUDIENCES, RIDE_AUDIENCE_LABELS, RIDE_BIKE_TYPES, RIDE_BIKE_TYPE_LABELS } from '@/features/rides/constants/rideOptions'
+import {
+  RIDE_AUDIENCES,
+  RIDE_AUDIENCE_LABELS,
+  RIDE_BIKE_TYPES,
+  RIDE_BIKE_TYPE_LABELS,
+} from '@/features/rides/constants/rideOptions'
 import { RIDE_LEVELS } from '@/features/rides/constants/rideLevels'
 
 const props = defineProps<{
@@ -94,7 +95,6 @@ function handleSubmit(): void {
     removeCurrentImage: removeCurrentImage.value,
   })
 }
-
 </script>
 
 <template>
@@ -110,9 +110,7 @@ function handleSubmit(): void {
         maxlength="100"
         aria-describedby="title-help"
       />
-      <p id="title-help" class="mt-1 text-xs text-graphite">
-        Entre 5 y 100 caracteres.
-      </p>
+      <p id="title-help" class="mt-1 text-xs text-graphite">Entre 5 y 100 caracteres.</p>
     </div>
 
     <div>
@@ -127,20 +125,12 @@ function handleSubmit(): void {
         required
         placeholder="Describe el recorrido, el terreno y qué deben llevar los participantes..."
       />
-      <p class="mt-1 text-right text-xs text-graphite">
-        {{ form.description.length }}/3000
-      </p>
+      <p class="mt-1 text-right text-xs text-graphite">{{ form.description.length }}/3000</p>
     </div>
 
     <div>
       <FormLabel id="startsAt">Fecha y hora de salida</FormLabel>
-      <Input
-        id="startsAt"
-        v-model="form.startsAt"
-        name="startsAt"
-        type="datetime-local"
-        required
-      />
+      <Input id="startsAt" v-model="form.startsAt" name="startsAt" type="datetime-local" required />
     </div>
 
     <div>
@@ -157,22 +147,14 @@ function handleSubmit(): void {
         @change="handleImageChange"
       />
 
-      <div
-        v-if="imagePreviewUrl || currentImageVisible"
-        class="mt-3 flex items-center gap-3"
-      >
+      <div v-if="imagePreviewUrl || currentImageVisible" class="mt-3 flex items-center gap-3">
         <img
           :src="imagePreviewUrl || props.initialImageUrl || ''"
           alt="Vista previa de la imagen de portada"
           class="h-20 w-28 rounded-2xl object-cover"
         />
 
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          @click="clearSelectedImage"
-        >
+        <Button type="button" variant="outline" size="sm" @click="clearSelectedImage">
           Quitar imagen
         </Button>
       </div>
@@ -181,17 +163,12 @@ function handleSubmit(): void {
         {{ imageError }}
       </Alert>
 
-      <p id="image-help" class="mt-2 text-xs text-graphite">
-        JPEG, PNG, WebP o AVIF. Máximo 5 MB.
-      </p>
+      <p id="image-help" class="mt-2 text-xs text-graphite">JPEG, PNG, WebP o AVIF. Máximo 5 MB.</p>
     </div>
 
     <div>
       <FormLabel id="meeting-point">Punto de encuentro</FormLabel>
-      <MeetingPointPicker
-        :initial-value="form.meetingPoint"
-        @select="handlePlaceSelect"
-      />
+      <MeetingPointPicker :initial-value="form.meetingPoint" @select="handlePlaceSelect" />
 
       <p v-if="form.meetingPoint" class="mt-2 text-sm text-graphite">
         Punto seleccionado: {{ form.meetingPoint }}
@@ -201,12 +178,7 @@ function handleSubmit(): void {
     <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
       <div>
         <FormLabel id="bikeType">Tipo de bicicleta</FormLabel>
-        <FormSelect
-          id="bikeType"
-          v-model="form.bikeType"
-          name="bikeType"
-          required
-        >
+        <FormSelect id="bikeType" v-model="form.bikeType" name="bikeType" required>
           <option v-for="bikeType in RIDE_BIKE_TYPES" :key="bikeType" :value="bikeType">
             {{ RIDE_BIKE_TYPE_LABELS[bikeType] }}
           </option>
@@ -247,8 +219,7 @@ function handleSubmit(): void {
       </div>
 
       <div>
-        <FormLabel id="durationMinutes">Duración estimada (min)"
-        </FormLabel>
+        <FormLabel id="durationMinutes">Duración estimada (min)" </FormLabel>
         <Input
           id="durationMinutes"
           v-model="form.durationMinutes"
@@ -273,12 +244,7 @@ function handleSubmit(): void {
 
     <div>
       <FormLabel id="audience">¿Para quién es esta ruta?</FormLabel>
-      <FormSelect
-        id="audience"
-        v-model="form.audience"
-        name="audience"
-        required
-      >
+      <FormSelect id="audience" v-model="form.audience" name="audience" required>
         <option v-for="audience in RIDE_AUDIENCES" :key="audience" :value="audience">
           {{ RIDE_AUDIENCE_LABELS[audience] }}
         </option>
@@ -303,12 +269,7 @@ function handleSubmit(): void {
       {{ errorMessage }}
     </Alert>
 
-    <Button
-      type="submit"
-      :loading="isSubmitting"
-      :disabled="isSubmitting"
-      block
-    >
+    <Button type="submit" :loading="isSubmitting" :disabled="isSubmitting" block>
       {{
         isSubmitting
           ? isEditMode

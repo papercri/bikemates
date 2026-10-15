@@ -13,10 +13,7 @@ import {
   getEmailLinkErrorMessage,
   parseEmailLinkParams,
 } from '@/features/auth/utils/emailLinkParams'
-import {
-  isEmailConfirmed,
-  verifyRecoveryToken,
-} from '@/features/auth/services/authService'
+import { isEmailConfirmed, verifyRecoveryToken } from '@/features/auth/services/authService'
 import { useAuthStore } from '@/features/auth/stores/authStore'
 
 useHead({

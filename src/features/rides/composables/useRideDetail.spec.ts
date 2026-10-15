@@ -76,9 +76,7 @@ describe('useRideDetail', () => {
     await flushPromises()
 
     expect(mocks.getRideById).not.toHaveBeenCalled()
-    expect(wrapper.vm.detail.errorMessage.value).toBe(
-      'El identificador de la ruta no es válido.',
-    )
+    expect(wrapper.vm.detail.errorMessage.value).toBe('El identificador de la ruta no es válido.')
     expect(wrapper.vm.detail.isLoading.value).toBe(false)
   })
 

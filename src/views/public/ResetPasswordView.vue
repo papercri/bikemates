@@ -23,13 +23,7 @@ const { isRecoverySession } = storeToRefs(authStore)
 
 const password = ref('')
 const confirmPassword = ref('')
-const {
-  isSubmitting,
-  errorMessage,
-  successMessage,
-  clearMessages,
-  submit,
-} = useAuthForm()
+const { isSubmitting, errorMessage, successMessage, clearMessages, submit } = useAuthForm()
 
 async function handleSubmit(): Promise<void> {
   clearMessages()

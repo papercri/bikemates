@@ -5,8 +5,7 @@
 
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024
 
-export const INVALID_IMAGE_TYPE_MESSAGE =
-  'Selecciona una imagen JPEG, PNG, WebP o AVIF.'
+export const INVALID_IMAGE_TYPE_MESSAGE = 'Selecciona una imagen JPEG, PNG, WebP o AVIF.'
 
 const ALLOWED_IMAGE_TYPES: readonly string[] = [
   'image/jpeg',

@@ -16,13 +16,7 @@ useHead({
 })
 
 const email = ref('')
-const {
-  isSubmitting,
-  errorMessage,
-  successMessage,
-  clearMessages,
-  submit,
-} = useAuthForm()
+const { isSubmitting, errorMessage, successMessage, clearMessages, submit } = useAuthForm()
 
 async function handleSubmit(): Promise<void> {
   clearMessages()

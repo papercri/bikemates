@@ -1,8 +1,5 @@
 import { onScopeDispose, ref } from 'vue'
-import {
-  searchPlaces,
-  type GeocodingResult,
-} from '@/features/rides/services/geocodingService'
+import { searchPlaces, type GeocodingResult } from '@/features/rides/services/geocodingService'
 
 /**
  * Búsqueda de lugares (Nominatim) para el punto de encuentro: query, resultados,

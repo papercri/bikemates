@@ -4,9 +4,7 @@ import type { GeocodingResult } from '@/features/rides/services/geocodingService
 import { usePlaceSearch } from './usePlaceSearch'
 
 const mocks = vi.hoisted(() => ({
-  searchPlaces: vi.fn<
-    (query: string, signal?: AbortSignal) => Promise<GeocodingResult[]>
-  >(),
+  searchPlaces: vi.fn<(query: string, signal?: AbortSignal) => Promise<GeocodingResult[]>>(),
 }))
 
 vi.mock('@/features/rides/services/geocodingService', () => ({

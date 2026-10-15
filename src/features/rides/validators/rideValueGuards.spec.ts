@@ -1,10 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import {
-  isBikeType,
-  isRideAudience,
-  isRideLevel,
-  isRideStatus,
-} from './rideValueGuards'
+import { isBikeType, isRideAudience, isRideLevel, isRideStatus } from './rideValueGuards'
 
 describe('rideValueGuards', () => {
   it('accepts every value of the ride domain', () => {

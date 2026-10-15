@@ -5,9 +5,7 @@ import { validateRideImage } from '../validators/rideImageValidator'
  * Estado y handlers de la imagen de portada de una ruta: selección del archivo,
  * vista previa (object URL) y marcado de "quitar imagen actual" en modo edición.
  */
-export function useRideImagePicker(
-  initialImageUrl: MaybeRefOrGetter<string | null | undefined>,
-) {
+export function useRideImagePicker(initialImageUrl: MaybeRefOrGetter<string | null | undefined>) {
   const selectedImage = ref<File | null>(null)
   const imagePreviewUrl = ref<string | null>(null)
   const imageError = ref<string | null>(null)
