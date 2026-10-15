@@ -1,6 +1,6 @@
 
 <script setup lang="ts">
-import { computed, onUnmounted, reactive, ref, watch } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 
 import type {
   RideFormSubmission,
@@ -9,7 +9,7 @@ import type {
 import type { GeocodingResult } from '@/features/rides/services/geocodingService'
 
 import { validateRideForm } from '@/features/rides/validators/rideFormValidator'
-import { validateRideImage } from '@/features/rides/validators/rideImageValidator'
+import { useRideImagePicker } from '@/features/rides/composables/useRideImagePicker'
 
 import MeetingPointPicker from '@/features/rides/components/MeetingPointPicker.vue'
 import FormLabel from '@/components/ui/FormLabel.vue'
@@ -35,16 +35,18 @@ const form = reactive<RideFormValues>({
   ...props.initialValues,
 })
 
-const selectedImage = ref<File | null>(null)
-const imagePreviewUrl = ref<string | null>(null)
-const imageError = ref<string | null>(null)
 const validationError = ref<string | null>(null)
-const imageInput = ref<HTMLInputElement | null>(null)
-const removeCurrentImage = ref(false)
 
-const currentImageVisible = computed(
-  () => Boolean(props.initialImageUrl) && !removeCurrentImage.value,
-)
+const {
+  selectedImage,
+  imagePreviewUrl,
+  imageError,
+  removeCurrentImage,
+  imageInput,
+  currentImageVisible,
+  clearSelectedImage,
+  handleImageChange,
+} = useRideImagePicker(() => props.initialImageUrl)
 
 watch(
   () => props.initialValues,
@@ -68,56 +70,6 @@ function handlePlaceSelect(place: GeocodingResult | null): void {
   form.longitude = place?.longitude ?? null
 }
 
-function revokeImagePreview(): void {
-  if (!imagePreviewUrl.value) return
-
-  URL.revokeObjectURL(imagePreviewUrl.value)
-  imagePreviewUrl.value = null
-}
-
-function clearSelectedImage(): void {
-  const hadNewImage = selectedImage.value !== null
-
-  revokeImagePreview()
-  selectedImage.value = null
-  imageError.value = null
-
-  if (hadNewImage) {
-    removeCurrentImage.value = false
-  } else {
-    removeCurrentImage.value = Boolean(props.initialImageUrl)
-  }
-
-  if (imageInput.value) {
-    imageInput.value.value = ''
-  }
-}
-
-function handleImageChange(event: Event): void {
-  const input = event.target
-
-  if (!(input instanceof HTMLInputElement)) return
-
-  const file = input.files?.[0]
-
-  if (!file) return
-
-  const error = validateRideImage(file)
-
-  if (error) {
-    input.value = ''
-    imageError.value = error
-    return
-  }
-
-  revokeImagePreview()
-
-  selectedImage.value = file
-  imagePreviewUrl.value = URL.createObjectURL(file)
-  imageError.value = null
-  removeCurrentImage.value = false
-}
-
 function handleSubmit(): void {
   if (props.isSubmitting) return
 
@@ -139,7 +91,6 @@ function handleSubmit(): void {
   })
 }
 
-onUnmounted(revokeImagePreview)
 </script>
 
 <template>
