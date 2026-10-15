@@ -1,10 +1,9 @@
 
 <script setup lang="ts">
 import { useHead } from '@unhead/vue'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import AppPage from '@/components/layout/AppPage.vue'
-import ElevationSparkline from '@/features/rides/components/ElevationSparkline.vue'
 import IconArrow from '@/components/icons/IconArrow.vue'
 import IconDistance from '@/components/icons/IconDistance.vue'
 import IconElevation from '@/components/icons/IconElevation.vue'
@@ -13,76 +12,41 @@ import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import Typography from '@/components/ui/Typography.vue'
-import { getRideById } from '@/features/rides/services/rideService'
+import { useAuthStore } from '@/features/auth/stores/authStore'
+import ElevationSparkline from '@/features/rides/components/ElevationSparkline.vue'
+import RideMap from '@/features/rides/components/RideMap.vue'
+import { useRideDetail } from '@/features/rides/composables/useRideDetail'
 import { RIDE_LEVEL_BADGE_COLORS } from '@/features/rides/constants/rideLevels'
 import { RIDE_BIKE_TYPE_LABELS } from '@/features/rides/constants/rideOptions'
-import type { Ride } from '@/features/rides/types'
-import RideMap from '@/features/rides/components/RideMap.vue'
-import { useAuthStore } from '@/features/auth/stores/authStore'
+import { formatRideDate } from '@/utils/dates'
 
 const route = useRoute()
 const authStore = useAuthStore()
-
-const isOrganizer = computed(
-  () =>
-    ride.value !== null &&
-    authStore.user?.id === ride.value.organizerId,
-)
-const ride = ref<Ride | null>(null)
-const isLoading = ref(true)
-const errorMessage = ref<string | null>(null)
 
 const rideId = computed(() => {
   const id = route.params.id
   return typeof id === 'string' ? id : null
 })
 
-async function loadRide(): Promise<void> {
-  const id = rideId.value
+const { ride, isLoading, errorMessage } = useRideDetail(rideId)
 
-  ride.value = null
-  errorMessage.value = null
+const isOrganizer = computed(
+  () => ride.value !== null && authStore.user?.id === ride.value.organizerId,
+)
 
-  if (!id) {
-    errorMessage.value = 'El identificador de la ruta no es válido.'
-    isLoading.value = false
-    return
-  }
+const durationHours = computed(() =>
+  ride.value ? Math.floor(ride.value.durationMinutes / 60) : 0,
+)
 
-  isLoading.value = true
-
-  try {
-    ride.value = await getRideById(id)
-  } catch (error: unknown) {
-    errorMessage.value =
-      error instanceof Error
-        ? error.message
-        : 'No se ha podido cargar la ruta.'
-  } finally {
-    isLoading.value = false
-  }
-}
-
-onMounted(loadRide)
-
-watch(rideId, loadRide)
+const durationMinutesRemainder = computed(() =>
+  ride.value ? ride.value.durationMinutes % 60 : 0,
+)
 
 useHead({
   title: computed(() =>
-    ride.value
-      ? `${ride.value.title} | BikeMates`
-      : 'Detalle de ruta | BikeMates',
+    ride.value ? `${ride.value.title} | BikeMates` : 'Detalle de ruta | BikeMates',
   ),
 })
-function formatRideDate(dateString: string): string {
-  return new Intl.DateTimeFormat('es-ES', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(new Date(dateString))
-}
 </script>
 
 
@@ -193,26 +157,23 @@ function formatRideDate(dateString: string): string {
                 Duración estimada
               </Typography>
               <dd class="mt-2 font-semibold tabular-nums text-ink">
-                {{ Math.floor(ride.durationMinutes / 60) }} h<span
-                  v-if="ride.durationMinutes % 60 > 0"
-                >
-                  {{ ride.durationMinutes % 60 }} min
+                {{ durationHours }} h<span v-if="durationMinutesRemainder > 0">
+                  {{ durationMinutesRemainder }} min
                 </span>
               </dd>
             </div>
           </dl>
-           <p class="text-center mb-4">
+          <p v-if="ride.wikilocUrl" class="mb-4 text-center">
             <a
-            v-if="ride.wikilocUrl"
-            :href="ride.wikilocUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-sm font-medium text-[#16A34A] hover:underline "
-            :aria-label="`Ver recorrido de ${ride.title} en Wikiloc`"
-          >
-            Ver recorrido en Wikiloc
-          </a>
-           </p> 
+              :href="ride.wikilocUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-sm font-medium text-trail-ink hover:underline"
+              :aria-label="`Ver recorrido de ${ride.title} en Wikiloc`"
+            >
+              Ver recorrido en Wikiloc
+            </a>
+          </p>
         </Card>
       </section>
 
@@ -251,17 +212,17 @@ function formatRideDate(dateString: string): string {
       </section>
 
       <div class="mt-8 flex flex-wrap gap-3">
-      <Button
-        v-if="isOrganizer"
-        :to="{ name: 'ride-edit', params: { id: ride.id } }"
-      >
-        Editar ruta
-      </Button>
+        <Button
+          v-if="isOrganizer"
+          :to="{ name: 'ride-edit', params: { id: ride.id } }"
+        >
+          Editar ruta
+        </Button>
 
-      <Button to="/rides" variant="outline">
-        Explorar más rutas
-      </Button>
-    </div>
+        <Button to="/rides" variant="outline">
+          Explorar más rutas
+        </Button>
+      </div>
     </template>
 
     <EmptyState

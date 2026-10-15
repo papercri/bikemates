@@ -1,5 +1,17 @@
 import { describe, expect, it } from 'vitest'
-import { toLocalDateTime } from './dates'
+import { formatRideDate, toLocalDateTime } from './dates'
+
+describe('formatRideDate', () => {
+  it('formats a departure in long Spanish format', () => {
+    const departure = new Date(2026, 5, 10, 9, 30)
+
+    const formatted = formatRideDate(departure.toISOString())
+
+    expect(formatted).toContain('10')
+    expect(formatted).toContain('junio')
+    expect(formatted).toContain('09:30')
+  })
+})
 
 describe('toLocalDateTime', () => {
   it('converts an ISO instant to the local datetime-local value', () => {
