@@ -9,6 +9,7 @@ import Typography from '@/components/ui/Typography.vue'
 import RideForm from '@/features/rides/components/RideForm.vue'
 
 import { createRide } from '@/features/rides/services/rideService'
+import { buildRideInput } from '@/features/rides/utils/rideFormMapping'
 import {
   deleteRideImage,
   uploadRideImage,
@@ -50,35 +51,17 @@ async function handleSubmit(
   errorMessage.value = null
 
   const { values, image } = payload
-  const { latitude, longitude } = values
 
   // Defensa adicional antes de construir el objeto de persistencia.
   // La validación completa de los campos pertenece a RideForm.vue.
-  if (latitude === null || longitude === null) {
+  const rideInput = buildRideInput(values, null)
+
+  if (!rideInput) {
     errorMessage.value = 'Selecciona un punto de encuentro válido.'
     return
   }
 
-  const input: CreateRideInput = {
-    title: values.title.trim(),
-    description: values.description.trim(),
-    startsAt: new Date(values.startsAt).toISOString(),
-    meetingPoint: values.meetingPoint.trim(),
-    latitude,
-    longitude,
-    bikeType: values.bikeType,
-    level: values.level,
-    distanceKm: Number(values.distanceKm),
-    elevationM: Number(values.elevationM),
-    durationMinutes: Number(values.durationMinutes),
-    imagePath: null,
-    wikilocUrl: values.wikilocUrl.trim() || null,
-    audience: values.audience,
-    maxParticipants: values.maxParticipants.trim()
-      ? Number(values.maxParticipants)
-      : null,
-    status: 'published',
-  }
+  const input: CreateRideInput = { ...rideInput, status: 'published' }
 
   isSubmitting.value = true
 

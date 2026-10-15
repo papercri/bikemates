@@ -10,13 +10,16 @@ import type {
   Ride,
   RideFormSubmission,
   RideFormValues,
-  UpdateRideInput,
 } from '@/features/rides/types'
 
 import {
   getRideForEdit,
   updateRide,
 } from '@/features/rides/services/rideService'
+import {
+  buildRideInput,
+  mapRideToFormValues,
+} from '@/features/rides/utils/rideFormMapping'
 
 import {
   deleteRideImage,
@@ -58,40 +61,6 @@ const initialValues = ref<RideFormValues>({
   audience: 'everyone',
   maxParticipants: '',
 })
-
-function toLocalDateTime(value: string): string {
-  const date = new Date(value)
-
-  if (Number.isNaN(date.getTime())) return ''
-
-  const localDate = new Date(
-    date.getTime() - date.getTimezoneOffset() * 60_000,
-  )
-
-  return localDate.toISOString().slice(0, 16)
-}
-
-function mapRideToFormValues(value: Ride): RideFormValues {
-  return {
-    title: value.title,
-    description: value.description,
-    startsAt: toLocalDateTime(value.startsAt),
-    meetingPoint: value.meetingPoint,
-    latitude: value.latitude,
-    longitude: value.longitude,
-    bikeType: value.bikeType,
-    level: value.level,
-    distanceKm: String(value.distanceKm),
-    elevationM: String(value.elevationM),
-    durationMinutes: String(value.durationMinutes),
-    wikilocUrl: value.wikilocUrl ?? '',
-    audience: value.audience,
-    maxParticipants:
-      value.maxParticipants === null
-        ? ''
-        : String(value.maxParticipants),
-  }
-}
 
 async function loadRide(): Promise<void> {
   const id = route.params.id
@@ -142,26 +111,11 @@ async function handleSubmit(
       imagePath = null
     }
 
-    const values = payload.values
+    const input = buildRideInput(payload.values, imagePath)
 
-    const input: UpdateRideInput = {
-      title: values.title.trim(),
-      description: values.description.trim(),
-      startsAt: new Date(values.startsAt).toISOString(),
-      meetingPoint: values.meetingPoint.trim(),
-      latitude: values.latitude as number,
-      longitude: values.longitude as number,
-      bikeType: values.bikeType,
-      level: values.level,
-      distanceKm: Number(values.distanceKm),
-      elevationM: Number(values.elevationM),
-      durationMinutes: Number(values.durationMinutes),
-      imagePath,
-      wikilocUrl: values.wikilocUrl.trim() || null,
-      audience: values.audience,
-      maxParticipants: values.maxParticipants.trim()
-        ? Number(values.maxParticipants)
-        : null,
+    if (!input) {
+      errorMessage.value = 'Selecciona un punto de encuentro válido.'
+      return
     }
 
     await updateRide(currentRide.id, input)
