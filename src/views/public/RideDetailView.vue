@@ -52,7 +52,7 @@ useHead({
       <section class="mt-8">
         <div class="flex flex-wrap items-center gap-3">
           <Typography as="span" variant="body-sm" tone="accent" class="font-medium">
-            {{ ride.location }}
+            {{ ride.meetingPoint }}
           </Typography>
           <Badge variant="muted" :color="RIDE_LEVEL_BADGE_COLORS[ride.level]" dot>
             {{ ride.level }}

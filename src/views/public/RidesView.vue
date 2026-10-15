@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { useHead } from '@unhead/vue'
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import AppPage from '@/components/layout/AppPage.vue'
 import RideCard from '@/components/rides/RideCard.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import Typography from '@/components/ui/Typography.vue'
-import { mockRides } from '@/features/rides/data/mockRides'
+import { getPublishedRides } from '@/features/rides/services/rideService'
 import { RIDE_LEVELS } from '@/features/rides/constants/rideLevels'
-import type { RideLevel } from '@/features/rides/types'
+import type { Ride, RideLevel } from '@/features/rides/types'
 
 useHead({
   title: 'Explorar rutas | BikeMates',
@@ -20,9 +20,10 @@ useHead({
   ],
 })
 
-const rides = ref(mockRides)
-
+const rides = ref<Ride[]>([])
 const selectedLevel = ref<'Todos' | RideLevel>('Todos')
+const isLoading = ref(true)
+const errorMessage = ref<string | null>(null)
 
 const filteredRides = computed(() => {
   if (selectedLevel.value === 'Todos') {
@@ -31,6 +32,24 @@ const filteredRides = computed(() => {
 
   return rides.value.filter((ride) => ride.level === selectedLevel.value)
 })
+
+async function loadRides(): Promise<void> {
+  isLoading.value = true
+  errorMessage.value = null
+
+  try {
+    rides.value = await getPublishedRides()
+  } catch (error: unknown) {
+    errorMessage.value =
+      error instanceof Error
+        ? error.message
+        : 'No se han podido cargar las rutas. Inténtalo de nuevo.'
+  } finally {
+    isLoading.value = false
+  }
+}
+
+onMounted(loadRides)
 </script>
 
 <template>

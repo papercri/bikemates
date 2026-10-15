@@ -23,7 +23,7 @@ defineProps<{
       />
       <div class="relative flex items-start justify-between gap-3 px-6 pt-5">
         <Typography as="span" variant="body-sm" tone="accent" class="font-medium">
-          {{ ride.location }}
+          {{ ride.meetingPoint }}
         </Typography>
         <Badge :color="RIDE_LEVEL_BADGE_COLORS[ride.level]" dot>
           {{ ride.level }}
