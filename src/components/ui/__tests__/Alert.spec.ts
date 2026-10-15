@@ -21,4 +21,17 @@ describe('Alert', () => {
     expect(wrapper.classes()).toContain('text-trail-ink')
     expect(wrapper.text()).toBe('Registro completado.')
   })
+
+  it('renders the boxed error variant as a highlighted panel', () => {
+    const wrapper = mount(Alert, {
+      props: { boxed: true },
+      slots: { default: 'Selecciona un punto de encuentro válido.' },
+    })
+
+    expect(wrapper.attributes('role')).toBe('alert')
+    expect(wrapper.classes()).toContain('rounded-xl')
+    expect(wrapper.classes()).toContain('bg-red-50')
+    expect(wrapper.classes()).toContain('text-red-700')
+    expect(wrapper.classes()).not.toContain('text-red-600')
+  })
 })
