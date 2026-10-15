@@ -8,7 +8,6 @@ import ElevationSparkline from '@/components/rides/ElevationSparkline.vue'
 import IconArrow from '@/components/svg/IconArrow.vue'
 import IconDistance from '@/components/svg/IconDistance.vue'
 import IconElevation from '@/components/svg/IconElevation.vue'
-import IconLevel from '@/components/svg/IconLevel.vue'
 import Badge from '@/components/ui/Badge.vue'
 import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
@@ -17,7 +16,7 @@ import Typography from '@/components/ui/Typography.vue'
 import { getRideById } from '@/features/rides/services/rideService'
 import {
   RIDE_LEVEL_BADGE_COLORS,
-  RIDE_LEVEL_DOT_CLASSES,
+  //RIDE_LEVEL_DOT_CLASSES,
 } from '@/features/rides/constants/rideLevels'
 import type { Ride } from '@/features/rides/types'
 import RideMap from '@/components/rides/RideMap.vue'

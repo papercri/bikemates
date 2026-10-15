@@ -3,17 +3,8 @@ import { describe, expect, it } from 'vitest'
 import RideCard from '../RideCard.vue'
 import Badge from '@/components/ui/Badge.vue'
 import { mockRides } from '@/features/rides/data/mockRides'
-import type { Ride } from '@/features/rides/types'
 
-function findRide(id: string): Ride {
-  const ride = mockRides[0]
 
-  if (!ride) {
-    throw new Error('No ride fixtures available')
-  }
-
-  return ride
-}
 const ride = mockRides[0]
 
 if (!ride) {
