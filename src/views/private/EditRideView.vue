@@ -5,11 +5,12 @@ import { useRoute, useRouter } from 'vue-router'
 import { useHead } from '@unhead/vue'
 
 import RideForm from '@/features/rides/components/RideForm.vue'
+import AppPage from '@/components/layout/AppPage.vue'
+import Typography from '@/components/ui/Typography.vue'
 
 import type {
   Ride,
   RideFormSubmission,
-  RideFormValues,
 } from '@/features/rides/types'
 
 import {
@@ -18,6 +19,7 @@ import {
 } from '@/features/rides/services/rideService'
 import {
   buildRideInput,
+  createEmptyRideFormValues,
   mapRideToFormValues,
 } from '@/features/rides/utils/rideFormMapping'
 
@@ -45,22 +47,7 @@ const isLoading = ref(true)
 const isSubmitting = ref(false)
 const errorMessage = ref<string | null>(null)
 
-const initialValues = ref<RideFormValues>({
-  title: '',
-  description: '',
-  startsAt: '',
-  meetingPoint: '',
-  latitude: null,
-  longitude: null,
-  bikeType: 'road',
-  level: 'Iniciación',
-  distanceKm: '',
-  elevationM: '',
-  durationMinutes: '',
-  wikilocUrl: '',
-  audience: 'everyone',
-  maxParticipants: '',
-})
+const initialValues = ref(createEmptyRideFormValues())
 
 async function loadRide(): Promise<void> {
   const id = route.params.id
@@ -160,30 +147,31 @@ onMounted(loadRide)
 </script>
 
 <template>
-  <main class="min-h-screen bg-[#F8F9FA] px-4 py-8 sm:px-6">
+  <AppPage size="detail" spacing="compact">
     <div class="mx-auto max-w-3xl">
       <header class="mb-8">
         <button
           type="button"
-          class="mb-4 text-sm font-medium text-[#6C757D] hover:text-[#1A1D20] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#22C55E] rounded"
+          class="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-trail"
           @click="router.back()"
         >
-          ← Volver
+          <span aria-hidden="true">←</span>
+          Volver
         </button>
 
-        <h1 class="text-2xl font-bold text-[#1A1D20] sm:text-3xl">
+        <Typography as="h1" variant="heading-md" class="tracking-tight">
           Editar ruta
-        </h1>
+        </Typography>
 
-        <p class="mt-2 text-sm text-[#6C757D]">
+        <Typography variant="body-sm" tone="muted" class="mt-2">
           Modifica los datos de tu salida ciclista.
-        </p>
+        </Typography>
       </header>
 
       <div
         v-if="isLoading"
         role="status"
-        class="rounded-2xl border border-[#DEE2E6] bg-white p-6 text-sm text-[#6C757D]"
+        class="rounded-2xl border border-line-strong bg-canvas p-6 text-sm text-graphite"
       >
         Cargando ruta…
       </div>
@@ -191,13 +179,13 @@ onMounted(loadRide)
       <div
         v-else-if="errorMessage && !ride"
         role="alert"
-        class="rounded-2xl border border-red-200 bg-white p-6"
+        class="rounded-2xl border border-red-200 bg-canvas p-6"
       >
         <p class="text-sm text-red-700">{{ errorMessage }}</p>
 
         <button
           type="button"
-          class="mt-4 text-sm font-semibold text-[#1A1D20] underline"
+          class="mt-4 text-sm font-semibold text-ink underline"
           @click="router.push({ name: 'rides' })"
         >
           Volver a las rutas
@@ -206,7 +194,7 @@ onMounted(loadRide)
 
       <section
         v-else-if="ride"
-        class="rounded-3xl border border-[#E9ECEF] bg-white p-5 shadow-sm sm:p-8"
+        class="rounded-3xl border border-line bg-canvas p-5 shadow-sm sm:p-8"
       >
         <RideForm
           :initial-values="initialValues"
@@ -220,5 +208,5 @@ onMounted(loadRide)
         />
       </section>
     </div>
-  </main>
+  </AppPage>
 </template>

@@ -1,6 +1,29 @@
 import { toLocalDateTime } from '@/utils/dates'
 import type { Ride, RideFormValues, UpdateRideInput } from '../types'
 
+/** Valores por defecto del formulario, con overrides para crear o editar. */
+export function createEmptyRideFormValues(
+  overrides: Partial<RideFormValues> = {},
+): RideFormValues {
+  return {
+    title: '',
+    description: '',
+    startsAt: '',
+    meetingPoint: '',
+    latitude: null,
+    longitude: null,
+    bikeType: 'road',
+    level: 'Iniciación',
+    distanceKm: '',
+    elevationM: '',
+    durationMinutes: '',
+    wikilocUrl: '',
+    audience: 'everyone',
+    maxParticipants: '',
+    ...overrides,
+  }
+}
+
 /** Transforma una ruta cargada de la base de datos en valores para el formulario. */
 export function mapRideToFormValues(ride: Ride): RideFormValues {
   return {

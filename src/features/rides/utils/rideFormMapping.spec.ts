@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import type { Ride } from '../types'
-import { buildRideInput, mapRideToFormValues } from './rideFormMapping'
+import {
+  buildRideInput,
+  createEmptyRideFormValues,
+  mapRideToFormValues,
+} from './rideFormMapping'
 
 function rideFixture(overrides: Partial<Ride> = {}): Ride {
   return {
@@ -109,5 +113,34 @@ describe('buildRideInput', () => {
   it('returns null when the meeting point has no coordinates', () => {
     expect(buildRideInput({ ...formValues, latitude: null }, null)).toBeNull()
     expect(buildRideInput({ ...formValues, longitude: null }, null)).toBeNull()
+  })
+})
+
+describe('createEmptyRideFormValues', () => {
+  it('returns an empty form with neutral defaults', () => {
+    expect(createEmptyRideFormValues()).toEqual({
+      title: '',
+      description: '',
+      startsAt: '',
+      meetingPoint: '',
+      latitude: null,
+      longitude: null,
+      bikeType: 'road',
+      level: 'Iniciación',
+      distanceKm: '',
+      elevationM: '',
+      durationMinutes: '',
+      wikilocUrl: '',
+      audience: 'everyone',
+      maxParticipants: '',
+    })
+  })
+
+  it('applies overrides on top of the defaults', () => {
+    const values = createEmptyRideFormValues({ bikeType: 'gravel', distanceKm: '30' })
+
+    expect(values.bikeType).toBe('gravel')
+    expect(values.distanceKm).toBe('30')
+    expect(values.level).toBe('Iniciación')
   })
 })

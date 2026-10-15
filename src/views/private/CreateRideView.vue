@@ -9,7 +9,10 @@ import Typography from '@/components/ui/Typography.vue'
 import RideForm from '@/features/rides/components/RideForm.vue'
 
 import { createRide } from '@/features/rides/services/rideService'
-import { buildRideInput } from '@/features/rides/utils/rideFormMapping'
+import {
+  buildRideInput,
+  createEmptyRideFormValues,
+} from '@/features/rides/utils/rideFormMapping'
 import {
   deleteRideImage,
   uploadRideImage,
@@ -18,7 +21,6 @@ import {
 import type {
   CreateRideInput,
   RideFormSubmission,
-  RideFormValues,
 } from '@/features/rides/types'
 
 const router = useRouter()
@@ -26,22 +28,13 @@ const router = useRouter()
 const isSubmitting = ref(false)
 const errorMessage = ref<string | null>(null)
 
-const initialValues: RideFormValues = {
-  title: '',
-  description: '',
-  startsAt: '',
-  meetingPoint: '',
-  latitude: null,
-  longitude: null,
+const initialValues = createEmptyRideFormValues({
   bikeType: 'gravel',
   level: 'Intermedio',
   distanceKm: '30',
   elevationM: '300',
   durationMinutes: '120',
-  wikilocUrl: '',
-  audience: 'everyone',
-  maxParticipants: '',
-}
+})
 
 async function handleSubmit(
   payload: RideFormSubmission,
