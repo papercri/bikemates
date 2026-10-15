@@ -8,7 +8,8 @@ import type {
 } from '@/features/rides/types'
 import type { GeocodingResult } from '@/features/rides/services/geocodingService'
 
-import { validateRideImage } from '@/features/rides/services/rideImageService'
+import { validateRideForm } from '@/features/rides/validators/rideFormValidator'
+import { validateRideImage } from '@/features/rides/validators/rideImageValidator'
 
 import MeetingPointPicker from '@/features/rides/components/MeetingPointPicker.vue'
 import FormLabel from '@/components/ui/FormLabel.vue'
@@ -117,135 +118,6 @@ function handleImageChange(event: Event): void {
   removeCurrentImage.value = false
 }
 
-function validateWikilocUrl(value: string): boolean {
-  const trimmedValue = value.trim()
-
-  if (!trimmedValue) return true
-
-  try {
-    const url = new URL(trimmedValue)
-
-    return (
-      url.protocol === 'https:' &&
-      (url.hostname === 'wikiloc.com' ||
-        url.hostname.endsWith('.wikiloc.com')) &&
-      url.pathname.length > 1 &&
-      !url.username &&
-      !url.password
-    )
-  } catch {
-    return false
-  }
-}
-
-function validateForm(
-  values: RideFormValues,
-  image: File | null,
-): string | null {
-  const title = values.title.trim()
-  const description = values.description.trim()
-
-  if (title.length < 5 || title.length > 100) {
-    return 'El título debe tener entre 5 y 100 caracteres.'
-  }
-
-  if (description.length < 10 || description.length > 3000) {
-    return 'La descripción debe tener entre 10 y 3000 caracteres.'
-  }
-
-  if (
-    !values.meetingPoint.trim() ||
-    values.latitude === null ||
-    values.longitude === null ||
-    !Number.isFinite(values.latitude) ||
-    !Number.isFinite(values.longitude) ||
-    values.latitude < -90 ||
-    values.latitude > 90 ||
-    values.longitude < -180 ||
-    values.longitude > 180
-  ) {
-    return 'Busca y selecciona un punto de encuentro válido.'
-  }
-
-  const startDate = new Date(values.startsAt)
-
-  if (
-    !values.startsAt ||
-    Number.isNaN(startDate.getTime()) ||
-    startDate.getTime() <= Date.now()
-  ) {
-    return 'Selecciona una fecha y hora futuras.'
-  }
-
-  if (!values.distanceKm.trim()) {
-    return 'Introduce la distancia de la ruta.'
-  }
-
-  const distanceKm = Number(values.distanceKm)
-
-  if (
-    !Number.isFinite(distanceKm) ||
-    distanceKm <= 0 ||
-    distanceKm > 1000
-  ) {
-    return 'La distancia debe estar entre 0 y 1000 km.'
-  }
-
-  if (!values.elevationM.trim()) {
-    return 'Introduce el desnivel positivo.'
-  }
-
-  const elevationM = Number(values.elevationM)
-
-  if (
-    !Number.isFinite(elevationM) ||
-    elevationM < 0 ||
-    elevationM > 20000
-  ) {
-    return 'El desnivel debe estar entre 0 y 20000 metros.'
-  }
-
-  if (!values.durationMinutes.trim()) {
-    return 'Introduce la duración estimada.'
-  }
-
-  const durationMinutes = Number(values.durationMinutes)
-
-  if (
-    !Number.isInteger(durationMinutes) ||
-    durationMinutes <= 0 ||
-    durationMinutes > 1440
-  ) {
-    return 'La duración debe ser un entero entre 1 y 1440 minutos.'
-  }
-
-  if (values.maxParticipants.trim()) {
-    const maxParticipants = Number(values.maxParticipants)
-
-    if (
-      !Number.isInteger(maxParticipants) ||
-      maxParticipants < 2 ||
-      maxParticipants > 500
-    ) {
-      return 'El máximo de participantes debe ser un entero entre 2 y 500.'
-    }
-  }
-
-  if (!validateWikilocUrl(values.wikilocUrl)) {
-    return 'Introduce una URL HTTPS válida de Wikiloc.'
-  }
-
-  if (image) {
-    const imageValidationError = validateRideImage(image)
-
-    if (imageValidationError) {
-      return imageValidationError
-    }
-  }
-
-  return null
-}
-
 function handleSubmit(): void {
   if (props.isSubmitting) return
 
@@ -256,7 +128,7 @@ function handleSubmit(): void {
     return
   }
 
-  validationError.value = validateForm(form, selectedImage.value)
+  validationError.value = validateRideForm(form, selectedImage.value)
 
   if (validationError.value) return
 
