@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatRideDate, getRideDateParts, toLocalDateTime } from './dates'
+import { formatRideDate, getRideDateParts, isRidePast, toLocalDateTime } from './dates'
 
 describe('formatRideDate', () => {
   it('formats a departure in long Spanish format', () => {
@@ -38,5 +38,23 @@ describe('toLocalDateTime', () => {
   it('returns an empty string for invalid dates', () => {
     expect(toLocalDateTime('no-es-fecha')).toBe('')
     expect(toLocalDateTime('')).toBe('')
+  })
+})
+
+describe('isRidePast', () => {
+  const now = new Date('2026-06-10T12:00:00Z')
+
+  it('detects departures that already happened', () => {
+    expect(isRidePast('2026-06-09T09:00:00Z', now)).toBe(true)
+    expect(isRidePast('2026-06-10T12:00:00Z', now)).toBe(true)
+  })
+
+  it('keeps upcoming departures as future', () => {
+    expect(isRidePast('2026-06-10T12:00:01Z', now)).toBe(false)
+    expect(isRidePast('2027-05-15T09:00:00+02:00', now)).toBe(false)
+  })
+
+  it('treats unparseable dates as future so the card is never dimmed', () => {
+    expect(isRidePast('no-es-fecha', now)).toBe(false)
   })
 })

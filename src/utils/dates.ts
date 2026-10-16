@@ -41,6 +41,18 @@ export function getRideDateParts(dateString: string): RideDateParts {
 }
 
 /**
+ * `true` cuando la fecha de salida ya ha pasado respecto a `now` (por defecto, el momento
+ * actual). Las fechas inválidas se consideran futuras para no atenuar la tarjeta.
+ */
+export function isRidePast(dateString: string, now: Date = new Date()): boolean {
+  const date = new Date(dateString)
+
+  if (Number.isNaN(date.getTime())) return false
+
+  return date.getTime() <= now.getTime()
+}
+
+/**
  * Convierte una fecha ISO al valor esperado por
  * `<input type="datetime-local">` en la zona horaria local.
  */

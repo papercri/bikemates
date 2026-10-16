@@ -102,7 +102,7 @@ function handleSubmit(): void {
 </script>
 
 <template>
-  <form novalidate class="space-y-8" @submit.prevent="handleSubmit">
+  <form novalidate class="space-y-6" @submit.prevent="handleSubmit">
     <Alert v-if="validationError" boxed>
       {{ validationError }}
     </Alert>
@@ -114,7 +114,7 @@ function handleSubmit(): void {
     <fieldset class="min-w-0 border-0 p-0">
       <legend :class="legendClasses">Datos básicos</legend>
 
-      <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div class="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <FormLabel id="title">Nombre de la ruta</FormLabel>
           <Input
@@ -160,7 +160,7 @@ function handleSubmit(): void {
     <fieldset class="min-w-0 border-0 p-0">
       <legend :class="legendClasses">Recorrido</legend>
 
-      <div class="mt-4 space-y-4">
+      <div class="mt-3 space-y-4">
         <div>
           <MeetingPointPicker :initial-value="form.meetingPoint" @select="handlePlaceSelect" />
 
@@ -222,7 +222,7 @@ function handleSubmit(): void {
     <fieldset class="min-w-0 border-0 p-0">
       <legend :class="legendClasses">Detalles de la salida</legend>
 
-      <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div class="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <FormLabel id="bikeType">Tipo de bicicleta</FormLabel>
           <FormSelect id="bikeType" v-model="form.bikeType" name="bikeType" required>
@@ -266,7 +266,7 @@ function handleSubmit(): void {
     <fieldset class="min-w-0 border-0 p-0">
       <legend :class="legendClasses">Imagen de portada</legend>
 
-      <div class="mt-4">
+      <div class="mt-3">
         <FormLabel id="ride-image" :margin="false" class="sr-only">Imagen de portada</FormLabel>
 
         <input

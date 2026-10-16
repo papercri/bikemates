@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { faMap } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { useHead } from '@unhead/vue'
 import { computed } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
@@ -11,6 +13,7 @@ import EmptyState from '@/components/ui/EmptyState.vue'
 import Typography from '@/components/ui/Typography.vue'
 import { useAuthStore } from '@/features/auth/stores/authStore'
 import RideMap from '@/features/rides/components/RideMap.vue'
+import RideAudienceBadge from '@/features/rides/components/RideAudienceBadge.vue'
 import { useRideDetail } from '@/features/rides/composables/useRideDetail'
 import { RIDE_LEVEL_BADGE_COLORS } from '@/features/rides/constants/rideLevels'
 import { RIDE_BIKE_TYPE_LABELS } from '@/features/rides/constants/rideOptions'
@@ -117,6 +120,8 @@ useHead({
             {{ RIDE_BIKE_TYPE_LABELS[ride.bikeType] }}
           </Badge>
 
+          <RideAudienceBadge :audience="ride.audience" />
+
           <Typography as="span" variant="body-sm" tone="accent" class="font-medium">
             {{ ride.meetingPoint }}
           </Typography>
@@ -126,23 +131,9 @@ useHead({
           {{ ride.title }}
         </Typography>
 
-        <div class="mt-1 flex flex-wrap items-center justify-between gap-x-6 gap-y-1">
-          <Typography variant="body-sm" tone="muted">
-            <time :datetime="ride.startsAt">{{ formatRideDate(ride.startsAt) }}</time>
-          </Typography>
-
-          <a
-            v-if="ride.wikilocUrl"
-            :href="ride.wikilocUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-sm font-medium text-trail-ink underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
-            :aria-label="`Ver recorrido de ${ride.title} en Wikiloc`"
-          >
-            Ver recorrido en Wikiloc
-            <span class="sr-only">(se abre en una pestaña nueva)</span>
-          </a>
-        </div>
+        <Typography class="mt-1" variant="body-sm" tone="muted">
+          <time :datetime="ride.startsAt">{{ formatRideDate(ride.startsAt) }}</time>
+        </Typography>
       </header>
 
       <img
@@ -180,6 +171,20 @@ useHead({
       <Typography class="mt-4 max-w-2xl leading-7" tone="muted">
         {{ ride.description }}
       </Typography>
+
+      <p v-if="ride.wikilocUrl" class="mt-3">
+        <a
+          :href="ride.wikilocUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 text-sm font-medium text-trail-ink underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
+          :aria-label="`Ver recorrido de ${ride.title} en Wikiloc`"
+        >
+          <FontAwesomeIcon :icon="faMap" aria-hidden="true" />
+          Ver recorrido en Wikiloc
+          <span class="sr-only">(se abre en una pestaña nueva)</span>
+        </a>
+      </p>
 
       <section class="mt-8" aria-labelledby="meeting-point-title">
         <Typography id="meeting-point-title" as="h2" variant="heading-sm" class="mb-3">

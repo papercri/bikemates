@@ -3,6 +3,7 @@ import { useHead } from '@unhead/vue'
 import { RouterLink } from 'vue-router'
 
 import AppPage from '@/components/layout/AppPage.vue'
+import Card from '@/components/ui/Card.vue'
 import IconArrow from '@/components/icons/IconArrow.vue'
 import Typography from '@/components/ui/Typography.vue'
 import RideForm from '@/features/rides/components/RideForm.vue'
@@ -56,12 +57,14 @@ async function handleSubmit(payload: RideFormSubmission): Promise<void> {
         </Typography>
       </header>
 
-      <RideForm
-        :initial-values="initialValues"
-        :is-submitting="isSubmitting"
-        :error-message="errorMessage"
-        @submit="handleSubmit"
-      />
+      <Card class="p-5 sm:p-6">
+        <RideForm
+          :initial-values="initialValues"
+          :is-submitting="isSubmitting"
+          :error-message="errorMessage"
+          @submit="handleSubmit"
+        />
+      </Card>
     </div>
   </AppPage>
 </template>

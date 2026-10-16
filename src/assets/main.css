@@ -7,15 +7,17 @@
   /*
    * Vibrant Nature (sin blanco en ningún fondo):
    * lima como superficie, café como tinta, escarlate como acción.
+   * Fondos lo bastante claros y tinta bastante oscura para que el contraste
+   * del texto y de los campos se note de un vistazo.
    */
-  --color-canvas: #faf7d4;
-  --color-snow: #f4f0bb;
-  --color-surface: #ece7a8;
-  --color-line: #ddd59a;
-  --color-line-strong: #c9bf7d;
+  --color-canvas: #fdfbe8;
+  --color-snow: #f8f4cf;
+  --color-surface: #f1edc3;
+  --color-line: #cec378;
+  --color-line-strong: #b6aa5c;
 
-  --color-ink: #43291f;
-  --color-graphite: #6b5548;
+  --color-ink: #2c1710;
+  --color-graphite: #55402f;
 
   --color-trail: #da2c38;
   --color-trail-deep: #b8202e;
@@ -41,8 +43,8 @@
   --radius-card: 1.25rem;
   --radius-btn: 0.875rem;
 
-  --shadow-card: 0 1px 2px rgb(67 41 31 / 0.05), 0 8px 24px rgb(67 41 31 / 0.07);
-  --shadow-lift: 0 2px 4px rgb(67 41 31 / 0.06), 0 16px 32px rgb(67 41 31 / 0.12);
+  --shadow-card: 0 1px 2px rgb(44 23 16 / 0.05), 0 8px 24px rgb(44 23 16 / 0.07);
+  --shadow-lift: 0 2px 4px rgb(44 23 16 / 0.06), 0 16px 32px rgb(44 23 16 / 0.12);
 }
 
 @layer base {

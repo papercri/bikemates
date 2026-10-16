@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { useHead } from '@unhead/vue'
-import { computed, ref } from 'vue'
 import AppPage from '@/components/layout/AppPage.vue'
 import RideCard from '@/features/rides/components/RideCard.vue'
+import RideFilters from '@/features/rides/components/RideFilters.vue'
 import Button from '@/components/ui/Button.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import Typography from '@/components/ui/Typography.vue'
+import { useRideFilters } from '@/features/rides/composables/useRideFilters'
 import { useRideList } from '@/features/rides/composables/useRideList'
-import { RIDE_LEVELS } from '@/features/rides/constants/rideLevels'
-import type { RideLevel } from '@/features/rides/types'
+import { isRidePast } from '@/utils/dates'
 
 useHead({
   title: 'Explorar rutas | BikeMates',
@@ -16,21 +16,15 @@ useHead({
     {
       name: 'description',
       content:
-        'Explora rutas en España por nivel: iniciación, intermedio y avanzado, con distancia y desnivel de cada salida.',
+        'Explora rutas en España por nivel y por público: iniciación, intermedio y avanzado, con distancia y desnivel de cada salida.',
     },
   ],
 })
 
 const { rides, isLoading, errorMessage, loadRides } = useRideList()
-const selectedLevel = ref<'Todos' | RideLevel>('Todos')
 
-const filteredRides = computed(() => {
-  if (selectedLevel.value === 'Todos') {
-    return rides.value
-  }
-
-  return rides.value.filter((ride) => ride.level === selectedLevel.value)
-})
+// El estado de los filtros y el filtrado/ordenado viven en el composable, no en la vista.
+const { query, selectedLevel, selectedAudience, filteredRides } = useRideFilters(rides)
 </script>
 
 <template>
@@ -43,29 +37,12 @@ const filteredRides = computed(() => {
       </Typography>
     </div>
 
-    <section class="mt-8" aria-label="Filtros">
-      <div
-        id="filter-title"
-        class="inline-flex flex-wrap gap-1 rounded-2xl border border-line-strong bg-canvas p-1 sm:rounded-full"
-        role="group"
-        aria-label="Filtrar por nivel"
-      >
-        <button
-          v-for="level in ['Todos', ...RIDE_LEVELS]"
-          :key="level"
-          type="button"
-          :aria-pressed="selectedLevel === level"
-          class="rounded-xl px-3.5 py-2 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail sm:rounded-full"
-          :class="
-            selectedLevel === level
-              ? 'bg-trail font-semibold text-white'
-              : 'text-graphite hover:text-ink'
-          "
-          @click="selectedLevel = level"
-        >
-          {{ level }}
-        </button>
-      </div>
+    <section class="mt-6" aria-label="Filtros de búsqueda">
+      <RideFilters
+        v-model:query="query"
+        v-model:level="selectedLevel"
+        v-model:audience="selectedAudience"
+      />
     </section>
 
     <section class="mt-6" aria-label="Listado de rutas">
@@ -74,10 +51,10 @@ const filteredRides = computed(() => {
         <div
           v-for="n in 3"
           :key="n"
-          class="flex items-center gap-6 border-b border-line px-2 py-6 sm:px-4"
+          class="flex items-center gap-6 border-b border-line px-2 py-5 sm:px-4"
           aria-hidden="true"
         >
-          <div class="h-10 w-10 shrink-0 bg-surface motion-safe:animate-pulse" />
+          <div class="h-8 w-8 shrink-0 bg-surface motion-safe:animate-pulse" />
           <div class="min-w-0 flex-1 space-y-2">
             <div class="h-5 w-2/5 bg-surface motion-safe:animate-pulse" />
             <div class="h-4 w-1/4 bg-surface motion-safe:animate-pulse" />
@@ -100,14 +77,19 @@ const filteredRides = computed(() => {
         </Typography>
 
         <div v-if="filteredRides.length > 0" class="mt-3 border-t border-line">
-          <RideCard v-for="ride in filteredRides" :key="ride.id" :ride="ride" />
+          <RideCard
+            v-for="ride in filteredRides"
+            :key="ride.id"
+            :ride="ride"
+            :past="isRidePast(ride.startsAt)"
+          />
         </div>
 
         <EmptyState
           v-else
           class="mt-6"
-          title="Sin rutas de este nivel"
-          description="No hay rutas disponibles para este nivel. Prueba con otro o vuelve más tarde."
+          title="Sin rutas con estos filtros"
+          description="No hay rutas disponibles con el nivel y el público seleccionados. Prueba con otra combinación."
         />
       </template>
     </section>
