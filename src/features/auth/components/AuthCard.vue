@@ -13,9 +13,9 @@ defineProps<{
   <Card>
     <RidgeStrip />
 
-    <div class="p-6 pt-4 sm:p-8 sm:pt-5">
+    <div class="p-5 pt-4 sm:p-7 sm:pt-5">
       <Typography as="h1" variant="heading-lg">{{ title }}</Typography>
-      <Typography class="mt-3" tone="muted">{{ description }}</Typography>
+      <Typography class="mt-1.5" tone="muted">{{ description }}</Typography>
 
       <slot />
     </div>

@@ -102,7 +102,7 @@ function handleSubmit(): void {
 </script>
 
 <template>
-  <form novalidate class="space-y-10" @submit.prevent="handleSubmit">
+  <form novalidate class="space-y-8" @submit.prevent="handleSubmit">
     <Alert v-if="validationError" boxed>
       {{ validationError }}
     </Alert>
@@ -114,7 +114,7 @@ function handleSubmit(): void {
     <fieldset class="min-w-0 border-0 p-0">
       <legend :class="legendClasses">Datos básicos</legend>
 
-      <div class="mt-5 space-y-6">
+      <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <FormLabel id="title">Nombre de la ruta</FormLabel>
           <Input
@@ -130,21 +130,6 @@ function handleSubmit(): void {
         </div>
 
         <div>
-          <FormLabel id="description">Descripción</FormLabel>
-          <Textarea
-            id="description"
-            v-model="form.description"
-            name="description"
-            :rows="4"
-            :minlength="10"
-            :maxlength="3000"
-            required
-            placeholder="Describe el recorrido, el terreno y qué deben llevar los participantes..."
-          />
-          <p class="mt-1 text-right text-xs text-graphite">{{ form.description.length }}/3000</p>
-        </div>
-
-        <div>
           <FormLabel id="startsAt">Fecha y hora de salida</FormLabel>
           <Input
             id="startsAt"
@@ -154,13 +139,28 @@ function handleSubmit(): void {
             required
           />
         </div>
+
+        <div class="sm:col-span-2">
+          <FormLabel id="description">Descripción</FormLabel>
+          <Textarea
+            id="description"
+            v-model="form.description"
+            name="description"
+            :rows="3"
+            :minlength="10"
+            :maxlength="3000"
+            required
+            placeholder="Describe el recorrido, el terreno y qué deben llevar los participantes..."
+          />
+          <p class="mt-1 text-right text-xs text-graphite">{{ form.description.length }}/3000</p>
+        </div>
       </div>
     </fieldset>
 
     <fieldset class="min-w-0 border-0 p-0">
       <legend :class="legendClasses">Recorrido</legend>
 
-      <div class="mt-5 space-y-6">
+      <div class="mt-4 space-y-4">
         <div>
           <MeetingPointPicker :initial-value="form.meetingPoint" @select="handlePlaceSelect" />
 
@@ -169,7 +169,7 @@ function handleSubmit(): void {
           </FormHelp>
         </div>
 
-        <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div>
             <FormLabel id="distanceKm">Distancia (km)</FormLabel>
             <Input
@@ -222,7 +222,7 @@ function handleSubmit(): void {
     <fieldset class="min-w-0 border-0 p-0">
       <legend :class="legendClasses">Detalles de la salida</legend>
 
-      <div class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
+      <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <FormLabel id="bikeType">Tipo de bicicleta</FormLabel>
           <FormSelect id="bikeType" v-model="form.bikeType" name="bikeType" required>
@@ -266,7 +266,7 @@ function handleSubmit(): void {
     <fieldset class="min-w-0 border-0 p-0">
       <legend :class="legendClasses">Imagen de portada</legend>
 
-      <div class="mt-5">
+      <div class="mt-4">
         <FormLabel id="ride-image" :margin="false" class="sr-only">Imagen de portada</FormLabel>
 
         <input

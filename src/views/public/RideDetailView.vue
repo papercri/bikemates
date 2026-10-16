@@ -4,8 +4,6 @@ import { computed } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import AppPage from '@/components/layout/AppPage.vue'
 import IconArrow from '@/components/icons/IconArrow.vue'
-import IconDistance from '@/components/icons/IconDistance.vue'
-import IconElevation from '@/components/icons/IconElevation.vue'
 import Badge from '@/components/ui/Badge.vue'
 import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
@@ -56,6 +54,27 @@ const durationHours = computed(() => (ride.value ? Math.floor(ride.value.duratio
 
 const durationMinutesRemainder = computed(() => (ride.value ? ride.value.durationMinutes % 60 : 0))
 
+interface RideStatItem {
+  label: string
+  value: string
+  unit?: string
+}
+
+const statItems = computed<RideStatItem[]>(() => {
+  if (!ride.value) return []
+
+  const duration =
+    durationMinutesRemainder.value > 0
+      ? `${durationHours.value} h ${durationMinutesRemainder.value} min`
+      : `${durationHours.value} h`
+
+  return [
+    { label: 'Distancia', value: String(ride.value.distanceKm), unit: 'km' },
+    { label: 'Desnivel', value: `+${ride.value.elevationM}`, unit: 'm' },
+    { label: 'Duración', value: duration },
+  ]
+})
+
 useHead({
   title: computed(() =>
     ride.value ? `${ride.value.title} | BikeMates` : 'Detalle de ruta | BikeMates',
@@ -88,12 +107,8 @@ useHead({
     </EmptyState>
 
     <template v-else-if="ride">
-      <section class="mt-8">
-        <div class="flex flex-wrap items-center gap-3">
-          <Typography as="span" variant="body-sm" tone="accent" class="font-medium">
-            {{ ride.meetingPoint }}
-          </Typography>
-
+      <header class="mt-6">
+        <div class="flex flex-wrap items-center gap-2">
           <Badge variant="muted" :color="RIDE_LEVEL_BADGE_COLORS[ride.level]" dot>
             {{ ride.level }}
           </Badge>
@@ -101,77 +116,23 @@ useHead({
           <Badge variant="muted">
             {{ RIDE_BIKE_TYPE_LABELS[ride.bikeType] }}
           </Badge>
+
+          <Typography as="span" variant="body-sm" tone="accent" class="font-medium">
+            {{ ride.meetingPoint }}
+          </Typography>
         </div>
 
-        <Typography as="h1" variant="heading-xl" class="mt-3 tracking-tight">
+        <Typography as="h1" variant="heading-lg" class="mt-2 tracking-tight">
           {{ ride.title }}
         </Typography>
-        <Typography class="mt-3" variant="body-sm" tone="muted">
-          <time :datetime="ride.startsAt">{{ formatRideDate(ride.startsAt) }}</time>
-        </Typography>
 
-        <img
-          :src="ride.imageUrl || '/default.webp'"
-          :alt="`Imagen de la ruta ${ride.title}`"
-          class="mt-6 aspect-[16/9] w-full rounded-card border border-line object-cover"
-          loading="eager"
-          fetchpriority="high"
-        />
+        <div class="mt-1 flex flex-wrap items-center justify-between gap-x-6 gap-y-1">
+          <Typography variant="body-sm" tone="muted">
+            <time :datetime="ride.startsAt">{{ formatRideDate(ride.startsAt) }}</time>
+          </Typography>
 
-        <dl class="mt-6 grid grid-cols-1 border-y border-line sm:grid-cols-3">
-          <div
-            class="border-t border-line px-4 py-4 first:border-t-0 sm:border-t-0 sm:border-l sm:first:border-l-0 sm:px-6 sm:py-5"
-          >
-            <Typography as="dt" variant="body-sm" tone="muted" class="flex items-center gap-1.5">
-              <IconDistance />
-              Distancia
-            </Typography>
-            <dd class="mt-2 flex items-baseline gap-1">
-              <Typography as="span" variant="numeric-lg">
-                {{ ride.distanceKm }}
-              </Typography>
-              <Typography as="span" variant="body-sm" tone="muted" class="font-semibold">
-                km
-              </Typography>
-            </dd>
-          </div>
-
-          <div class="border-t border-line px-4 py-4 sm:border-t-0 sm:border-l sm:px-6 sm:py-5">
-            <Typography as="dt" variant="body-sm" tone="muted" class="flex items-center gap-1.5">
-              <IconElevation />
-              Desnivel
-            </Typography>
-            <dd class="mt-2 flex items-baseline gap-1">
-              <Typography as="span" variant="numeric-lg"> +{{ ride.elevationM }} </Typography>
-              <Typography as="span" variant="body-sm" tone="muted" class="font-semibold">
-                m
-              </Typography>
-            </dd>
-          </div>
-
-          <div class="border-t border-line px-4 py-4 sm:border-t-0 sm:border-l sm:px-6 sm:py-5">
-            <Typography as="dt" variant="body-sm" tone="muted"> Duración estimada </Typography>
-            <dd class="mt-2 flex items-baseline gap-1">
-              <Typography as="span" variant="numeric-lg">
-                {{ durationHours }}
-              </Typography>
-              <Typography as="span" variant="body-sm" tone="muted" class="font-semibold">
-                h
-              </Typography>
-              <template v-if="durationMinutesRemainder > 0">
-                <Typography as="span" variant="numeric-lg">
-                  {{ durationMinutesRemainder }}
-                </Typography>
-                <Typography as="span" variant="body-sm" tone="muted" class="font-semibold">
-                  min
-                </Typography>
-              </template>
-            </dd>
-          </div>
-        </dl>
-
-        <p v-if="ride.wikilocUrl" class="mt-4">
           <a
+            v-if="ride.wikilocUrl"
             :href="ride.wikilocUrl"
             target="_blank"
             rel="noopener noreferrer"
@@ -181,38 +142,72 @@ useHead({
             Ver recorrido en Wikiloc
             <span class="sr-only">(se abre en una pestaña nueva)</span>
           </a>
-        </p>
+        </div>
+      </header>
 
-        <Typography class="mt-6 leading-7" tone="muted">
-          {{ ride.description }}
-        </Typography>
-      </section>
+      <img
+        :src="ride.imageUrl || '/default.webp'"
+        :alt="`Imagen de la ruta ${ride.title}`"
+        class="mt-4 h-44 w-full rounded-card border border-line object-cover sm:h-56"
+        loading="eager"
+        fetchpriority="high"
+      />
 
-      <section class="mt-10" aria-labelledby="meeting-point-title">
-        <Typography id="meeting-point-title" as="h2" variant="heading-lg" class="mb-4">
+      <dl class="mt-4 grid grid-cols-3 border-y border-line">
+        <div
+          v-for="item in statItems"
+          :key="item.label"
+          class="border-l border-line px-3 py-3 first:border-l-0 sm:px-4"
+        >
+          <Typography as="dt" variant="caption" tone="muted" class="whitespace-nowrap">
+            {{ item.label }}
+          </Typography>
+          <dd class="mt-1 flex items-baseline gap-1">
+            <Typography as="span" variant="numeric-md">{{ item.value }}</Typography>
+            <Typography
+              v-if="item.unit"
+              as="span"
+              variant="caption"
+              tone="muted"
+              class="font-semibold"
+            >
+              {{ item.unit }}
+            </Typography>
+          </dd>
+        </div>
+      </dl>
+
+      <Typography class="mt-4 max-w-2xl leading-7" tone="muted">
+        {{ ride.description }}
+      </Typography>
+
+      <section class="mt-8" aria-labelledby="meeting-point-title">
+        <Typography id="meeting-point-title" as="h2" variant="heading-sm" class="mb-3">
           Punto de encuentro
         </Typography>
 
-        <Card class="overflow-hidden">
+        <Card>
           <RideMap
             :latitude="ride.latitude"
             :longitude="ride.longitude"
             :meeting-point="ride.meetingPoint"
           />
 
-          <div class="p-5 sm:p-6">
-            <Typography as="h3" variant="body-sm" class="font-semibold">
-              {{ ride.meetingPoint }}
-            </Typography>
-            <Typography class="mt-1" variant="body-sm" tone="muted">
-              Lugar de salida de la grupeta
-            </Typography>
+          <div class="flex flex-wrap items-center justify-between gap-3 p-4">
+            <div>
+              <Typography as="h3" variant="body-sm" class="font-semibold">
+                {{ ride.meetingPoint }}
+              </Typography>
+              <Typography class="mt-0.5" variant="caption" tone="muted">
+                Lugar de salida de la grupeta
+              </Typography>
+            </div>
 
             <a
               :href="`https://www.openstreetmap.org/?mlat=${ride.latitude}&mlon=${ride.longitude}#map=15/${ride.latitude}/${ride.longitude}`"
               target="_blank"
               rel="noopener noreferrer"
-              class="mt-4 inline-flex rounded-full border border-line px-4 py-2 text-sm font-semibold text-ink transition-colors hover:border-trail focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
+              class="rounded-full border border-line px-3.5 py-1.5 text-sm font-medium text-ink transition-colors hover:border-trail focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
             >
               Abrir en OpenStreetMap
               <span class="sr-only">(se abre en una pestaña nueva)</span>
@@ -223,7 +218,7 @@ useHead({
 
       <RideParticipants
         v-if="isAuthenticated"
-        class="mt-10"
+        class="mt-8"
         :participants="participants"
         :is-loading="isLoadingParticipants"
         :error-message="participantsError"
@@ -235,9 +230,9 @@ useHead({
         @leave="leave"
       />
 
-      <section v-else class="mt-10" aria-labelledby="participants-title">
-        <div class="mb-4 flex items-center justify-between gap-4">
-          <Typography id="participants-title" as="h2" variant="heading-lg">
+      <section v-else class="mt-8" aria-labelledby="participants-title">
+        <div class="mb-3 flex items-center justify-between gap-4">
+          <Typography id="participants-title" as="h2" variant="heading-sm">
             Participantes
           </Typography>
 
@@ -272,7 +267,7 @@ useHead({
         </Card>
       </section>
 
-      <div class="mt-8 flex flex-wrap gap-3">
+      <div class="mt-6 flex flex-wrap gap-3">
         <Button v-if="isOrganizer" :to="{ name: 'ride-edit', params: { id: ride.id } }">
           Editar ruta
         </Button>

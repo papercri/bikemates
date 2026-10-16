@@ -37,6 +37,7 @@ BikeMates es una SPA **mobile-first** construida con Vue 3 y TypeScript estricto
 | Lenguaje | TypeScript estricto (sin `any`, `noUncheckedIndexedAccess`)                  |
 | Estilos  | Tailwind CSS v4 (tokens en `src/assets/main.css` vía `@theme`)               |
 | SEO      | `@unhead/vue`                                                                |
+| Iconos   | Font Awesome free-solid (`@fortawesome/vue-fontawesome`)                     |
 | Backend  | Supabase: Auth, PostgreSQL con RLS, Edge Functions                           |
 | Tests    | Vitest + Vue Test Utils, Playwright                                          |
 | Calidad  | ESLint, oxlint, Prettier                                                     |
@@ -102,7 +103,8 @@ src/
   app/router/              # rutas y guards
   components/
     ui/                    # primitivos: Button, Input, Textarea, Card, Badge, Alert,
-                           # Typography, EmptyState, FormLabel, FormError, FormHelp,
+                           # Typography, EmptyState, ConfirmDialog (modal de
+                           # confirmación), FormLabel, FormError, FormHelp,
                            # FormSelect, PasswordInput
     layout/                # AppHeader, AppFooter, AppPage (shell de página)
     icons/                 # BrandLogo, RidgeStrip, CyclistScene, RidgeDivider,
@@ -130,6 +132,9 @@ Separación de responsabilidades: las vistas orquestan, los componentes presenta
 - Los tokens (colores, radios, sombras, tipografías) se definen una sola vez en `src/assets/main.css`.
 - La receta de campos de formulario (`FIELD_CLASSES` en `src/design-system/field.ts`) se comparte entre `Input`, `Textarea` y `FormSelect` para mantener borde, radio, foco y estados idénticos.
 - Los primitivos exponen variantes homogéneas (`variant`, `size`, `tone`, `loading`, `block`, `dot`…) construidas con `createVariant`, sin dependencias externas.
+- `Button` incluye los tamaños `xs`–`lg` y, además de `primary`/`outline`/`destructive`, las variantes `sun`/`sun-outline` (superficies oscuras) y `quiet-destructive` (acción peligrosa discreta, el color solo aparece al interactuar).
+- `ConfirmDialog` es el modal estándar de confirmaciones y acciones irreversibles (`role="dialog"`, `aria-modal`, trampa de foco, Escape y clic en el fondo para cancelar). Los mensajes de formulario se mantienen como `Alert` inline con `role="alert"`.
+- Los iconos de navegación y acciones usan Font Awesome (free-solid) con `FontAwesomeIcon`; los SVG ilustrativos y de datos siguen en `src/components/icons/`.
 - Los componentes de UI reciben datos por props y emiten eventos; el estado compartido vive en Pinia (`authStore`).
 
 ## Seguridad
@@ -141,7 +146,7 @@ Separación de responsabilidades: las vistas orquestan, los componentes presenta
 
 ## Calidad y tests
 
-- **Unit**: `npm run test:unit` — 110 tests en 19 archivos (design system, validadores, servicio de autenticación, store de sesión, primitivos de UI e iconos SVG).
+- **Unit**: `npm run test:unit` — 217 tests en 36 archivos (design system, validadores, servicios y composables de rutas, servicio de autenticación, store de sesión, primitivos de UI e iconos SVG).
 - **E2E**: `npm run test:e2e` — Playwright (configurado en `playwright.config.ts`).
 - Gates antes de dar por completa una tarea: `npm run test:unit -- --run`, `npm run type-check`, `npx eslint .`, `npx oxlint .`, Prettier y, cuando toca, `npm run build`.
 

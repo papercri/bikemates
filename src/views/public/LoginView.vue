@@ -45,7 +45,7 @@ async function handleSubmit(): Promise<void> {
 <template>
   <AppPage size="narrow">
     <AuthCard title="Inicia sesión" description="Accede a tu cuenta de BikeMates.">
-      <form class="mt-8 space-y-5" novalidate @submit.prevent="handleSubmit">
+      <form class="mt-6 space-y-4" novalidate @submit.prevent="handleSubmit">
         <div>
           <FormLabel id="email">Correo electrónico</FormLabel>
 
@@ -91,7 +91,7 @@ async function handleSubmit(): Promise<void> {
         </Button>
       </form>
 
-      <Typography as="p" variant="body-sm" tone="muted" class="mt-6 text-center">
+      <Typography as="p" variant="body-sm" tone="muted" class="mt-5 text-center">
         ¿Todavía no tienes cuenta?
         <RouterLink
           to="/register"

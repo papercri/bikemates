@@ -59,7 +59,7 @@ async function handleSubmit(): Promise<void> {
       title="Nueva contraseña"
       description="Introduce una nueva contraseña para tu cuenta de BikeMates."
     >
-      <form class="mt-8 space-y-5" novalidate @submit.prevent="handleSubmit">
+      <form class="mt-6 space-y-4" novalidate @submit.prevent="handleSubmit">
         <div>
           <FormLabel id="password">Nueva contraseña</FormLabel>
 

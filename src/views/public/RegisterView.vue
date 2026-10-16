@@ -92,7 +92,7 @@ async function handleSubmit(): Promise<void> {
       title="Únete a BikeMates"
       description="Crea tu cuenta para conectar con otros ciclistas."
     >
-      <form novalidate class="mt-8 space-y-5" @submit.prevent="handleSubmit">
+      <form novalidate class="mt-6 space-y-4" @submit.prevent="handleSubmit">
         <div>
           <FormLabel id="name">Nombre</FormLabel>
 
@@ -192,7 +192,7 @@ async function handleSubmit(): Promise<void> {
         </Button>
       </form>
 
-      <Typography as="p" variant="body-sm" tone="muted" class="mt-6 text-center">
+      <Typography as="p" variant="body-sm" tone="muted" class="mt-5 text-center">
         ¿Ya tienes cuenta?
         <RouterLink
           to="/login"

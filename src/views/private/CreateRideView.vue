@@ -48,10 +48,10 @@ async function handleSubmit(payload: RideFormSubmission): Promise<void> {
         Volver a las rutas
       </RouterLink>
 
-      <header class="mb-8 mt-4">
-        <Typography as="h1" variant="heading-xl"> Publica una ruta </Typography>
+      <header class="mb-6 mt-4">
+        <Typography as="h1" variant="heading-lg"> Publica una ruta </Typography>
 
-        <Typography variant="body-sm" tone="muted" class="mt-2 max-w-2xl">
+        <Typography variant="body-sm" tone="muted" class="mt-1.5 max-w-2xl">
           Organiza tu próxima salida y encuentra ciclistas con quienes pedalear.
         </Typography>
       </header>

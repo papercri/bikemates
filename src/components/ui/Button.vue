@@ -38,6 +38,8 @@ const classes = createVariant({
         'border border-line-strong bg-canvas text-ink hover:border-trail hover:text-trail-ink focus-visible:outline-trail',
       destructive:
         'border border-red-300 bg-canvas text-red-700 hover:bg-red-100 focus-visible:outline-red-600',
+      // Acción destructiva de bajo peso: el color solo aparece al interactuar.
+      'quiet-destructive': 'text-graphite hover:text-red-700 focus-visible:outline-red-600',
       link: 'text-trail-ink hover:text-trail-dark focus-visible:outline-trail',
     },
     size: {

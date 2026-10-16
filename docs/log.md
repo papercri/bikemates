@@ -243,3 +243,85 @@ datos. Detector mecánico limpio (`impeccable detect --json src` → `[]`).
 - `impeccable detect --json src`: sin hallazgos.
 - No se verificó en navegador (sin browser tooling en esta sesión): revisión responsive
   por inspección de clases en 320/375/768/1024/1440.
+
+## 2026-10-16 — Identidad "Vibrant Nature", cabecera con menú y sistema de iconos
+
+Rediseño visual de la landing y del sistema base, sin tocar lógica de negocio ni datos.
+
+### Color y tipografía (`src/assets/main.css`, `src/design-system/`)
+
+- Nueva paleta sobre fondo `canvas #FAF7D4` (amarillo lima suave): `snow`, `surface`,
+  `line`, `line-strong`, tinta `ink #43291F` / `graphite`, acentos `trail #DA2C38`,
+  `route #87C38F` y `turf #226F54`. Ninguna página usa fondo blanco.
+- Fuentes: `font-sans` Inter, `font-display` Archivo (numéricos con `tabular-nums`),
+  mono reservado; las variantes numéricas de `Typography` (`numeric-xl/lg/md/inline`)
+  pasan a Archivo y dejan `font-mono`.
+- `Button`: variantes `sun` y `sun-outline` para superficies oscuras (antes `ember`/`bark`),
+  nuevo tamaño `xs` (`ButtonSize`) para acciones discretas de cabecera.
+- `Card` plana: `border border-line bg-canvas`, interactivas con `hover:bg-snow`; se retiran
+  las sombras `--shadow-card`/`--shadow-lift` del uso de tarjetas.
+
+### Componentes y vistas
+
+- `AppHeader`: cabecera fija con botón hamburguesa (`aria-expanded`/`aria-controls`,
+  cierre con Escape y al cambiar de ruta) y panel móvil con acciones de invitado/sesión.
+- Iconografía: dependencias `@fortawesome/fontawesome-svg-core`, `@fortawesome/vue-fontawesome`
+  y `@fortawesome/free-solid-svg-icons` para iconos de navegación y acciones
+  (`faBicycle`, `faCirclePlus`, `faRightToBracket`, `faUserPlus`, `faUserGear`,
+  `faRightFromBracket`, `faBars`/`faXmark`).
+- `HomeView`: banda de conversión final sobre `turf` (antes banda marrón `ink`) con botón
+  `sun`; `CyclistScene`, `HeroBackdrop` y `RidgeDivider` adaptados a la nueva paleta.
+- `PhotoFrame`: tinte fotográfico `photo-natural` en lugar del sepia cálido.
+- `RidesView` + `RideCard`: lista tipo "libro de registro" (raíl de fecha, entrada y cifras
+  alineadas a la derecha con traza de desnivel) en lugar de rejilla de tarjetas; filtro
+  segmentado con `aria-pressed` y recuento de resultados con `aria-live`.
+
+### Verificación
+
+- `vitest`: 209/209 en verde (nuevos `AppHeader.spec` con estados de sesión y menú).
+- `vue-tsc --build`: mismos 11 errores preexistentes (`imageUrl` en `mockRides.ts` y specs).
+- `oxlint src` y `eslint src` en verde; `npm run lint` sigue fallando en scripts
+  vendorizados de `.agents/skills/impeccable/` (preexistente).
+
+## 2026-10-16 — Detalle de ruta y formularios compactos, aviso de cuenta en modal
+
+### Detalle de ruta (`RideDetailView`, `RideMap`)
+
+- Composición compacta y moderna: cabecera con insignias, título `heading-lg`, fila con
+  fecha y enlace a Wikiloc; imagen reducida (`h-44` / `sm:h-56`) y tira de estadísticas de
+  tres celdas con filete (distancia, desnivel y duración en `numeric-md`).
+- Mapa más pequeño (`h-48` / `sm:h-60` por defecto en `RideMap`) dentro de una tarjeta plana
+  con el punto de encuentro y el enlace a OpenStreetMap en una sola fila.
+- Espaciado general rebajado (`mt-8`/`mt-6`) y `heading-sm` en los subtítulos de sección.
+
+### Formularios (`RideForm`, `CreateRideView`, `EditRideView`, vistas auth)
+
+- `RideForm`: `space-y-8`, rejillas de 2 y 3 columnas en escritorio (nombre + fecha y hora,
+  descripción a ancho completo), `Textarea` de 3 filas y filetes de sección más compactos.
+- `Create/EditRideView`: cabeceras con `heading-lg` y menos aire; tarjeta de edición con
+  padding reducido. `AuthCard` y los formularios de login/registro/recuperación pasan a
+  `space-y-4` con tarjeta más ajustada.
+
+### Pie y cuenta (`AppFooter`, `ProfileView`, `ConfirmDialog`)
+
+- `AppFooter`: "Iniciar sesión" solo se muestra cuando no hay sesión (nueva aserción en
+  `AppFooter.spec`).
+- `ProfileView`: eliminada la "Zona de peligro"; la baja de cuenta queda como bloque
+  discreto con filete superior y acción `quiet-destructive` (nueva variante de `Button`,
+  color de peligro solo en hover/foco).
+- Nuevo primitivo `ConfirmDialog` (`src/components/ui/`): modal estándar de confirmación
+  con `role="dialog"`, `aria-modal`, etiqueta por `useId`, foco inicial en "Cancelar",
+  trampa de foco, Escape y clic en el fondo para cancelar, bloqueo de scroll y respeto de
+  `prefers-reduced-motion`; `isBusy` deshabilita la salida durante la operación. Se usa
+  para eliminar la cuenta (antes `window.confirm`). Los errores de formulario siguen
+  siendo `Alert` inline, acorde con lo acordado: los modales se reservan para
+  confirmaciones y acciones irreversibles.
+
+### Verificación
+
+- `vitest`: 217/217 en verde (5 de `ConfirmDialog.spec`, 3 de `AppFooter.spec`, +1 en
+  `Button.spec`).
+- `vue-tsc --build`: mismos 11 errores preexistentes; `oxlint src` y `eslint src` en verde;
+  `vite build` correcto.
+- Revisión visual en navegador (Playwright, 1440×900 y 375×812): detalle, crear ruta,
+  perfil con modal, pie con/sin sesión y lista de rutas.

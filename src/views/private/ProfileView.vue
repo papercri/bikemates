@@ -8,6 +8,7 @@ import RidgeStrip from '@/components/icons/RidgeStrip.vue'
 import Alert from '@/components/ui/Alert.vue'
 import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
+import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import Typography from '@/components/ui/Typography.vue'
 import { useAuthStore } from '@/features/auth/stores/authStore'
@@ -21,6 +22,7 @@ type ProfileTab = 'details' | 'saved-rides' | 'published-rides'
 
 const activeTab = ref<ProfileTab>('details')
 const isDeletingAccount = ref(false)
+const isDeleteDialogOpen = ref(false)
 const deleteAccountError = ref('')
 
 const authStore = useAuthStore()
@@ -55,21 +57,28 @@ function handleTabKeydown(event: KeyboardEvent, index: number): void {
   document.getElementById(`tab-${nextTab.id}`)?.focus()
 }
 
-async function handleDeleteAccount(): Promise<void> {
-  const confirmed = window.confirm(
-    '¿Estás segura de que quieres eliminar tu cuenta de BikeMates? Esta acción es irreversible.',
-  )
+function requestAccountDeletion(): void {
+  if (isDeletingAccount.value) return
+  deleteAccountError.value = ''
+  isDeleteDialogOpen.value = true
+}
 
-  if (!confirmed) return
+function cancelAccountDeletion(): void {
+  if (isDeletingAccount.value) return
+  isDeleteDialogOpen.value = false
+}
 
+async function confirmAccountDeletion(): Promise<void> {
   isDeletingAccount.value = true
   deleteAccountError.value = ''
 
   try {
     await authStore.deleteAccount()
+    isDeleteDialogOpen.value = false
     await router.replace({ name: 'home' })
   } catch {
     deleteAccountError.value = 'No se ha podido eliminar la cuenta. Inténtalo de nuevo más tarde.'
+    isDeleteDialogOpen.value = false
   } finally {
     isDeletingAccount.value = false
   }
@@ -139,6 +148,29 @@ async function handleDeleteAccount(): Promise<void> {
         <Typography class="mt-2 max-w-2xl leading-7" tone="muted">
           La edición de tus datos personales estará disponible en una próxima versión.
         </Typography>
+
+        <div class="mt-10 border-t border-line pt-5">
+          <Typography variant="body-sm" tone="muted" class="max-w-2xl leading-6">
+            Eliminar tu cuenta borra de forma permanente tu perfil y tus datos asociados. Esta
+            acción es irreversible.
+          </Typography>
+
+          <div class="mt-3 flex flex-wrap items-center gap-4">
+            <Button
+              variant="quiet-destructive"
+              size="sm"
+              :loading="isDeletingAccount"
+              :disabled="isDeletingAccount"
+              @click="requestAccountDeletion"
+            >
+              {{ isDeletingAccount ? 'Eliminando cuenta…' : 'Eliminar mi cuenta' }}
+            </Button>
+
+            <Alert v-if="deleteAccountError">
+              {{ deleteAccountError }}
+            </Alert>
+          </div>
+        </div>
       </template>
 
       <template v-else-if="tab.id === 'saved-rides'">
@@ -160,31 +192,16 @@ async function handleDeleteAccount(): Promise<void> {
       </template>
     </section>
 
-    <section aria-labelledby="danger-zone-title">
-      <Card variant="danger" class="mt-8 p-5 sm:p-6">
-        <Typography id="danger-zone-title" as="h2" variant="heading-xs" class="text-red-700">
-          Zona de peligro
-        </Typography>
-
-        <Typography variant="body-sm" tone="muted" class="mt-2 max-w-2xl leading-6">
-          Eliminar tu cuenta es una acción irreversible. Esta operación eliminará tu cuenta si el
-          servidor autoriza la solicitud.
-        </Typography>
-
-        <Button
-          variant="destructive"
-          size="sm"
-          class="mt-5"
-          :loading="isDeletingAccount"
-          @click="handleDeleteAccount"
-        >
-          {{ isDeletingAccount ? 'Eliminando cuenta…' : 'Eliminar mi cuenta' }}
-        </Button>
-
-        <Alert v-if="deleteAccountError" class="mt-3">
-          {{ deleteAccountError }}
-        </Alert>
-      </Card>
-    </section>
+    <ConfirmDialog
+      :open="isDeleteDialogOpen"
+      tone="danger"
+      title="¿Eliminar tu cuenta?"
+      description="Tu cuenta y tus datos asociados se eliminarán de forma permanente. Esta acción es irreversible."
+      confirm-label="Eliminar mi cuenta"
+      cancel-label="Cancelar"
+      :is-busy="isDeletingAccount"
+      @confirm="confirmAccountDeletion"
+      @cancel="cancelAccountDeletion"
+    />
   </AppPage>
 </template>

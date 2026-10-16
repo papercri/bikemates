@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useAuthStore } from '@/features/auth/stores/authStore'
 
 const year = computed(() => new Date().getFullYear())
+
+const { user } = storeToRefs(useAuthStore())
 
 const linkClasses =
   'text-xs text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail'
@@ -15,7 +19,7 @@ const linkClasses =
         class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2"
       >
         <RouterLink to="/rides" :class="linkClasses">Explorar rutas</RouterLink>
-        <RouterLink to="/login" :class="linkClasses">Iniciar sesión</RouterLink>
+        <RouterLink v-if="!user" to="/login" :class="linkClasses">Iniciar sesión</RouterLink>
         <RouterLink to="/privacy" :class="linkClasses">Política de privacidad</RouterLink>
       </nav>
 
