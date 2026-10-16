@@ -31,6 +31,29 @@ const tabs: { id: ProfileTab; label: string }[] = [
   { id: 'published-rides', label: 'Rutas publicadas' },
 ]
 
+function handleTabKeydown(event: KeyboardEvent, index: number): void {
+  const lastIndex = tabs.length - 1
+  let nextIndex = index
+
+  if (event.key === 'ArrowRight') {
+    nextIndex = index === lastIndex ? 0 : index + 1
+  } else if (event.key === 'ArrowLeft') {
+    nextIndex = index === 0 ? lastIndex : index - 1
+  } else if (event.key === 'Home') {
+    nextIndex = 0
+  } else if (event.key === 'End') {
+    nextIndex = lastIndex
+  } else {
+    return
+  }
+
+  event.preventDefault()
+  const nextTab = tabs[nextIndex]
+  if (!nextTab) return
+  activeTab.value = nextTab.id
+  document.getElementById(`tab-${nextTab.id}`)?.focus()
+}
+
 async function handleDeleteAccount(): Promise<void> {
   const confirmed = window.confirm(
     '¿Estás segura de que quieres eliminar tu cuenta de BikeMates? Esta acción es irreversible.',
@@ -58,9 +81,9 @@ async function handleDeleteAccount(): Promise<void> {
       <RidgeStrip />
 
       <div class="flex items-center gap-4 p-6 pt-4 sm:p-8 sm:pt-5">
-        <div
-          class="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-trail text-ink"
-        >
+      <div
+        class="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-surface text-ink ring-1 ring-line-strong"
+      >
           <BrandLogo variant="simple" />
         </div>
 
@@ -84,7 +107,7 @@ async function handleDeleteAccount(): Promise<void> {
       aria-label="Secciones del perfil"
     >
       <button
-        v-for="tab in tabs"
+        v-for="(tab, index) in tabs"
         :key="tab.id"
         :id="`tab-${tab.id}`"
         type="button"
@@ -92,13 +115,14 @@ async function handleDeleteAccount(): Promise<void> {
         :aria-selected="activeTab === tab.id"
         :aria-controls="`panel-${tab.id}`"
         :tabindex="activeTab === tab.id ? 0 : -1"
-        class="shrink-0 border-b-2 px-4 py-3 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-trail"
+        class="shrink-0 border-b-2 px-4 py-3 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-trail"
         :class="
           activeTab === tab.id
             ? 'border-trail text-trail-ink'
             : 'border-transparent text-graphite hover:text-ink'
         "
         @click="activeTab = tab.id"
+        @keydown="handleTabKeydown($event, index)"
       >
         {{ tab.label }}
       </button>
@@ -117,14 +141,21 @@ async function handleDeleteAccount(): Promise<void> {
       <template v-if="tab.id === 'details'">
         <Typography as="h2" variant="heading-sm">Mis datos</Typography>
         <Typography class="mt-2" tone="muted">
-          Aquí mostraremos y editaremos tu información personal.
+          La edición de tus datos personales estará disponible en una próxima versión.
+        </Typography>
+      </template>
+
+      <template v-else-if="tab.id === 'saved-rides'">
+        <Typography as="h2" variant="heading-sm">Rutas guardadas</Typography>
+        <Typography class="mt-2" tone="muted">
+          Todavía no hay rutas guardadas. Aquí aparecerán las que marques desde Explorar rutas.
         </Typography>
       </template>
 
       <template v-else>
-        <Typography as="h2" variant="heading-sm">Mis rutas</Typography>
+        <Typography as="h2" variant="heading-sm">Rutas publicadas</Typography>
         <Typography class="mt-2" tone="muted">
-          Aquí aparecerán las rutas que hayas publicado.
+          Todavía no has publicado rutas. Aquí aparecerán las que crees desde BikeMates.
         </Typography>
       </template>
     </section>

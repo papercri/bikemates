@@ -21,7 +21,8 @@ const classes = computed(() =>
     props.variant === 'danger'
       ? 'border border-red-200 bg-red-50'
       : 'border border-line bg-canvas shadow-card',
-    props.interactive && 'transition-shadow duration-300 hover:shadow-lg',
+    props.interactive &&
+      'transition-[border-color,box-shadow] duration-300 hover:border-line-strong hover:shadow-lift',
   ),
 )
 </script>

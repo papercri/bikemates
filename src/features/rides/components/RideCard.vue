@@ -7,6 +7,7 @@ import ElevationSparkline from '@/features/rides/components/ElevationSparkline.v
 import IconArrow from '@/components/icons/IconArrow.vue'
 import { RIDE_LEVEL_BADGE_COLORS } from '@/features/rides/constants/rideLevels'
 import type { Ride } from '@/features/rides/types'
+import { formatRideDate } from '@/utils/dates'
 
 defineProps<{
   ride: Ride
@@ -34,6 +35,10 @@ defineProps<{
     <div class="p-6 pt-4">
       <Typography as="h2" variant="heading-sm">
         {{ ride.title }}
+      </Typography>
+
+      <Typography variant="body-sm" tone="muted" class="mt-1 tabular-nums">
+        {{ formatRideDate(ride.startsAt) }}
       </Typography>
 
       <div class="mt-4 flex items-end gap-6">

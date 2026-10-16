@@ -194,7 +194,10 @@ async function handleSubmit(): Promise<void> {
 
       <Typography as="p" variant="body-sm" tone="muted" class="mt-6 text-center">
         ¿Ya tienes cuenta?
-        <RouterLink to="/login" class="font-medium text-trail-ink hover:text-trail-dark">
+        <RouterLink
+          to="/login"
+          class="font-medium text-trail-ink hover:text-trail-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
+        >
           Inicia sesión
         </RouterLink>
       </Typography>

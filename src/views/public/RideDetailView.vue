@@ -76,7 +76,7 @@ useHead({
   <AppPage size="detail">
     <RouterLink
       to="/rides"
-      class="inline-flex items-center gap-1.5 text-sm text-trail-ink hover:text-trail-dark focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-trail"
+      class="inline-flex items-center gap-1.5 text-sm text-trail-ink hover:text-trail-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
     >
       <IconArrow direction="left" />
       Volver a las rutas
@@ -123,7 +123,7 @@ useHead({
           {{ ride.description }}
         </Typography>
 
-        <Card class="mt-8 overflow-hidden">
+        <Card class="mt-8">
           <div
             class="flex items-center justify-between border-b border-line bg-snow px-5 py-3 sm:px-6"
           >
@@ -175,14 +175,16 @@ useHead({
 
             <div class="col-span-2 border-t border-line p-5 sm:col-span-1 sm:border-t-0 sm:p-6">
               <Typography as="dt" variant="body-sm" tone="muted"> Duración estimada </Typography>
-              <dd class="mt-2 font-semibold tabular-nums text-ink">
-                {{ durationHours }} h<span v-if="durationMinutesRemainder > 0">
-                  {{ durationMinutesRemainder }} min
-                </span>
+              <dd class="mt-2">
+                <Typography as="span" variant="numeric-inline">
+                  {{ durationHours }} h<span v-if="durationMinutesRemainder > 0">
+                    {{ durationMinutesRemainder }} min
+                  </span>
+                </Typography>
               </dd>
             </div>
           </dl>
-          <p v-if="ride.wikilocUrl" class="mb-4 text-center">
+          <p v-if="ride.wikilocUrl" class="mt-4 text-center">
             <a
               :href="ride.wikilocUrl"
               target="_blank"
@@ -197,7 +199,9 @@ useHead({
       </section>
 
       <section class="mt-10" aria-labelledby="meeting-point-title">
-        <Typography as="h2" variant="heading-lg" class="mb-4"> Punto de encuentro </Typography>
+        <Typography id="meeting-point-title" as="h2" variant="heading-lg" class="mb-4">
+          Punto de encuentro
+        </Typography>
 
         <Card class="overflow-hidden">
           <RideMap
@@ -232,6 +236,7 @@ useHead({
 
 <RideParticipants
   v-if="isAuthenticated"
+  class="mt-10"
   :participants="participants"
   :is-loading="isLoadingParticipants"
   :error-message="participantsError"

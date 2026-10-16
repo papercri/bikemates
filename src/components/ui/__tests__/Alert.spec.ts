@@ -29,7 +29,7 @@ describe('Alert', () => {
     })
 
     expect(wrapper.attributes('role')).toBe('alert')
-    expect(wrapper.classes()).toContain('rounded-xl')
+    expect(wrapper.classes()).toContain('rounded-btn')
     expect(wrapper.classes()).toContain('bg-red-50')
     expect(wrapper.classes()).toContain('text-red-700')
     expect(wrapper.classes()).not.toContain('text-red-600')

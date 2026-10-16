@@ -22,11 +22,11 @@ const props = withDefaults(
 
 const variantClasses: Record<TypographyVariant, string> = {
   display: 'text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl',
-  'heading-xl': 'text-3xl font-bold sm:text-4xl',
-  'heading-lg': 'text-3xl font-bold',
-  'heading-md': 'text-2xl font-bold sm:text-3xl',
-  'heading-sm': 'text-xl font-semibold',
-  'heading-xs': 'text-lg font-semibold',
+  'heading-xl': 'text-3xl font-bold tracking-tight sm:text-4xl',
+  'heading-lg': 'text-2xl font-bold tracking-tight sm:text-3xl',
+  'heading-md': 'text-xl font-bold tracking-tight sm:text-2xl',
+  'heading-sm': 'text-lg font-semibold tracking-tight sm:text-xl',
+  'heading-xs': 'text-base font-semibold sm:text-lg',
   body: '',
   'body-sm': 'text-sm',
   caption: 'text-xs leading-5',

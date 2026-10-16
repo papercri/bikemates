@@ -25,8 +25,8 @@ const classes = createVariant({
     color: 'trail',
   },
   compoundVariants: [
-    { variant: 'soft', color: 'trail', class: 'bg-trail/15 text-trail-ink' },
-    { variant: 'soft', color: 'route', class: 'bg-route/15 text-route-ink' },
+    { variant: 'soft', color: 'trail', class: 'bg-trail/15 text-trail-dark' },
+    { variant: 'soft', color: 'route', class: 'bg-route/15 text-route-dark' },
     { variant: 'soft', color: 'ink', class: 'bg-ink/10 text-ink' },
     { variant: 'muted', color: 'trail', class: 'bg-surface text-graphite' },
     { variant: 'muted', color: 'route', class: 'bg-surface text-graphite' },

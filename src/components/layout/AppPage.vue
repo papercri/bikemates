@@ -42,9 +42,16 @@ const mainClasses = computed(() =>
 
 <template>
   <div class="flex min-h-screen flex-col bg-snow text-ink">
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-btn focus:bg-ink focus:px-4 focus:py-3 focus:text-sm focus:font-semibold focus:text-canvas"
+    >
+      Saltar al contenido
+    </a>
+
     <AppHeader />
 
-    <main :class="mainClasses">
+    <main id="main-content" :class="mainClasses">
       <slot />
     </main>
 

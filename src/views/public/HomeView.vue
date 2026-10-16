@@ -8,7 +8,6 @@ import IconMeetup from '@/components/icons/IconMeetup.vue'
 import IconRoutes from '@/components/icons/IconRoutes.vue'
 import RidgeDivider from '@/components/icons/RidgeDivider.vue'
 import Button from '@/components/ui/Button.vue'
-import Card from '@/components/ui/Card.vue'
 import Typography from '@/components/ui/Typography.vue'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/features/auth/stores/authStore'
@@ -26,6 +25,24 @@ useHead({
     },
   ],
 })
+
+const features = [
+  {
+    icon: IconRoutes,
+    title: 'Descubre rutas',
+    description: 'Encuentra próximas salidas y explora nuevos recorridos por tu zona.',
+  },
+  {
+    icon: IconCyclists,
+    title: 'Conoce ciclistas',
+    description: 'Conecta con personas que comparten tu pasión por el ciclismo.',
+  },
+  {
+    icon: IconMeetup,
+    title: 'Organiza quedadas',
+    description: 'Propón una salida, define el recorrido y pedalea en compañía.',
+  },
+]
 </script>
 
 <template>
@@ -37,10 +54,6 @@ useHead({
         class="relative mx-auto grid max-w-7xl gap-12 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-2 lg:items-center lg:gap-16 lg:px-8"
       >
         <div class="max-w-xl">
-          <Typography variant="eyebrow-wide" tone="accent" class="mb-5">
-            Tu próxima aventura empieza aquí
-          </Typography>
-
           <Typography id="hero-title" as="h1" variant="display">
             Encuentra tu grupeta.
             <span class="text-trail-ink">Comparte la ruta.</span>
@@ -51,7 +64,7 @@ useHead({
             disfrutar de la bici en compañía.
           </Typography>
 
-          <div class="mt-9 flex flex-col gap-3 sm:flex-row">
+          <div class="mt-10 flex flex-col gap-3 sm:flex-row">
             <Button to="/rides" size="lg"> Explorar rutas </Button>
 
             <Button v-if="isInitialized && user" to="/rides/create" variant="primary" size="lg">
@@ -85,30 +98,16 @@ useHead({
           para descubrir nuevos caminos.
         </Typography>
 
-        <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          <Card class="p-6">
-            <IconRoutes class="mb-4 text-trail-ink" />
-            <Typography as="h3" variant="heading-xs">Descubre rutas</Typography>
-            <Typography tone="muted" class="mt-3 leading-7">
-              Encuentra próximas salidas y explora nuevos recorridos por tu zona.
+        <div class="mt-12 grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+          <div v-for="feature in features" :key="feature.title" class="border-t border-line-strong pt-6">
+            <component :is="feature.icon" class="text-trail-ink" />
+            <Typography as="h3" variant="heading-xs" class="mt-4">
+              {{ feature.title }}
             </Typography>
-          </Card>
-
-          <Card class="p-6">
-            <IconCyclists class="mb-4 text-trail-ink" />
-            <Typography as="h3" variant="heading-xs">Conoce ciclistas</Typography>
-            <Typography tone="muted" class="mt-3 leading-7">
-              Conecta con personas que comparten tu pasión por el ciclismo.
+            <Typography tone="muted" class="mt-2 leading-7">
+              {{ feature.description }}
             </Typography>
-          </Card>
-
-          <Card class="p-6">
-            <IconMeetup class="mb-4 text-trail-ink" />
-            <Typography as="h3" variant="heading-xs">Organiza quedadas</Typography>
-            <Typography tone="muted" class="mt-3 leading-7">
-              Propón una salida, define el recorrido y pedalea en compañía.
-            </Typography>
-          </Card>
+          </div>
         </div>
       </div>
     </section>

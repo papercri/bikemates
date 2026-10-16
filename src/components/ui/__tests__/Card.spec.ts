@@ -9,7 +9,7 @@ describe('Card', () => {
     expect(wrapper.element.tagName).toBe('DIV')
     expect(wrapper.classes()).toContain('border-line')
     expect(wrapper.classes()).toContain('bg-canvas')
-    expect(wrapper.classes()).not.toContain('hover:shadow-lg')
+    expect(wrapper.classes()).not.toContain('hover:shadow-lift')
   })
 
   it('renders the requested element', () => {
@@ -38,7 +38,7 @@ describe('Card', () => {
       slots: { default: 'Contenido' },
     })
 
-    expect(wrapper.classes()).toContain('hover:shadow-lg')
+    expect(wrapper.classes()).toContain('hover:shadow-lift')
   })
 
   it('renders the slot content', () => {

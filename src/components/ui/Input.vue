@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { FIELD_CLASSES } from '@/design-system'
+
 withDefaults(
   defineProps<{
     id: string
@@ -40,7 +42,6 @@ const model = defineModel<string>({ required: true })
     :disabled="disabled"
     :aria-invalid="ariaInvalid"
     :aria-describedby="ariaDescribedby"
-    class="w-full rounded-btn border border-line bg-canvas text-ink outline-none transition-colors placeholder:text-graphite focus:border-trail focus:ring-2 focus:ring-trail/25"
-    :class="trailing ? 'py-3 pl-4 pr-12' : 'px-4 py-3'"
+    :class="[FIELD_CLASSES, trailing ? 'py-3 pl-4 pr-12' : 'px-4 py-3']"
   />
 </template>

@@ -70,7 +70,10 @@ async function handleSubmit(): Promise<void> {
       </form>
 
       <Typography as="p" variant="body-sm" tone="muted" class="mt-6 text-center">
-        <RouterLink to="/login" class="text-trail-ink hover:text-trail-dark">
+        <RouterLink
+          to="/login"
+          class="text-trail-ink hover:text-trail-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
+        >
           Volver al inicio de sesión
         </RouterLink>
       </Typography>

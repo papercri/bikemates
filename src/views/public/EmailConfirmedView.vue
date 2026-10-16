@@ -25,13 +25,10 @@ const { isProcessing, isConfirmed, errorMessage } = useEmailLinkConfirmation(
 
     <main class="flex flex-1 items-center justify-center px-4 py-12">
       <Card aria-labelledby="confirmation-title" class="w-full max-w-md p-8 text-center sm:p-10">
-        <Typography variant="eyebrow" tone="accent">BikeMates</Typography>
-
         <Typography
           id="confirmation-title"
           as="h1"
           variant="heading-md"
-          class="mt-4 tracking-tight"
         >
           {{
             isProcessing
@@ -59,7 +56,7 @@ const { isProcessing, isConfirmed, errorMessage } = useEmailLinkConfirmation(
           :to="{ name: 'login' }"
           block
           size="md"
-          class="mt-8 min-h-12 text-sm"
+          class="mt-8"
         >
           {{ isConfirmed ? 'Ir al inicio de sesión' : 'Volver al inicio de sesión' }}
         </Button>
@@ -70,7 +67,7 @@ const { isProcessing, isConfirmed, errorMessage } = useEmailLinkConfirmation(
           variant="outline"
           block
           size="md"
-          class="mt-4 min-h-12 text-sm"
+          class="mt-4"
         >
           Solicitar nueva contraseña
         </Button>

@@ -5,6 +5,9 @@ import { useHead } from '@unhead/vue'
 
 import RideForm from '@/features/rides/components/RideForm.vue'
 import AppPage from '@/components/layout/AppPage.vue'
+import Button from '@/components/ui/Button.vue'
+import Card from '@/components/ui/Card.vue'
+import IconArrow from '@/components/icons/IconArrow.vue'
 import Typography from '@/components/ui/Typography.vue'
 
 import { getRideImageUrl } from '@/features/rides/services/rideImageService'
@@ -45,48 +48,33 @@ async function handleSubmit(payload: RideFormSubmission): Promise<void> {
       <header class="mb-8">
         <button
           type="button"
-          class="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-trail"
+          class="inline-flex items-center gap-1.5 text-sm text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
           @click="router.back()"
         >
-          <span aria-hidden="true">←</span>
+          <IconArrow direction="left" />
           Volver
         </button>
 
-        <Typography as="h1" variant="heading-md" class="tracking-tight"> Editar ruta </Typography>
+        <Typography as="h1" variant="heading-xl" class="mt-4"> Editar ruta </Typography>
 
         <Typography variant="body-sm" tone="muted" class="mt-2">
           Modifica los datos de tu salida ciclista.
         </Typography>
       </header>
 
-      <div
-        v-if="isLoading"
-        role="status"
-        class="rounded-2xl border border-line-strong bg-canvas p-6 text-sm text-graphite"
-      >
-        Cargando ruta…
-      </div>
+      <Card v-if="isLoading" class="p-6" role="status">
+        <Typography variant="body-sm" tone="muted">Cargando ruta…</Typography>
+      </Card>
 
-      <div
-        v-else-if="errorMessage && !ride"
-        role="alert"
-        class="rounded-2xl border border-red-200 bg-canvas p-6"
-      >
-        <p class="text-sm text-red-700">{{ errorMessage }}</p>
+      <Card v-else-if="errorMessage && !ride" variant="danger" class="p-6" role="alert">
+        <Typography variant="body-sm" class="text-red-700">{{ errorMessage }}</Typography>
 
-        <button
-          type="button"
-          class="mt-4 text-sm font-semibold text-ink underline"
-          @click="router.push({ name: 'rides' })"
-        >
+        <Button variant="outline" size="sm" class="mt-4" @click="router.push({ name: 'rides' })">
           Volver a las rutas
-        </button>
-      </div>
+        </Button>
+      </Card>
 
-      <section
-        v-else-if="ride"
-        class="rounded-3xl border border-line bg-canvas p-5 shadow-sm sm:p-8"
-      >
+      <Card v-else-if="ride" class="p-5 sm:p-8">
         <RideForm
           :initial-values="initialValues"
           :initial-image-url="ride.imagePath ? getRideImageUrl(ride.imagePath) : null"
@@ -95,7 +83,7 @@ async function handleSubmit(payload: RideFormSubmission): Promise<void> {
           :error-message="errorMessage"
           @submit="handleSubmit"
         />
-      </section>
+      </Card>
     </div>
   </AppPage>
 </template>

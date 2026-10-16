@@ -3,6 +3,7 @@ import { useHead } from '@unhead/vue'
 import { RouterLink } from 'vue-router'
 
 import AppPage from '@/components/layout/AppPage.vue'
+import IconArrow from '@/components/icons/IconArrow.vue'
 import Typography from '@/components/ui/Typography.vue'
 import RideForm from '@/features/rides/components/RideForm.vue'
 
@@ -41,18 +42,16 @@ async function handleSubmit(payload: RideFormSubmission): Promise<void> {
     <div class="mx-auto max-w-3xl">
       <RouterLink
         :to="{ name: 'rides' }"
-        class="inline-flex items-center gap-1.5 text-sm font-medium text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-trail"
+        class="inline-flex items-center gap-1.5 text-sm text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
       >
-        <span aria-hidden="true">←</span>
+        <IconArrow direction="left" />
         Volver a las rutas
       </RouterLink>
 
-      <header class="mb-4 mt-3">
-        <Typography variant="eyebrow" tone="accent"> Comunidad BikeMates </Typography>
+      <header class="mb-8 mt-4">
+        <Typography as="h1" variant="heading-xl"> Publica una ruta </Typography>
 
-        <Typography as="h1" variant="heading-xl" class="mt-1"> Publica una ruta </Typography>
-
-        <Typography variant="body-sm" tone="muted" class="mt-1 max-w-2xl">
+        <Typography variant="body-sm" tone="muted" class="mt-2 max-w-2xl">
           Organiza tu próxima salida y encuentra ciclistas con quienes pedalear.
         </Typography>
       </header>

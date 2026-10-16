@@ -27,21 +27,20 @@ const props = withDefaults(
 )
 
 const classes = createVariant({
-  base: 'inline-flex items-center justify-center gap-2 rounded-btn transition-colors focus-visible:outline-2 disabled:cursor-not-allowed disabled:opacity-60',
+  base: 'inline-flex items-center justify-center gap-2 rounded-btn font-semibold transition-[color,background-color,border-color,transform] focus-visible:outline-2 focus-visible:outline-offset-2 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60 disabled:active:translate-y-0',
   variants: {
     variant: {
-      primary:
-        'bg-trail font-semibold text-ink hover:bg-trail-deep focus-visible:outline-offset-4 focus-visible:outline-ink',
+      primary: 'bg-trail text-ink hover:bg-trail-deep focus-visible:outline-ink',
       outline:
-        'border border-line bg-canvas font-semibold text-ink hover:border-trail hover:text-trail-ink focus-visible:outline-offset-4 focus-visible:outline-trail',
+        'border border-line-strong bg-canvas text-ink hover:border-trail hover:text-trail-ink focus-visible:outline-trail',
       destructive:
-        'border border-red-300 bg-canvas font-semibold text-red-700 hover:bg-red-100 focus-visible:outline-offset-2 focus-visible:outline-red-600',
-      link: 'font-semibold text-trail-ink hover:text-trail-dark focus-visible:outline-offset-4 focus-visible:outline-trail',
+        'border border-red-300 bg-canvas text-red-700 hover:bg-red-100 focus-visible:outline-red-600',
+      link: 'text-trail-ink hover:text-trail-dark focus-visible:outline-trail',
     },
     size: {
-      sm: 'px-4 py-2 text-sm',
+      sm: 'px-4 py-2.5 text-sm',
       md: 'px-5 py-3',
-      lg: 'px-6 py-3',
+      lg: 'px-6 py-3.5',
     },
   },
   defaultVariants: {
@@ -76,6 +75,11 @@ const rootClasses = computed(() => [
     :aria-busy="loading || undefined"
     :class="rootClasses"
   >
+    <span
+      v-if="loading"
+      aria-hidden="true"
+      class="size-4 shrink-0 rounded-full border-2 border-current border-t-transparent motion-reduce:animate-none motion-safe:animate-spin"
+    />
     <slot />
   </button>
 </template>

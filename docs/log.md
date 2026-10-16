@@ -163,3 +163,83 @@ Refactor incremental sobre `refactor/architecture-cleanup` (12 commits), sin cam
 - Formato Prettier unificado en `src/`.
 - Verificación: `vue-tsc --build`, `vitest` (194/194), `eslint`, `oxlint`, `vite build` y
   `prettier --check src` en verde.
+
+## 2026-10-16 — Pase Impeccable: UI modernizada (normalize · adapt · polish)
+
+Pase de refinamiento visual sin tocar lógica, props públicas, eventos, rutas ni llamadas a
+datos. Detector mecánico limpio (`impeccable detect --json src` → `[]`).
+
+### Design system (`src/assets/main.css`, `src/design-system/`)
+
+- Neutros cálidos tipo alpine: `snow #F7F8F6`, `surface #F0F2EE`, `line #E4E8E1`,
+  `line-strong #D5DBD2`; `graphite` oscurecido a `#5C6560` (AA ≥ 4.5:1 también sobre
+  `surface`; el anterior `#6C757D` quedaba en 4.16:1 sobre `surface`).
+- Nuevo token `route-dark #9A3412` para texto de badges naranjas sobre tinte.
+- Nueva sombra `--shadow-lift` para elevación hover de tarjetas interactivas.
+- Base layer: `text-wrap: balance` en encabezados, `::selection` con tinte trail,
+  scrollbars temáticas, foco/caret ya unificados desde los componentes.
+- `FIELD_CLASSES` (`src/design-system/field.ts`): receta única de campos compartida por
+  `Input`, `Textarea` y `FormSelect` (borde, radio `rounded-btn`, hover, foco ring/25,
+  caret trail, `aria-invalid`, disabled).
+
+### Primitivas
+
+- `Button`: spinner de carga (`motion-safe`), foco `outline-offset-2` unificado, estado
+  `active`, tamaños sm/md/lg con objetivos táctiles ≥ 40px.
+- `Card`: elevación hover con `shadow-lift` + `border-line-strong` (sustituye el
+  `hover:shadow-lg` genérico de Tailwind).
+- `Badge`: texto de variantes soft en `trail-dark`/`route-dark` para contraste AA sobre
+  tintes.
+- `Alert` boxed: `rounded-btn` (token) en vez de `rounded-xl`.
+- `Typography`: escala reordenada (heading-lg/md/xs diferenciadas, `tracking-tight` en
+  encabezados); variantes eyebrow conservadas pero ya no se usan como kicker sobre un h1.
+- `PasswordInput`: área táctil del toggle a 48px.
+
+### Layout
+
+- `AppPage`: skip link "Saltar al contenido" + `id="main-content"` en `<main>`.
+- `AppHeader`: acciones con `flex-wrap` (el CTA de registro y "Mi perfil" ya no desaparecen
+  en móvil), foco visible en los enlaces de nav.
+- `AppFooter`: nav con "Explorar rutas", "Iniciar sesión" y "Política de privacidad"
+  (móvil siempre tiene ruta a las superficies core).
+
+### Vistas y features
+
+- `RidesView` (P0): estados reales de carga (skeletons `motion-safe:animate-pulse`),
+  error con reintento (`loadRides` del composable existente) y vacío; chips con objetivo
+  táctil de 40px; eliminado el eyebrow kicker.
+- `RideCard`: añadida la fecha de salida (`formatRideDate`) — dato decisivo para elegir
+  grupeta; `tabular-nums` para escaneo.
+- `RideDetailView`: `id="meeting-point-title"` (aria-labelledby roto), espaciado del bloque
+  de participantes y del enlace Wikiloc, duración con `numeric-inline`, foco unificado.
+- `RideParticipants`: error con `Alert` (antes en verde con `role="alert"`), loading/vacío
+  en tono muted, iniciales sobre `surface`.
+- `RideForm`: resumen de errores al inicio del formulario (antes al final de 11 campos),
+  `FormHelp` en lugar de párrafos sueltos, eliminada la etiqueta duplicada del punto de
+  encuentro, radios a token.
+- `MeetingPointPicker`: error con `role="alert"`, radios a token, `FormHelp`.
+- `Create/EditRideView`: `IconArrow` en vez de "←" literal, cabeceras hermanas
+  (`heading-xl`), estados de carga/error con `Card`, formulario envuelto en `Card`.
+- `HomeView`: features sin tarjetas idénticas (columnas con filete superior), sin eyebrow;
+  hero con más aire (`mt-10` en CTAs).
+- `ProfileView`: avatar sin círculo verde (surface + anillo), tabs con navegación por
+  teclado (flechas/Home/End), copy honesto y distinto por pestaña.
+- Vistas auth: foco visible en todos los enlaces, `EmailConfirmedView` sin eyebrow ni
+  overrides puntuales de botón.
+
+### Specs
+
+- Ajustadas las aserciones de clases en `Badge.spec`, `Card.spec`, `Alert.spec` (detalle
+  de presentación); `Textarea.spec` verifica la igualdad de receta con `Input` vía
+  `FIELD_CLASSES`.
+
+### Verificación
+
+- `vitest`: 194/194 en verde.
+- `vue-tsc --build`: los mismos 8 errores preexistentes de la rama (`imageUrl` en
+  `mockRides.ts` y specs); ninguno nuevo.
+- `oxlint src` y `eslint src`: en verde. `npm run lint` falla en los scripts vendorizados
+  de `.agents/skills/impeccable/` (preexistente, verificado con la rama limpia).
+- `impeccable detect --json src`: sin hallazgos.
+- No se verificó en navegador (sin browser tooling en esta sesión): revisión responsive
+  por inspección de clases en 320/375/768/1024/1440.

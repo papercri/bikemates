@@ -10,6 +10,7 @@ import { useRideImagePicker } from '@/features/rides/composables/useRideImagePic
 import MeetingPointPicker from '@/features/rides/components/MeetingPointPicker.vue'
 import Alert from '@/components/ui/Alert.vue'
 import Button from '@/components/ui/Button.vue'
+import FormHelp from '@/components/ui/FormHelp.vue'
 import FormLabel from '@/components/ui/FormLabel.vue'
 import FormSelect from '@/components/ui/FormSelect.vue'
 import Input from '@/components/ui/Input.vue'
@@ -99,6 +100,14 @@ function handleSubmit(): void {
 
 <template>
   <form novalidate class="space-y-6" @submit.prevent="handleSubmit">
+    <Alert v-if="validationError" boxed>
+      {{ validationError }}
+    </Alert>
+
+    <Alert v-if="errorMessage" boxed>
+      {{ errorMessage }}
+    </Alert>
+
     <div>
       <FormLabel id="title">Nombre de la ruta</FormLabel>
       <Input
@@ -110,7 +119,7 @@ function handleSubmit(): void {
         maxlength="100"
         aria-describedby="title-help"
       />
-      <p id="title-help" class="mt-1 text-xs text-graphite">Entre 5 y 100 caracteres.</p>
+      <FormHelp id="title-help">Entre 5 y 100 caracteres.</FormHelp>
     </div>
 
     <div>
@@ -125,7 +134,9 @@ function handleSubmit(): void {
         required
         placeholder="Describe el recorrido, el terreno y qué deben llevar los participantes..."
       />
-      <p class="mt-1 text-right text-xs text-graphite">{{ form.description.length }}/3000</p>
+      <p class="mt-1 text-right text-xs text-graphite">
+        {{ form.description.length }}/3000
+      </p>
     </div>
 
     <div>
@@ -143,7 +154,7 @@ function handleSubmit(): void {
         accept="image/jpeg,image/png,image/webp,image/avif"
         aria-describedby="image-help"
         :aria-invalid="Boolean(imageError)"
-        class="block w-full text-sm text-graphite file:mr-3 file:rounded-xl file:border-0 file:bg-surface file:px-4 file:py-2 file:font-medium file:text-ink"
+        class="block w-full text-sm text-graphite file:mr-3 file:rounded-btn file:border-0 file:bg-surface file:px-4 file:py-2 file:font-medium file:text-ink"
         @change="handleImageChange"
       />
 
@@ -151,7 +162,7 @@ function handleSubmit(): void {
         <img
           :src="imagePreviewUrl || props.initialImageUrl || ''"
           alt="Vista previa de la imagen de portada"
-          class="h-20 w-28 rounded-2xl object-cover"
+          class="h-20 w-28 rounded-btn object-cover"
         />
 
         <Button type="button" variant="outline" size="sm" @click="clearSelectedImage">
@@ -163,16 +174,15 @@ function handleSubmit(): void {
         {{ imageError }}
       </Alert>
 
-      <p id="image-help" class="mt-2 text-xs text-graphite">JPEG, PNG, WebP o AVIF. Máximo 5 MB.</p>
+      <FormHelp id="image-help">JPEG, PNG, WebP o AVIF. Máximo 5 MB.</FormHelp>
     </div>
 
     <div>
-      <FormLabel id="meeting-point">Punto de encuentro</FormLabel>
       <MeetingPointPicker :initial-value="form.meetingPoint" @select="handlePlaceSelect" />
 
-      <p v-if="form.meetingPoint" class="mt-2 text-sm text-graphite">
+      <FormHelp v-if="form.meetingPoint">
         Punto seleccionado: {{ form.meetingPoint }}
-      </p>
+      </FormHelp>
     </div>
 
     <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
@@ -260,14 +270,6 @@ function handleSubmit(): void {
         placeholder="https://www.wikiloc.com/..."
       />
     </div>
-
-    <Alert v-if="validationError" boxed>
-      {{ validationError }}
-    </Alert>
-
-    <Alert v-if="errorMessage" boxed>
-      {{ errorMessage }}
-    </Alert>
 
     <Button type="submit" :loading="isSubmitting" :disabled="isSubmitting" block>
       {{

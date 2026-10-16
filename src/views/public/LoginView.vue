@@ -64,7 +64,10 @@ async function handleSubmit(): Promise<void> {
           <div class="mb-2 flex items-center justify-between gap-3">
             <FormLabel id="password" :margin="false">Contraseña</FormLabel>
 
-            <RouterLink to="/forgot-password" class="text-sm text-trail-ink hover:text-trail-dark">
+            <RouterLink
+              to="/forgot-password"
+              class="text-sm text-trail-ink hover:text-trail-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
+            >
               ¿La has olvidado?
             </RouterLink>
           </div>
@@ -90,7 +93,10 @@ async function handleSubmit(): Promise<void> {
 
       <Typography as="p" variant="body-sm" tone="muted" class="mt-6 text-center">
         ¿Todavía no tienes cuenta?
-        <RouterLink to="/register" class="font-medium text-trail-ink hover:text-trail-dark">
+        <RouterLink
+          to="/register"
+          class="font-medium text-trail-ink hover:text-trail-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
+        >
           Regístrate
         </RouterLink>
       </Typography>

@@ -13,7 +13,7 @@ describe('Badge', () => {
     const wrapper = mount(Badge, { slots: { default: 'Intermedio' } })
 
     expect(wrapper.classes()).toContain('bg-trail/15')
-    expect(wrapper.classes()).toContain('text-trail-ink')
+    expect(wrapper.classes()).toContain('text-trail-dark')
   })
 
   it('applies the compound classes for the selected color', () => {
@@ -23,7 +23,7 @@ describe('Badge', () => {
     })
 
     expect(wrapper.classes()).toContain('bg-route/15')
-    expect(wrapper.classes()).toContain('text-route-ink')
+    expect(wrapper.classes()).toContain('text-route-dark')
   })
 
   it('applies muted surface classes for the muted variant', () => {
