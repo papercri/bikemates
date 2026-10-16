@@ -70,4 +70,11 @@ export interface RideFormSubmission {
   removeCurrentImage: boolean
 }
 
+export interface RideParticipant {
+  id: string
+  displayName: string
+  avatarUrl: string | null
+  isOrganizer: boolean
+}
+
 export type UpdateRideInput = Omit<CreateRideInput, 'status'>

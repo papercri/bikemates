@@ -18,6 +18,10 @@ import { useRideDetail } from '@/features/rides/composables/useRideDetail'
 import { RIDE_LEVEL_BADGE_COLORS } from '@/features/rides/constants/rideLevels'
 import { RIDE_BIKE_TYPE_LABELS } from '@/features/rides/constants/rideOptions'
 import { formatRideDate } from '@/utils/dates'
+import RideParticipants from '@/features/rides/components/RideParticipants.vue'
+import { useRideParticipantCount } from '@/features/rides/composables/useRideParticipantCount'
+import { useRideParticipants } from '@/features/rides/composables/useRideParticipants'
+
 
 const route = useRoute()
 const authStore = useAuthStore()
@@ -29,13 +33,38 @@ const rideId = computed(() => {
 
 const { ride, isLoading, errorMessage } = useRideDetail(rideId)
 
+const isAuthenticated = computed(() => authStore.user !== null)
+
+const {
+  participantCount,
+  isLoadingCount,
+  countError,
+} = useRideParticipantCount(rideId)
+
+const {
+  participants,
+  isLoading: isLoadingParticipants,
+  isSubmitting,
+  errorMessage: participantsError,
+  join,
+  leave,
+} = useRideParticipants(
+  rideId,
+  computed(() => ride.value?.organizerId ?? null),
+  isAuthenticated,
+)
+
 const isOrganizer = computed(
   () => ride.value !== null && authStore.user?.id === ride.value.organizerId,
 )
 
-const durationHours = computed(() => (ride.value ? Math.floor(ride.value.durationMinutes / 60) : 0))
+const durationHours = computed(
+  () => (ride.value ? Math.floor(ride.value.durationMinutes / 60) : 0),
+)
 
-const durationMinutesRemainder = computed(() => (ride.value ? ride.value.durationMinutes % 60 : 0))
+const durationMinutesRemainder = computed(
+  () => (ride.value ? ride.value.durationMinutes % 60 : 0),
+)
 
 useHead({
   title: computed(() =>
@@ -197,6 +226,81 @@ useHead({
           </div>
         </Card>
       </section>
+
+
+
+
+<RideParticipants
+  v-if="isAuthenticated"
+  :participants="participants"
+  :is-loading="isLoadingParticipants"
+  :error-message="participantsError"
+  :is-authenticated="isAuthenticated"
+  :current-user-id="authStore.user?.id ?? null"
+  :is-submitting="isSubmitting"
+  :is-organizer="isOrganizer"
+  @join="join"
+  @leave="leave"
+/>
+
+  <section
+    v-else
+    class="mt-10"
+    aria-labelledby="participants-title"
+  >
+    <div class="mb-4 flex items-center justify-between gap-4">
+      <Typography
+        id="participants-title"
+        as="h2"
+        variant="heading-lg"
+      >
+        Participantes
+      </Typography>
+
+      <Typography
+        v-if="participantCount !== null"
+        as="span"
+        variant="numeric-inline"
+        class="text-ink"
+        aria-live="polite"
+      >
+        {{ participantCount }}
+        {{ participantCount === 1 ? 'inscrito' : 'inscritos' }}
+      </Typography>
+    </div>
+
+    <Card class="p-5 sm:p-6">
+      <Typography
+        v-if="isLoadingCount"
+        variant="body-sm"
+        tone="muted"
+        role="status"
+      >
+        Cargando el número de participantes...
+      </Typography>
+
+      <Typography
+        v-else-if="countError"
+        variant="body-sm"
+        tone="muted"
+        role="status"
+      >
+        No se ha podido cargar el número de participantes.
+      </Typography>
+
+      <div v-else>
+        <Typography variant="body-sm" tone="muted">
+          Inicia sesión para ver quién participa en esta ruta.
+        </Typography>
+
+        <Button to="/login" class="mt-4">
+          Iniciar sesión
+        </Button>
+      </div>
+    </Card>
+  </section>
+
+
 
       <div class="mt-8 flex flex-wrap gap-3">
         <Button v-if="isOrganizer" :to="{ name: 'ride-edit', params: { id: ride.id } }">
