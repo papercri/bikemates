@@ -3,23 +3,16 @@ import { describe, expect, it } from 'vitest'
 import RideCard from '../RideCard.vue'
 import Badge from '@/components/ui/Badge.vue'
 import { mockRides } from '@/features/rides/data/mockRides'
-import type { Ride } from '@/features/rides/types'
 
-function findRide(id: number): Ride {
-  const ride = mockRides.find((item) => item.id === id)
+const ride = mockRides[0]
 
-  if (!ride) {
-    throw new Error(`Missing ride fixture with id ${id}`)
-  }
-
-  return ride
+if (!ride) {
+  throw new Error('No ride fixtures available')
 }
-
-const ride = findRide(1)
 
 function mountRideCard() {
   return mount(RideCard, {
-    props: { ride },
+    props: { ride: ride! },
     global: { stubs: { RouterLink: RouterLinkStub } },
   })
 }
@@ -29,7 +22,7 @@ describe('RideCard', () => {
     const wrapper = mountRideCard()
 
     expect(wrapper.get('h2').text()).toBe(ride.title)
-    expect(wrapper.text()).toContain(ride.location)
+    expect(wrapper.text()).toContain(ride.meetingPoint)
   })
 
   it('renders the distance and elevation figures', () => {

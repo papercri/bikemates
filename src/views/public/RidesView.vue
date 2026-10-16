@@ -2,10 +2,10 @@
 import { useHead } from '@unhead/vue'
 import { computed, ref } from 'vue'
 import AppPage from '@/components/layout/AppPage.vue'
-import RideCard from '@/components/rides/RideCard.vue'
+import RideCard from '@/features/rides/components/RideCard.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import Typography from '@/components/ui/Typography.vue'
-import { mockRides } from '@/features/rides/data/mockRides'
+import { useRideList } from '@/features/rides/composables/useRideList'
 import { RIDE_LEVELS } from '@/features/rides/constants/rideLevels'
 import type { RideLevel } from '@/features/rides/types'
 
@@ -20,8 +20,7 @@ useHead({
   ],
 })
 
-const rides = ref(mockRides)
-
+const { rides } = useRideList()
 const selectedLevel = ref<'Todos' | RideLevel>('Todos')
 
 const filteredRides = computed(() => {

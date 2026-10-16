@@ -1,15 +1,20 @@
 <script setup lang="ts">
 import { useHead } from '@unhead/vue'
 import AppPage from '@/components/layout/AppPage.vue'
-import CyclistScene from '@/components/svg/CyclistScene.vue'
-import HeroBackdrop from '@/components/svg/HeroBackdrop.vue'
-import IconCyclists from '@/components/svg/IconCyclists.vue'
-import IconMeetup from '@/components/svg/IconMeetup.vue'
-import IconRoutes from '@/components/svg/IconRoutes.vue'
-import RidgeDivider from '@/components/svg/RidgeDivider.vue'
+import CyclistScene from '@/components/icons/CyclistScene.vue'
+import HeroBackdrop from '@/components/icons/HeroBackdrop.vue'
+import IconCyclists from '@/components/icons/IconCyclists.vue'
+import IconMeetup from '@/components/icons/IconMeetup.vue'
+import IconRoutes from '@/components/icons/IconRoutes.vue'
+import RidgeDivider from '@/components/icons/RidgeDivider.vue'
 import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
 import Typography from '@/components/ui/Typography.vue'
+import { storeToRefs } from 'pinia'
+import { useAuthStore } from '@/features/auth/stores/authStore'
+
+const authStore = useAuthStore()
+const { user, isInitialized } = storeToRefs(authStore)
 
 useHead({
   title: 'BikeMates | Encuentra ciclistas y rutas',
@@ -47,9 +52,15 @@ useHead({
           </Typography>
 
           <div class="mt-9 flex flex-col gap-3 sm:flex-row">
-            <Button to="/rides" size="lg">Explorar rutas</Button>
+            <Button to="/rides" size="lg"> Explorar rutas </Button>
 
-            <Button to="/register" variant="outline" size="lg">Únete a BikeMates</Button>
+            <Button v-if="isInitialized && user" to="/rides/create" variant="primary" size="lg">
+              Publicar ruta
+            </Button>
+
+            <Button v-else-if="isInitialized" to="/register" variant="outline" size="lg">
+              Únete a BikeMates
+            </Button>
           </div>
         </div>
 

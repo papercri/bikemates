@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import IconEye from '@/components/svg/IconEye.vue'
+import IconEye from '@/components/icons/IconEye.vue'
 import Input from '@/components/ui/Input.vue'
 
 const model = defineModel<string>({ required: true })

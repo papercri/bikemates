@@ -3,8 +3,8 @@ import { useHead } from '@unhead/vue'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import AppPage from '@/components/layout/AppPage.vue'
-import BrandLogo from '@/components/svg/BrandLogo.vue'
-import RidgeStrip from '@/components/svg/RidgeStrip.vue'
+import BrandLogo from '@/components/icons/BrandLogo.vue'
+import RidgeStrip from '@/components/icons/RidgeStrip.vue'
 import Alert from '@/components/ui/Alert.vue'
 import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
@@ -121,15 +121,8 @@ async function handleDeleteAccount(): Promise<void> {
         </Typography>
       </template>
 
-      <template v-else-if="tab.id === 'saved-rides'">
-        <Typography as="h2" variant="heading-sm">Rutas guardadas</Typography>
-        <Typography class="mt-2" tone="muted">
-          Aquí aparecerán las rutas que hayas guardado.
-        </Typography>
-      </template>
-
       <template v-else>
-        <Typography as="h2" variant="heading-sm">Rutas publicadas</Typography>
+        <Typography as="h2" variant="heading-sm">Mis rutas</Typography>
         <Typography class="mt-2" tone="muted">
           Aquí aparecerán las rutas que hayas publicado.
         </Typography>

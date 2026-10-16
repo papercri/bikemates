@@ -3,14 +3,15 @@ import { useHead } from '@unhead/vue'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import AppPage from '@/components/layout/AppPage.vue'
-import AuthCard from '@/components/features/AuthCard.vue'
-import FormLabel from '@/components/forms/FormLabel.vue'
-import PasswordInput from '@/components/forms/PasswordInput.vue'
+import AuthCard from '@/features/auth/components/AuthCard.vue'
+import FormLabel from '@/components/ui/FormLabel.vue'
+import PasswordInput from '@/components/ui/PasswordInput.vue'
 import Alert from '@/components/ui/Alert.vue'
 import Button from '@/components/ui/Button.vue'
 import Input from '@/components/ui/Input.vue'
 import Typography from '@/components/ui/Typography.vue'
 import { loginUser } from '@/features/auth/services/authService'
+import { useAuthForm } from '@/features/auth/composables/useAuthForm'
 
 useHead({
   title: 'Iniciar sesión | BikeMates',
@@ -20,32 +21,24 @@ const router = useRouter()
 
 const email = ref('')
 const password = ref('')
-const isSubmitting = ref(false)
-const errorMessage = ref('')
+const { isSubmitting, errorMessage, clearMessages, submit } = useAuthForm()
 
 async function handleSubmit(): Promise<void> {
-  errorMessage.value = ''
+  clearMessages()
 
   if (!email.value.trim() || !password.value) {
     errorMessage.value = 'Introduce tu email y contraseña.'
     return
   }
 
-  isSubmitting.value = true
-
-  try {
+  await submit(async () => {
     await loginUser({
       email: email.value,
       password: password.value,
     })
 
     await router.push('/rides')
-  } catch {
-    errorMessage.value =
-      'No se ha podido iniciar sesión. Comprueba tus datos y que hayas confirmado tu email.'
-  } finally {
-    isSubmitting.value = false
-  }
+  }, 'No se ha podido iniciar sesión. Comprueba tus datos y que hayas confirmado tu email.')
 }
 </script>
 

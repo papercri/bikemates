@@ -99,19 +99,23 @@ El guard de router resuelve la sesión antes de navegar y redirige a `/login?red
 src/
   assets/main.css          # tokens del Design System (@theme) y estilos globales
   design-system/           # cn(), createVariant (equivalente mínimo de CVA) y tipos
+  app/router/              # rutas y guards
   components/
-    ui/                    # primitivos: Button, Input, Card, Badge, Alert, Typography, EmptyState
-    forms/                 # PasswordInput, FormLabel, FormHelp, FormError
+    ui/                    # primitivos: Button, Input, Textarea, Card, Badge, Alert,
+                           # Typography, EmptyState, FormLabel, FormError, FormHelp,
+                           # FormSelect, PasswordInput
     layout/                # AppHeader, AppFooter, AppPage (shell de página)
-    svg/                   # SVGs extraídos: BrandLogo, RidgeStrip, CyclistScene, RidgeDivider, HeroBackdrop, Icon*
-    features/              # AuthCard
-    rides/                 # RideCard, ElevationSparkline
+    icons/                 # BrandLogo, RidgeStrip, CyclistScene, RidgeDivider,
+                           # HeroBackdrop, Icon*
   features/
-    auth/                  # authService (Supabase Auth) + authStore (Pinia)
-    rides/                 # tipos, constantes de nivel y datos de ejemplo
-  router/                  # rutas y guards
+    auth/                  # components (AuthCard), composables (useAuthForm),
+                           # services (Supabase Auth), stores (authStore),
+                           # utils (emailLinkParams), validators
+    rides/                 # types, components, composables (useRideImagePicker,
+                           # usePlaceSearch, useRideDetail, useRideList),
+                           # constants, data, services, utils, validators
   services/                # cliente Supabase (único punto de acceso)
-  utils/validators/        # validación de formularios
+  utils/                   # utilidades puras (dates, validators…)
   views/                   # public/ y private/
 e2e/                       # tests Playwright
 docs/log.md                # registro de cambios
@@ -122,7 +126,7 @@ Separación de responsabilidades: las vistas orquestan, los componentes presenta
 ## Design System
 
 - Los componentes visuales viven en `src/components/` y no contienen lógica de negocio.
-- Los SVG decorativos e iconográficos viven en `src/components/svg/` como componentes propios (`CyclistScene`, `RidgeDivider`, `HeroBackdrop`, `Icon*`); las vistas y componentes solo los componen.
+- Los SVG decorativos e iconográficos viven en `src/components/icons/` como componentes propios (`CyclistScene`, `RidgeDivider`, `HeroBackdrop`, `Icon*`); las vistas y componentes solo los componen.
 - Los tokens (colores, radios, sombras, tipografías) se definen una sola vez en `src/assets/main.css`.
 - Los primitivos exponen variantes homogéneas (`variant`, `size`, `tone`, `loading`, `block`, `dot`…) construidas con `createVariant`, sin dependencias externas.
 - Los componentes de UI reciben datos por props y emiten eventos; el estado compartido vive en Pinia (`authStore`).

@@ -3,8 +3,8 @@ import Badge from '@/components/ui/Badge.vue'
 import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
 import Typography from '@/components/ui/Typography.vue'
-import ElevationSparkline from '@/components/rides/ElevationSparkline.vue'
-import IconArrow from '@/components/svg/IconArrow.vue'
+import ElevationSparkline from '@/features/rides/components/ElevationSparkline.vue'
+import IconArrow from '@/components/icons/IconArrow.vue'
 import { RIDE_LEVEL_BADGE_COLORS } from '@/features/rides/constants/rideLevels'
 import type { Ride } from '@/features/rides/types'
 
@@ -23,7 +23,7 @@ defineProps<{
       />
       <div class="relative flex items-start justify-between gap-3 px-6 pt-5">
         <Typography as="span" variant="body-sm" tone="accent" class="font-medium">
-          {{ ride.location }}
+          {{ ride.meetingPoint }}
         </Typography>
         <Badge :color="RIDE_LEVEL_BADGE_COLORS[ride.level]" dot>
           {{ ride.level }}

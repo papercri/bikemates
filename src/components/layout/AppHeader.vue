@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
-import BrandLogo from '@/components/svg/BrandLogo.vue'
+import BrandLogo from '@/components/icons/BrandLogo.vue'
 import Alert from '@/components/ui/Alert.vue'
 import Button from '@/components/ui/Button.vue'
 import { useAuthStore } from '@/features/auth/stores/authStore'
@@ -48,16 +48,25 @@ async function handleLogout(): Promise<void> {
         <RouterLink to="/rides" class="text-sm text-graphite transition-colors hover:text-ink">
           Explorar rutas
         </RouterLink>
+        <RouterLink
+          v-if="user"
+          to="/rides/create"
+          class="text-sm text-graphite transition-colors hover:text-ink"
+        >
+          Publicar ruta
+        </RouterLink>
       </nav>
 
       <div class="flex items-center gap-3">
         <span v-if="!isInitialized" class="text-sm text-graphite"> Comprobando sesión… </span>
 
         <template v-else-if="user">
-          <Button to="/profile" variant="outline" size="sm">Mi perfil</Button>
-
           <Button variant="primary" size="sm" :loading="isLoggingOut" @click="handleLogout">
             {{ isLoggingOut ? 'Cerrando sesión…' : 'Cerrar sesión' }}
+          </Button>
+
+          <Button to="/profile" variant="outline" size="sm" class="hidden sm:inline-flex">
+            Mi perfil
           </Button>
         </template>
 
