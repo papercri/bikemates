@@ -12,7 +12,6 @@ import Card from '@/components/ui/Card.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import Typography from '@/components/ui/Typography.vue'
 import { useAuthStore } from '@/features/auth/stores/authStore'
-import ElevationSparkline from '@/features/rides/components/ElevationSparkline.vue'
 import RideMap from '@/features/rides/components/RideMap.vue'
 import { useRideDetail } from '@/features/rides/composables/useRideDetail'
 import { RIDE_LEVEL_BADGE_COLORS } from '@/features/rides/constants/rideLevels'
@@ -137,12 +136,13 @@ useHead({
             </Typography>
           </div>
 
-          <ElevationSparkline
-            :distance-km="ride.distanceKm"
-            :elevation-m="ride.elevationM"
-            variant="banner"
-            class="bg-snow"
-          />
+          <img
+          :src="ride.imageUrl || '/default.webp'"
+          :alt="`Imagen de la ruta ${ride.title}`"
+          class="aspect-[16/9] w-full object-cover"
+          loading="eager"
+          fetchpriority="high"
+        />
 
           <dl class="grid grid-cols-2 border-t border-line sm:grid-cols-3">
             <div class="border-r border-line p-5 sm:p-6">

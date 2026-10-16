@@ -6,7 +6,17 @@ import {
   isRideLevel,
   isRideStatus,
 } from '../validators/rideValueGuards'
+function getRideImageUrl(imagePath: string | null): string | null {
+  if (!imagePath) {
+    return null
+  }
 
+  const { data } = supabase.storage
+    .from('ride-images')
+    .getPublicUrl(imagePath)
+
+  return data.publicUrl
+}
 function mapRide(data: {
   id: string
   organizer_id: string
@@ -59,6 +69,7 @@ function mapRide(data: {
     status: data.status,
     createdAt: data.created_at,
     updatedAt: data.updated_at,
+    imageUrl: getRideImageUrl(data.image_path)
   }
 }
 

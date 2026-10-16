@@ -27,6 +27,7 @@ export interface Ride {
   status: RideStatus
   createdAt: string
   updatedAt: string
+  imageUrl: string | null
 }
 
 export interface CreateRideInput {
