@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatRideDate, toLocalDateTime } from './dates'
+import { formatRideDate, getRideDateParts, toLocalDateTime } from './dates'
 
 describe('formatRideDate', () => {
   it('formats a departure in long Spanish format', () => {
@@ -10,6 +10,21 @@ describe('formatRideDate', () => {
     expect(formatted).toContain('10')
     expect(formatted).toContain('junio')
     expect(formatted).toContain('09:30')
+  })
+})
+
+describe('getRideDateParts', () => {
+  it('splits a departure into a day figure and a short month', () => {
+    const departure = new Date(2026, 5, 10, 9, 30)
+
+    expect(getRideDateParts(departure.toISOString())).toEqual({
+      day: '10',
+      month: 'jun',
+    })
+  })
+
+  it('returns empty parts for an unparseable date', () => {
+    expect(getRideDateParts('no-es-fecha')).toEqual({ day: '', month: '' })
   })
 })
 

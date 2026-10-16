@@ -33,10 +33,10 @@ const variantClasses: Record<TypographyVariant, string> = {
   eyebrow: 'text-sm font-semibold uppercase tracking-widest',
   'eyebrow-wide': 'text-sm font-semibold uppercase tracking-[0.2em]',
   'label-xs': 'text-xs font-semibold uppercase tracking-widest',
-  'numeric-xl': 'font-mono text-4xl font-bold leading-none tracking-tight',
-  'numeric-lg': 'font-mono text-2xl font-bold tracking-tight sm:text-3xl',
-  'numeric-md': 'font-mono text-xl font-bold leading-none tracking-tight',
-  'numeric-inline': 'font-mono font-bold',
+  'numeric-xl': 'font-display text-4xl font-extrabold leading-none tracking-tight tabular-nums',
+  'numeric-lg': 'font-display text-2xl font-extrabold tracking-tight tabular-nums sm:text-3xl',
+  'numeric-md': 'font-display text-xl font-extrabold leading-none tracking-tight tabular-nums',
+  'numeric-inline': 'font-display font-bold tabular-nums',
 }
 
 const toneClasses: Record<TypographyTone, string> = {

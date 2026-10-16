@@ -2,6 +2,17 @@
 import { onBeforeUnmount, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import {
+  faBars,
+  faBicycle,
+  faCirclePlus,
+  faRightFromBracket,
+  faRightToBracket,
+  faUserGear,
+  faUserPlus,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons'
 import BrandLogo from '@/components/icons/BrandLogo.vue'
 import Alert from '@/components/ui/Alert.vue'
 import Button from '@/components/ui/Button.vue'
@@ -21,7 +32,7 @@ const menuId = 'primary-mobile-nav'
 const menuButton = ref<HTMLButtonElement | null>(null)
 
 const menuLinkClasses =
-  'block rounded-btn px-3 py-3 text-base text-ink transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail'
+  'flex items-center gap-3 rounded-btn px-3 py-3 text-base text-ink transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail'
 
 async function handleLogout(): Promise<void> {
   isLoggingOut.value = true
@@ -84,63 +95,62 @@ onBeforeUnmount(() => {
         <span>Bike<span class="text-trail-ink">Mates</span></span>
       </RouterLink>
 
-      <nav aria-label="Navegación principal" class="hidden items-center gap-6 sm:flex">
+      <nav aria-label="Navegación principal" class="hidden items-center gap-5 sm:flex">
         <RouterLink
           to="/rides"
-          class="text-sm text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
+          class="inline-flex items-center gap-2 text-sm text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
         >
+          <FontAwesomeIcon :icon="faBicycle" aria-hidden="true" />
           Explorar rutas
         </RouterLink>
         <RouterLink
           v-if="user"
           to="/rides/create"
-          class="text-sm text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
+          class="inline-flex items-center gap-2 text-sm text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
         >
+          <FontAwesomeIcon :icon="faCirclePlus" aria-hidden="true" />
           Publicar ruta
         </RouterLink>
       </nav>
 
-      <div class="hidden items-center justify-end gap-2 sm:flex sm:gap-3">
-        <span v-if="!isInitialized" class="text-sm text-graphite"> Comprobando sesión… </span>
+      <div class="hidden items-center justify-end gap-2 sm:flex">
+        <span v-if="!isInitialized" class="text-xs text-graphite"> Comprobando sesión… </span>
 
         <template v-else-if="user">
-          <Button to="/profile" variant="outline" size="sm"> Mi perfil </Button>
+          <Button to="/profile" variant="outline" size="xs">
+            <FontAwesomeIcon :icon="faUserGear" aria-hidden="true" />
+            Mi perfil
+          </Button>
 
-          <Button variant="primary" size="sm" :loading="isLoggingOut" @click="handleLogout">
-            {{ isLoggingOut ? 'Cerrando sesión…' : 'Cerrar sesión' }}
+          <Button variant="primary" size="xs" :loading="isLoggingOut" @click="handleLogout">
+            <FontAwesomeIcon v-if="!isLoggingOut" :icon="faRightFromBracket" aria-hidden="true" />
+            {{ isLoggingOut ? 'Cerrando…' : 'Cerrar sesión' }}
           </Button>
         </template>
 
         <template v-else>
-          <Button to="/login" variant="outline" size="sm" class="shrink-0"> Iniciar sesión </Button>
+          <Button to="/login" variant="outline" size="xs">
+            <FontAwesomeIcon :icon="faRightToBracket" aria-hidden="true" />
+            Iniciar sesión
+          </Button>
 
-          <Button to="/register" variant="primary" size="sm" class="shrink-0"> Registrarse </Button>
+          <Button to="/register" variant="primary" size="xs">
+            <FontAwesomeIcon :icon="faUserPlus" aria-hidden="true" />
+            Registrarse
+          </Button>
         </template>
       </div>
 
       <button
         ref="menuButton"
         type="button"
-        class="-mr-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-btn text-ink transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail sm:hidden"
+        class="-mr-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-btn text-lg text-ink transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail sm:hidden"
         :aria-expanded="isMenuOpen"
         :aria-controls="menuId"
         @click="toggleMenu"
       >
         <span class="sr-only">{{ isMenuOpen ? 'Cerrar menú' : 'Abrir menú' }}</span>
-        <span aria-hidden="true" class="relative block h-4 w-5">
-          <span
-            class="absolute inset-x-0 top-0 h-0.5 rounded-full bg-ink motion-safe:duration-200 motion-safe:transition-transform"
-            :class="isMenuOpen ? 'translate-y-1.5 rotate-45' : ''"
-          />
-          <span
-            class="absolute inset-x-0 top-1.5 h-0.5 rounded-full bg-ink motion-safe:transition-opacity"
-            :class="isMenuOpen ? 'opacity-0' : 'opacity-100'"
-          />
-          <span
-            class="absolute inset-x-0 top-3 h-0.5 rounded-full bg-ink motion-safe:duration-200 motion-safe:transition-transform"
-            :class="isMenuOpen ? '-translate-y-1.5 -rotate-45' : ''"
-          />
-        </span>
+        <FontAwesomeIcon :icon="isMenuOpen ? faXmark : faBars" aria-hidden="true" />
       </button>
     </div>
 
@@ -154,10 +164,16 @@ onBeforeUnmount(() => {
         <nav aria-label="Navegación principal" class="mx-auto max-w-7xl px-4 py-3 sm:px-6">
           <ul class="flex flex-col">
             <li>
-              <RouterLink to="/rides" :class="menuLinkClasses">Explorar rutas</RouterLink>
+              <RouterLink to="/rides" :class="menuLinkClasses">
+                <FontAwesomeIcon :icon="faBicycle" aria-hidden="true" />
+                Explorar rutas
+              </RouterLink>
             </li>
             <li v-if="user">
-              <RouterLink to="/rides/create" :class="menuLinkClasses">Publicar ruta</RouterLink>
+              <RouterLink to="/rides/create" :class="menuLinkClasses">
+                <FontAwesomeIcon :icon="faCirclePlus" aria-hidden="true" />
+                Publicar ruta
+              </RouterLink>
             </li>
           </ul>
 
@@ -167,7 +183,10 @@ onBeforeUnmount(() => {
             </span>
 
             <template v-else-if="user">
-              <RouterLink to="/profile" :class="menuLinkClasses">Mi perfil</RouterLink>
+              <RouterLink to="/profile" :class="menuLinkClasses">
+                <FontAwesomeIcon :icon="faUserGear" aria-hidden="true" />
+                Mi perfil
+              </RouterLink>
 
               <Button
                 variant="outline"
@@ -176,14 +195,25 @@ onBeforeUnmount(() => {
                 :loading="isLoggingOut"
                 @click="handleLogout"
               >
+                <FontAwesomeIcon
+                  v-if="!isLoggingOut"
+                  :icon="faRightFromBracket"
+                  aria-hidden="true"
+                />
                 {{ isLoggingOut ? 'Cerrando sesión…' : 'Cerrar sesión' }}
               </Button>
             </template>
 
             <template v-else>
-              <RouterLink to="/login" :class="menuLinkClasses">Iniciar sesión</RouterLink>
+              <RouterLink to="/login" :class="menuLinkClasses">
+                <FontAwesomeIcon :icon="faRightToBracket" aria-hidden="true" />
+                Iniciar sesión
+              </RouterLink>
 
-              <Button to="/register" variant="primary" size="sm" block> Registrarse </Button>
+              <Button to="/register" variant="primary" size="sm" block>
+                <FontAwesomeIcon :icon="faUserPlus" aria-hidden="true" />
+                Registrarse
+              </Button>
             </template>
           </div>
         </nav>

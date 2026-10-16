@@ -8,6 +8,7 @@ import RidgeStrip from '@/components/icons/RidgeStrip.vue'
 import Alert from '@/components/ui/Alert.vue'
 import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
+import EmptyState from '@/components/ui/EmptyState.vue'
 import Typography from '@/components/ui/Typography.vue'
 import { useAuthStore } from '@/features/auth/stores/authStore'
 
@@ -88,12 +89,7 @@ async function handleDeleteAccount(): Promise<void> {
         </div>
 
         <div>
-          <Typography as="p" variant="body-sm" tone="accent" class="font-medium">
-            BIKEMATES
-          </Typography>
-          <Typography as="h1" variant="heading-lg" class="mt-1 tracking-tight">
-            Mi perfil
-          </Typography>
+          <Typography as="h1" variant="heading-lg" class="tracking-tight"> Mi perfil </Typography>
           <Typography class="mt-1" tone="muted">
             Gestiona tus datos y tu actividad ciclista.
           </Typography>
@@ -140,23 +136,27 @@ async function handleDeleteAccount(): Promise<void> {
     >
       <template v-if="tab.id === 'details'">
         <Typography as="h2" variant="heading-sm">Mis datos</Typography>
-        <Typography class="mt-2" tone="muted">
+        <Typography class="mt-2 max-w-2xl leading-7" tone="muted">
           La edición de tus datos personales estará disponible en una próxima versión.
         </Typography>
       </template>
 
       <template v-else-if="tab.id === 'saved-rides'">
-        <Typography as="h2" variant="heading-sm">Rutas guardadas</Typography>
-        <Typography class="mt-2" tone="muted">
-          Todavía no hay rutas guardadas. Aquí aparecerán las que marques desde Explorar rutas.
-        </Typography>
+        <EmptyState
+          title="Rutas guardadas"
+          description="Todavía no has guardado ninguna ruta. Las que marques desde Explorar rutas aparecerán aquí."
+        >
+          <Button to="/rides" variant="outline">Explorar rutas</Button>
+        </EmptyState>
       </template>
 
       <template v-else>
-        <Typography as="h2" variant="heading-sm">Rutas publicadas</Typography>
-        <Typography class="mt-2" tone="muted">
-          Todavía no has publicado rutas. Aquí aparecerán las que crees desde BikeMates.
-        </Typography>
+        <EmptyState
+          title="Rutas publicadas"
+          description="Todavía no has publicado ninguna ruta. Crea la primera y aparecerá aquí."
+        >
+          <Button to="/rides/create">Publicar ruta</Button>
+        </EmptyState>
       </template>
     </section>
 

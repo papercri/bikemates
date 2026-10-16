@@ -44,7 +44,8 @@ describe('Typography', () => {
       slots: { default: '650' },
     })
 
-    expect(wrapper.classes()).toContain('font-mono')
+    expect(wrapper.classes()).toContain('font-display')
+    expect(wrapper.classes()).toContain('tabular-nums')
     expect(wrapper.classes()).toContain('text-trail-ink')
   })
 

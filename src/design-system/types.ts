@@ -1,5 +1,5 @@
 export type ButtonVariant = 'primary' | 'sun' | 'sun-outline' | 'outline' | 'destructive' | 'link'
-export type ButtonSize = 'sm' | 'md' | 'lg'
+export type ButtonSize = 'xs' | 'sm' | 'md' | 'lg'
 
 export type BadgeVariant = 'soft' | 'muted'
 export type BadgeColor = 'trail' | 'route' | 'ink'

@@ -107,86 +107,85 @@ useHead({
           {{ ride.title }}
         </Typography>
         <Typography class="mt-3" variant="body-sm" tone="muted">
-          {{ formatRideDate(ride.startsAt) }}
+          <time :datetime="ride.startsAt">{{ formatRideDate(ride.startsAt) }}</time>
         </Typography>
 
-        <Typography class="mt-5 leading-7" tone="muted">
-          {{ ride.description }}
-        </Typography>
+        <img
+          :src="ride.imageUrl || '/default.webp'"
+          :alt="`Imagen de la ruta ${ride.title}`"
+          class="mt-6 aspect-[16/9] w-full rounded-card border border-line object-cover"
+          loading="eager"
+          fetchpriority="high"
+        />
 
-        <Card class="mt-8">
+        <dl class="mt-6 grid grid-cols-1 border-y border-line sm:grid-cols-3">
           <div
-            class="flex items-center justify-between border-b border-line bg-snow px-5 py-3 sm:px-6"
+            class="border-t border-line px-4 py-4 first:border-t-0 sm:border-t-0 sm:border-l sm:first:border-l-0 sm:px-6 sm:py-5"
           >
-            <Typography as="h2" variant="label-xs" tone="muted"> Perfil del recorrido </Typography>
-            <Typography variant="caption" tone="muted">
-              Desnivel acumulado
-              <Typography as="span" variant="numeric-inline" class="text-ink">
-                +{{ ride.elevationM }} m
-              </Typography>
+            <Typography as="dt" variant="body-sm" tone="muted" class="flex items-center gap-1.5">
+              <IconDistance />
+              Distancia
             </Typography>
+            <dd class="mt-2 flex items-baseline gap-1">
+              <Typography as="span" variant="numeric-lg">
+                {{ ride.distanceKm }}
+              </Typography>
+              <Typography as="span" variant="body-sm" tone="muted" class="font-semibold">
+                km
+              </Typography>
+            </dd>
           </div>
 
-          <img
-            :src="ride.imageUrl || '/default.webp'"
-            :alt="`Imagen de la ruta ${ride.title}`"
-            class="aspect-[16/9] w-full object-cover"
-            loading="eager"
-            fetchpriority="high"
-          />
-
-          <dl class="grid grid-cols-2 border-t border-line sm:grid-cols-3">
-            <div class="border-r border-line p-5 sm:p-6">
-              <Typography as="dt" variant="body-sm" tone="muted" class="flex items-center gap-1.5">
-                <IconDistance />
-                Distancia
+          <div class="border-t border-line px-4 py-4 sm:border-t-0 sm:border-l sm:px-6 sm:py-5">
+            <Typography as="dt" variant="body-sm" tone="muted" class="flex items-center gap-1.5">
+              <IconElevation />
+              Desnivel
+            </Typography>
+            <dd class="mt-2 flex items-baseline gap-1">
+              <Typography as="span" variant="numeric-lg"> +{{ ride.elevationM }} </Typography>
+              <Typography as="span" variant="body-sm" tone="muted" class="font-semibold">
+                m
               </Typography>
-              <dd class="mt-2 flex items-baseline gap-1">
+            </dd>
+          </div>
+
+          <div class="border-t border-line px-4 py-4 sm:border-t-0 sm:border-l sm:px-6 sm:py-5">
+            <Typography as="dt" variant="body-sm" tone="muted"> Duración estimada </Typography>
+            <dd class="mt-2 flex items-baseline gap-1">
+              <Typography as="span" variant="numeric-lg">
+                {{ durationHours }}
+              </Typography>
+              <Typography as="span" variant="body-sm" tone="muted" class="font-semibold">
+                h
+              </Typography>
+              <template v-if="durationMinutesRemainder > 0">
                 <Typography as="span" variant="numeric-lg">
-                  {{ ride.distanceKm }}
+                  {{ durationMinutesRemainder }}
                 </Typography>
                 <Typography as="span" variant="body-sm" tone="muted" class="font-semibold">
-                  km
+                  min
                 </Typography>
-              </dd>
-            </div>
+              </template>
+            </dd>
+          </div>
+        </dl>
 
-            <div class="border-r border-line p-5 sm:p-6">
-              <Typography as="dt" variant="body-sm" tone="muted" class="flex items-center gap-1.5">
-                <IconElevation />
-                Desnivel
-              </Typography>
-              <dd class="mt-2 flex items-baseline gap-1">
-                <Typography as="span" variant="numeric-lg"> +{{ ride.elevationM }} </Typography>
-                <Typography as="span" variant="body-sm" tone="muted" class="font-semibold">
-                  m
-                </Typography>
-              </dd>
-            </div>
+        <p v-if="ride.wikilocUrl" class="mt-4">
+          <a
+            :href="ride.wikilocUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-sm font-medium text-trail-ink underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
+            :aria-label="`Ver recorrido de ${ride.title} en Wikiloc`"
+          >
+            Ver recorrido en Wikiloc
+            <span class="sr-only">(se abre en una pestaña nueva)</span>
+          </a>
+        </p>
 
-            <div class="col-span-2 border-t border-line p-5 sm:col-span-1 sm:border-t-0 sm:p-6">
-              <Typography as="dt" variant="body-sm" tone="muted"> Duración estimada </Typography>
-              <dd class="mt-2">
-                <Typography as="span" variant="numeric-inline">
-                  {{ durationHours }} h<span v-if="durationMinutesRemainder > 0">
-                    {{ durationMinutesRemainder }} min
-                  </span>
-                </Typography>
-              </dd>
-            </div>
-          </dl>
-          <p v-if="ride.wikilocUrl" class="mt-4 text-center">
-            <a
-              :href="ride.wikilocUrl"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="text-sm font-medium text-trail-ink hover:underline"
-              :aria-label="`Ver recorrido de ${ride.title} en Wikiloc`"
-            >
-              Ver recorrido en Wikiloc
-            </a>
-          </p>
-        </Card>
+        <Typography class="mt-6 leading-7" tone="muted">
+          {{ ride.description }}
+        </Typography>
       </section>
 
       <section class="mt-10" aria-labelledby="meeting-point-title">

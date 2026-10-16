@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useHead } from '@unhead/vue'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { faBicycle } from '@fortawesome/free-solid-svg-icons'
 import AppPage from '@/components/layout/AppPage.vue'
 import CyclistScene from '@/components/icons/CyclistScene.vue'
 import HeroBackdrop from '@/components/icons/HeroBackdrop.vue'
@@ -204,7 +206,7 @@ const { isInView: galleryVisible } = useInView(gallerySection)
     </section>
 
     <section
-      class="relative isolate -mx-4 overflow-hidden bg-ink sm:-mx-6 lg:-mx-8"
+      class="relative isolate -mx-4 overflow-hidden bg-turf sm:-mx-6 lg:-mx-8"
       aria-labelledby="cta-title"
     >
       <svg
@@ -218,7 +220,7 @@ const { isInView: galleryVisible } = useInView(gallerySection)
           d="M-40 86 C 260 34, 520 104, 820 62 S 1240 30, 1480 78"
           fill="none"
           stroke="var(--color-route)"
-          stroke-opacity="0.35"
+          stroke-opacity="0.55"
           stroke-width="3"
           stroke-dasharray="8 12"
           stroke-linecap="round"
@@ -235,7 +237,7 @@ const { isInView: galleryVisible } = useInView(gallerySection)
           >
             Tu próxima salida empieza aquí
           </h2>
-          <p class="mt-4 max-w-xl leading-7 text-canvas/80">
+          <p class="mt-4 max-w-xl leading-7 text-canvas/90">
             Crea tu cuenta, elige una ruta cerca de ti y sal a pedalear con gente nueva.
           </p>
         </div>
@@ -247,8 +249,9 @@ const { isInView: galleryVisible } = useInView(gallerySection)
 
           <RouterLink
             to="/rides"
-            class="text-route underline-offset-4 transition-colors hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-route"
+            class="inline-flex items-center gap-2 text-canvas underline-offset-4 transition-colors hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-canvas"
           >
+            <FontAwesomeIcon :icon="faBicycle" aria-hidden="true" />
             Explorar rutas
           </RouterLink>
         </div>
