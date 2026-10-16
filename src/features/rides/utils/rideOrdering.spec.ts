@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { sortRidesByDate } from '../rideOrdering'
+import { sortRidesByDate } from './rideOrdering'
 
 const rides = [
   { startsAt: '2027-05-17T08:00:00+02:00' },

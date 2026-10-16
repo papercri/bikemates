@@ -26,9 +26,7 @@ const isPrideAudience = computed(() => props.audience === 'lgbt')
 <template>
   <Badge variant="muted" color="ink">
     <!-- La comunidad LGBT+ se identifica con la bandera arcoíris. -->
-    <span v-if="isPrideAudience" aria-hidden="true" class="text-[0.95em] leading-none">
-      🏳️‍🌈
-    </span>
+    <span v-if="isPrideAudience" aria-hidden="true" class="text-[0.95em] leading-none"> 🏳️‍🌈 </span>
     <FontAwesomeIcon v-else :icon="icon" aria-hidden="true" />
     {{ label }}
   </Badge>
