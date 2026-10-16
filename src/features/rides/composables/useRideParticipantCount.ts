@@ -1,10 +1,7 @@
-
 import { ref, toValue, watch, type MaybeRefOrGetter } from 'vue'
 import { getRideParticipantCount } from '../services/rideService'
 
-export function useRideParticipantCount(
-  rideId: MaybeRefOrGetter<string | null>,
-) {
+export function useRideParticipantCount(rideId: MaybeRefOrGetter<string | null>) {
   const participantCount = ref<number | null>(null)
   const isLoadingCount = ref(false)
   const countError = ref<string | null>(null)
@@ -25,9 +22,7 @@ export function useRideParticipantCount(
       participantCount.value = await getRideParticipantCount(id)
     } catch (error: unknown) {
       countError.value =
-        error instanceof Error
-          ? error.message
-          : 'No se pudo cargar el número de participantes.'
+        error instanceof Error ? error.message : 'No se pudo cargar el número de participantes.'
     } finally {
       isLoadingCount.value = false
     }

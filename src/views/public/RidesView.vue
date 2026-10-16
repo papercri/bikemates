@@ -63,7 +63,7 @@ const filteredRides = computed(() => {
           class="rounded-full border px-4 py-2.5 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
           :class="
             selectedLevel === level
-              ? 'border-trail bg-trail font-semibold text-ink'
+              ? 'border-trail bg-trail font-semibold text-white'
               : 'border-line-strong bg-canvas text-graphite hover:border-trail hover:text-ink'
           "
           @click="selectedLevel = level"

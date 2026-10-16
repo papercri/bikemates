@@ -21,7 +21,6 @@ import RideParticipants from '@/features/rides/components/RideParticipants.vue'
 import { useRideParticipantCount } from '@/features/rides/composables/useRideParticipantCount'
 import { useRideParticipants } from '@/features/rides/composables/useRideParticipants'
 
-
 const route = useRoute()
 const authStore = useAuthStore()
 
@@ -34,11 +33,7 @@ const { ride, isLoading, errorMessage } = useRideDetail(rideId)
 
 const isAuthenticated = computed(() => authStore.user !== null)
 
-const {
-  participantCount,
-  isLoadingCount,
-  countError,
-} = useRideParticipantCount(rideId)
+const { participantCount, isLoadingCount, countError } = useRideParticipantCount(rideId)
 
 const {
   participants,
@@ -57,13 +52,9 @@ const isOrganizer = computed(
   () => ride.value !== null && authStore.user?.id === ride.value.organizerId,
 )
 
-const durationHours = computed(
-  () => (ride.value ? Math.floor(ride.value.durationMinutes / 60) : 0),
-)
+const durationHours = computed(() => (ride.value ? Math.floor(ride.value.durationMinutes / 60) : 0))
 
-const durationMinutesRemainder = computed(
-  () => (ride.value ? ride.value.durationMinutes % 60 : 0),
-)
+const durationMinutesRemainder = computed(() => (ride.value ? ride.value.durationMinutes % 60 : 0))
 
 useHead({
   title: computed(() =>
@@ -137,12 +128,12 @@ useHead({
           </div>
 
           <img
-          :src="ride.imageUrl || '/default.webp'"
-          :alt="`Imagen de la ruta ${ride.title}`"
-          class="aspect-[16/9] w-full object-cover"
-          loading="eager"
-          fetchpriority="high"
-        />
+            :src="ride.imageUrl || '/default.webp'"
+            :alt="`Imagen de la ruta ${ride.title}`"
+            class="aspect-[16/9] w-full object-cover"
+            loading="eager"
+            fetchpriority="high"
+          />
 
           <dl class="grid grid-cols-2 border-t border-line sm:grid-cols-3">
             <div class="border-r border-line p-5 sm:p-6">
@@ -231,81 +222,56 @@ useHead({
         </Card>
       </section>
 
+      <RideParticipants
+        v-if="isAuthenticated"
+        class="mt-10"
+        :participants="participants"
+        :is-loading="isLoadingParticipants"
+        :error-message="participantsError"
+        :is-authenticated="isAuthenticated"
+        :current-user-id="authStore.user?.id ?? null"
+        :is-submitting="isSubmitting"
+        :is-organizer="isOrganizer"
+        @join="join"
+        @leave="leave"
+      />
 
+      <section v-else class="mt-10" aria-labelledby="participants-title">
+        <div class="mb-4 flex items-center justify-between gap-4">
+          <Typography id="participants-title" as="h2" variant="heading-lg">
+            Participantes
+          </Typography>
 
+          <Typography
+            v-if="participantCount !== null"
+            as="span"
+            variant="numeric-inline"
+            class="text-ink"
+            aria-live="polite"
+          >
+            {{ participantCount }}
+            {{ participantCount === 1 ? 'inscrito' : 'inscritos' }}
+          </Typography>
+        </div>
 
-<RideParticipants
-  v-if="isAuthenticated"
-  class="mt-10"
-  :participants="participants"
-  :is-loading="isLoadingParticipants"
-  :error-message="participantsError"
-  :is-authenticated="isAuthenticated"
-  :current-user-id="authStore.user?.id ?? null"
-  :is-submitting="isSubmitting"
-  :is-organizer="isOrganizer"
-  @join="join"
-  @leave="leave"
-/>
+        <Card class="p-5 sm:p-6">
+          <Typography v-if="isLoadingCount" variant="body-sm" tone="muted" role="status">
+            Cargando el número de participantes...
+          </Typography>
 
-  <section
-    v-else
-    class="mt-10"
-    aria-labelledby="participants-title"
-  >
-    <div class="mb-4 flex items-center justify-between gap-4">
-      <Typography
-        id="participants-title"
-        as="h2"
-        variant="heading-lg"
-      >
-        Participantes
-      </Typography>
+          <Typography v-else-if="countError" variant="body-sm" tone="muted" role="status">
+            No se ha podido cargar el número de participantes.
+          </Typography>
 
-      <Typography
-        v-if="participantCount !== null"
-        as="span"
-        variant="numeric-inline"
-        class="text-ink"
-        aria-live="polite"
-      >
-        {{ participantCount }}
-        {{ participantCount === 1 ? 'inscrito' : 'inscritos' }}
-      </Typography>
-    </div>
+          <div v-else>
+            <Typography variant="body-sm" tone="muted">
+              Inicia sesión para ver quién participa en esta ruta.
+            </Typography>
 
-    <Card class="p-5 sm:p-6">
-      <Typography
-        v-if="isLoadingCount"
-        variant="body-sm"
-        tone="muted"
-        role="status"
-      >
-        Cargando el número de participantes...
-      </Typography>
-
-      <Typography
-        v-else-if="countError"
-        variant="body-sm"
-        tone="muted"
-        role="status"
-      >
-        No se ha podido cargar el número de participantes.
-      </Typography>
-
-      <div v-else>
-        <Typography variant="body-sm" tone="muted">
-          Inicia sesión para ver quién participa en esta ruta.
-        </Typography>
-
-        <Button to="/login" class="mt-4">
-          Iniciar sesión
-        </Button>
-      </div>
-    </Card>
-  </section>
-
-
+            <Button to="/login" class="mt-4"> Iniciar sesión </Button>
+          </div>
+        </Card>
+      </section>
 
       <div class="mt-8 flex flex-wrap gap-3">
         <Button v-if="isOrganizer" :to="{ name: 'ride-edit', params: { id: ride.id } }">

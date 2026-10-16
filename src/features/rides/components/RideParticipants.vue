@@ -53,9 +53,7 @@ function confirmLeave(): void {
 <template>
   <section aria-labelledby="participants-title">
     <div class="mb-4 flex flex-wrap items-center justify-between gap-4">
-      <Typography id="participants-title" as="h2" variant="heading-lg">
-        Participantes
-      </Typography>
+      <Typography id="participants-title" as="h2" variant="heading-lg"> Participantes </Typography>
 
       <Typography variant="body-sm" tone="muted" aria-live="polite">
         {{ participantCount }}
@@ -81,9 +79,7 @@ function confirmLeave(): void {
         </template>
 
         <template v-else-if="isParticipant">
-          <Typography variant="body-sm" tone="muted">
-            Ya estás inscrito en esta ruta.
-          </Typography>
+          <Typography variant="body-sm" tone="muted"> Ya estás inscrito en esta ruta. </Typography>
 
           <Button variant="outline" class="mt-3" :disabled="isSubmitting" @click="confirmLeave">
             {{ isSubmitting ? 'Procesando…' : 'Dejar de participar' }}
@@ -136,9 +132,7 @@ function confirmLeave(): void {
               {{ participant.displayName }}
             </Typography>
 
-            <Badge v-if="participant.isOrganizer" variant="muted">
-              Organizador
-            </Badge>
+            <Badge v-if="participant.isOrganizer" variant="muted"> Organizador </Badge>
           </div>
         </li>
       </ul>

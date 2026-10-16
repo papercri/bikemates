@@ -25,11 +25,7 @@ const { isProcessing, isConfirmed, errorMessage } = useEmailLinkConfirmation(
 
     <main class="flex flex-1 items-center justify-center px-4 py-12">
       <Card aria-labelledby="confirmation-title" class="w-full max-w-md p-8 text-center sm:p-10">
-        <Typography
-          id="confirmation-title"
-          as="h1"
-          variant="heading-md"
-        >
+        <Typography id="confirmation-title" as="h1" variant="heading-md">
           {{
             isProcessing
               ? 'Verificando enlace…'
@@ -51,13 +47,7 @@ const { isProcessing, isConfirmed, errorMessage } = useEmailLinkConfirmation(
           {{ errorMessage }}
         </Alert>
 
-        <Button
-          v-if="!isProcessing"
-          :to="{ name: 'login' }"
-          block
-          size="md"
-          class="mt-8"
-        >
+        <Button v-if="!isProcessing" :to="{ name: 'login' }" block size="md" class="mt-8">
           {{ isConfirmed ? 'Ir al inicio de sesión' : 'Volver al inicio de sesión' }}
         </Button>
 

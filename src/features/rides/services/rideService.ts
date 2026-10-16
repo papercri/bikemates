@@ -11,9 +11,7 @@ function getRideImageUrl(imagePath: string | null): string | null {
     return null
   }
 
-  const { data } = supabase.storage
-    .from('ride-images')
-    .getPublicUrl(imagePath)
+  const { data } = supabase.storage.from('ride-images').getPublicUrl(imagePath)
 
   return data.publicUrl
 }
@@ -69,7 +67,7 @@ function mapRide(data: {
     status: data.status,
     createdAt: data.created_at,
     updatedAt: data.updated_at,
-    imageUrl: getRideImageUrl(data.image_path)
+    imageUrl: getRideImageUrl(data.image_path),
   }
 }
 
@@ -265,21 +263,22 @@ export async function updateRide(id: string, input: UpdateRideInput): Promise<Ri
   return mapRide(data)
 }
 
-
 export async function getRideParticipants(
   rideId: string,
   organizerId: string,
 ): Promise<RideParticipant[]> {
   const { data, error } = await supabase
     .from('ride_participants')
-    .select(`
+    .select(
+      `
       user_id,
       profiles (
         id,
         display_name,
         avatar_url
       )
-    `)
+    `,
+    )
     .eq('ride_id', rideId)
     .order('joined_at', { ascending: true })
 
@@ -303,19 +302,11 @@ export async function getRideParticipants(
   })
 }
 
-
-export async function getRideParticipantCount(
-  rideId: string,
-): Promise<number> {
-  const { data, error } = await supabase.rpc(
-    'get_ride_participant_count',
-    { p_ride_id: rideId },
-  )
+export async function getRideParticipantCount(rideId: string): Promise<number> {
+  const { data, error } = await supabase.rpc('get_ride_participant_count', { p_ride_id: rideId })
 
   if (error) {
-    throw new Error(
-      `No se pudo cargar el número de participantes: ${error.message}`,
-    )
+    throw new Error(`No se pudo cargar el número de participantes: ${error.message}`)
   }
 
   return Number(data)

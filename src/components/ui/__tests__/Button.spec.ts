@@ -56,6 +56,27 @@ describe('Button', () => {
     expect(wrapper.classes()).not.toContain('px-5')
   })
 
+  it('renders the primary variant with readable brand colors', () => {
+    const wrapper = mount(Button, { props: { variant: 'primary' } })
+
+    expect(wrapper.classes()).toContain('bg-trail')
+    expect(wrapper.classes()).toContain('text-white')
+    expect(wrapper.classes()).not.toContain('text-ink')
+  })
+
+  it('renders the sun variants for dark surfaces', () => {
+    const sun = mount(Button, { props: { variant: 'sun' } })
+
+    expect(sun.classes()).toContain('bg-canvas')
+    expect(sun.classes()).toContain('text-ink')
+
+    const sunOutline = mount(Button, { props: { variant: 'sun-outline' } })
+
+    expect(sunOutline.classes()).toContain('text-canvas')
+    expect(sunOutline.classes()).toContain('border-canvas/70')
+    expect(sunOutline.classes()).not.toContain('bg-canvas')
+  })
+
   it('renders a router link when to is provided', () => {
     const to = { name: 'rides' }
     const wrapper = mount(Button, {

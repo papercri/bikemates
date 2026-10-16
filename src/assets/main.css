@@ -1,24 +1,30 @@
 @import 'tailwindcss';
 @import '@fontsource-variable/inter';
+@import '@fontsource-variable/archivo/wdth.css';
 @import '@fontsource-variable/jetbrains-mono';
 
 @theme {
-  --color-canvas: #ffffff;
-  --color-snow: #f7f8f6;
-  --color-surface: #f0f2ee;
-  --color-line: #e4e8e1;
-  --color-line-strong: #d5dbd2;
+  /*
+   * Vibrant Nature (sin blanco en ningún fondo):
+   * lima como superficie, café como tinta, escarlate como acción.
+   */
+  --color-canvas: #faf7d4;
+  --color-snow: #f4f0bb;
+  --color-surface: #ece7a8;
+  --color-line: #ddd59a;
+  --color-line-strong: #c9bf7d;
 
-  --color-ink: #1a1d20;
-  --color-graphite: #5c6560;
+  --color-ink: #43291f;
+  --color-graphite: #6b5548;
 
-  --color-trail: #22c55e;
-  --color-trail-deep: #10b981;
-  --color-trail-ink: #15803d;
-  --color-trail-dark: #166534;
-  --color-route: #f97316;
-  --color-route-ink: #c2410c;
-  --color-route-dark: #9a3412;
+  --color-trail: #da2c38;
+  --color-trail-deep: #b8202e;
+  --color-trail-ink: #a51c2a;
+  --color-trail-dark: #84131f;
+  --color-route: #87c38f;
+  --color-route-ink: #1f6b4f;
+  --color-route-dark: #14563f;
+  --color-turf: #226f54;
 
   --animate-trail-dash: trail-dash 24s linear infinite;
 
@@ -29,13 +35,14 @@
   }
 
   --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Archivo Variable', 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, monospace;
 
   --radius-card: 1.25rem;
   --radius-btn: 0.875rem;
 
-  --shadow-card: 0 1px 2px rgb(26 29 32 / 0.04), 0 8px 24px rgb(26 29 32 / 0.06);
-  --shadow-lift: 0 2px 4px rgb(26 29 32 / 0.05), 0 16px 32px rgb(26 29 32 / 0.1);
+  --shadow-card: 0 1px 2px rgb(67 41 31 / 0.05), 0 8px 24px rgb(67 41 31 / 0.07);
+  --shadow-lift: 0 2px 4px rgb(67 41 31 / 0.06), 0 16px 32px rgb(67 41 31 / 0.12);
 }
 
 @layer base {

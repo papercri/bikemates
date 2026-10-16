@@ -8,12 +8,13 @@
   >
     <path
       d="M0 64 V34 L140 12 L280 38 L430 8 L580 40 L720 18 L870 44 L1020 10 L1170 36 L1310 16 L1440 38 V64 Z"
-      fill="var(--color-surface)"
+      fill="var(--color-canvas)"
     />
     <path
       d="M0 34 L140 12 L280 38 L430 8 L580 40 L720 18 L870 44 L1020 10 L1170 36 L1310 16 L1440 38"
       fill="none"
-      stroke="var(--color-line)"
+      stroke="var(--color-ink)"
+      stroke-opacity="0.3"
       stroke-width="2"
       stroke-linejoin="round"
     />

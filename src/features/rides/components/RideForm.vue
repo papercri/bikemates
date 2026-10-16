@@ -134,9 +134,7 @@ function handleSubmit(): void {
         required
         placeholder="Describe el recorrido, el terreno y qué deben llevar los participantes..."
       />
-      <p class="mt-1 text-right text-xs text-graphite">
-        {{ form.description.length }}/3000
-      </p>
+      <p class="mt-1 text-right text-xs text-graphite">{{ form.description.length }}/3000</p>
     </div>
 
     <div>
@@ -180,9 +178,7 @@ function handleSubmit(): void {
     <div>
       <MeetingPointPicker :initial-value="form.meetingPoint" @select="handlePlaceSelect" />
 
-      <FormHelp v-if="form.meetingPoint">
-        Punto seleccionado: {{ form.meetingPoint }}
-      </FormHelp>
+      <FormHelp v-if="form.meetingPoint"> Punto seleccionado: {{ form.meetingPoint }} </FormHelp>
     </div>
 
     <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">

@@ -81,9 +81,9 @@ async function handleDeleteAccount(): Promise<void> {
       <RidgeStrip />
 
       <div class="flex items-center gap-4 p-6 pt-4 sm:p-8 sm:pt-5">
-      <div
-        class="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-surface text-ink ring-1 ring-line-strong"
-      >
+        <div
+          class="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-surface text-ink ring-1 ring-line-strong"
+        >
           <BrandLogo variant="simple" />
         </div>
 

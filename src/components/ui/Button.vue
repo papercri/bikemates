@@ -30,7 +30,10 @@ const classes = createVariant({
   base: 'inline-flex items-center justify-center gap-2 rounded-btn font-semibold transition-[color,background-color,border-color,transform] focus-visible:outline-2 focus-visible:outline-offset-2 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60 disabled:active:translate-y-0',
   variants: {
     variant: {
-      primary: 'bg-trail text-ink hover:bg-trail-deep focus-visible:outline-ink',
+      primary: 'bg-trail text-white hover:bg-trail-deep focus-visible:outline-ink',
+      sun: 'bg-canvas text-ink hover:bg-surface focus-visible:outline-canvas',
+      'sun-outline':
+        'border border-canvas/70 bg-transparent text-canvas hover:border-canvas hover:bg-canvas/12 focus-visible:outline-canvas',
       outline:
         'border border-line-strong bg-canvas text-ink hover:border-trail hover:text-trail-ink focus-visible:outline-trail',
       destructive:
