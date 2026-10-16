@@ -15,7 +15,7 @@ withDefaults(
 )
 
 const classes = createVariant({
-  base: 'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold',
+  base: 'inline-flex items-center gap-1.5 px-2 py-1 text-xs font-semibold',
   variants: {
     variant: { soft: '', muted: '' },
     color: { trail: '', route: '', ink: '' },

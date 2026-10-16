@@ -10,7 +10,7 @@ defineProps<{
 </script>
 
 <template>
-  <Card>
+  <Card class="mx-auto w-full max-w-lg">
     <RidgeStrip />
 
     <div class="p-5 pt-4 sm:p-7 sm:pt-5">

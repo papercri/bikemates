@@ -86,7 +86,7 @@ useHead({
 </script>
 
 <template>
-  <AppPage size="detail">
+  <AppPage>
     <RouterLink
       to="/rides"
       class="inline-flex items-center gap-1.5 text-sm text-trail-ink hover:text-trail-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
@@ -212,7 +212,7 @@ useHead({
               :href="`https://www.openstreetmap.org/?mlat=${ride.latitude}&mlon=${ride.longitude}#map=15/${ride.latitude}/${ride.longitude}`"
               target="_blank"
               rel="noopener noreferrer"
-              class="rounded-full border border-line px-3.5 py-1.5 text-sm font-medium text-ink transition-colors hover:border-trail focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
+              class="border border-line px-3 py-1.5 text-sm font-medium text-ink transition-colors hover:border-trail focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
             >
               Abrir en OpenStreetMap
               <span class="sr-only">(se abre en una pestaña nueva)</span>

@@ -52,7 +52,7 @@ onUnmounted(() => {
 <template>
   <div
     ref="mapContainer"
-    class="h-48 w-full overflow-hidden rounded-3xl bg-snow sm:h-60"
+    class="h-48 w-full overflow-hidden rounded-card bg-snow sm:h-60"
     role="application"
     :aria-label="`Mapa del punto de encuentro: ${meetingPoint}`"
   />

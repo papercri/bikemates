@@ -36,7 +36,7 @@ async function handleSubmit(): Promise<void> {
 </script>
 
 <template>
-  <AppPage size="narrow">
+  <AppPage>
     <AuthCard
       title="Recuperar contraseña"
       description="Introduce el email de tu cuenta y te enviaremos las instrucciones para establecer una nueva contraseña."

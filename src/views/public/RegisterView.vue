@@ -87,7 +87,7 @@ async function handleSubmit(): Promise<void> {
 </script>
 
 <template>
-  <AppPage size="narrow">
+  <AppPage>
     <AuthCard
       title="Únete a BikeMates"
       description="Crea tu cuenta para conectar con otros ciclistas."

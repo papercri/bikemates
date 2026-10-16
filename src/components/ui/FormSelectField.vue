@@ -9,10 +9,13 @@ withDefaults(
     options: readonly { value: T; label: string }[]
     name?: string
     disabled?: boolean
+    /** Oculta la etiqueta visible y la conserva solo para lectores de pantalla. */
+    labelHidden?: boolean
   }>(),
   {
     name: undefined,
     disabled: false,
+    labelHidden: false,
   },
 )
 
@@ -21,18 +24,16 @@ const model = defineModel<T>({ required: true })
 
 <template>
   <div class="min-w-0">
-    <FormLabel :id="id" :margin="false" class="mb-1.5 text-xs font-semibold text-graphite">
+    <FormLabel
+      :id="id"
+      :margin="false"
+      :class="labelHidden ? 'sr-only' : 'mb-1.5 text-xs font-semibold text-graphite'"
+    >
       {{ label }}
     </FormLabel>
 
     <!-- Receta compacta heredada de FormSelect, sin duplicar la receta de campos. -->
-    <FormSelect
-      :id="id"
-      v-model="model"
-      :name="name"
-      :disabled="disabled"
-      class="[&_select]:py-2.5 [&_select]:pl-3 [&_select]:pr-9 [&_select]:text-sm"
-    >
+    <FormSelect :id="id" v-model="model" :name="name" :disabled="disabled">
       <option v-for="option in options" :key="option.value" :value="option.value">
         {{ option.label }}
       </option>

@@ -42,6 +42,6 @@ const model = defineModel<string>({ required: true })
     :disabled="disabled"
     :aria-invalid="ariaInvalid"
     :aria-describedby="ariaDescribedby"
-    :class="[FIELD_CLASSES, trailing ? 'py-3 pl-4 pr-12' : 'px-4 py-3']"
+    :class="[FIELD_CLASSES, trailing ? 'py-2 pl-3 pr-10' : 'px-3 py-2']"
   />
 </template>

@@ -1,14 +1,15 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useHead } from '@unhead/vue'
 import AppPage from '@/components/layout/AppPage.vue'
 import RideCard from '@/features/rides/components/RideCard.vue'
 import RideFilters from '@/features/rides/components/RideFilters.vue'
+import RideTimeframeTabs from '@/features/rides/components/RideTimeframeTabs.vue'
 import Button from '@/components/ui/Button.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import Typography from '@/components/ui/Typography.vue'
 import { useRideFilters } from '@/features/rides/composables/useRideFilters'
 import { useRideList } from '@/features/rides/composables/useRideList'
-import { isRidePast } from '@/utils/dates'
 
 useHead({
   title: 'Explorar rutas | BikeMates',
@@ -23,8 +24,19 @@ useHead({
 
 const { rides, isLoading, errorMessage, loadRides } = useRideList()
 
-// El estado de los filtros y el filtrado/ordenado viven en el composable, no en la vista.
-const { query, selectedLevel, selectedAudience, filteredRides } = useRideFilters(rides)
+// El estado de los filtros, el orden, las ventanas temporales y el filtrado viven en el composable.
+const {
+  query,
+  selectedLevel,
+  selectedAudience,
+  sortBy,
+  timeframe,
+  upcomingRides,
+  pastRides,
+  visibleRides,
+} = useRideFilters(rides)
+
+const isPastTab = computed(() => timeframe.value === 'past')
 </script>
 
 <template>
@@ -38,10 +50,18 @@ const { query, selectedLevel, selectedAudience, filteredRides } = useRideFilters
     </div>
 
     <section class="mt-6" aria-label="Filtros de búsqueda">
+      <RideTimeframeTabs
+        v-model="timeframe"
+        :upcoming-count="upcomingRides.length"
+        :past-count="pastRides.length"
+        class="mb-3"
+      />
+
       <RideFilters
         v-model:query="query"
         v-model:level="selectedLevel"
         v-model:audience="selectedAudience"
+        v-model:sort="sortBy"
       />
     </section>
 
@@ -72,24 +92,33 @@ const { query, selectedLevel, selectedAudience, filteredRides } = useRideFilters
 
       <template v-else>
         <Typography variant="body-sm" tone="muted" aria-live="polite">
-          {{ filteredRides.length }}
-          {{ filteredRides.length === 1 ? 'ruta encontrada' : 'rutas encontradas' }}
+          <template v-if="isPastTab">
+            {{ visibleRides.length }}
+            {{ visibleRides.length === 1 ? 'salida celebrada' : 'salidas celebradas' }}
+          </template>
+          <template v-else>
+            {{ visibleRides.length }}
+            {{ visibleRides.length === 1 ? 'ruta encontrada' : 'rutas encontradas' }}
+          </template>
         </Typography>
 
-        <div v-if="filteredRides.length > 0" class="mt-3 border-t border-line">
-          <RideCard
-            v-for="ride in filteredRides"
-            :key="ride.id"
-            :ride="ride"
-            :past="isRidePast(ride.startsAt)"
-          />
+        <div v-if="visibleRides.length > 0" class="mt-3 border-t border-line">
+          <RideCard v-for="ride in visibleRides" :key="ride.id" :ride="ride" :past="isPastTab" />
         </div>
 
         <EmptyState
           v-else
           class="mt-6"
-          title="Sin rutas con estos filtros"
-          description="No hay rutas disponibles con el nivel y el público seleccionados. Prueba con otra combinación."
+          :title="
+            isPastTab
+              ? 'Sin salidas pasadas con estos filtros'
+              : 'Sin próximas rutas con estos filtros'
+          "
+          :description="
+            isPastTab
+              ? 'Todavía no hay salidas celebradas con el nivel y el público seleccionados.'
+              : 'No hay rutas disponibles con el nivel y el público seleccionados. Prueba con otra combinación.'
+          "
         />
       </template>
     </section>

@@ -86,13 +86,13 @@ async function confirmAccountDeletion(): Promise<void> {
 </script>
 
 <template>
-  <AppPage size="profile" spacing="compact">
+  <AppPage spacing="compact">
     <Card as="header" class="mb-8">
       <RidgeStrip />
 
       <div class="flex items-center gap-4 p-6 pt-4 sm:p-8 sm:pt-5">
         <div
-          class="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-surface text-ink ring-1 ring-line-strong"
+          class="flex h-16 w-16 shrink-0 items-center justify-center bg-surface text-ink ring-1 ring-line-strong"
         >
           <BrandLogo variant="simple" />
         </div>

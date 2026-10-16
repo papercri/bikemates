@@ -54,7 +54,7 @@ async function handleSubmit(): Promise<void> {
 </script>
 
 <template>
-  <AppPage size="narrow">
+  <AppPage>
     <AuthCard
       title="Nueva contraseña"
       description="Introduce una nueva contraseña para tu cuenta de BikeMates."

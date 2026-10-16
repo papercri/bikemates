@@ -2,14 +2,18 @@
 
 Aplicación web para ciclistas en España: descubre rutas, encuentra compañeros de pedaleo y organiza salidas en grupo.
 
-BikeMates es una SPA **mobile-first** construida con Vue 3 y TypeScript estricto, con acceso a datos sobre **Supabase** (autenticación, base de datos y Edge Functions), SEO técnico en las páginas públicas y una interfaz clara y luminosa según el design system **Clean Alpine & Light** (fondo claro, acentos verde `trail` y naranja `route`, tipografía Inter).
+BikeMates es una SPA **mobile-first** construida con Vue 3 y TypeScript estricto, con acceso a datos sobre **Supabase** (autenticación, base de datos y Edge Functions), SEO técnico en las páginas públicas y una interfaz clara y luminosa según el design system **Clean Alpine & Light** (lienzo blanco en página, header y footer; superficies y filetes crema-oliva; acentos rojo `trail` y verdes `route`/`turf`; tipografía Inter; esquinas rectas en toda la interfaz).
 
 ## Funcionalidades
 
 ### Descubrimiento de rutas
 
 - Listado de rutas con tarjeta por salida: localización, distancia, desnivel acumulado y nivel.
-- Filtro por nivel: `Iniciación`, `Intermedio` y `Avanzado`.
+- Filtros compactos con etiquetas solo para lectores de pantalla: búsqueda por título (sin
+  distinguir mayúsculas ni tildes), nivel, público y orden (`Por fecha`, `Por distancia`,
+  `Por desnivel`).
+- Dos páginas en el listado: `Próximas` y `Pasadas`, con sus recuentos; las pasadas salen
+  ordenadas de la más reciente a la más antigua y atenuadas en la tarjeta.
 - Detalle de ruta con perfil del recorrido (gráfico de desnivel), descripción y datos clave.
 - Estado vacío y enlace de retorno cuando la ruta no existe.
 - Los datos de rutas son de ejemplo (`src/features/rides/data/mockRides.ts`) hasta conectar con la base de datos.
@@ -105,7 +109,7 @@ src/
     ui/                    # primitivos: Button, Input, Textarea, Card, Badge, Alert,
                            # Typography, EmptyState, ConfirmDialog (modal de
                            # confirmación), FormLabel, FormError, FormHelp,
-                           # FormSelect, PasswordInput
+                           # FormSelect, FormSelectField, PasswordInput
     layout/                # AppHeader, AppFooter, AppPage (shell de página)
     icons/                 # BrandLogo, RidgeStrip, CyclistScene, RidgeDivider,
                            # HeroBackdrop, Icon*
@@ -113,9 +117,11 @@ src/
     auth/                  # components (AuthCard), composables (useAuthForm),
                            # services (Supabase Auth), stores (authStore),
                            # utils (emailLinkParams), validators
-    rides/                 # types, components, composables (useRideImagePicker,
-                           # usePlaceSearch, useRideDetail, useRideList),
-                           # constants, data, services, utils, validators
+    rides/                 # types, components (RideCard, RideFilters,
+                           # RideTimeframeTabs, RideForm…), composables
+                           # (useRideFilters, useRideList, useRideDetail…),
+                           # constants (rideFilters), data, services, utils
+                           # (rideOrdering), validators
   services/                # cliente Supabase (único punto de acceso)
   utils/                   # utilidades puras (dates, validators…)
   views/                   # public/ y private/
@@ -130,6 +136,11 @@ Separación de responsabilidades: las vistas orquestan, los componentes presenta
 - Los componentes visuales viven en `src/components/` y no contienen lógica de negocio.
 - Los SVG decorativos e iconográficos viven en `src/components/icons/` como componentes propios (`CyclistScene`, `RidgeDivider`, `HeroBackdrop`, `Icon*`); las vistas y componentes solo los componen.
 - Los tokens (colores, radios, sombras, tipografías) se definen una sola vez en `src/assets/main.css`.
+- Diseño lineal: `--radius-card` y `--radius-btn` están a `0px`, así que botones, campos,
+  tarjetas e insignias tienen esquinas rectas; la jerarquía la marcan filetes y tonos, no sombras ni redondeos.
+- Contenedor único: `AppPage` envuelve todas las páginas con `max-w-7xl` (el mismo que header
+  y footer); la prop `bleed` queda reservada a las bandas a sangre de la landing y la anchura
+  de lectura se controla dentro de cada vista (`max-w-lg`, `max-w-3xl`…).
 - La receta de campos de formulario (`FIELD_CLASSES` en `src/design-system/field.ts`) se comparte entre `Input`, `Textarea` y `FormSelect` para mantener borde, radio, foco y estados idénticos.
 - Los primitivos exponen variantes homogéneas (`variant`, `size`, `tone`, `loading`, `block`, `dot`…) construidas con `createVariant`, sin dependencias externas.
 - `Button` incluye los tamaños `xs`–`lg` y, además de `primary`/`outline`/`destructive`, las variantes `sun`/`sun-outline` (superficies oscuras) y `quiet-destructive` (acción peligrosa discreta, el color solo aparece al interactuar).
@@ -146,7 +157,7 @@ Separación de responsabilidades: las vistas orquestan, los componentes presenta
 
 ## Calidad y tests
 
-- **Unit**: `npm run test:unit` — 217 tests en 36 archivos (design system, validadores, servicios y composables de rutas, servicio de autenticación, store de sesión, primitivos de UI e iconos SVG).
+- **Unit**: `npm run test:unit` — 248 tests en 42 archivos (design system, validadores, servicios y composables de rutas, servicio de autenticación, store de sesión, primitivos de UI, filtros del listado e iconos SVG).
 - **E2E**: `npm run test:e2e` — Playwright (configurado en `playwright.config.ts`).
 - Gates antes de dar por completa una tarea: `npm run test:unit -- --run`, `npm run type-check`, `npx eslint .`, `npx oxlint .`, Prettier y, cuando toca, `npm run build`.
 

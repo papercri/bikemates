@@ -276,7 +276,7 @@ function handleSubmit(): void {
           accept="image/jpeg,image/png,image/webp,image/avif"
           aria-describedby="image-help"
           :aria-invalid="Boolean(imageError)"
-          class="block w-full text-sm text-graphite file:mr-3 file:rounded-btn file:border-0 file:bg-surface file:px-4 file:py-2 file:font-medium file:text-ink"
+          class="block w-full text-sm text-graphite file:mr-3 file:rounded-btn file:border-0 file:bg-surface file:px-3 file:py-1.5 file:font-medium file:text-ink"
           @change="handleImageChange"
         />
 

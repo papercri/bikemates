@@ -115,13 +115,13 @@ function confirmLeave(): void {
             v-if="participant.avatarUrl"
             :src="participant.avatarUrl"
             :alt="`Foto de ${participant.displayName}`"
-            class="size-11 shrink-0 rounded-full object-cover"
+            class="size-11 shrink-0 border border-line object-cover"
             loading="lazy"
           />
 
           <div
             v-else
-            class="flex size-11 shrink-0 items-center justify-center rounded-full bg-surface text-sm font-semibold text-trail-ink"
+            class="flex size-11 shrink-0 items-center justify-center border border-line bg-surface text-sm font-semibold text-trail-ink"
             aria-hidden="true"
           >
             {{ getInitials(participant.displayName) }}

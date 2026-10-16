@@ -43,6 +43,6 @@ const model = defineModel<string>({ required: true })
     :disabled="disabled"
     :aria-invalid="ariaInvalid"
     :aria-describedby="ariaDescribedby"
-    :class="[FIELD_CLASSES, 'px-4 py-3']"
+    :class="[FIELD_CLASSES, 'px-3 py-2']"
   />
 </template>

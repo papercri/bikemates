@@ -43,7 +43,7 @@ async function handleSubmit(payload: RideFormSubmission): Promise<void> {
 </script>
 
 <template>
-  <AppPage size="detail" spacing="compact">
+  <AppPage spacing="compact">
     <div class="mx-auto max-w-3xl">
       <header class="mb-6">
         <button

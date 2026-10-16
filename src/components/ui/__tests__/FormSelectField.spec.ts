@@ -29,6 +29,24 @@ describe('FormSelectField', () => {
     expect(wrapper.get('select').attributes('id')).toBe('level-filter')
   })
 
+  it('keeps the label only for assistive technology when label-hidden is set', () => {
+    const wrapper = mount(FormSelectField, {
+      props: {
+        id: 'level-filter',
+        label: 'Nivel',
+        labelHidden: true,
+        options,
+        modelValue: 'Todos',
+      },
+    })
+
+    const label = wrapper.get('label')
+
+    expect(label.classes()).toContain('sr-only')
+    expect(label.text()).toBe('Nivel')
+    expect(label.attributes('for')).toBe('level-filter')
+  })
+
   it('renders every option', () => {
     const wrapper = mountField()
     const values = wrapper.findAll('option').map((option) => option.attributes('value'))

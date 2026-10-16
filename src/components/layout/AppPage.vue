@@ -5,22 +5,15 @@ import AppHeader from '@/components/layout/AppHeader.vue'
 
 const props = withDefaults(
   defineProps<{
-    size?: 'narrow' | 'detail' | 'profile' | 'wide' | 'full'
+    /** Ancho de viewport sin contenedor, reservado a bandas a sangre (landing). */
+    bleed?: boolean
     spacing?: 'none' | 'compact' | 'default'
   }>(),
   {
-    size: 'wide',
+    bleed: false,
     spacing: 'default',
   },
 )
-
-const sizeClasses: Record<string, string> = {
-  narrow: 'max-w-lg',
-  detail: 'max-w-4xl',
-  profile: 'max-w-5xl',
-  wide: 'max-w-7xl',
-  full: '',
-}
 
 const spacingClasses: Record<string, string> = {
   none: '',
@@ -30,9 +23,9 @@ const spacingClasses: Record<string, string> = {
 
 const mainClasses = computed(() =>
   [
-    'mx-auto w-full px-4 sm:px-6 lg:px-8',
+    // Mismo contenedor que el header y el footer en todas las páginas.
+    props.bleed ? 'w-full px-4 sm:px-6 lg:px-8' : 'mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8',
     'flex-1',
-    sizeClasses[props.size],
     spacingClasses[props.spacing],
   ]
     .filter(Boolean)

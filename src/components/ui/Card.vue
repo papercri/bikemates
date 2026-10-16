@@ -20,7 +20,7 @@ const classes = computed(() =>
     'overflow-hidden rounded-card',
     props.variant === 'danger' ? 'border border-red-200 bg-red-50' : 'border border-line bg-canvas',
     // Sin sombras: la jerarquía la marcan el filete y el tono de fondo.
-    props.interactive && 'transition-colors duration-200 hover:border-line-strong hover:bg-snow',
+    props.interactive && 'transition-colors duration-200 hover:border-line-strong hover:bg-surface',
   ),
 )
 </script>

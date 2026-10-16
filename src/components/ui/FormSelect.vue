@@ -32,7 +32,7 @@ const model = defineModel<T>({ required: true })
       :disabled="disabled"
       :aria-invalid="ariaInvalid"
       :aria-describedby="ariaDescribedby"
-      :class="[FIELD_CLASSES, 'appearance-none py-3 pl-4 pr-10']"
+      :class="[FIELD_CLASSES, 'appearance-none py-2 pl-3 pr-9']"
     >
       <slot />
     </select>

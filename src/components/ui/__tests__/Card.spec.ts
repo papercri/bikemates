@@ -9,7 +9,7 @@ describe('Card', () => {
     expect(wrapper.element.tagName).toBe('DIV')
     expect(wrapper.classes()).toContain('border-line')
     expect(wrapper.classes()).toContain('bg-canvas')
-    expect(wrapper.classes()).not.toContain('hover:bg-snow')
+    expect(wrapper.classes()).not.toContain('hover:bg-surface')
     expect(wrapper.classes()).not.toContain('shadow-card')
   })
 
@@ -39,7 +39,7 @@ describe('Card', () => {
       slots: { default: 'Contenido' },
     })
 
-    expect(wrapper.classes()).toContain('hover:bg-snow')
+    expect(wrapper.classes()).toContain('hover:bg-surface')
     expect(wrapper.classes()).toContain('hover:border-line-strong')
   })
 

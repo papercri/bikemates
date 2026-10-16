@@ -19,6 +19,8 @@ function buildRides(): Ride[] {
       level: 'Intermedio',
       audience: 'everyone',
       startsAt: '2027-05-15T09:00:00+02:00',
+      distanceKm: 42,
+      elevationM: 700,
     },
     {
       ...template,
@@ -27,6 +29,8 @@ function buildRides(): Ride[] {
       level: 'Iniciación',
       audience: 'women',
       startsAt: '2026-01-10T09:00:00+01:00',
+      distanceKm: 30,
+      elevationM: 300,
     },
     {
       ...template,
@@ -35,60 +39,105 @@ function buildRides(): Ride[] {
       level: 'Avanzado',
       audience: 'lgbt',
       startsAt: '2027-06-01T09:00:00+02:00',
+      distanceKm: 95,
+      elevationM: 1500,
+    },
+    {
+      ...template,
+      id: 'r4',
+      title: 'Rodaje de invierno',
+      level: 'Intermedio',
+      audience: 'everyone',
+      startsAt: '2026-02-20T09:00:00+01:00',
+      distanceKm: 60,
+      elevationM: 900,
     },
   ]
 }
 
 describe('useRideFilters', () => {
-  it('returns every ride ordered from nearest to furthest departure', () => {
+  it('separates upcoming rides from past ones, showing the nearest first', () => {
     const rides = ref<Ride[]>(buildRides())
-    const { filteredRides } = useRideFilters(rides)
+    const { upcomingRides, pastRides } = useRideFilters(rides)
 
-    expect(filteredRides.value.map((ride) => ride.id)).toEqual(['r2', 'r1', 'r3'])
+    expect(upcomingRides.value.map((ride) => ride.id)).toEqual(['r1', 'r3'])
+    expect(pastRides.value.map((ride) => ride.id)).toEqual(['r4', 'r2'])
+  })
+
+  it('shows only the rides of the active timeframe', () => {
+    const rides = ref<Ride[]>(buildRides())
+    const { timeframe, visibleRides } = useRideFilters(rides)
+
+    expect(visibleRides.value.map((ride) => ride.id)).toEqual(['r1', 'r3'])
+
+    timeframe.value = 'past'
+
+    expect(visibleRides.value.map((ride) => ride.id)).toEqual(['r4', 'r2'])
   })
 
   it('filters by level', () => {
     const rides = ref<Ride[]>(buildRides())
-    const { selectedLevel, filteredRides } = useRideFilters(rides)
+    const { selectedLevel, visibleRides } = useRideFilters(rides)
 
     selectedLevel.value = 'Avanzado'
 
-    expect(filteredRides.value.map((ride) => ride.id)).toEqual(['r3'])
+    expect(visibleRides.value.map((ride) => ride.id)).toEqual(['r3'])
   })
 
   it('filters by audience', () => {
     const rides = ref<Ride[]>(buildRides())
-    const { selectedAudience, filteredRides } = useRideFilters(rides)
+    const { selectedAudience, timeframe, visibleRides } = useRideFilters(rides)
 
     selectedAudience.value = 'women'
+    timeframe.value = 'past'
 
-    expect(filteredRides.value.map((ride) => ride.id)).toEqual(['r2'])
+    expect(visibleRides.value.map((ride) => ride.id)).toEqual(['r2'])
   })
 
   it('searches the title ignoring case and accents', () => {
     const rides = ref<Ride[]>(buildRides())
-    const { query, filteredRides } = useRideFilters(rides)
+    const { query, visibleRides } = useRideFilters(rides)
 
     query.value = '  COLLSEROLA '
-    expect(filteredRides.value.map((ride) => ride.id)).toEqual(['r1'])
+    expect(visibleRides.value.map((ride) => ride.id)).toEqual(['r1'])
 
     query.value = 'maresme'
-    expect(filteredRides.value.map((ride) => ride.id)).toEqual(['r2'])
+    expect(visibleRides.value.map((ride) => ride.id)).toEqual([])
   })
 
   it('combines the query with the level and audience filters', () => {
     const rides = ref<Ride[]>(buildRides())
-    const { query, selectedLevel, selectedAudience, filteredRides } = useRideFilters(rides)
+    const { query, selectedLevel, selectedAudience, timeframe, visibleRides } =
+      useRideFilters(rides)
 
-    query.value = 'ruta'
+    query.value = 'rodaje'
+    selectedLevel.value = 'Intermedio'
+    selectedAudience.value = 'everyone'
+    timeframe.value = 'past'
+
+    expect(visibleRides.value.map((ride) => ride.id)).toEqual(['r4'])
+
     selectedLevel.value = 'Avanzado'
-    selectedAudience.value = 'lgbt'
 
-    expect(filteredRides.value).toEqual([])
+    expect(visibleRides.value).toEqual([])
+  })
 
-    selectedLevel.value = 'Iniciación'
-    selectedAudience.value = 'women'
+  it('sorts upcoming rides by distance when requested', () => {
+    const rides = ref<Ride[]>(buildRides())
+    const { sortBy, visibleRides } = useRideFilters(rides)
 
-    expect(filteredRides.value.map((ride) => ride.id)).toEqual(['r2'])
+    sortBy.value = 'distance'
+
+    expect(visibleRides.value.map((ride) => ride.id)).toEqual(['r3', 'r1'])
+  })
+
+  it('keeps the most recent past rides first whatever the sort is', () => {
+    const rides = ref<Ride[]>(buildRides())
+    const { sortBy, timeframe, visibleRides } = useRideFilters(rides)
+
+    timeframe.value = 'past'
+    sortBy.value = 'date'
+
+    expect(visibleRides.value.map((ride) => ride.id)).toEqual(['r4', 'r2'])
   })
 })

@@ -325,3 +325,67 @@ Rediseño visual de la landing y del sistema base, sin tocar lógica de negocio 
   `vite build` correcto.
 - Revisión visual en navegador (Playwright, 1440×900 y 375×812): detalle, crear ruta,
   perfil con modal, pie con/sin sesión y lista de rutas.
+
+## 2026-10-16 — Diseño lineal, contenedor único, fondo blanco y filtros del listado
+
+### Diseño lineal y controles compactos
+
+- `src/assets/main.css`: `--radius-card` y `--radius-btn` a `0px` (esquinas rectas en toda la
+  interfaz) y scrollbar thumb sin radio. Se eliminan los `rounded-*` sueltos de `Badge`,
+  `PasswordInput`, enlace OSM del detalle, avatares de `RideParticipants`/`ProfileView` y mapa
+  (`RideMap` pasa a `rounded-card`). Se conservan `rounded-full` solo en el spinner de
+  `Button`, el punto de `Badge` y afines (elementos circulares por naturaleza).
+- `Button`: tamaños más ajustados (`xs px-2.5 py-1`, `sm px-3.5 py-1.5`, `md px-4 py-2`,
+  `lg px-5 py-2.5`); `Input`/`Textarea`/`FormSelect` con `py-2 px-3`; insignias con `px-2`.
+- `Card`: el hover pasa de `hover:bg-snow` a `hover:bg-surface` (con el lienzo blanco el
+  antiguo hover ya no se veía); aserción actualizada en `Card.spec`.
+
+### Fondo blanco y contraste de filetes
+
+- `--color-canvas` y `--color-snow` pasan a `#ffffff`: página, header y footer comparten
+  blanco puro (decisión del usuario). `--color-surface`, `--color-line` y los acentos siguen
+  crema-oliva, tal como se acordó.
+- `--color-line-strong` se oscurece de `#b6aa5c` a `#a1954c` para que el borde de los campos
+  alcance ~3:1 sobre blanco (WCAG 1.4.11); sigue siendo oliva.
+
+### Contenedor único (`AppPage`)
+
+- `AppPage` deja de aceptar `size` (`narrow`/`detail`/`profile`/`wide`/`full`): todas las
+  páginas usan el mismo contenedor `max-w-7xl` que header y footer. Nueva prop `bleed`
+  (solo la landing la usa) para mantener las bandas a sangre.
+- Vistas actualizadas (detalle, auth, privacidad, perfil, crear/editar, landing) y `AuthCard`
+  con `mx-auto max-w-lg` para que los formularios sigan estrechos y centrados dentro del
+  contenedor común. Las lecturas largas conservan sus límites interiores (`max-w-3xl`…).
+
+### Filtros del listado: placeholder, orden y dos páginas
+
+- `src/features/rides/constants/rideFilters.ts`: etiquetas visibles que sustituyen al label
+  (`Cualquier nivel`, `Cualquier público`), `RIDE_SORT_OPTIONS` (`Por fecha`, `Por distancia`,
+  `Por desnivel`) y tipos `RideSortOption` y `RideTimeframe`.
+- `FormSelectField`: nueva prop `labelHidden` (la etiqueta se conserva en `sr-only`, cumpliendo
+  el requisito de label programático aunque no se vea).
+- `RideFilters`: buscador con `sr-only` + placeholder "Buscar por título", tres selects
+  (nivel, público, orden) y `text-sm` en los controles para que el placeholder no se corte;
+  anchos ampliados (`sm:w-44`) para evitar truncar "Cualquier nivel". Nuevo modelo `sort`.
+- `useRideFilters`: además de `query`/`selectedLevel`/`selectedAudience`, expone `sortBy`,
+  `timeframe`, `upcomingRides` (fecha ascendente; métricas descendentes), `pastRides` (siempre
+  de la más reciente a la más antigua) y `visibleRides` según la pestaña activa.
+- `src/features/rides/utils/rideOrdering.ts`: nueva función `sortRides(rides, key, order)`
+  con fechas inválidas siempre al final (`+4` tests).
+- Nuevo `RideTimeframeTabs` (Próximas/Pasadas con recuentos, `aria-pressed`, filete de
+  activo) y `RidesView` reescrita con pestañas, orden, recuento por pestaña (`aria-live`) y
+  estado vacío propio de cada pestaña. `RideCard` sigue recibiendo `past` para atenuar las
+  salidas celebradas.
+- Tests: `useRideFilters.spec` reescrito (8), `RideFilters.spec` (4), `RideTimeframeTabs.spec`
+  (3), `FormSelectField.spec` (+1), `rideOrdering.spec` (+4), `Input.spec` y `Card.spec`
+  ajustados a las recetas nuevas.
+
+### Verificación
+
+- `vitest`: 248/248 en verde (42 archivos).
+- `vue-tsc --build`: mismos 11 errores preexistentes (`imageUrl` en `mockRides.ts` y specs);
+  `oxlint src` y `eslint src` en verde; `vite build` correcto.
+- Revisión visual con Playwright (1440×900 y 375×812): lista (pestañas, filtros, tarjetas),
+  detalle, crear ruta, login y footer con fondo blanco y contenedor común.
+- Pendiente conocido: `npm run lint` sigue fallando por el fichero ignorado
+  `.agents/skills/impeccable/scripts/live-browser.js`.

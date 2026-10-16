@@ -84,7 +84,7 @@ const { isInView: galleryVisible } = useInView(gallerySection)
 </script>
 
 <template>
-  <AppPage size="full" spacing="none">
+  <AppPage bleed spacing="none">
     <section
       class="relative isolate -mx-4 overflow-hidden bg-turf sm:-mx-6 lg:-mx-8"
       aria-labelledby="hero-title"
