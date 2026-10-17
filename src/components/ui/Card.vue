@@ -18,9 +18,9 @@ const props = withDefaults(
 const classes = computed(() =>
   cn(
     'overflow-hidden rounded-card',
-    props.variant === 'danger' ? 'border border-red-200 bg-red-50' : 'border border-line bg-canvas',
-    // Sin sombras: la jerarquía la marcan el filete y el tono de fondo.
-    props.interactive && 'transition-colors duration-200 hover:border-line-strong hover:bg-surface',
+    props.variant === 'danger' ? 'border border-red-200 bg-red-50' : 'border border-line bg-white',
+    // Cowboy: planitud editorial; el hover solo refuerza el filete, sin sombras.
+    props.interactive && 'transition-colors duration-200 hover:border-line-strong',
   ),
 )
 </script>

@@ -1,5 +1,28 @@
 # Registro de cambios
 
+## 2026-10-17 — Motion con `motion-v`: hero a pantalla completa, header transparente y parallax
+
+Se sustituye la implementación nativa de motion (directiva `v-reveal` + `useParallax` + `reveal.css`, que rompía la home: fotos de la galería invisibles por `clip-path` y parallax sin efecto visible) por la librería oficial **Motion for Vue** (`motion-v`), con el patrón de animaciones del repo de referencia Dabasystem (reveals con `opacity`+`translateY` y curva `cubic-bezier(0.25, 1, 0.5, 1)`).
+
+- **Dependencias:** `motion-v@^2.8.0` y su peer `@vueuse/core@^15.0.0` (instaladas con `--legacy-peer-deps` por un conflicto preexistente entre `@vue/eslint-config-typescript` y `eslint-plugin-vue`). No se añade ninguna otra librería.
+- **Eliminado:** `src/directives/vReveal.ts` (+ specs), `src/composables/useParallax.ts` (+ specs), `src/assets/reveal.css`, registro de la directiva en `main.ts` y prop `parallax` de `PhotoFrame`. Causa raíz del bug de fotos desaparecidas: `.reveal-photo` aplicaba `clip-path: inset(0 0 100% 0)` al mismo elemento que observaba el `IntersectionObserver`, que podía no intersectar nunca.
+- **`App.vue`:** `<MotionConfig reduced-motion="user">` envuelve el `RouterView` para respetar `prefers-reduced-motion` en toda la app.
+- **Header transparente en home:** nueva meta `overlayHeader` en la ruta `/` del router; `AppHeader` se posiciona `fixed` con fondo transparente, texto blanco y variantes de botón claras (`sun`/`sun-outline`) cuando la ruta marca overlay; en el resto de rutas sigue `sticky` con canvas. El panel móvil del menú usa fondo sólido (`bg-ink`) sobre el hero para mantener legibilidad.
+- **`HomeView` reescrito con `motion-v`:**
+  - Hero a pantalla completa (`min-h-[100svh]`) bajo el header transparente; la imagen `hero-bosque.webp` arranca con zoom de `scale(1.08)` a `1` en 1.6 s (curva expo-out) y se desplaza un 12 % con `useScroll({ target, offset: ['start start', 'end start'] })` + `useTransform` mientras la sección sale de pantalla.
+  - Bloques de contenido (títulos, features con stagger, fotos de la galería, banda CTA) revelados con componentes `motion.div`: `initial`/`whileInView` sobre `opacity` + `y: 32px`, `viewport: { once: true, amount: 0.2–0.25 }`, duración 0.8 s.
+  - Las fotos de "Así se vive una salida" (`img8.avif`, `grupeta-sepia.webp`, `img10.avif`) vuelven a estar visibles; se eliminan los wrappers clip-path y se revelan con el mismo patrón whileInView.
+  - Constantes de animación con nombre al inicio del `<script setup>` (`EASE`, `HERO_INITIAL_SCALE`, `HERO_PARALLAX_Y`, `REVEAL_Y`, etc.).
+- **Resto de vistas públicas** (`RidesView`, `RideDetailView`, `LoginView`, `RegisterView`, `ForgotPasswordView`, `ResetPasswordView`, `EmailConfirmedView`, `PrivacyView`, `NotFoundView`): se retiran los `v-reveal`; sin animación propia en esta pasada.
+
+### Verificación
+
+- `npx oxlint src` y `npx eslint src`: en verde.
+- `npm run test:unit` (248/248; bajan de 262 al eliminar los specs de `vReveal`/`useParallax`).
+- `npm run build-only`: OK.
+- `npm run type-check`: solo los 11 errores preexistentes de `imageUrl` en `mockRides`/specs de rides (ajenos a este cambio).
+- No se pudo verificar el aspecto visual en navegador desde esta sesión (sin browser tool): parallax, zoom del hero, header transparente y revelados requieren revisión manual en el dev server.
+
 ## 2026-10-13 — SVGs extraídos a componentes (`src/components/svg/`)
 
 Sin cambios de comportamiento: el marcado SVG pasa de vistas/componentes a componentes propios.
@@ -389,3 +412,255 @@ Rediseño visual de la landing y del sistema base, sin tocar lógica de negocio 
   detalle, crear ruta, login y footer con fondo blanco y contenedor común.
 - Pendiente conocido: `npm run lint` sigue fallando por el fichero ignorado
   `.agents/skills/impeccable/scripts/live-browser.js`.
+
+## 2026-10-17 — Restyling "Clean Alpine" → industrial brutalism (papel, negro y naranja)
+
+Solo estilo y el marcado imprescindible: sin cambios de lógica, estado, rutas ni
+comportamiento. Paleta extraída de `public/layout-black-orange.webp`.
+
+### Tokens y tipografía (`src/assets/main.css`, `src/design-system/`)
+
+- Nueva paleta: papel (`canvas #F7F6F3`, `snow #F0EFEB`, `surface #E5E2D9`), tinta
+  (`ink`/`line`/`line-strong`/`turf #0A0A0A`), `graphite #525252` y naranja
+  (`trail #EA580C`, `trail-deep/trail-ink/trail-dark`); `route` pasa a la misma familia
+  naranja.
+- Radios: `--radius-btn` (píldora) y `--radius-card` (0px); sombras: `--shadow-card`
+  anulada y `--shadow-lift` sólida de 4px en `ink`.
+- Fuentes: Archivo Variable (display/macro), Inter Variable (cuerpo) y JetBrains Mono
+  Variable (etiquetas mono), ya instaladas.
+
+### Primitivas
+
+- `Button`: píldora con borde de 2px en `ink`; primaria naranja con texto negro (5,9:1)
+  e hover que invierte a tinta/papel; `sun` papel para fondos oscuros; foco `ink` en
+  claros y `canvas` en oscuros.
+- `Badge`: escalera de intensidad corregida para que el nivel lea de menor a mayor
+  (`soft+trail` naranja pálido, `soft+route` gris `bg-ink/10`, `soft+ink` losa negra); el
+  punto de `ink` es papel para no fundirse con la losa.
+- `Card`, `Alert`, `FormError`, `MeetingPointPicker` y `RideForm`: filetes de 2px,
+  esquinas cuadradas y errores en `red-700` (5,9:1 en papel) en lugar de `red-600`.
+- `Typography`: display/heading en Archivo extrabold con tracking negativo; `eyebrow`,
+  `eyebrow-wide` y `label-xs` en JetBrains Mono uppercase.
+- `AppHeader` y `AppFooter`: filete de 4px, navegación y links en mono uppercase, foco
+  visible en `ink` y menú móvil enmarcado.
+
+### Landing (`HomeView.vue`)
+
+- Hero a sangre negra (`bg-turf`) con titular macro en cuatro líneas (segunda frase en
+  naranja), ilustración enmarcada en `trail`, entrada escalonada con `@keyframes rise` y
+  `prefers-reduced-motion`.
+- Features en rejilla suiza (`gap-1` sobre negro dentro de un marco de 4px) con la
+  primera celda invertida para dar profundidad.
+- Galería con foto grande y dos cuadradas enmarcadas en negro; revelado por scroll con
+  `useInView` (`clip-path`) y CTA primaria.
+- Banda final naranja con trazo discontinuo en `ink` y contraste del párrafo corregido a
+  `text-ink/90` (5,9:1).
+- Nuevas fotos `public/photos/salida-amanecer.webp` y `salida-pista.webp` (Picsum:
+  Alejandro Escamilla y Paul Jarvis vía Unsplash).
+
+### Tests
+
+- `Badge.spec`, `Button.spec`, `Card.spec`, `Alert.spec`, `Typography.spec` y
+  `RideCard.spec` ajustados a las recetas nuevas.
+
+### Verificación
+
+- `vitest`: 248/248 en verde; `oxlint src` y `eslint src` en verde; `vite build` correcto.
+- `vue-tsc --build`: mismos 11 errores preexistentes (`imageUrl` en `mockRides.ts` y sus
+  specs, commit `4cbe9`); ninguno en ficheros tocados.
+- `impeccable detect` contra el dev server: 0 anti-patrones y sin avisos (se corrigió el
+  único aviso de contraste detectado en la banda naranja).
+- Revisión visual con Playwright (1440×900 y 375×812): home como invitado y autenticado,
+  y listado de rutas con el nuevo badge de nivel.
+- Nota: los cambios se recogieron en commits automáticos del hook de la sesión (`67912`
+  y `286eb`); el segundo incluye además `public/photos/img*` (~20 MB, sin referencias en
+  el código) aparecidos en el árbol de trabajo por un proceso concurrente.
+
+## 2026-10-17 — Repintado a editorial minimalista outdoor (impeccable + minimalist-ui)
+
+Sustituye el brutalismo industrial por el mundo visual fijado por el usuario en
+`public/example1-3.png` con el protocolo **minimalist-ui**: hueso cálido, filetes
+ultrafinos, tinta off-black y un único acento naranja desaturado. Solo estilo y
+marcado imprescindible: sin cambios de lógica, estado, rutas ni comportamiento.
+
+### Tokens y tipografía (`src/assets/main.css`, `src/design-system/field.ts`)
+
+- Nueva paleta: canvas `#FBFBFA`, snow `#F7F6F3`, surface `#F2F1ED`, línea
+  `#E8E6E1`/`#D6D3CC`, tinta `#111111`, grafito `#787774`, naranja `trail #E08A3C`
+  (ink `#8C4A12` para texto AA), banda oscura `turf #141414`.
+- Se elimina la importación de Inter (veto del protocolo): Archivo Variable cubre
+  display y cuerpo, JetBrains Mono queda para datos y etiquetas mono.
+- Radios: tarjeta 12px, control 6px (sin píldoras en primarios); sombras
+  `shadow-card` y `shadow-lift` difusas de opacidad ≤4%.
+- `FIELD_CLASSES`: borde 1px, fondo blanco, foco tinta en lugar de naranja.
+
+### Primitivas
+
+- `Button`: primaria tinta sólida/blanca con hover `#333` y `scale(0.98)`; `sun`
+  papel sólido; `sun-outline` con borde blanco translúcido; `outline` con filete
+  claro; destructiva con rojo apagado.
+- `Badge`: píldora con pastel apagado (`bg-trail/15`), escala de intensidad
+  `soft+route` en gris y `soft+ink` en losa negra.
+- `Card`: filete 1px, fondo blanco, halo difuso en hover; peligro en rojo suave.
+- `Alert` boxed y recetas de `MeetingPointPicker`, `RideForm` y
+  `RideTimeframeTabs` a filete 1px.
+- `PhotoFrame`: tinte cálido bajado al 6% y desaturación editorial.
+- Header/footer: filete 1px, navegación en sans medium (mono reservado a datos),
+  header con `backdrop-blur` sutil. `AppPage` sobre canvas.
+- Se eliminan los componentes muertos `CyclistScene`, `HeroBackdrop` y
+  `RidgeDivider` (eran del héroe negro anterior).
+
+### Landing (`HomeView.vue`)
+
+- Hero a sangre con foto real (`public/photos/hero-bosque.webp`, optimizada desde
+  `img1.jpg`) y velo degradado de tinta; titular title-case con la segunda frase
+  en naranja, como las referencias.
+- Features en tarjetas blancas con icono en pastel circular y revelado por scroll.
+- Galería con foto grande (`img8.avif`) y dos cuadradas (`grupeta-sepia.webp`
+  optimizada desde `img3.jpg`, `img10.avif`), marcos de 12px.
+- Banda final en `turf` con botón papel y halo naranja radial al 5% (profundidad
+  sin gradientes decorativos).
+- Nuevos assets optimizados: `hero-bosque.webp`, `grupeta-sepia.webp`,
+  `grupeta-camino.webp` (esta última queda disponible, sin usar aún). Se evitó
+  `img5` por llevar marcas de agua de stock.
+
+### Tests
+
+- `Badge.spec`, `Button.spec`, `Card.spec` y `RideCard.spec` ajustados a las
+  recetas nuevas.
+
+### Verificación
+
+- `vitest`: 248/248 en verde (42 archivos).
+- `oxlint src` y `eslint src` en verde; `vite build` correcto.
+- `vue-tsc --build`: mismos 11 errores preexistentes (`imageUrl` en `mockRides.ts`
+  y specs, commit `4cbe9`); ninguno en ficheros tocados.
+- `impeccable detect` sobre los 16 ficheros de UI cambiados: 0 hallazgos.
+- Revisión visual con Playwright (1440×900 y 375×812): home (con scroll para
+  disparar los reveals), listado, login y privacidad.
+- Pendiente conocido: `@fontsource-variable/inter` sigue en `package.json` sin
+  importarse; retirarlo requiere aprobación (cambio de dependencias).
+
+## 2026-10-17 — Repintado al design system Cowboy (showroom acromático)
+
+Sustituye el repintado "editorial minimalista outdoor" por el sistema visual de
+referencia **Cowboy** fijado por el usuario: porcelana blanca, filetes hairline,
+tinta carbón, tipografía a escala editorial con tracking negativo y cero
+cromatismo en el chrome de la UI (la fotografía aporta todo el color). Solo
+estilo y clases: sin cambios de lógica, estado, rutas, servicios ni
+comportamiento. Los nombres de token se conservan para no romper clases ni
+tests existentes; los valores siguen la paleta Cowboy.
+
+### Tokens y tipografía (`src/assets/main.css`, `src/design-system/field.ts`)
+
+- Paleta remapeada: canvas `#FFFFFF` (porcelana), snow/surface `#F3F4F6`
+  (mist), línea `#E5E7EB`/`#D1D5DB`, filete de campos slate `#6B7280`, tinta
+  `#1D1D1D` (charcoal) y grafito `#5E5E5E`. Los tokens de marca (`trail`,
+  `route`, `turf` y sus variantes `*-ink`/`*-deep`/`*-dark`) apuntan al
+  carbón: el sistema queda acromático y no existe CTA cromático. Nuevos
+  tokens semánticos sin uso decorativo: `moss #569D5F` y
+  `signal-blue #2563EB` (foco de campos).
+- Radios: `--radius-card` 12px → 8px (fotos, campos y botones ya eran 8px /
+  píldora). Sombras: `shadow-card`/`shadow-lift` redefinidas con los valores
+  Cowboy; las tarjetas dejan de usarlas (planitud editorial), solo
+  `ConfirmDialog` conserva elevación.
+- Fuentes: se importa `@fontsource-variable/inter` (sustituto aprobado de
+  SuisseIntl) como `font-sans` y `font-display`; se retira la importación de
+  Archivo (el paquete sigue en `package.json` sin usar, retirarlo requiere
+  aprobación). JetBrains Mono sigue en datos y etiquetas.
+- `::selection` en carbón al 15%; `FIELD_CLASSES` con foco `signal-blue`.
+
+### Primitivos y layout
+
+- `Button`: `primary` con hover hacia `graphite` (aclara, como Cowboy); `sun`
+  pasa a píldora blanca con texto carbón sobre fondos oscuros (antes naranja);
+  `link` en carbón subrayable.
+- `Card`: sin sombra; hover interactivo solo refuerza el filete.
+- `Typography`: display/heading en peso 500 con tracking `-0.025em`/`-0.02em`
+  (antes extrabold); numéricos en 600.
+- `AppHeader`: los enlaces de navegación de escritorio adoptan la píldora
+  Cowboy (`rounded-btn` + hover `bg-surface`), como el menú móvil.
+
+### Landing y componentes de rutas
+
+- `HomeView`: velo del hero uniforme `bg-ink/40` (scrim Cowboy, sin degradado);
+  titular blanco a una sola tinta en peso medium; tarjetas de features sin
+  sombra; halo radial de la banda final en porcelana al 5% (antes naranja);
+  titulares de sección en medium con tracking editorial.
+- `RideCard`: sin sombra, con filete hairline; cifras en 600; se eliminan los
+  hovers de título/flecha a `trail` (invisibles sobre foto con la paleta
+  acromática).
+- `PhotoFrame`: se elimina el tinte multiply y la desaturación de las fotos:
+  la fotografía queda natural y aporta todo el color (filosofía Cowboy).
+
+### Tests y docs
+
+- `Button.spec` (variantes `sun` y `link`), `Card.spec` (sin sombras) y
+  `Typography.spec` (peso medium) ajustados a las recetas nuevas.
+- `README.md`: descripción y sección de design system actualizadas al sistema
+  Cowboy.
+
+### Verificación
+
+- `vitest`: 248/248 en verde (42 archivos).
+- `npx oxlint src`, `npx eslint src` y Prettier en verde.
+- `vue-tsc --build`: mismos 11 errores preexistentes (`imageUrl` en
+  `mockRides.ts` y specs); ninguno en ficheros tocados.
+- `vite build` (`build-only`) correcto con Inter Variable incluida.
+
+## 2026-10-17 — Motion nativo estilo Cowboy (reveal + parallax)
+
+Efectos de scroll de la referencia Cowboy (es.cowboy.com) implementados con
+APIs nativas, sin dependencias nuevas. La interpolación de scroll tipo Lenis
+queda diferida a una pasada posterior con aprobación explícita.
+
+### Infraestructura nueva
+
+- Directiva global `v-reveal` (`src/directives/vReveal.ts`, registrada en
+  `main.ts`): añade `.reveal`/`.reveal-photo` y observa una vez con
+  IntersectionObserver; al entrar añade `is-revealed` y desconecta. Binding
+  `v-reveal="{ delay, variant }"` (o solo número para el retardo) para
+  stagger. Con `prefers-reduced-motion` o sin IO se revela al instante: el
+  contenido nunca depende de la animación.
+- CSS compartido `src/assets/reveal.css`: `.reveal` (opacity + translateY,
+  curva `cubic-bezier(0.16, 1, 0.3, 1)` a 0.7s), `.reveal-photo` (clip-path)
+  y utilidad `.parallax-layer` (translate3d vía `--parallax-y` + scale 1.1);
+  todo desactivado bajo `prefers-reduced-motion`.
+- Composable `useParallax` (`src/composables/useParallax.ts`): escribe
+  `--parallax-y` en rAF solo mientras el elemento es visible (IO con margen
+  del 20%), pasivo en scroll/resize, limpieza al desmontar; off con
+  movimiento reducido o sin IO.
+
+### Aplicación (solo páginas públicas)
+
+- `HomeView`: parallax en la foto del hero (0.35×, máx. 56px); revelados con
+  stagger en el copy del hero, cabecera y cards de features (80ms por celda),
+  galería (variant photo, delays 0/160/240), texto y CTA de la banda final.
+  Se elimina el CSS scoped de reveals y el uso previo de `useInView` en la
+  vista (el composable se mantiene para otros consumidores).
+- `PhotoFrame`: prop `parallax` (por defecto off) que aplica la capa con
+  desplazamiento lento a la imagen interna.
+- `RidesView`: cabecera y stagger de `RideCard` por índice (`% 8 × 70ms`).
+- `RideDetailView`: reveals encadenados de cabecera, portada, datos, descripción
+  y bloque de punto de encuentro.
+- Auth (`Login`, `Register`, `ForgotPassword`, `ResetPassword`), confirmación
+  de email, privacidad y 404: reveal del bloque principal.
+
+### Tests y docs
+
+- Nuevos: `vReveal.spec.ts` (7 casos) y `useParallax.spec.ts` (6 casos) con
+  IntersectionObserver y rAF mockeados.
+- `README.md`: nota de motion en la sección de design system.
+
+### Verificación
+
+- `vitest`: 262/262 en verde (44 archivos; +14 tests nuevos).
+- `npx oxlint src`, `npx eslint src` y Prettier en verde.
+- `vue-tsc --build`: mismos 11 errores preexistentes (`imageUrl`); ninguno
+  en ficheros tocados.
+- `vite build` (`build-only`) correcto.
+
+### Pendiente (aprobado por dirección, paso siguiente)
+
+- Lenis para interpolación de scroll de rueda (~2KB): init en `App.vue`,
+  `stop()` con `prefers-reduced-motion`, sin romper menú móvil ni diálogos.

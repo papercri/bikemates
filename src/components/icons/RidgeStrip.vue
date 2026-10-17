@@ -19,14 +19,31 @@
       stroke-width="2"
       stroke-linejoin="round"
     />
+    <!-- Sendero animado con tono trail -->
     <path
       d="M10 52 C 80 44, 140 58, 200 48 S 330 40, 392 50"
       fill="none"
-      stroke="var(--color-trail)"
+      stroke="var(--color-route)"
       stroke-width="2"
       stroke-dasharray="5 7"
       vector-effect="non-scaling-stroke"
       class="motion-safe:animate-trail-dash"
     />
+    <!-- Bici simple sobre el sendero -->
+    <g
+      transform="translate(178, 30)"
+      fill="none"
+      stroke="var(--color-ink)"
+      stroke-width="1.6"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      opacity="0.85"
+    >
+      <circle cx="6" cy="10" r="4.5" />
+      <circle cx="22" cy="10" r="4.5" />
+      <path d="M6 10 L12 10 L15 2 L20 2 L22 10" />
+      <path d="M12 10 L15 2" />
+      <circle cx="15" cy="2" r="1" fill="var(--color-route)" stroke="none" />
+    </g>
   </svg>
 </template>

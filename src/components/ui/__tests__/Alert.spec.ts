@@ -7,7 +7,7 @@ describe('Alert', () => {
     const wrapper = mount(Alert, { slots: { default: 'No se ha podido enviar el formulario.' } })
 
     expect(wrapper.attributes('role')).toBe('alert')
-    expect(wrapper.classes()).toContain('text-red-600')
+    expect(wrapper.classes()).toContain('text-red-700')
     expect(wrapper.text()).toBe('No se ha podido enviar el formulario.')
   })
 
@@ -29,7 +29,7 @@ describe('Alert', () => {
     })
 
     expect(wrapper.attributes('role')).toBe('alert')
-    expect(wrapper.classes()).toContain('rounded-btn')
+    expect(wrapper.classes()).toContain('rounded-card')
     expect(wrapper.classes()).toContain('bg-red-50')
     expect(wrapper.classes()).toContain('text-red-700')
     expect(wrapper.classes()).not.toContain('text-red-600')

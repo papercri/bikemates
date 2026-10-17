@@ -21,7 +21,7 @@ const options = [
       :key="option.value"
       type="button"
       :aria-pressed="timeframe === option.value"
-      class="-mb-px border-b-2 px-1 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-trail"
+      class="-mb-px border-b border-line-strong px-1 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ink"
       :class="
         timeframe === option.value
           ? 'border-trail text-ink'

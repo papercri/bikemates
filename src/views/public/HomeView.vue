@@ -1,21 +1,40 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useHead } from '@unhead/vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faBicycle } from '@fortawesome/free-solid-svg-icons'
+import { motion, useReducedMotion, useScroll, useTransform } from 'motion-v'
 import AppPage from '@/components/layout/AppPage.vue'
-import CyclistScene from '@/components/icons/CyclistScene.vue'
-import HeroBackdrop from '@/components/icons/HeroBackdrop.vue'
+import IconArrow from '@/components/icons/IconArrow.vue'
 import IconCyclists from '@/components/icons/IconCyclists.vue'
 import IconMeetup from '@/components/icons/IconMeetup.vue'
 import IconRoutes from '@/components/icons/IconRoutes.vue'
-import RidgeDivider from '@/components/icons/RidgeDivider.vue'
-import PhotoFrame from '@/components/landing/PhotoFrame.vue'
 import Button from '@/components/ui/Button.vue'
+import RideCard from '@/features/rides/components/RideCard.vue'
+import { useRideList } from '@/features/rides/composables/useRideList'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/features/auth/stores/authStore'
-import { useInView } from '@/composables/useInView'
 import type { ButtonVariant } from '@/design-system'
+
+// Constantes de animación (curva Cowboy: expo-out suave)
+const EASE = [0.25, 1, 0.5, 1] as const
+const HERO_PARALLAX_Y = '12%'
+const REVEAL_Y = 32
+const REVEAL_DURATION = 0.8
+const STAGGER_DELAY = 0.1
+
+// Slideshow del hero: crossfade + zoom lento (Ken Burns) por foto.
+const HERO_SLIDE_MS = 6000
+const HERO_FADE_S = 1.2
+const HERO_ZOOM_FROM = 1
+const HERO_ZOOM_TO = 1.08
+
+const heroSlides = [
+  { src: '/photos/hero-bosque.webp', position: 'object-center' },
+  { src: '/photos/grupeta-camino.webp', position: 'object-center' },
+  { src: '/photos/img4.avif', position: 'object-center' },
+  { src: '/photos/img10.avif', position: 'object-center' },
+] as const
 
 const authStore = useAuthStore()
 const { user, isInitialized } = storeToRefs(authStore)
@@ -79,35 +98,103 @@ const features = [
   },
 ]
 
-const gallerySection = ref<HTMLElement | null>(null)
-const { isInView: galleryVisible } = useInView(gallerySection)
+const { rides: publishedRides, isLoading: isLoadingRides } = useRideList()
+
+// Tres próximas salidas reales, ordenadas por fecha.
+const latestRides = computed(() =>
+  [...publishedRides.value]
+    .filter((ride) => new Date(ride.startsAt).getTime() >= Date.now())
+    .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime())
+    .slice(0, 3),
+)
+
+// Parallax del hero: el contenedor de fotos se desplaza un 12 % al salir de pantalla.
+const heroSection = ref<HTMLElement | null>(null)
+const reduceMotion = useReducedMotion()
+
+const { scrollYProgress } = useScroll({
+  target: heroSection,
+  offset: ['start start', 'end start'],
+})
+
+const heroImageY = useTransform(scrollYProgress, [0, 1], ['0%', HERO_PARALLAX_Y])
+
+// Con reduced-motion se omite el parallax (objeto sin y).
+const heroImageStyle = computed(() => (reduceMotion.value ? {} : { y: heroImageY }))
+
+// Avance del slideshow; con reduced-motion se queda en la primera foto.
+const activeSlide = ref(0)
+let slideTimer: ReturnType<typeof setInterval> | null = null
+
+onMounted(() => {
+  if (reduceMotion.value) return
+
+  slideTimer = setInterval(() => {
+    activeSlide.value = (activeSlide.value + 1) % heroSlides.length
+  }, HERO_SLIDE_MS)
+})
+
+onBeforeUnmount(() => {
+  if (slideTimer) clearInterval(slideTimer)
+})
 </script>
 
 <template>
   <AppPage bleed spacing="none">
     <section
-      class="relative isolate -mx-4 overflow-hidden bg-turf sm:-mx-6 lg:-mx-8"
+      ref="heroSection"
+      class="relative isolate -mx-4 min-h-[100svh] overflow-hidden sm:-mx-6 lg:-mx-8"
       aria-labelledby="hero-title"
     >
-      <HeroBackdrop class="absolute inset-0" />
+      <motion.div class="absolute inset-0" :style="heroImageStyle" aria-hidden="true">
+        <motion.img
+          v-for="(slide, index) in heroSlides"
+          :key="slide.src"
+          :src="slide.src"
+          alt=""
+          :loading="index === 0 ? 'eager' : 'lazy'"
+          :fetchpriority="index === 0 ? 'high' : 'auto'"
+          decoding="async"
+          class="absolute inset-0 h-full w-full object-cover"
+          :class="slide.position"
+          :initial="{ opacity: index === 0 ? 1 : 0, scale: HERO_ZOOM_FROM }"
+          :animate="{
+            opacity: index === activeSlide ? 1 : 0,
+            scale: index === activeSlide ? HERO_ZOOM_TO : HERO_ZOOM_FROM,
+          }"
+          :transition="{
+            opacity: { duration: HERO_FADE_S, ease: EASE },
+            scale: {
+              duration: index === activeSlide ? HERO_SLIDE_MS / 1000 : 0,
+              ease: 'linear',
+            },
+          }"
+        />
+      </motion.div>
+      <div class="absolute inset-0 bg-ink/40" />
 
       <div
-        class="relative mx-auto grid max-w-7xl gap-10 px-4 pb-12 pt-12 sm:px-6 sm:pb-14 sm:pt-16 lg:grid-cols-[1.02fr_1fr] lg:items-center lg:gap-14 lg:px-8 lg:pb-16 lg:pt-20"
+        class="relative mx-auto grid max-w-7xl gap-10 px-4 pb-20 pt-28 sm:px-6 sm:pb-24 sm:pt-32 lg:grid-cols-[1.06fr_0.94fr] lg:items-center lg:gap-12 lg:px-8 lg:pb-28 lg:pt-36"
       >
-        <div>
+        <motion.div
+          :initial="{ opacity: 0, y: REVEAL_Y }"
+          :animate="{ opacity: 1, y: 0 }"
+          :transition="{ duration: REVEAL_DURATION, ease: EASE, delay: 0.15 }"
+        >
           <h1
             id="hero-title"
-            class="max-w-xl font-display text-[2.25rem] leading-[0.98] font-extrabold tracking-[-0.03em] text-canvas sm:text-5xl lg:text-6xl"
+            class="max-w-3xl font-display text-[clamp(2.4rem,6vw,4.4rem)] leading-[0.95] font-medium tracking-[-0.025em] text-white"
           >
-            Encuentra tu grupeta. Comparte la ruta.
+            <span class="block">Encuentra tu grupeta.</span>
+            <span class="block">Comparte la ruta.</span>
           </h1>
 
-          <p class="mt-6 max-w-xl text-lg leading-8 text-canvas">
+          <p class="mt-6 max-w-xl text-base leading-7 text-white/85 sm:text-lg">
             Conecta con ciclistas cerca de ti, organiza salidas y descubre nuevas rutas para
             disfrutar de la bici en compañía.
           </p>
 
-          <div class="mt-9 flex flex-col gap-3 sm:flex-row">
+          <div class="mt-8 flex flex-col gap-3 sm:flex-row">
             <Button
               v-for="cta in heroCtas"
               :key="cta.to"
@@ -118,131 +205,162 @@ const { isInView: galleryVisible } = useInView(gallerySection)
               {{ cta.label }}
             </Button>
           </div>
-        </div>
-
-        <div class="relative mx-auto w-full max-w-md lg:max-w-none">
-          <CyclistScene />
-        </div>
-      </div>
-
-      <div class="relative -mb-px">
-        <RidgeDivider />
+        </motion.div>
       </div>
     </section>
 
-    <section class="-mx-4 bg-canvas sm:-mx-6 lg:-mx-8" aria-labelledby="features-title">
-      <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-        <h2
-          id="features-title"
-          class="max-w-2xl font-display text-3xl font-extrabold tracking-[-0.02em] text-ink sm:text-4xl"
+    <section class="-mx-4 sm:-mx-6 lg:-mx-8" aria-labelledby="features-title">
+      <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8 lg:py-14">
+        <motion.div
+          :initial="{ opacity: 0, y: REVEAL_Y }"
+          :while-in-view="{ opacity: 1, y: 0 }"
+          :viewport="{ once: true, amount: 0.25 }"
+          :transition="{ duration: REVEAL_DURATION, ease: EASE }"
         >
-          Todo empieza con una ruta
-        </h2>
+          <h2
+            id="features-title"
+            class="max-w-3xl font-display text-3xl leading-[1.05] font-medium tracking-[-0.025em] text-ink sm:text-5xl"
+          >
+            Todo empieza con una ruta
+          </h2>
 
-        <p class="mt-3 max-w-2xl leading-7 text-graphite">
-          Encuentra personas con tus mismos intereses y convierte cada salida en una oportunidad
-          para descubrir nuevos caminos.
-        </p>
+          <p class="mt-4 max-w-2xl leading-7 text-graphite">
+            Encuentra personas con tus mismos intereses y convierte cada salida en una oportunidad
+            para descubrir nuevos caminos.
+          </p>
+        </motion.div>
 
-        <div class="mt-12 grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
-          <div v-for="feature in features" :key="feature.title" class="border-t-2 border-line pt-6">
-            <component :is="feature.icon" class="text-trail" />
-            <h3 class="mt-4 text-base font-semibold text-ink sm:text-lg">
+        <div class="mt-10 grid gap-3 sm:grid-cols-3">
+          <motion.div
+            v-for="(feature, index) in features"
+            :key="feature.title"
+            :initial="{ opacity: 0, y: REVEAL_Y }"
+            :while-in-view="{ opacity: 1, y: 0 }"
+            :viewport="{ once: true, amount: 0.2 }"
+            :transition="{ duration: REVEAL_DURATION, ease: EASE, delay: index * STAGGER_DELAY }"
+            class="rounded-card border border-line bg-white p-7"
+          >
+            <span
+              class="inline-flex rounded-full bg-trail/10 p-3 text-trail-ink"
+              aria-hidden="true"
+            >
+              <component :is="feature.icon" class="size-6" />
+            </span>
+
+            <h3
+              class="mt-5 font-display text-lg leading-tight font-medium tracking-[-0.01em] sm:text-xl"
+            >
               {{ feature.title }}
             </h3>
-            <p class="mt-2 leading-7 text-graphite">{{ feature.description }}</p>
-          </div>
+
+            <p class="mt-2 text-sm leading-6 text-graphite">
+              {{ feature.description }}
+            </p>
+          </motion.div>
         </div>
       </div>
     </section>
 
-    <section
-      ref="gallerySection"
-      class="-mx-4 border-t border-line bg-surface sm:-mx-6 lg:-mx-8"
-      aria-labelledby="gallery-title"
-    >
-      <div
-        class="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] lg:items-center lg:gap-14 lg:px-8"
-      >
-        <PhotoFrame
-          src="/default.webp"
-          alt="Dos ciclistas miran la sierra desde un prado durante una salida en bici"
-          ratio="4/5"
-          class="reveal-photo"
-          :class="galleryVisible ? 'is-revealed' : ''"
-        />
-
-        <div>
+    <section class="-mx-4 bg-snow sm:-mx-6 lg:-mx-8" aria-labelledby="gallery-title">
+      <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8 lg:py-14">
+        <motion.div
+          :initial="{ opacity: 0, y: REVEAL_Y }"
+          :while-in-view="{ opacity: 1, y: 0 }"
+          :viewport="{ once: true, amount: 0.2 }"
+          :transition="{ duration: REVEAL_DURATION, ease: EASE }"
+        >
           <h2
             id="gallery-title"
-            class="max-w-xl font-display text-3xl font-extrabold tracking-[-0.02em] text-ink sm:text-4xl"
+            class="max-w-xl font-display text-3xl leading-[1.05] font-medium tracking-[-0.025em] text-ink sm:text-4xl"
           >
             Así se vive una salida
           </h2>
 
-          <p class="mt-4 max-w-xl leading-7 text-graphite">
+          <p class="mt-3 max-w-xl leading-7 text-graphite">
             Desde paseos por la mañana hasta rutas de montaña con desnivel. Mira la dificultad y el
             ritmo de cada salida antes de apuntarte.
           </p>
+        </motion.div>
 
-          <div class="mt-8 grid grid-cols-2 gap-4">
-            <PhotoFrame
-              src="/photos/salida-amanecer.webp"
-              alt="Grupo de ciclistas preparando la salida al amanecer"
-              ratio="1/1"
-            />
-            <PhotoFrame
-              src="/photos/salida-pista.webp"
-              alt="Ciclistas pedaleando por una pista de monte a última hora del día"
-              ratio="1/1"
-            />
-          </div>
+        <div
+          v-if="isLoadingRides"
+          class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+          role="status"
+          aria-live="polite"
+        >
+          <span class="sr-only">Cargando salidas…</span>
+          <div
+            v-for="n in 3"
+            :key="n"
+            class="h-[13.5rem] rounded-photo bg-surface motion-safe:animate-pulse"
+            aria-hidden="true"
+          />
+        </div>
 
-          <div class="mt-8">
-            <Button variant="primary" size="lg" to="/rides"> Ver próximas salidas </Button>
-          </div>
+        <div v-else-if="latestRides.length > 0" class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <motion.div
+            v-for="(ride, index) in latestRides"
+            :key="ride.id"
+            :initial="{ opacity: 0, y: REVEAL_Y }"
+            :while-in-view="{ opacity: 1, y: 0 }"
+            :viewport="{ once: true, amount: 0.15 }"
+            :transition="{ duration: REVEAL_DURATION, ease: EASE, delay: index * STAGGER_DELAY }"
+          >
+            <RideCard :ride="ride" />
+          </motion.div>
+        </div>
+
+        <div class="mt-8">
+          <Button variant="primary" size="lg" to="/rides">
+            Ver próximas salidas
+            <IconArrow direction="right" />
+          </Button>
         </div>
       </div>
     </section>
 
     <section
-      class="relative isolate -mx-4 overflow-hidden bg-turf sm:-mx-6 lg:-mx-8"
+      class="relative isolate -mx-4 overflow-hidden sm:-mx-6 lg:-mx-8"
       aria-labelledby="cta-title"
     >
-      <svg
-        class="pointer-events-none absolute inset-x-0 bottom-0 h-28 w-full"
+      <img
+        src="/photos/salida-pista.webp"
+        alt=""
         aria-hidden="true"
-        focusable="false"
-        preserveAspectRatio="none"
-        viewBox="0 0 1440 112"
-      >
-        <path
-          d="M-40 86 C 260 34, 520 104, 820 62 S 1240 30, 1480 78"
-          fill="none"
-          stroke="var(--color-route)"
-          stroke-opacity="0.55"
-          stroke-width="3"
-          stroke-dasharray="8 12"
-          stroke-linecap="round"
-        />
-      </svg>
+        loading="lazy"
+        decoding="async"
+        class="absolute inset-0 h-full w-full object-cover object-center"
+      />
+      <div class="absolute inset-0 bg-ink/75" aria-hidden="true" />
 
       <div
-        class="relative mx-auto flex max-w-7xl flex-col gap-8 px-4 py-16 sm:px-6 sm:py-20 lg:flex-row lg:items-end lg:justify-between lg:gap-12 lg:px-8"
+        class="relative mx-auto flex max-w-7xl flex-col gap-6 px-4 py-10 sm:px-6 sm:py-12 lg:flex-row lg:items-end lg:justify-between lg:gap-12 lg:px-8 lg:py-14"
       >
-        <div class="max-w-2xl">
+        <motion.div
+          :initial="{ opacity: 0, y: REVEAL_Y }"
+          :while-in-view="{ opacity: 1, y: 0 }"
+          :viewport="{ once: true, amount: 0.25 }"
+          :transition="{ duration: REVEAL_DURATION, ease: EASE }"
+          class="max-w-2xl"
+        >
           <h2
             id="cta-title"
-            class="font-display text-3xl font-extrabold tracking-[-0.02em] text-canvas sm:text-4xl"
+            class="font-display text-3xl leading-[1.05] font-medium tracking-[-0.025em] text-white sm:text-4xl"
           >
             Tu próxima salida empieza aquí
           </h2>
-          <p class="mt-4 max-w-xl leading-7 text-canvas/90">
+          <p class="mt-4 max-w-xl leading-7 text-white/70">
             Crea tu cuenta, elige una ruta cerca de ti y sal a pedalear con gente nueva.
           </p>
-        </div>
+        </motion.div>
 
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+        <motion.div
+          :initial="{ opacity: 0, y: REVEAL_Y }"
+          :while-in-view="{ opacity: 1, y: 0 }"
+          :viewport="{ once: true, amount: 0.25 }"
+          :transition="{ duration: REVEAL_DURATION, ease: EASE, delay: STAGGER_DELAY }"
+          class="flex flex-col gap-4 sm:flex-row sm:items-center"
+        >
           <Button :to="bandCta.to" :variant="bandCta.variant" size="lg">
             {{ bandCta.label }}
           </Button>
@@ -254,26 +372,8 @@ const { isInView: galleryVisible } = useInView(gallerySection)
             <FontAwesomeIcon :icon="faBicycle" aria-hidden="true" />
             Explorar rutas
           </RouterLink>
-        </div>
+        </motion.div>
       </div>
     </section>
   </AppPage>
 </template>
-
-<style scoped>
-.reveal-photo {
-  clip-path: inset(0 0 100% 0);
-  transition: clip-path 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.reveal-photo.is-revealed {
-  clip-path: inset(0 0 0 0);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .reveal-photo {
-    clip-path: none;
-    transition: none;
-  }
-}
-</style>

@@ -13,6 +13,8 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
+      // El header se superpone transparente sobre el hero a pantalla completa.
+      meta: { overlayHeader: true },
     },
     {
       path: '/rides',

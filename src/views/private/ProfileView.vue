@@ -92,7 +92,7 @@ async function confirmAccountDeletion(): Promise<void> {
 
       <div class="flex items-center gap-4 p-6 pt-4 sm:p-8 sm:pt-5">
         <div
-          class="flex h-16 w-16 shrink-0 items-center justify-center bg-surface text-ink ring-1 ring-line-strong"
+          class="flex h-16 w-16 shrink-0 items-center justify-center rounded-card bg-surface text-ink ring-1 ring-line-strong"
         >
           <BrandLogo variant="simple" />
         </div>
@@ -120,7 +120,7 @@ async function confirmAccountDeletion(): Promise<void> {
         :aria-selected="activeTab === tab.id"
         :aria-controls="`panel-${tab.id}`"
         :tabindex="activeTab === tab.id ? 0 : -1"
-        class="shrink-0 border-b-2 px-4 py-3 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-trail"
+        class="shrink-0 border-b border-line-strong px-4 py-3 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ink"
         :class="
           activeTab === tab.id
             ? 'border-trail text-trail-ink'
@@ -141,7 +141,7 @@ async function confirmAccountDeletion(): Promise<void> {
       role="tabpanel"
       :aria-labelledby="`tab-${tab.id}`"
       tabindex="0"
-      class="py-6 focus-visible:outline-2 focus-visible:outline-trail"
+      class="py-6 focus-visible:outline-2 focus-visible:outline-ink"
     >
       <template v-if="tab.id === 'details'">
         <Typography as="h2" variant="heading-sm">Mis datos</Typography>

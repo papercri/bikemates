@@ -66,7 +66,7 @@ async function handleSubmit(): Promise<void> {
 
             <RouterLink
               to="/forgot-password"
-              class="text-sm text-trail-ink hover:text-trail-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
+              class="text-sm text-trail-ink hover:text-trail-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
             >
               ¿La has olvidado?
             </RouterLink>
@@ -95,7 +95,7 @@ async function handleSubmit(): Promise<void> {
         ¿Todavía no tienes cuenta?
         <RouterLink
           to="/register"
-          class="font-medium text-trail-ink hover:text-trail-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
+          class="font-medium text-trail-ink hover:text-trail-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
         >
           Regístrate
         </RouterLink>

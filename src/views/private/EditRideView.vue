@@ -45,10 +45,10 @@ async function handleSubmit(payload: RideFormSubmission): Promise<void> {
 <template>
   <AppPage spacing="compact">
     <div class="mx-auto max-w-3xl">
-      <header class="mb-6">
+      <header class="mb-5">
         <button
           type="button"
-          class="inline-flex items-center gap-1.5 text-sm text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
+          class="inline-flex items-center gap-1.5 text-sm text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
           @click="router.back()"
         >
           <IconArrow direction="left" />
@@ -57,7 +57,7 @@ async function handleSubmit(payload: RideFormSubmission): Promise<void> {
 
         <Typography as="h1" variant="heading-lg" class="mt-3"> Editar ruta </Typography>
 
-        <Typography variant="body-sm" tone="muted" class="mt-2">
+        <Typography variant="body-sm" tone="muted" class="mt-1.5">
           Modifica los datos de tu salida ciclista.
         </Typography>
       </header>

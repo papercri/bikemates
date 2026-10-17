@@ -52,16 +52,16 @@ describe('Button', () => {
   it('omits size padding for the link variant', () => {
     const wrapper = mount(Button, { props: { variant: 'link' } })
 
-    expect(wrapper.classes()).toContain('text-trail-ink')
+    expect(wrapper.classes()).toContain('text-ink')
     expect(wrapper.classes()).not.toContain('px-5')
   })
 
-  it('renders the primary variant with readable brand colors', () => {
+  it('renders the primary variant as a solid ink action', () => {
     const wrapper = mount(Button, { props: { variant: 'primary' } })
 
-    expect(wrapper.classes()).toContain('bg-trail')
-    expect(wrapper.classes()).toContain('text-white')
-    expect(wrapper.classes()).not.toContain('text-ink')
+    expect(wrapper.classes()).toContain('bg-ink')
+    expect(wrapper.classes()).toContain('text-canvas')
+    expect(wrapper.classes()).toContain('rounded-btn')
   })
 
   it('renders the sun variants for dark surfaces', () => {
@@ -73,8 +73,8 @@ describe('Button', () => {
     const sunOutline = mount(Button, { props: { variant: 'sun-outline' } })
 
     expect(sunOutline.classes()).toContain('text-canvas')
-    expect(sunOutline.classes()).toContain('border-canvas/70')
-    expect(sunOutline.classes()).not.toContain('bg-canvas')
+    expect(sunOutline.classes()).toContain('border-canvas/50')
+    expect(sunOutline.classes()).toContain('bg-transparent')
   })
 
   it('renders the quiet-destructive variant as a discreet action', () => {

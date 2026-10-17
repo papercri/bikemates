@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useHead } from '@unhead/vue'
+import { useWindowSize } from '@vueuse/core'
 import AppPage from '@/components/layout/AppPage.vue'
 import RideCard from '@/features/rides/components/RideCard.vue'
 import RideFilters from '@/features/rides/components/RideFilters.vue'
@@ -10,6 +11,7 @@ import EmptyState from '@/components/ui/EmptyState.vue'
 import Typography from '@/components/ui/Typography.vue'
 import { useRideFilters } from '@/features/rides/composables/useRideFilters'
 import { useRideList } from '@/features/rides/composables/useRideList'
+import type { Ride } from '@/features/rides/types'
 
 useHead({
   title: 'Explorar rutas | BikeMates',
@@ -22,9 +24,11 @@ useHead({
   ],
 })
 
+/** Tarjetas visibles por lote al hacer scroll. */
+const PAGE_SIZE = 8
+
 const { rides, isLoading, errorMessage, loadRides } = useRideList()
 
-// El estado de los filtros, el orden, las ventanas temporales y el filtrado viven en el composable.
 const {
   query,
   selectedLevel,
@@ -37,6 +41,54 @@ const {
 } = useRideFilters(rides)
 
 const isPastTab = computed(() => timeframe.value === 'past')
+
+// Columnas adaptativas: 1 en móvil; en pantallas mayores, tantas como tarjetas haya (máx. 4).
+const { width: viewportWidth } = useWindowSize()
+
+const columnCount = computed(() => {
+  const count = visibleRides.value.length
+  if (count === 0) return 1
+  if (viewportWidth.value < 640) return 1
+  if (viewportWidth.value < 1024) return Math.min(count, 2)
+  return Math.min(count, 4)
+})
+
+const gridStyle = computed(() => ({
+  gridTemplateColumns: `repeat(${columnCount.value}, minmax(0, 1fr))`,
+}))
+
+// Carga progresiva: se muestran lotes de PAGE_SIZE al acercarse al final.
+const visibleCount = ref(PAGE_SIZE)
+const sentinelEl = ref<HTMLElement | null>(null)
+
+const paginatedRides = computed<Ride[]>(() => visibleRides.value.slice(0, visibleCount.value))
+const hasMore = computed(() => visibleCount.value < visibleRides.value.length)
+
+// Al cambiar filtros, pestaña u orden se vuelve al primer lote.
+watch(visibleRides, () => {
+  visibleCount.value = PAGE_SIZE
+})
+
+let loadObserver: IntersectionObserver | null = null
+
+onMounted(() => {
+  if (typeof IntersectionObserver === 'undefined') return
+
+  loadObserver = new IntersectionObserver(
+    (entries) => {
+      if (entries[0]?.isIntersecting && hasMore.value) {
+        visibleCount.value += PAGE_SIZE
+      }
+    },
+    { rootMargin: '240px 0px' },
+  )
+
+  if (sentinelEl.value) loadObserver.observe(sentinelEl.value)
+})
+
+onBeforeUnmount(() => {
+  loadObserver?.disconnect()
+})
 </script>
 
 <template>
@@ -66,20 +118,20 @@ const isPastTab = computed(() => timeframe.value === 'past')
     </section>
 
     <section class="mt-6" aria-label="Listado de rutas">
-      <div v-if="isLoading" class="border-t border-line" role="status" aria-live="polite">
+      <div
+        v-if="isLoading"
+        class="mt-4 grid gap-4"
+        :style="gridStyle"
+        role="status"
+        aria-live="polite"
+      >
         <span class="sr-only">Cargando rutas…</span>
         <div
-          v-for="n in 3"
+          v-for="n in Math.max(columnCount, 2)"
           :key="n"
-          class="flex items-center gap-6 border-b border-line px-2 py-5 sm:px-4"
+          class="h-56 rounded-photo bg-surface motion-safe:animate-pulse"
           aria-hidden="true"
-        >
-          <div class="h-8 w-8 shrink-0 bg-surface motion-safe:animate-pulse" />
-          <div class="min-w-0 flex-1 space-y-2">
-            <div class="h-5 w-2/5 bg-surface motion-safe:animate-pulse" />
-            <div class="h-4 w-1/4 bg-surface motion-safe:animate-pulse" />
-          </div>
-        </div>
+        />
       </div>
 
       <EmptyState
@@ -102,12 +154,28 @@ const isPastTab = computed(() => timeframe.value === 'past')
           </template>
         </Typography>
 
-        <div v-if="visibleRides.length > 0" class="mt-3 border-t border-line">
-          <RideCard v-for="ride in visibleRides" :key="ride.id" :ride="ride" :past="isPastTab" />
+        <div v-if="paginatedRides.length > 0" class="mt-4 grid gap-4" :style="gridStyle">
+          <RideCard v-for="ride in paginatedRides" :key="ride.id" :ride="ride" :past="isPastTab" />
+        </div>
+
+        <!-- Centinela de scroll: carga el siguiente lote al entrar en pantalla. -->
+        <div ref="sentinelEl" class="h-px" aria-hidden="true" />
+
+        <div
+          v-if="hasMore"
+          class="mt-4 flex justify-center py-4"
+          role="status"
+          aria-live="polite"
+        >
+          <span class="sr-only">Cargando más rutas…</span>
+          <span
+            class="size-6 rounded-full border-2 border-line border-t-ink motion-safe:animate-spin"
+            aria-hidden="true"
+          />
         </div>
 
         <EmptyState
-          v-else
+          v-if="paginatedRides.length === 0"
           class="mt-6"
           :title="
             isPastTab

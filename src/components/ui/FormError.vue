@@ -10,7 +10,7 @@ withDefaults(
 </script>
 
 <template>
-  <p :id="id" class="mt-2 text-sm text-red-600">
+  <p :id="id" class="mt-2 text-sm text-red-700">
     <slot />
   </p>
 </template>

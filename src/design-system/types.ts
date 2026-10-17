@@ -2,7 +2,8 @@ export type ButtonVariant =
   'primary' | 'sun' | 'sun-outline' | 'outline' | 'destructive' | 'quiet-destructive' | 'link'
 export type ButtonSize = 'xs' | 'sm' | 'md' | 'lg'
 
-export type BadgeVariant = 'soft' | 'muted'
+/** `inverse` es la variante para texto sobre fotografía (fondo oscuro translúcido). */
+export type BadgeVariant = 'soft' | 'muted' | 'inverse'
 export type BadgeColor = 'trail' | 'route' | 'ink'
 
 export type AlertVariant = 'error' | 'success'

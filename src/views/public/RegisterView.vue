@@ -196,7 +196,7 @@ async function handleSubmit(): Promise<void> {
         ¿Ya tienes cuenta?
         <RouterLink
           to="/login"
-          class="font-medium text-trail-ink hover:text-trail-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
+          class="font-medium text-trail-ink hover:text-trail-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
         >
           Inicia sesión
         </RouterLink>
