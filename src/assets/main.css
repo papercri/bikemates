@@ -1,31 +1,30 @@
 @import 'tailwindcss';
-@import '@fontsource-variable/inter';
 @import '@fontsource-variable/archivo/wdth.css';
 @import '@fontsource-variable/jetbrains-mono';
 
 @theme {
   /*
-   * Industrial brutalism sobre papel: filete negro, naranja quemado como
-   * única llamada a la acción y bloques profundos invertidos.
-   * Paleta tomada de public/layout-black-orange.webp.
+   * Editorial minimalista outdoor: hueso cálido, filetes ultrafinos,
+   * tinta off-black y un único acento naranja desaturado.
+   * Paleta derivada de public/example1-3.png + protocolo minimalist-ui.
    */
-  --color-canvas: #f7f6f3;
-  --color-snow: #f0efeb;
-  --color-surface: #e5e2d9;
-  --color-line: #0a0a0a;
-  --color-line-strong: #0a0a0a;
+  --color-canvas: #fbfbfa;
+  --color-snow: #f7f6f3;
+  --color-surface: #f2f1ed;
+  --color-line: #e8e6e1;
+  --color-line-strong: #d6d3cc;
 
-  --color-ink: #0a0a0a;
-  --color-graphite: #525252;
+  --color-ink: #111111;
+  --color-graphite: #787774;
 
-  --color-trail: #ea580c;
-  --color-trail-deep: #c2410c;
-  --color-trail-ink: #9a3412;
-  --color-trail-dark: #7c2d12;
-  --color-route: #ea580c;
-  --color-route-ink: #9a3412;
-  --color-route-dark: #7c2d12;
-  --color-turf: #0a0a0a;
+  --color-trail: #e08a3c;
+  --color-trail-deep: #b4651f;
+  --color-trail-ink: #8c4a12;
+  --color-trail-dark: #7a3f10;
+  --color-route: #e08a3c;
+  --color-route-ink: #8c4a12;
+  --color-route-dark: #7a3f10;
+  --color-turf: #141414;
 
   --animate-trail-dash: trail-dash 24s linear infinite;
 
@@ -35,21 +34,22 @@
     }
   }
 
-  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
-  --font-display: 'Archivo Variable', 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, monospace;
 
-  /* Dos niveles declarados: los controles son píldora, el resto es esquina viva. */
-  --radius-card: 0px;
-  --radius-btn: 9999px;
+  /* Esquinas crisp: tarjetas 12px, controles 6px; sin píldoras en primarios. */
+  --radius-card: 12px;
+  --radius-btn: 6px;
 
-  --shadow-card: 0 0 #0000;
-  --shadow-lift: 4px 4px 0 0 #0a0a0a;
+  /* Profundidad casi nula: solo un halo difuso de baja opacidad. */
+  --shadow-card: 0 1px 2px rgb(17 17 17 / 0.03);
+  --shadow-lift: 0 2px 8px rgb(17 17 17 / 0.04);
 }
 
 @layer base {
   body {
-    @apply bg-snow font-sans text-ink antialiased;
+    @apply bg-canvas font-sans text-ink antialiased;
     text-rendering: optimizeLegibility;
     box-sizing: border-box;
   }
@@ -80,7 +80,7 @@
   }
 
   ::selection {
-    background: color-mix(in oklab, var(--color-trail) 32%, transparent);
+    background: color-mix(in oklab, var(--color-trail) 28%, transparent);
   }
 
   ::-webkit-scrollbar {
@@ -92,7 +92,8 @@
   }
   ::-webkit-scrollbar-thumb {
     background: var(--color-line-strong);
-    border: 2px solid var(--color-snow);
+    border: 2px solid var(--color-canvas);
+    border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
     background: var(--color-graphite);

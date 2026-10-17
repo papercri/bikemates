@@ -43,11 +43,11 @@ const frameClasses = computed(() => ratioClasses[props.ratio])
 
 <style scoped>
 .photo-natural {
-  filter: saturate(0.98) contrast(1.04);
+  filter: saturate(0.9) contrast(1.02);
 }
 
 .photo-tint {
-  background: color-mix(in oklab, var(--color-trail) 11%, transparent);
+  background: color-mix(in oklab, var(--color-trail) 6%, transparent);
   mix-blend-mode: multiply;
 }
 

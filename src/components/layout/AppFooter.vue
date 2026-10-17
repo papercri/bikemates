@@ -8,11 +8,11 @@ const year = computed(() => new Date().getFullYear())
 const { user } = storeToRefs(useAuthStore())
 
 const linkClasses =
-  'font-mono text-xs uppercase tracking-[0.14em] text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink'
+  'text-sm font-medium text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink'
 </script>
 
 <template>
-  <footer class="border-t-4 border-ink bg-canvas">
+  <footer class="border-t border-line bg-canvas">
     <div class="mx-auto flex max-w-7xl flex-col items-center gap-3 px-4 py-8 sm:px-6 lg:px-8">
       <nav
         aria-label="Enlaces del pie"

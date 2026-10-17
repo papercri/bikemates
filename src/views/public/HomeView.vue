@@ -4,12 +4,9 @@ import { useHead } from '@unhead/vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faBicycle } from '@fortawesome/free-solid-svg-icons'
 import AppPage from '@/components/layout/AppPage.vue'
-import CyclistScene from '@/components/icons/CyclistScene.vue'
-import HeroBackdrop from '@/components/icons/HeroBackdrop.vue'
 import IconCyclists from '@/components/icons/IconCyclists.vue'
 import IconMeetup from '@/components/icons/IconMeetup.vue'
 import IconRoutes from '@/components/icons/IconRoutes.vue'
-import RidgeDivider from '@/components/icons/RidgeDivider.vue'
 import PhotoFrame from '@/components/landing/PhotoFrame.vue'
 import Button from '@/components/ui/Button.vue'
 import { storeToRefs } from 'pinia'
@@ -92,25 +89,33 @@ const { isInView: bandVisible } = useInView(bandSection)
 <template>
   <AppPage bleed spacing="none">
     <section
-      class="relative isolate -mx-4 overflow-hidden bg-turf sm:-mx-6 lg:-mx-8"
+      class="relative isolate -mx-4 overflow-hidden sm:-mx-6 lg:-mx-8"
       aria-labelledby="hero-title"
     >
-      <HeroBackdrop class="absolute inset-0" />
+      <img
+        src="/photos/hero-bosque.webp"
+        alt=""
+        aria-hidden="true"
+        fetchpriority="high"
+        decoding="async"
+        class="absolute inset-0 h-full w-full object-cover object-center"
+      />
+      <div class="absolute inset-0 bg-gradient-to-r from-ink/75 via-ink/45 to-ink/20" />
 
       <div
-        class="relative mx-auto grid max-w-7xl gap-10 px-4 pb-14 pt-10 sm:px-6 sm:pb-16 sm:pt-12 lg:grid-cols-[1.06fr_0.94fr] lg:items-center lg:gap-12 lg:px-8 lg:pt-14"
+        class="relative mx-auto grid max-w-7xl gap-10 px-4 pb-20 pt-14 sm:px-6 sm:pb-24 sm:pt-16 lg:grid-cols-[1.06fr_0.94fr] lg:items-center lg:gap-12 lg:px-8 lg:pb-28 lg:pt-20"
       >
         <div>
           <h1
             id="hero-title"
-            class="hero-rise max-w-3xl font-display text-[clamp(2.35rem,6.2vw,4.5rem)] leading-[0.92] font-extrabold tracking-[-0.03em] text-canvas uppercase"
+            class="hero-rise max-w-3xl font-display text-[clamp(2.4rem,6vw,4.4rem)] leading-[0.98] font-extrabold tracking-[-0.03em] text-white"
           >
             <span class="block">Encuentra tu grupeta.</span>
             <span class="block text-trail">Comparte la ruta.</span>
           </h1>
 
           <p
-            class="hero-rise hero-rise-delay-1 mt-6 max-w-xl text-base leading-7 text-canvas/80 sm:text-lg"
+            class="hero-rise hero-rise-delay-1 mt-6 max-w-xl text-base leading-7 text-white/85 sm:text-lg"
           >
             Conecta con ciclistas cerca de ti, organiza salidas y descubre nuevas rutas para
             disfrutar de la bici en compañía.
@@ -128,29 +133,19 @@ const { isInView: bandVisible } = useInView(bandSection)
             </Button>
           </div>
         </div>
-
-        <div
-          class="relative mx-auto w-full max-w-md border-4 border-trail p-3 sm:p-5 lg:max-w-none"
-        >
-          <CyclistScene />
-        </div>
-      </div>
-
-      <div class="relative -mb-px">
-        <RidgeDivider />
       </div>
     </section>
 
     <section
       ref="featuresSection"
-      class="-mx-4 border-y-4 border-ink bg-canvas sm:-mx-6 lg:-mx-8"
+      class="-mx-4 sm:-mx-6 lg:-mx-8"
       aria-labelledby="features-title"
     >
-      <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+      <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
         <div class="reveal" :class="featuresVisible ? 'is-revealed' : ''">
           <h2
             id="features-title"
-            class="max-w-3xl font-display text-3xl leading-[1.02] font-extrabold tracking-[-0.03em] text-ink uppercase sm:text-5xl"
+            class="max-w-3xl font-display text-3xl leading-[1.05] font-extrabold tracking-[-0.03em] text-ink sm:text-5xl"
           >
             Todo empieza con una ruta
           </h2>
@@ -161,28 +156,25 @@ const { isInView: bandVisible } = useInView(bandSection)
           </p>
         </div>
 
-        <div class="mt-10 grid gap-1 border-4 border-ink bg-ink sm:grid-cols-3">
+        <div class="mt-10 grid gap-3 sm:grid-cols-3">
           <div
             v-for="(feature, index) in features"
             :key="feature.title"
-            class="reveal reveal-cell flex flex-col p-6 sm:p-7"
-            :class="[
-              featuresVisible ? 'is-revealed' : '',
-              index === 0 ? 'bg-turf text-canvas' : 'bg-canvas text-ink',
-            ]"
+            class="reveal reveal-cell rounded-card border border-line bg-white p-7 shadow-card"
+            :class="featuresVisible ? 'is-revealed' : ''"
           >
-            <component :is="feature.icon" class="text-trail" />
-
-            <h3
-              class="mt-5 font-display text-lg leading-tight font-extrabold tracking-[-0.01em] uppercase sm:text-xl"
+            <span
+              class="inline-flex rounded-full bg-trail/10 p-3 text-trail-ink"
+              aria-hidden="true"
             >
+              <component :is="feature.icon" class="size-6" />
+            </span>
+
+            <h3 class="mt-5 font-display text-lg leading-tight font-bold tracking-[-0.01em] sm:text-xl">
               {{ feature.title }}
             </h3>
 
-            <p
-              class="mt-2 text-sm leading-6"
-              :class="index === 0 ? 'text-canvas/75' : 'text-graphite'"
-            >
+            <p class="mt-2 text-sm leading-6 text-graphite">
               {{ feature.description }}
             </p>
           </div>
@@ -192,24 +184,24 @@ const { isInView: bandVisible } = useInView(bandSection)
 
     <section
       ref="gallerySection"
-      class="-mx-4 bg-surface sm:-mx-6 lg:-mx-8"
+      class="-mx-4 bg-snow sm:-mx-6 lg:-mx-8"
       aria-labelledby="gallery-title"
     >
       <div
-        class="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] lg:items-center lg:gap-14 lg:px-8"
+        class="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] lg:items-center lg:gap-14 lg:px-8 lg:py-24"
       >
         <PhotoFrame
-          src="/default.webp"
-          alt="Dos ciclistas miran la sierra desde un prado durante una salida en bici"
+          src="/photos/img8.avif"
+          alt="Tres ciclistas pedalean por un camino de campo al atardecer"
           ratio="4/5"
-          class="reveal-photo border-4 border-ink"
+          class="reveal-photo"
           :class="galleryVisible ? 'is-revealed' : ''"
         />
 
         <div>
           <h2
             id="gallery-title"
-            class="max-w-xl font-display text-3xl leading-[1.02] font-extrabold tracking-[-0.03em] text-ink uppercase sm:text-4xl"
+            class="max-w-xl font-display text-3xl leading-[1.05] font-extrabold tracking-[-0.03em] text-ink sm:text-4xl"
           >
             Así se vive una salida
           </h2>
@@ -221,16 +213,14 @@ const { isInView: bandVisible } = useInView(bandSection)
 
           <div class="mt-8 grid grid-cols-2 gap-4">
             <PhotoFrame
-              src="/photos/salida-amanecer.webp"
-              alt="Pradera iluminada por el sol bajo una salida temprana"
+              src="/photos/grupeta-sepia.webp"
+              alt="Dos ciclistas recorren un camino rural entre campos"
               ratio="1/1"
-              class="border-4 border-ink"
             />
             <PhotoFrame
-              src="/photos/salida-pista.webp"
-              alt="Sendero de tierra que atraviesa un prado entre árboles"
+              src="/photos/img10.avif"
+              alt="Dos ciclistas sonríen en una carretera de costa con el océano al fondo"
               ratio="1/1"
-              class="border-4 border-ink"
             />
           </div>
 
@@ -243,38 +233,29 @@ const { isInView: bandVisible } = useInView(bandSection)
 
     <section
       ref="bandSection"
-      class="relative isolate -mx-4 border-t-4 border-ink bg-trail sm:-mx-6 lg:-mx-8"
+      class="relative isolate -mx-4 overflow-hidden bg-turf sm:-mx-6 lg:-mx-8"
       aria-labelledby="cta-title"
     >
-      <svg
-        class="pointer-events-none absolute inset-x-0 bottom-0 h-28 w-full"
+      <div
+        class="pointer-events-none absolute inset-0 opacity-[0.05]"
+        style="
+          background:
+            radial-gradient(60% 80% at 85% 20%, var(--color-trail), transparent 70%);
+        "
         aria-hidden="true"
-        focusable="false"
-        preserveAspectRatio="none"
-        viewBox="0 0 1440 112"
-      >
-        <path
-          d="M-40 86 C 260 34, 520 104, 820 62 S 1240 30, 1480 78"
-          fill="none"
-          stroke="var(--color-ink)"
-          stroke-opacity="0.32"
-          stroke-width="3"
-          stroke-dasharray="8 12"
-          stroke-linecap="round"
-        />
-      </svg>
+      />
 
       <div
-        class="relative mx-auto flex max-w-7xl flex-col gap-8 px-4 py-16 sm:px-6 sm:py-20 lg:flex-row lg:items-end lg:justify-between lg:gap-12 lg:px-8"
+        class="relative mx-auto flex max-w-7xl flex-col gap-8 px-4 py-16 sm:px-6 sm:py-20 lg:flex-row lg:items-end lg:justify-between lg:gap-12 lg:px-8 lg:py-24"
       >
         <div class="max-w-2xl reveal" :class="bandVisible ? 'is-revealed' : ''">
           <h2
             id="cta-title"
-            class="font-display text-3xl leading-[1.02] font-extrabold tracking-[-0.03em] text-ink uppercase sm:text-4xl"
+            class="font-display text-3xl leading-[1.05] font-extrabold tracking-[-0.03em] text-white sm:text-4xl"
           >
             Tu próxima salida empieza aquí
           </h2>
-          <p class="mt-4 max-w-xl leading-7 text-ink/90">
+          <p class="mt-4 max-w-xl leading-7 text-white/70">
             Crea tu cuenta, elige una ruta cerca de ti y sal a pedalear con gente nueva.
           </p>
         </div>
@@ -289,7 +270,7 @@ const { isInView: bandVisible } = useInView(bandSection)
 
           <RouterLink
             to="/rides"
-            class="inline-flex items-center gap-2 text-ink underline-offset-4 transition-colors hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+            class="inline-flex items-center gap-2 text-canvas underline-offset-4 transition-colors hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-canvas"
           >
             <FontAwesomeIcon :icon="faBicycle" aria-hidden="true" />
             Explorar rutas
@@ -305,12 +286,12 @@ const { isInView: bandVisible } = useInView(bandSection)
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(18px);
+    transform: translateY(12px);
   }
 }
 
 .hero-rise {
-  animation: rise 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .hero-rise-delay-1 {
@@ -324,7 +305,7 @@ const { isInView: bandVisible } = useInView(bandSection)
 /* Revelado por scroll de las bandas informativas. */
 .reveal {
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateY(12px);
   transition:
     opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
     transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);

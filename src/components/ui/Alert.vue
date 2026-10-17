@@ -22,7 +22,7 @@ const classes = computed(() =>
     'text-sm',
     props.variant === 'error'
       ? props.boxed
-        ? 'rounded-card border-2 border-red-700 bg-red-50 p-3 text-red-700'
+        ? 'rounded-card border border-red-200 bg-red-50 p-3 text-red-700'
         : 'text-red-700'
       : 'text-trail-ink',
   ),

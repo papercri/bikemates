@@ -84,7 +84,7 @@ function handleSelectPlace(place: GeocodingResult): void {
     <ul
       v-if="results.length"
       aria-label="Resultados de lugares"
-      class="divide-y divide-line overflow-hidden rounded-card border-2 border-ink bg-canvas"
+      class="divide-y divide-line overflow-hidden rounded-card border border-line bg-white"
     >
       <li v-for="place in results" :key="place.id">
         <button
@@ -100,7 +100,7 @@ function handleSelectPlace(place: GeocodingResult): void {
     <div
       v-if="selectedPlace"
       role="status"
-      class="rounded-card border-2 border-ink bg-trail/15 p-3"
+      class="rounded-card border border-line bg-trail/10 p-3"
     >
       <p class="text-sm font-semibold text-ink">Lugar seleccionado</p>
       <p class="mt-1 text-sm text-ink">

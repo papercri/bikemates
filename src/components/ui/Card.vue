@@ -17,10 +17,13 @@ const props = withDefaults(
 
 const classes = computed(() =>
   cn(
-    'overflow-hidden rounded-card',
-    props.variant === 'danger' ? 'border-2 border-red-600 bg-red-50' : 'border-2 border-ink bg-canvas',
-    // Sin sombras suaves: la jerarquía la marcan el filete negro y el tono de fondo.
-    props.interactive && 'transition-colors duration-200 hover:border-ink hover:bg-surface',
+    'overflow-hidden rounded-card bg-white',
+    props.variant === 'danger'
+      ? 'border border-red-200 bg-red-50'
+      : 'border border-line shadow-card',
+    // Hover: solo un halo difuso, sin elevar la tarjeta del suelo.
+    props.interactive &&
+      'transition-[border-color,box-shadow] duration-200 hover:border-line-strong hover:shadow-lift',
   ),
 )
 </script>

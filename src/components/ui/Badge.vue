@@ -15,7 +15,8 @@ withDefaults(
 )
 
 const classes = createVariant({
-  base: 'inline-flex items-center gap-1.5 px-2 py-1 text-xs font-semibold',
+  // Pastel apagado en píldora: el color es escaso y solo marca significado.
+  base: 'inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium tracking-[0.03em]',
   variants: {
     variant: { soft: '', muted: '' },
     color: { trail: '', route: '', ink: '' },
@@ -25,9 +26,9 @@ const classes = createVariant({
     color: 'trail',
   },
   compoundVariants: [
-    { variant: 'soft', color: 'trail', class: 'bg-trail/15 text-trail-dark' },
+    { variant: 'soft', color: 'trail', class: 'bg-trail/15 text-trail-ink' },
     // Escalera de intensidad creciente sin depender solo del color: naranja pálido, gris y losa negra.
-    { variant: 'soft', color: 'route', class: 'bg-ink/10 text-ink' },
+    { variant: 'soft', color: 'route', class: 'bg-ink/8 text-ink' },
     { variant: 'soft', color: 'ink', class: 'bg-ink text-canvas' },
     { variant: 'muted', color: 'trail', class: 'bg-surface text-graphite' },
     { variant: 'muted', color: 'route', class: 'bg-surface text-graphite' },
