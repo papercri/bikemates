@@ -22,8 +22,8 @@ describe('Badge', () => {
       slots: { default: 'Intermedio' },
     })
 
-    expect(wrapper.classes()).toContain('bg-ink')
-    expect(wrapper.classes()).toContain('text-canvas')
+    expect(wrapper.classes()).toContain('bg-ink/10')
+    expect(wrapper.classes()).toContain('text-ink')
   })
 
   it('applies muted surface classes for the muted variant', () => {

@@ -272,7 +272,7 @@ const { isInView: bandVisible } = useInView(bandSection)
           >
             Tu próxima salida empieza aquí
           </h2>
-          <p class="mt-4 max-w-xl leading-7 text-ink/80">
+          <p class="mt-4 max-w-xl leading-7 text-ink/90">
             Crea tu cuenta, elige una ruta cerca de ti y sal a pedalear con gente nueva.
           </p>
         </div>

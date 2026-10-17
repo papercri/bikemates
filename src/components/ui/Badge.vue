@@ -26,9 +26,9 @@ const classes = createVariant({
   },
   compoundVariants: [
     { variant: 'soft', color: 'trail', class: 'bg-trail/15 text-trail-dark' },
-    // Escalera de intensidad legible sin depender solo del color: teja, losa negra y gris.
-    { variant: 'soft', color: 'route', class: 'bg-ink text-canvas' },
-    { variant: 'soft', color: 'ink', class: 'bg-ink/10 text-ink' },
+    // Escalera de intensidad creciente sin depender solo del color: naranja pálido, gris y losa negra.
+    { variant: 'soft', color: 'route', class: 'bg-ink/10 text-ink' },
+    { variant: 'soft', color: 'ink', class: 'bg-ink text-canvas' },
     { variant: 'muted', color: 'trail', class: 'bg-surface text-graphite' },
     { variant: 'muted', color: 'route', class: 'bg-surface text-graphite' },
     { variant: 'muted', color: 'ink', class: 'bg-surface text-graphite' },
@@ -38,7 +38,8 @@ const classes = createVariant({
 const dotColorClasses: Record<BadgeColor, string> = {
   trail: 'bg-trail',
   route: 'bg-route',
-  ink: 'bg-ink',
+  // El punto nunca puede fundirse con la losa negra del color `ink`.
+  ink: 'bg-canvas',
 }
 </script>
 
