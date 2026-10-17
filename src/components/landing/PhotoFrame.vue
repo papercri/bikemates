@@ -1,25 +1,18 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useParallax } from '@/composables/useParallax'
 
 const props = withDefaults(
   defineProps<{
     src: string
     alt: string
     ratio?: '4/5' | '1/1'
-    /** Desplaza la imagen más lento que el scroll (efecto Cowboy). */
-    parallax?: boolean
   }>(),
   {
     ratio: '4/5',
-    parallax: false,
   },
 )
 
 const hasError = ref(false)
-const imageEl = ref<HTMLElement | null>(null)
-
-useParallax(imageEl, { speed: 0.22, maxOffset: 20 })
 
 const ratioClasses = {
   '4/5': 'aspect-[4/5]',
@@ -35,13 +28,12 @@ const frameClasses = computed(() => ratioClasses[props.ratio])
     <div v-if="hasError" aria-hidden="true" class="photo-fallback absolute inset-0" />
 
     <img
-      ref="imageEl"
       :src="props.src"
       :alt="props.alt"
       loading="lazy"
       decoding="async"
       class="absolute inset-0 h-full w-full object-cover"
-      :class="[hasError ? 'opacity-0' : '', parallax ? 'parallax-layer' : '']"
+      :class="hasError ? 'opacity-0' : ''"
       @error="hasError = true"
     />
   </div>

@@ -44,7 +44,7 @@ async function handleSubmit(): Promise<void> {
 
 <template>
   <AppPage>
-    <AuthCard v-reveal title="Inicia sesión" description="Accede a tu cuenta de BikeMates.">
+    <AuthCard title="Inicia sesión" description="Accede a tu cuenta de BikeMates.">
       <form class="mt-6 space-y-4" novalidate @submit.prevent="handleSubmit">
         <div>
           <FormLabel id="email">Correo electrónico</FormLabel>

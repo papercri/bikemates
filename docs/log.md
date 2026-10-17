@@ -1,5 +1,28 @@
 # Registro de cambios
 
+## 2026-10-17 — Motion con `motion-v`: hero a pantalla completa, header transparente y parallax
+
+Se sustituye la implementación nativa de motion (directiva `v-reveal` + `useParallax` + `reveal.css`, que rompía la home: fotos de la galería invisibles por `clip-path` y parallax sin efecto visible) por la librería oficial **Motion for Vue** (`motion-v`), con el patrón de animaciones del repo de referencia Dabasystem (reveals con `opacity`+`translateY` y curva `cubic-bezier(0.25, 1, 0.5, 1)`).
+
+- **Dependencias:** `motion-v@^2.8.0` y su peer `@vueuse/core@^15.0.0` (instaladas con `--legacy-peer-deps` por un conflicto preexistente entre `@vue/eslint-config-typescript` y `eslint-plugin-vue`). No se añade ninguna otra librería.
+- **Eliminado:** `src/directives/vReveal.ts` (+ specs), `src/composables/useParallax.ts` (+ specs), `src/assets/reveal.css`, registro de la directiva en `main.ts` y prop `parallax` de `PhotoFrame`. Causa raíz del bug de fotos desaparecidas: `.reveal-photo` aplicaba `clip-path: inset(0 0 100% 0)` al mismo elemento que observaba el `IntersectionObserver`, que podía no intersectar nunca.
+- **`App.vue`:** `<MotionConfig reduced-motion="user">` envuelve el `RouterView` para respetar `prefers-reduced-motion` en toda la app.
+- **Header transparente en home:** nueva meta `overlayHeader` en la ruta `/` del router; `AppHeader` se posiciona `fixed` con fondo transparente, texto blanco y variantes de botón claras (`sun`/`sun-outline`) cuando la ruta marca overlay; en el resto de rutas sigue `sticky` con canvas. El panel móvil del menú usa fondo sólido (`bg-ink`) sobre el hero para mantener legibilidad.
+- **`HomeView` reescrito con `motion-v`:**
+  - Hero a pantalla completa (`min-h-[100svh]`) bajo el header transparente; la imagen `hero-bosque.webp` arranca con zoom de `scale(1.08)` a `1` en 1.6 s (curva expo-out) y se desplaza un 12 % con `useScroll({ target, offset: ['start start', 'end start'] })` + `useTransform` mientras la sección sale de pantalla.
+  - Bloques de contenido (títulos, features con stagger, fotos de la galería, banda CTA) revelados con componentes `motion.div`: `initial`/`whileInView` sobre `opacity` + `y: 32px`, `viewport: { once: true, amount: 0.2–0.25 }`, duración 0.8 s.
+  - Las fotos de "Así se vive una salida" (`img8.avif`, `grupeta-sepia.webp`, `img10.avif`) vuelven a estar visibles; se eliminan los wrappers clip-path y se revelan con el mismo patrón whileInView.
+  - Constantes de animación con nombre al inicio del `<script setup>` (`EASE`, `HERO_INITIAL_SCALE`, `HERO_PARALLAX_Y`, `REVEAL_Y`, etc.).
+- **Resto de vistas públicas** (`RidesView`, `RideDetailView`, `LoginView`, `RegisterView`, `ForgotPasswordView`, `ResetPasswordView`, `EmailConfirmedView`, `PrivacyView`, `NotFoundView`): se retiran los `v-reveal`; sin animación propia en esta pasada.
+
+### Verificación
+
+- `npx oxlint src` y `npx eslint src`: en verde.
+- `npm run test:unit` (248/248; bajan de 262 al eliminar los specs de `vReveal`/`useParallax`).
+- `npm run build-only`: OK.
+- `npm run type-check`: solo los 11 errores preexistentes de `imageUrl` en `mockRides`/specs de rides (ajenos a este cambio).
+- No se pudo verificar el aspecto visual en navegador desde esta sesión (sin browser tool): parallax, zoom del hero, header transparente y revelados requieren revisión manual en el dev server.
+
 ## 2026-10-13 — SVGs extraídos a componentes (`src/components/svg/`)
 
 Sin cambios de comportamiento: el marcado SVG pasa de vistas/componentes a componentes propios.

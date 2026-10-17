@@ -38,7 +38,6 @@ async function handleSubmit(): Promise<void> {
 <template>
   <AppPage>
     <AuthCard
-      v-reveal
       title="Recuperar contraseña"
       description="Introduce el email de tu cuenta y te enviaremos las instrucciones para establecer una nueva contraseña."
     >

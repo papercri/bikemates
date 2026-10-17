@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { useHead } from '@unhead/vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faBicycle } from '@fortawesome/free-solid-svg-icons'
+import { motion, useReducedMotion, useScroll, useTransform } from 'motion-v'
 import AppPage from '@/components/layout/AppPage.vue'
 import IconCyclists from '@/components/icons/IconCyclists.vue'
 import IconMeetup from '@/components/icons/IconMeetup.vue'
@@ -11,8 +12,16 @@ import PhotoFrame from '@/components/landing/PhotoFrame.vue'
 import Button from '@/components/ui/Button.vue'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/features/auth/stores/authStore'
-import { useParallax } from '@/composables/useParallax'
 import type { ButtonVariant } from '@/design-system'
+
+// Constantes de animación (curva Cowboy: expo-out suave)
+const EASE = [0.25, 1, 0.5, 1] as const
+const HERO_INITIAL_SCALE = 1.08
+const HERO_ZOOM_DURATION = 1.6
+const HERO_PARALLAX_Y = '12%'
+const REVEAL_Y = 32
+const REVEAL_DURATION = 0.8
+const STAGGER_DELAY = 0.1
 
 const authStore = useAuthStore()
 const { user, isInitialized } = storeToRefs(authStore)
@@ -76,31 +85,49 @@ const features = [
   },
 ]
 
-const heroImage = ref<HTMLElement | null>(null)
-useParallax(heroImage, { speed: 0.35, maxOffset: 56 })
+// Parallax del hero: la imagen se desplaza un 12 % mientras la sección sale de pantalla.
+const heroSection = ref<HTMLElement | null>(null)
+const reduceMotion = useReducedMotion()
+
+const { scrollYProgress } = useScroll({
+  target: heroSection,
+  offset: ['start start', 'end start'],
+})
+
+const heroImageY = useTransform(scrollYProgress, [0, 1], ['0%', HERO_PARALLAX_Y])
+
+const heroImageStyle = computed(() => (reduceMotion.value ? {} : { y: heroImageY }))
 </script>
 
 <template>
   <AppPage bleed spacing="none">
     <section
-      class="relative isolate -mx-4 overflow-hidden sm:-mx-6 lg:-mx-8"
+      ref="heroSection"
+      class="relative isolate -mx-4 min-h-[100svh] overflow-hidden sm:-mx-6 lg:-mx-8"
       aria-labelledby="hero-title"
     >
-      <img
-        ref="heroImage"
+      <motion.img
         src="/photos/hero-bosque.webp"
         alt=""
         aria-hidden="true"
         fetchpriority="high"
         decoding="async"
-        class="parallax-layer absolute inset-0 h-full w-full object-cover object-center"
+        class="absolute inset-0 h-full w-full object-cover object-center"
+        :initial="{ scale: HERO_INITIAL_SCALE }"
+        :animate="{ scale: 1 }"
+        :transition="{ duration: HERO_ZOOM_DURATION, ease: EASE }"
+        :style="heroImageStyle"
       />
       <div class="absolute inset-0 bg-ink/40" />
 
       <div
-        class="relative mx-auto grid max-w-7xl gap-10 px-4 pb-20 pt-14 sm:px-6 sm:pb-24 sm:pt-16 lg:grid-cols-[1.06fr_0.94fr] lg:items-center lg:gap-12 lg:px-8 lg:pb-28 lg:pt-20"
+        class="relative mx-auto grid max-w-7xl gap-10 px-4 pb-20 pt-28 sm:px-6 sm:pb-24 sm:pt-32 lg:grid-cols-[1.06fr_0.94fr] lg:items-center lg:gap-12 lg:px-8 lg:pb-28 lg:pt-36"
       >
-        <div v-reveal>
+        <motion.div
+          :initial="{ opacity: 0, y: REVEAL_Y }"
+          :animate="{ opacity: 1, y: 0 }"
+          :transition="{ duration: REVEAL_DURATION, ease: EASE, delay: 0.15 }"
+        >
           <h1
             id="hero-title"
             class="max-w-3xl font-display text-[clamp(2.4rem,6vw,4.4rem)] leading-[0.95] font-medium tracking-[-0.025em] text-white"
@@ -125,13 +152,18 @@ useParallax(heroImage, { speed: 0.35, maxOffset: 56 })
               {{ cta.label }}
             </Button>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
 
     <section class="-mx-4 sm:-mx-6 lg:-mx-8" aria-labelledby="features-title">
       <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
-        <div v-reveal>
+        <motion.div
+          :initial="{ opacity: 0, y: REVEAL_Y }"
+          :while-in-view="{ opacity: 1, y: 0 }"
+          :viewport="{ once: true, amount: 0.25 }"
+          :transition="{ duration: REVEAL_DURATION, ease: EASE }"
+        >
           <h2
             id="features-title"
             class="max-w-3xl font-display text-3xl leading-[1.05] font-medium tracking-[-0.025em] text-ink sm:text-5xl"
@@ -143,13 +175,16 @@ useParallax(heroImage, { speed: 0.35, maxOffset: 56 })
             Encuentra personas con tus mismos intereses y convierte cada salida en una oportunidad
             para descubrir nuevos caminos.
           </p>
-        </div>
+        </motion.div>
 
         <div class="mt-10 grid gap-3 sm:grid-cols-3">
-          <div
+          <motion.div
             v-for="(feature, index) in features"
             :key="feature.title"
-            v-reveal="{ delay: index * 80 }"
+            :initial="{ opacity: 0, y: REVEAL_Y }"
+            :while-in-view="{ opacity: 1, y: 0 }"
+            :viewport="{ once: true, amount: 0.2 }"
+            :transition="{ duration: REVEAL_DURATION, ease: EASE, delay: index * STAGGER_DELAY }"
             class="rounded-card border border-line bg-white p-7"
           >
             <span
@@ -168,7 +203,7 @@ useParallax(heroImage, { speed: 0.35, maxOffset: 56 })
             <p class="mt-2 text-sm leading-6 text-graphite">
               {{ feature.description }}
             </p>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
@@ -177,15 +212,25 @@ useParallax(heroImage, { speed: 0.35, maxOffset: 56 })
       <div
         class="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] lg:items-center lg:gap-14 lg:px-8 lg:py-24"
       >
-        <PhotoFrame
-          v-reveal="{ variant: 'photo' }"
-          src="/photos/img8.avif"
-          alt="Tres ciclistas pedalean por un camino de campo al atardecer"
-          ratio="4/5"
-          parallax
-        />
+        <motion.div
+          :initial="{ opacity: 0, y: REVEAL_Y }"
+          :while-in-view="{ opacity: 1, y: 0 }"
+          :viewport="{ once: true, amount: 0.2 }"
+          :transition="{ duration: REVEAL_DURATION, ease: EASE }"
+        >
+          <PhotoFrame
+            src="/photos/img8.avif"
+            alt="Tres ciclistas pedalean por un camino de campo al atardecer"
+            ratio="4/5"
+          />
+        </motion.div>
 
-        <div v-reveal="{ delay: 100 }">
+        <motion.div
+          :initial="{ opacity: 0, y: REVEAL_Y }"
+          :while-in-view="{ opacity: 1, y: 0 }"
+          :viewport="{ once: true, amount: 0.2 }"
+          :transition="{ duration: REVEAL_DURATION, ease: EASE, delay: STAGGER_DELAY }"
+        >
           <h2
             id="gallery-title"
             class="max-w-xl font-display text-3xl leading-[1.05] font-medium tracking-[-0.025em] text-ink sm:text-4xl"
@@ -199,26 +244,36 @@ useParallax(heroImage, { speed: 0.35, maxOffset: 56 })
           </p>
 
           <div class="mt-8 grid grid-cols-2 gap-4">
-            <PhotoFrame
-              v-reveal="{ delay: 160, variant: 'photo' }"
-              src="/photos/grupeta-sepia.webp"
-              alt="Dos ciclistas recorren un camino rural entre campos"
-              ratio="1/1"
-              parallax
-            />
-            <PhotoFrame
-              v-reveal="{ delay: 240, variant: 'photo' }"
-              src="/photos/img10.avif"
-              alt="Dos ciclistas sonríen en una carretera de costa con el océano al fondo"
-              ratio="1/1"
-              parallax
-            />
+            <motion.div
+              :initial="{ opacity: 0, y: REVEAL_Y }"
+              :while-in-view="{ opacity: 1, y: 0 }"
+              :viewport="{ once: true, amount: 0.2 }"
+              :transition="{ duration: REVEAL_DURATION, ease: EASE, delay: STAGGER_DELAY * 2 }"
+            >
+              <PhotoFrame
+                src="/photos/grupeta-sepia.webp"
+                alt="Dos ciclistas recorren un camino rural entre campos"
+                ratio="1/1"
+              />
+            </motion.div>
+            <motion.div
+              :initial="{ opacity: 0, y: REVEAL_Y }"
+              :while-in-view="{ opacity: 1, y: 0 }"
+              :viewport="{ once: true, amount: 0.2 }"
+              :transition="{ duration: REVEAL_DURATION, ease: EASE, delay: STAGGER_DELAY * 3 }"
+            >
+              <PhotoFrame
+                src="/photos/img10.avif"
+                alt="Dos ciclistas sonríen en una carretera de costa con el océano al fondo"
+                ratio="1/1"
+              />
+            </motion.div>
           </div>
 
           <div class="mt-8">
             <Button variant="primary" size="lg" to="/rides"> Ver próximas salidas </Button>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
 
@@ -237,7 +292,13 @@ useParallax(heroImage, { speed: 0.35, maxOffset: 56 })
       <div
         class="relative mx-auto flex max-w-7xl flex-col gap-8 px-4 py-16 sm:px-6 sm:py-20 lg:flex-row lg:items-end lg:justify-between lg:gap-12 lg:px-8 lg:py-24"
       >
-        <div v-reveal class="max-w-2xl">
+        <motion.div
+          :initial="{ opacity: 0, y: REVEAL_Y }"
+          :while-in-view="{ opacity: 1, y: 0 }"
+          :viewport="{ once: true, amount: 0.25 }"
+          :transition="{ duration: REVEAL_DURATION, ease: EASE }"
+          class="max-w-2xl"
+        >
           <h2
             id="cta-title"
             class="font-display text-3xl leading-[1.05] font-medium tracking-[-0.025em] text-white sm:text-4xl"
@@ -247,9 +308,15 @@ useParallax(heroImage, { speed: 0.35, maxOffset: 56 })
           <p class="mt-4 max-w-xl leading-7 text-white/70">
             Crea tu cuenta, elige una ruta cerca de ti y sal a pedalear con gente nueva.
           </p>
-        </div>
+        </motion.div>
 
-        <div v-reveal="{ delay: 120 }" class="flex flex-col gap-4 sm:flex-row sm:items-center">
+        <motion.div
+          :initial="{ opacity: 0, y: REVEAL_Y }"
+          :while-in-view="{ opacity: 1, y: 0 }"
+          :viewport="{ once: true, amount: 0.25 }"
+          :transition="{ duration: REVEAL_DURATION, ease: EASE, delay: STAGGER_DELAY }"
+          class="flex flex-col gap-4 sm:flex-row sm:items-center"
+        >
           <Button :to="bandCta.to" :variant="bandCta.variant" size="lg">
             {{ bandCta.label }}
           </Button>
@@ -261,7 +328,7 @@ useParallax(heroImage, { speed: 0.35, maxOffset: 56 })
             <FontAwesomeIcon :icon="faBicycle" aria-hidden="true" />
             Explorar rutas
           </RouterLink>
-        </div>
+        </motion.div>
       </div>
     </section>
   </AppPage>

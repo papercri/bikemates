@@ -41,7 +41,7 @@ const isPastTab = computed(() => timeframe.value === 'past')
 
 <template>
   <AppPage>
-    <div v-reveal>
+    <div>
       <Typography as="h1" variant="heading-xl">Explorar rutas</Typography>
 
       <Typography class="mt-3 max-w-2xl" tone="muted">
@@ -97,13 +97,7 @@ const isPastTab = computed(() => timeframe.value === 'past')
         </Typography>
 
         <div v-if="visibleRides.length > 0" class="mt-4 grid gap-4 sm:grid-cols-2">
-          <RideCard
-            v-for="(ride, index) in visibleRides"
-            :key="ride.id"
-            v-reveal="{ delay: (index % 8) * 70 }"
-            :ride="ride"
-            :past="isPastTab"
-          />
+          <RideCard v-for="ride in visibleRides" :key="ride.id" :ride="ride" :past="isPastTab" />
         </div>
 
         <EmptyState

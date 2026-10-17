@@ -1,5 +1,9 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { MotionConfig } from 'motion-v'
+</script>
 
 <template>
-  <RouterView />
+  <MotionConfig reduced-motion="user">
+    <RouterView />
+  </MotionConfig>
 </template>

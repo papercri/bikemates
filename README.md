@@ -28,7 +28,7 @@ BikeMates es una SPA **mobile-first** construida con Vue 3 y TypeScript estricto
 
 ### Páginas y infraestructura
 
-- Landing pública con CTA, **política de privacidad** y **404** con `noindex`.
+- Landing pública con hero a pantalla completa (zoom de entrada y parallax al scroll), header transparente superpuesto, CTA, **política de privacidad** y **404** con `noindex`.
 - Header con navegación principal y footer global en todas las vistas con shell.
 - Título y meta por ruta con `@unhead/vue`: ninguna página muestra el título por defecto de Vite, la ruta de detalle genera un título dinámico y el perfil es `noindex`.
 - Favicon SVG propio (marca sin texto) en `public/favicon.svg`.
@@ -38,6 +38,7 @@ BikeMates es una SPA **mobile-first** construida con Vue 3 y TypeScript estricto
 | Capa     | Tecnología                                                                   |
 | -------- | ---------------------------------------------------------------------------- |
 | Frontend | Vue 3 (Composition API, `<script setup lang="ts">`), Vite, Vue Router, Pinia |
+| Animaciones | `motion-v` (Motion for Vue): parallax con `useScroll`/`useTransform`, revelados `whileInView` |
 | Lenguaje | TypeScript estricto (sin `any`, `noUncheckedIndexedAccess`)                  |
 | Estilos  | Tailwind CSS v4 (tokens en `src/assets/main.css` vía `@theme`)               |
 | SEO      | `@unhead/vue`                                                                |
@@ -102,9 +103,8 @@ El guard de router resuelve la sesión antes de navegar y redirige a `/login?red
 
 ```text
 src/
-  assets/                  # main.css (tokens @theme) y reveal.css (motion)
-  composables/              # useInView, useParallax…
-  directives/              # vReveal (revelado por scroll)
+  assets/                  # main.css (tokens @theme)
+  composables/              # useInView…
   design-system/           # cn(), createVariant (equivalente mínimo de CVA) y tipos
   app/router/              # rutas y guards
   components/
@@ -159,7 +159,7 @@ Separación de responsabilidades: las vistas orquestan, los componentes presenta
 - `Button` incluye los tamaños `xs`–`lg` y, además de `primary`/`outline`/`destructive`, las variantes `sun`/`sun-outline` (sobre fotos y fondos oscuros: píldora blanca con texto carbón, o contorno blanco) y `quiet-destructive` (acción peligrosa discreta, el color solo aparece al interactuar).
 - `ConfirmDialog` es el modal estándar de confirmaciones y acciones irreversibles (`role="dialog"`, `aria-modal`, trampa de foco, Escape y clic en el fondo para cancelar). Los mensajes de formulario se mantienen como `Alert` inline con `role="alert"`.
 - Los iconos de navegación y acciones usan Font Awesome (free-solid) con `FontAwesomeIcon`; los SVG ilustrativos y de datos siguen en `src/components/icons/`.
-- Motion nativo estilo Cowboy: la directiva global `v-reveal` revela bloques al entrar en pantalla (con `delay` para stagger y variante `photo`), `useParallax` desplaza capas más lento que el scroll escribiendo `--parallax-y`, y las utilidades compartidas viven en `src/assets/reveal.css`. Todo respeta `prefers-reduced-motion` y degrada a contenido visible sin IntersectionObserver.
+- Motion con `motion-v` (Motion for Vue): la home usa `useScroll`/`useTransform` para el parallax del hero (offset por sección, rango 12 %) y componentes `motion.div` con `whileInView` (`opacity` + `y`) para revelar bloques; el zoom de entrada del hero es un `scale` animado al montar. `MotionConfig reduced-motion="user"` en `App.vue` respeta `prefers-reduced-motion` en toda la app. El header de la home es transparente (`meta.overlayHeader` en el router) y se superpone al hero a pantalla completa.
 - Los componentes de UI reciben datos por props y emiten eventos; el estado compartido vive en Pinia (`authStore`).
 
 ## Seguridad

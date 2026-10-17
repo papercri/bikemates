@@ -17,7 +17,7 @@ useHead({
 
 <template>
   <AppPage>
-    <div v-reveal>
+    <div>
       <Typography as="h1" variant="heading-xl">Compromiso de privacidad</Typography>
 
       <Typography variant="body-sm" tone="muted" class="mt-5">

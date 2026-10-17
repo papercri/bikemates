@@ -110,7 +110,7 @@ useHead({
     </EmptyState>
 
     <template v-else-if="ride">
-      <header v-reveal class="mt-6">
+      <header class="mt-6">
         <div class="flex flex-wrap items-center gap-2">
           <Badge variant="muted" :color="RIDE_LEVEL_BADGE_COLORS[ride.level]" dot>
             {{ ride.level }}
@@ -137,7 +137,6 @@ useHead({
       </header>
 
       <img
-        v-reveal="{ delay: 80 }"
         :src="ride.imageUrl || '/default.webp'"
         :alt="`Imagen de la ruta ${ride.title}`"
         class="mt-4 h-44 w-full rounded-photo object-cover sm:h-56"
@@ -145,7 +144,7 @@ useHead({
         fetchpriority="high"
       />
 
-      <dl v-reveal="{ delay: 140 }" class="mt-4 grid grid-cols-3 border-y border-line">
+      <dl class="mt-4 grid grid-cols-3 border-y border-line">
         <div
           v-for="item in statItems"
           :key="item.label"
@@ -169,7 +168,7 @@ useHead({
         </div>
       </dl>
 
-      <Typography v-reveal class="mt-4 max-w-2xl leading-7" tone="muted">
+      <Typography class="mt-4 max-w-2xl leading-7" tone="muted">
         {{ ride.description }}
       </Typography>
 
@@ -187,7 +186,7 @@ useHead({
         </a>
       </p>
 
-      <section v-reveal class="mt-8" aria-labelledby="meeting-point-title">
+      <section class="mt-8" aria-labelledby="meeting-point-title">
         <Typography id="meeting-point-title" as="h2" variant="heading-sm" class="mb-3">
           Punto de encuentro
         </Typography>

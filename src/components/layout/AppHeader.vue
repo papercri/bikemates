@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -31,11 +31,24 @@ const isMenuOpen = ref(false)
 const menuId = 'primary-mobile-nav'
 const menuButton = ref<HTMLButtonElement | null>(null)
 
+const isOverlay = computed(() => route.meta.overlayHeader === true)
+
+// El panel móvil del menú siempre lleva fondo sólido (ink o canvas), así que
+// los enlaces se pintan con tinta en ambos modos.
 const menuLinkClasses =
   'flex items-center gap-3 rounded-btn px-3 py-3 text-sm font-medium text-ink transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink'
 
-const navLinkClasses =
-  'inline-flex items-center gap-2 rounded-btn px-3 py-1.5 text-sm font-medium text-graphite transition-colors hover:bg-surface hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink'
+const navLinkClasses = computed(() =>
+  isOverlay.value
+    ? 'inline-flex items-center gap-2 rounded-btn px-3 py-1.5 text-sm font-medium text-white/90 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-canvas'
+    : 'inline-flex items-center gap-2 rounded-btn px-3 py-1.5 text-sm font-medium text-graphite transition-colors hover:bg-surface hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink',
+)
+
+const headerClasses = computed(() =>
+  isOverlay.value
+    ? 'fixed inset-x-0 top-0 z-40 border-b border-white/10 bg-transparent text-white backdrop-blur-sm'
+    : 'sticky top-0 z-40 border-b border-line bg-canvas/95 text-ink backdrop-blur',
+)
 
 async function handleLogout(): Promise<void> {
   isLoggingOut.value = true
@@ -85,17 +98,22 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <header class="sticky top-0 z-40 border-b border-line bg-canvas/95 text-ink backdrop-blur">
+  <header :class="headerClasses">
     <div
       class="mx-auto flex max-w-7xl items-center justify-between gap-x-4 px-4 py-3 sm:px-6 lg:px-8"
     >
       <RouterLink
         to="/"
-        class="flex shrink-0 items-center gap-2.5 text-xl font-bold tracking-tight text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+        class="flex shrink-0 items-center gap-2.5 text-xl font-bold tracking-tight focus-visible:outline-2 focus-visible:outline-offset-2"
+        :class="
+          isOverlay
+            ? 'text-white focus-visible:outline-canvas'
+            : 'text-ink focus-visible:outline-ink'
+        "
         aria-label="BikeMates, página de inicio"
       >
         <BrandLogo />
-        <span>Bike<span class="text-trail-ink">Mates</span></span>
+        <span>Bike<span :class="isOverlay ? 'text-white/70' : 'text-trail-ink'">Mates</span></span>
       </RouterLink>
 
       <nav aria-label="Navegación principal" class="hidden items-center gap-5 sm:flex">
@@ -110,10 +128,16 @@ onBeforeUnmount(() => {
       </nav>
 
       <div class="hidden items-center justify-end gap-2 sm:flex">
-        <span v-if="!isInitialized" class="text-xs text-graphite"> Comprobando sesión… </span>
+        <span
+          v-if="!isInitialized"
+          class="text-xs"
+          :class="isOverlay ? 'text-white/80' : 'text-graphite'"
+        >
+          Comprobando sesión…
+        </span>
 
         <template v-else-if="user">
-          <Button to="/profile" variant="outline" size="xs">
+          <Button to="/profile" :variant="isOverlay ? 'sun' : 'outline'" size="xs">
             <FontAwesomeIcon :icon="faUserGear" aria-hidden="true" />
             Mi perfil
           </Button>
@@ -125,12 +149,12 @@ onBeforeUnmount(() => {
         </template>
 
         <template v-else>
-          <Button to="/login" variant="outline" size="xs">
+          <Button to="/login" :variant="isOverlay ? 'sun-outline' : 'outline'" size="xs">
             <FontAwesomeIcon :icon="faRightToBracket" aria-hidden="true" />
             Iniciar sesión
           </Button>
 
-          <Button to="/register" variant="primary" size="xs">
+          <Button :to="'/register'" :variant="isOverlay ? 'sun' : 'primary'" size="xs">
             <FontAwesomeIcon :icon="faUserPlus" aria-hidden="true" />
             Registrarse
           </Button>
@@ -140,7 +164,12 @@ onBeforeUnmount(() => {
       <button
         ref="menuButton"
         type="button"
-        class="-mr-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-btn border border-transparent text-lg text-ink transition-colors hover:border-line-strong hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink sm:hidden"
+        class="-mr-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-btn border border-transparent text-lg transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 sm:hidden"
+        :class="
+          isOverlay
+            ? 'text-white hover:border-white/20 hover:bg-white/10 focus-visible:outline-canvas'
+            : 'text-ink hover:border-line-strong hover:bg-surface focus-visible:outline-ink'
+        "
         :aria-expanded="isMenuOpen"
         :aria-controls="menuId"
         @click="toggleMenu"
@@ -156,7 +185,13 @@ onBeforeUnmount(() => {
       leave-active-class="motion-safe:ease-in motion-safe:transition motion-safe:duration-150"
       leave-to-class="motion-safe:opacity-0"
     >
-      <div v-show="isMenuOpen" :id="menuId" class="border-t border-line bg-canvas sm:hidden">
+      <!-- En overlay el panel lleva fondo sólido para que el menú sea legible sobre el hero. -->
+      <div
+        v-show="isMenuOpen"
+        :id="menuId"
+        class="border-t sm:hidden"
+        :class="isOverlay ? 'border-white/10 bg-ink' : 'border-line bg-canvas'"
+      >
         <nav aria-label="Navegación principal" class="mx-auto max-w-7xl px-4 py-3 sm:px-6">
           <ul class="flex flex-col">
             <li>
@@ -173,7 +208,10 @@ onBeforeUnmount(() => {
             </li>
           </ul>
 
-          <div class="flex flex-col gap-2 border-t border-line pt-3">
+          <div
+            class="flex flex-col gap-2 border-t pt-3"
+            :class="isOverlay ? 'border-white/10' : 'border-line'"
+          >
             <span v-if="!isInitialized" class="px-3 py-2 text-sm text-graphite">
               Comprobando sesión…
             </span>
@@ -206,7 +244,7 @@ onBeforeUnmount(() => {
                 Iniciar sesión
               </RouterLink>
 
-              <Button to="/register" variant="primary" size="sm" block>
+              <Button to="/register" variant="sun" size="sm" block>
                 <FontAwesomeIcon :icon="faUserPlus" aria-hidden="true" />
                 Registrarse
               </Button>
