@@ -9,8 +9,7 @@ describe('Card', () => {
     expect(wrapper.element.tagName).toBe('DIV')
     expect(wrapper.classes()).toContain('border-line')
     expect(wrapper.classes()).toContain('bg-white')
-    expect(wrapper.classes()).toContain('shadow-card')
-    expect(wrapper.classes()).not.toContain('hover:shadow-lift')
+    expect(wrapper.classes()).not.toContain('shadow-card')
   })
 
   it('renders the requested element', () => {
@@ -33,13 +32,13 @@ describe('Card', () => {
     expect(wrapper.classes()).not.toContain('bg-white')
   })
 
-  it('adds the surface shift only when interactive', () => {
+  it('adds the border shift only when interactive', () => {
     const wrapper = mount(Card, {
       props: { interactive: true },
       slots: { default: 'Contenido' },
     })
 
-    expect(wrapper.classes()).toContain('hover:shadow-lift')
+    expect(wrapper.classes()).not.toContain('hover:shadow-lift')
     expect(wrapper.classes()).toContain('hover:border-line-strong')
   })
 

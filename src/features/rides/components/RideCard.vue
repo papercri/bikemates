@@ -33,7 +33,7 @@ const dateParts = computed(() => getRideDateParts(props.ride.startsAt))
 
 <template>
   <article
-    class="overflow-hidden rounded-photo shadow-card transition-shadow duration-200 hover:shadow-lift"
+    class="overflow-hidden rounded-photo border border-line"
     :class="past ? 'opacity-75' : ''"
   >
     <RouterLink
@@ -60,13 +60,13 @@ const dateParts = computed(() => getRideDateParts(props.ride.startsAt))
 
         <div class="flex items-baseline gap-4 text-canvas">
           <span class="flex items-baseline gap-1">
-            <span class="font-display text-xl font-extrabold tabular-nums">
+            <span class="font-display text-xl font-semibold tabular-nums">
               {{ ride.distanceKm }}
             </span>
             <span class="text-xs font-semibold text-canvas/80">km</span>
           </span>
           <span class="flex items-baseline gap-1">
-            <span class="font-display text-xl font-extrabold tabular-nums">
+            <span class="font-display text-xl font-semibold tabular-nums">
               +{{ ride.elevationM }}
             </span>
             <span class="text-xs font-semibold text-canvas/80">m</span>
@@ -76,9 +76,7 @@ const dateParts = computed(() => getRideDateParts(props.ride.startsAt))
 
       <!-- Entrada -->
       <div class="relative min-w-0">
-        <h2
-          class="font-display text-lg font-bold tracking-tight text-canvas transition-colors group-hover:text-trail sm:text-xl"
-        >
+        <h2 class="font-display text-lg font-medium tracking-[-0.01em] text-canvas sm:text-xl">
           {{ ride.title }}
         </h2>
 
@@ -96,7 +94,7 @@ const dateParts = computed(() => getRideDateParts(props.ride.startsAt))
           <RideAudienceBadge :audience="ride.audience" variant="inverse" />
 
           <IconArrow
-            class="ml-auto text-canvas/75 transition-transform duration-200 group-hover:translate-x-1 group-hover:text-trail"
+            class="ml-auto text-canvas/75 transition-transform duration-200 group-hover:translate-x-1"
             aria-hidden="true"
           />
 

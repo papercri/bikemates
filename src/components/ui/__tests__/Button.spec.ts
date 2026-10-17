@@ -52,7 +52,7 @@ describe('Button', () => {
   it('omits size padding for the link variant', () => {
     const wrapper = mount(Button, { props: { variant: 'link' } })
 
-    expect(wrapper.classes()).toContain('text-trail-ink')
+    expect(wrapper.classes()).toContain('text-ink')
     expect(wrapper.classes()).not.toContain('px-5')
   })
 
@@ -67,7 +67,7 @@ describe('Button', () => {
   it('renders the sun variants for dark surfaces', () => {
     const sun = mount(Button, { props: { variant: 'sun' } })
 
-    expect(sun.classes()).toContain('bg-trail')
+    expect(sun.classes()).toContain('bg-canvas')
     expect(sun.classes()).toContain('text-ink')
 
     const sunOutline = mount(Button, { props: { variant: 'sun-outline' } })

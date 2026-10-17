@@ -32,25 +32,14 @@ const frameClasses = computed(() => ratioClasses[props.ratio])
       :alt="props.alt"
       loading="lazy"
       decoding="async"
-      class="photo-natural absolute inset-0 h-full w-full object-cover"
+      class="absolute inset-0 h-full w-full object-cover"
       :class="hasError ? 'opacity-0' : ''"
       @error="hasError = true"
     />
-
-    <div v-if="!hasError" aria-hidden="true" class="photo-tint absolute inset-0" />
   </div>
 </template>
 
 <style scoped>
-.photo-natural {
-  filter: saturate(0.9) contrast(1.02);
-}
-
-.photo-tint {
-  background: color-mix(in oklab, var(--color-trail) 6%, transparent);
-  mix-blend-mode: multiply;
-}
-
 .photo-fallback {
   background-color: var(--color-canvas);
   background-image:
@@ -61,7 +50,7 @@ const frameClasses = computed(() => ratioClasses[props.ratio])
     ),
     radial-gradient(
       circle at 30% 25%,
-      color-mix(in oklab, var(--color-route) 45%, transparent),
+      color-mix(in oklab, var(--color-graphite) 45%, transparent),
       transparent 62%
     );
 }

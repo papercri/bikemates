@@ -26,7 +26,7 @@ describe('Typography', () => {
     })
 
     expect(wrapper.classes()).toContain('text-3xl')
-    expect(wrapper.classes()).toContain('font-extrabold')
+    expect(wrapper.classes()).toContain('font-medium')
     expect(wrapper.classes()).toContain('font-display')
   })
 

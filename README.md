@@ -2,7 +2,7 @@
 
 Aplicación web para ciclistas en España: descubre rutas, encuentra compañeros de pedaleo y organiza salidas en grupo.
 
-BikeMates es una SPA **mobile-first** construida con Vue 3 y TypeScript estricto, con acceso a datos sobre **Supabase** (autenticación, base de datos y Edge Functions), SEO técnico en las páginas públicas y una interfaz editorial minimalista (lienzo hueso `#FBFBFA`, tarjetas blancas con filete ultrafino y esquinas de 12px, tinta off-black `#111111`, único acento naranja desaturado `trail`, tipografía Archivo y JetBrains Mono para datos, profundidad casi nula).
+BikeMates es una SPA **mobile-first** construida con Vue 3 y TypeScript estricto, con acceso a datos sobre **Supabase** (autenticación, base de datos y Edge Functions), SEO técnico en las páginas públicas y una interfaz editorial minimalista de showroom (lienzo porcelana `#FFFFFF`, tarjetas blancas con filete hairline `#e5e7eb` y esquinas de 8px, tinta carbón `#1d1d1d`, interfaz acromática sin CTA cromático, tipografía Inter con tracking negativo en titulares y JetBrains Mono para datos).
 
 ## Funcionalidades
 
@@ -136,19 +136,25 @@ Separación de responsabilidades: las vistas orquestan, los componentes presenta
 - Los componentes visuales viven en `src/components/` y no contienen lógica de negocio.
 - Los SVG decorativos e iconográficos viven en `src/components/icons/` como componentes propios (`CyclistScene`, `RidgeDivider`, `HeroBackdrop`, `Icon*`); las vistas y componentes solo los componen.
 - Los tokens (colores, radios, sombras, tipografías) se definen una sola vez en `src/assets/main.css`.
-- Estilo industrial claro: paleta de papel (`canvas`, `snow`, `surface`), tinta negra
-  (`ink`, `turf`) y naranja (`trail`); filetes de 2px en controles y 4px en secciones.
-  `--radius-card` sigue a `0px` (tarjetas y campos con esquinas rectas) y `--radius-btn` es
-  píldora para botones; la jerarquía la marcan filetes, bloques invertidos y sombra sólida,
-  no redondeos ni degradados.
-- Tipografía: Archivo para titulares y cifras, Inter para el cuerpo y JetBrains Mono para
-  etiquetas, navegación y datos en mayúsculas.
+- Estilo showroom editorial claro (referencia Cowboy): paleta acromática de
+  porcelana (`canvas` `#FFFFFF`, `snow`/`surface` `#f3f4f6`), tinta carbón
+  (`ink` `#1d1d1d`, `graphite` `#5e5e5e`) y filetes hairline (`line` `#e5e7eb`);
+  los tokens de marca (`trail`, `route`, `turf`) conservan sus nombres y
+  apuntan al carbón, de modo que no existe CTA cromático. `moss` y
+  `signal-blue` quedan reservados a estados semánticos (el foco de los campos
+  usa `signal-blue`). Estructura con filetes de 1px, sin sombras en tarjetas;
+  solo `ConfirmDialog` conserva elevación. Radios: 8px en tarjetas, fotos y
+  campos (`--radius-card`, `--radius-photo`, `--radius-field`); píldora en
+  botones y badges (`--radius-btn`).
+- Tipografía: Inter (sustituto de SuisseIntl) para todo el UI; titulares en
+  peso 500 con tracking negativo (`-0.025em` a display), cuerpo en 400 y
+  JetBrains Mono para etiquetas y datos tabulares.
 - Contenedor único: `AppPage` envuelve todas las páginas con `max-w-7xl` (el mismo que header
   y footer); la prop `bleed` queda reservada a las bandas a sangre de la landing y la anchura
   de lectura se controla dentro de cada vista (`max-w-lg`, `max-w-3xl`…).
 - La receta de campos de formulario (`FIELD_CLASSES` en `src/design-system/field.ts`) se comparte entre `Input`, `Textarea` y `FormSelect` para mantener borde, radio, foco y estados idénticos.
 - Los primitivos exponen variantes homogéneas (`variant`, `size`, `tone`, `loading`, `block`, `dot`…) construidas con `createVariant`, sin dependencias externas.
-- `Button` incluye los tamaños `xs`–`lg` y, además de `primary`/`outline`/`destructive`, las variantes `sun`/`sun-outline` (superficies oscuras) y `quiet-destructive` (acción peligrosa discreta, el color solo aparece al interactuar).
+- `Button` incluye los tamaños `xs`–`lg` y, además de `primary`/`outline`/`destructive`, las variantes `sun`/`sun-outline` (sobre fotos y fondos oscuros: píldora blanca con texto carbón, o contorno blanco) y `quiet-destructive` (acción peligrosa discreta, el color solo aparece al interactuar).
 - `ConfirmDialog` es el modal estándar de confirmaciones y acciones irreversibles (`role="dialog"`, `aria-modal`, trampa de foco, Escape y clic en el fondo para cancelar). Los mensajes de formulario se mantienen como `Alert` inline con `role="alert"`.
 - Los iconos de navegación y acciones usan Font Awesome (free-solid) con `FontAwesomeIcon`; los SVG ilustrativos y de datos siguen en `src/components/icons/`.
 - Los componentes de UI reciben datos por props y emiten eventos; el estado compartido vive en Pinia (`authStore`).

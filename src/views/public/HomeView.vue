@@ -100,7 +100,7 @@ const { isInView: bandVisible } = useInView(bandSection)
         decoding="async"
         class="absolute inset-0 h-full w-full object-cover object-center"
       />
-      <div class="absolute inset-0 bg-gradient-to-r from-ink/75 via-ink/45 to-ink/20" />
+      <div class="absolute inset-0 bg-ink/40" />
 
       <div
         class="relative mx-auto grid max-w-7xl gap-10 px-4 pb-20 pt-14 sm:px-6 sm:pb-24 sm:pt-16 lg:grid-cols-[1.06fr_0.94fr] lg:items-center lg:gap-12 lg:px-8 lg:pb-28 lg:pt-20"
@@ -108,10 +108,10 @@ const { isInView: bandVisible } = useInView(bandSection)
         <div>
           <h1
             id="hero-title"
-            class="max-w-3xl font-display text-[clamp(2.4rem,6vw,4.4rem)] leading-[0.98] font-extrabold tracking-[-0.03em] text-white"
+            class="max-w-3xl font-display text-[clamp(2.4rem,6vw,4.4rem)] leading-[0.95] font-medium tracking-[-0.025em] text-white"
           >
             <span class="block">Encuentra tu grupeta.</span>
-            <span class="block text-trail">Comparte la ruta.</span>
+            <span class="block">Comparte la ruta.</span>
           </h1>
 
           <p class="mt-6 max-w-xl text-base leading-7 text-white/85 sm:text-lg">
@@ -134,16 +134,12 @@ const { isInView: bandVisible } = useInView(bandSection)
       </div>
     </section>
 
-    <section
-      ref="featuresSection"
-      class="-mx-4 sm:-mx-6 lg:-mx-8"
-      aria-labelledby="features-title"
-    >
+    <section ref="featuresSection" class="-mx-4 sm:-mx-6 lg:-mx-8" aria-labelledby="features-title">
       <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
         <div class="reveal" :class="featuresVisible ? 'is-revealed' : ''">
           <h2
             id="features-title"
-            class="max-w-3xl font-display text-3xl leading-[1.05] font-extrabold tracking-[-0.03em] text-ink sm:text-5xl"
+            class="max-w-3xl font-display text-3xl leading-[1.05] font-medium tracking-[-0.025em] text-ink sm:text-5xl"
           >
             Todo empieza con una ruta
           </h2>
@@ -158,7 +154,7 @@ const { isInView: bandVisible } = useInView(bandSection)
           <div
             v-for="feature in features"
             :key="feature.title"
-            class="reveal reveal-cell rounded-card border border-line bg-white p-7 shadow-card"
+            class="reveal reveal-cell rounded-card border border-line bg-white p-7"
             :class="featuresVisible ? 'is-revealed' : ''"
           >
             <span
@@ -168,7 +164,9 @@ const { isInView: bandVisible } = useInView(bandSection)
               <component :is="feature.icon" class="size-6" />
             </span>
 
-            <h3 class="mt-5 font-display text-lg leading-tight font-bold tracking-[-0.01em] sm:text-xl">
+            <h3
+              class="mt-5 font-display text-lg leading-tight font-medium tracking-[-0.01em] sm:text-xl"
+            >
               {{ feature.title }}
             </h3>
 
@@ -199,7 +197,7 @@ const { isInView: bandVisible } = useInView(bandSection)
         <div>
           <h2
             id="gallery-title"
-            class="max-w-xl font-display text-3xl leading-[1.05] font-extrabold tracking-[-0.03em] text-ink sm:text-4xl"
+            class="max-w-xl font-display text-3xl leading-[1.05] font-medium tracking-[-0.025em] text-ink sm:text-4xl"
           >
             Así se vive una salida
           </h2>
@@ -237,8 +235,7 @@ const { isInView: bandVisible } = useInView(bandSection)
       <div
         class="pointer-events-none absolute inset-0 opacity-[0.05]"
         style="
-          background:
-            radial-gradient(60% 80% at 85% 20%, var(--color-trail), transparent 70%);
+          background: radial-gradient(60% 80% at 85% 20%, var(--color-canvas), transparent 70%);
         "
         aria-hidden="true"
       />
@@ -249,7 +246,7 @@ const { isInView: bandVisible } = useInView(bandSection)
         <div class="max-w-2xl reveal" :class="bandVisible ? 'is-revealed' : ''">
           <h2
             id="cta-title"
-            class="font-display text-3xl leading-[1.05] font-extrabold tracking-[-0.03em] text-white sm:text-4xl"
+            class="font-display text-3xl leading-[1.05] font-medium tracking-[-0.025em] text-white sm:text-4xl"
           >
             Tu próxima salida empieza aquí
           </h2>

@@ -30,19 +30,19 @@ const classes = createVariant({
   base: 'inline-flex items-center justify-center gap-2 rounded-btn font-semibold transition-[color,background-color,border-color,transform] focus-visible:outline-2 focus-visible:outline-offset-2 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100 sm:whitespace-nowrap',
   variants: {
     variant: {
-      // CTA principal del mundo example2: píldora de tinta sólida, sin filete.
-      primary: 'bg-ink text-canvas hover:bg-ink/80 focus-visible:outline-ink',
-      // Sobre fotos y fondos oscuros: píldora naranja de marca (example1).
-      sun: 'bg-trail text-ink hover:bg-trail-deep focus-visible:outline-canvas',
+      // CTA principal Cowboy: píldora de carbón sólido; el hover aclara hacia graphite.
+      primary: 'bg-ink text-canvas hover:bg-graphite focus-visible:outline-ink',
+      // Sobre fotos y fondos oscuros: píldora blanca con texto carbón (Cowboy).
+      sun: 'bg-canvas text-ink hover:bg-canvas/90 focus-visible:outline-canvas',
       'sun-outline':
         'border border-canvas/50 bg-transparent text-canvas hover:bg-canvas hover:text-ink focus-visible:outline-canvas',
-      // Acción secundaria de example2: píldora blanca con filete fino.
+      // Acción secundaria Cowboy: píldora blanca con filete fino.
       outline: 'border border-ink bg-white text-ink hover:bg-snow focus-visible:outline-ink',
       destructive:
         'border border-red-300 bg-white text-red-700 hover:bg-red-700 hover:text-white focus-visible:outline-red-700',
       // Acción destructiva de bajo peso: el color solo aparece al interactuar.
       'quiet-destructive': 'text-graphite hover:text-red-700 focus-visible:outline-red-600',
-      link: 'text-trail-ink underline-offset-4 hover:underline focus-visible:outline-ink',
+      link: 'text-ink underline-offset-4 hover:underline focus-visible:outline-ink',
     },
     size: {
       xs: 'px-2.5 py-1 text-xs',

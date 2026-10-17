@@ -517,3 +517,70 @@ marcado imprescindible: sin cambios de lógica, estado, rutas ni comportamiento.
   disparar los reveals), listado, login y privacidad.
 - Pendiente conocido: `@fontsource-variable/inter` sigue en `package.json` sin
   importarse; retirarlo requiere aprobación (cambio de dependencias).
+
+## 2026-10-17 — Repintado al design system Cowboy (showroom acromático)
+
+Sustituye el repintado "editorial minimalista outdoor" por el sistema visual de
+referencia **Cowboy** fijado por el usuario: porcelana blanca, filetes hairline,
+tinta carbón, tipografía a escala editorial con tracking negativo y cero
+cromatismo en el chrome de la UI (la fotografía aporta todo el color). Solo
+estilo y clases: sin cambios de lógica, estado, rutas, servicios ni
+comportamiento. Los nombres de token se conservan para no romper clases ni
+tests existentes; los valores siguen la paleta Cowboy.
+
+### Tokens y tipografía (`src/assets/main.css`, `src/design-system/field.ts`)
+
+- Paleta remapeada: canvas `#FFFFFF` (porcelana), snow/surface `#F3F4F6`
+  (mist), línea `#E5E7EB`/`#D1D5DB`, filete de campos slate `#6B7280`, tinta
+  `#1D1D1D` (charcoal) y grafito `#5E5E5E`. Los tokens de marca (`trail`,
+  `route`, `turf` y sus variantes `*-ink`/`*-deep`/`*-dark`) apuntan al
+  carbón: el sistema queda acromático y no existe CTA cromático. Nuevos
+  tokens semánticos sin uso decorativo: `moss #569D5F` y
+  `signal-blue #2563EB` (foco de campos).
+- Radios: `--radius-card` 12px → 8px (fotos, campos y botones ya eran 8px /
+  píldora). Sombras: `shadow-card`/`shadow-lift` redefinidas con los valores
+  Cowboy; las tarjetas dejan de usarlas (planitud editorial), solo
+  `ConfirmDialog` conserva elevación.
+- Fuentes: se importa `@fontsource-variable/inter` (sustituto aprobado de
+  SuisseIntl) como `font-sans` y `font-display`; se retira la importación de
+  Archivo (el paquete sigue en `package.json` sin usar, retirarlo requiere
+  aprobación). JetBrains Mono sigue en datos y etiquetas.
+- `::selection` en carbón al 15%; `FIELD_CLASSES` con foco `signal-blue`.
+
+### Primitivos y layout
+
+- `Button`: `primary` con hover hacia `graphite` (aclara, como Cowboy); `sun`
+  pasa a píldora blanca con texto carbón sobre fondos oscuros (antes naranja);
+  `link` en carbón subrayable.
+- `Card`: sin sombra; hover interactivo solo refuerza el filete.
+- `Typography`: display/heading en peso 500 con tracking `-0.025em`/`-0.02em`
+  (antes extrabold); numéricos en 600.
+- `AppHeader`: los enlaces de navegación de escritorio adoptan la píldora
+  Cowboy (`rounded-btn` + hover `bg-surface`), como el menú móvil.
+
+### Landing y componentes de rutas
+
+- `HomeView`: velo del hero uniforme `bg-ink/40` (scrim Cowboy, sin degradado);
+  titular blanco a una sola tinta en peso medium; tarjetas de features sin
+  sombra; halo radial de la banda final en porcelana al 5% (antes naranja);
+  titulares de sección en medium con tracking editorial.
+- `RideCard`: sin sombra, con filete hairline; cifras en 600; se eliminan los
+  hovers de título/flecha a `trail` (invisibles sobre foto con la paleta
+  acromática).
+- `PhotoFrame`: se elimina el tinte multiply y la desaturación de las fotos:
+  la fotografía queda natural y aporta todo el color (filosofía Cowboy).
+
+### Tests y docs
+
+- `Button.spec` (variantes `sun` y `link`), `Card.spec` (sin sombras) y
+  `Typography.spec` (peso medium) ajustados a las recetas nuevas.
+- `README.md`: descripción y sección de design system actualizadas al sistema
+  Cowboy.
+
+### Verificación
+
+- `vitest`: 248/248 en verde (42 archivos).
+- `npx oxlint src`, `npx eslint src` y Prettier en verde.
+- `vue-tsc --build`: mismos 11 errores preexistentes (`imageUrl` en
+  `mockRides.ts` y specs); ninguno en ficheros tocados.
+- `vite build` (`build-only`) correcto con Inter Variable incluida.

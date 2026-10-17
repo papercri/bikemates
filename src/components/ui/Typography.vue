@@ -21,24 +21,22 @@ const props = withDefaults(
 )
 
 const variantClasses: Record<TypographyVariant, string> = {
-  display: 'font-display text-4xl font-extrabold leading-[0.95] tracking-[-0.035em] sm:text-6xl',
-  'heading-xl':
-    'font-display text-3xl font-extrabold leading-[1.02] tracking-[-0.03em] sm:text-4xl',
-  'heading-lg':
-    'font-display text-2xl font-extrabold leading-[1.05] tracking-[-0.02em] sm:text-3xl',
-  'heading-md': 'font-display text-xl font-bold leading-tight tracking-[-0.02em] sm:text-2xl',
-  'heading-sm': 'text-lg font-semibold tracking-tight sm:text-xl',
-  'heading-xs': 'text-base font-semibold sm:text-lg',
+  display: 'font-display text-4xl font-medium leading-[0.95] tracking-[-0.025em] sm:text-6xl',
+  'heading-xl': 'font-display text-3xl font-medium leading-[1.02] tracking-[-0.025em] sm:text-4xl',
+  'heading-lg': 'font-display text-2xl font-medium leading-[1.05] tracking-[-0.02em] sm:text-3xl',
+  'heading-md': 'font-display text-xl font-medium leading-tight tracking-[-0.015em] sm:text-2xl',
+  'heading-sm': 'text-lg font-medium tracking-tight sm:text-xl',
+  'heading-xs': 'text-base font-medium sm:text-lg',
   body: '',
   'body-sm': 'text-sm',
   caption: 'text-xs leading-5',
   eyebrow: 'font-mono text-xs font-semibold uppercase tracking-[0.18em]',
   'eyebrow-wide': 'font-mono text-xs font-semibold uppercase tracking-[0.22em]',
   'label-xs': 'font-mono text-[0.7rem] font-semibold uppercase tracking-[0.18em]',
-  'numeric-xl': 'font-display text-4xl font-extrabold leading-none tracking-tight tabular-nums',
-  'numeric-lg': 'font-display text-2xl font-extrabold tracking-tight tabular-nums sm:text-3xl',
-  'numeric-md': 'font-display text-xl font-extrabold leading-none tracking-tight tabular-nums',
-  'numeric-inline': 'font-display font-bold tabular-nums',
+  'numeric-xl': 'font-display text-4xl font-semibold leading-none tracking-tight tabular-nums',
+  'numeric-lg': 'font-display text-2xl font-semibold tracking-tight tabular-nums sm:text-3xl',
+  'numeric-md': 'font-display text-xl font-semibold leading-none tracking-tight tabular-nums',
+  'numeric-inline': 'font-display font-medium tabular-nums',
 }
 
 const toneClasses: Record<TypographyTone, string> = {

@@ -35,7 +35,7 @@ const menuLinkClasses =
   'flex items-center gap-3 rounded-btn px-3 py-3 text-sm font-medium text-ink transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink'
 
 const navLinkClasses =
-  'inline-flex items-center gap-2 text-sm font-medium text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink'
+  'inline-flex items-center gap-2 rounded-btn px-3 py-1.5 text-sm font-medium text-graphite transition-colors hover:bg-surface hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink'
 
 async function handleLogout(): Promise<void> {
   isLoggingOut.value = true
