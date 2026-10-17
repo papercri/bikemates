@@ -5,11 +5,13 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faBicycle } from '@fortawesome/free-solid-svg-icons'
 import { motion, useReducedMotion, useScroll, useTransform } from 'motion-v'
 import AppPage from '@/components/layout/AppPage.vue'
+import IconArrow from '@/components/icons/IconArrow.vue'
 import IconCyclists from '@/components/icons/IconCyclists.vue'
 import IconMeetup from '@/components/icons/IconMeetup.vue'
 import IconRoutes from '@/components/icons/IconRoutes.vue'
-import PhotoFrame from '@/components/landing/PhotoFrame.vue'
 import Button from '@/components/ui/Button.vue'
+import RideCard from '@/features/rides/components/RideCard.vue'
+import { mockRides } from '@/features/rides/data/mockRides'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/features/auth/stores/authStore'
 import type { ButtonVariant } from '@/design-system'
@@ -95,6 +97,8 @@ const features = [
     description: 'Propón una salida, define el recorrido y pedalea en compañía.',
   },
 ]
+
+const latestRides = mockRides.slice(0, 3)
 
 // Parallax del hero: el contenedor de fotos se desplaza un 12 % al salir de pantalla.
 const heroSection = ref<HTMLElement | null>(null)
@@ -197,7 +201,7 @@ onBeforeUnmount(() => {
     </section>
 
     <section class="-mx-4 sm:-mx-6 lg:-mx-8" aria-labelledby="features-title">
-      <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
+      <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8 lg:py-14">
         <motion.div
           :initial="{ opacity: 0, y: REVEAL_Y }"
           :while-in-view="{ opacity: 1, y: 0 }"
@@ -249,27 +253,12 @@ onBeforeUnmount(() => {
     </section>
 
     <section class="-mx-4 bg-snow sm:-mx-6 lg:-mx-8" aria-labelledby="gallery-title">
-      <div
-        class="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] lg:items-center lg:gap-14 lg:px-8 lg:py-24"
-      >
+      <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8 lg:py-14">
         <motion.div
           :initial="{ opacity: 0, y: REVEAL_Y }"
           :while-in-view="{ opacity: 1, y: 0 }"
           :viewport="{ once: true, amount: 0.2 }"
           :transition="{ duration: REVEAL_DURATION, ease: EASE }"
-        >
-          <PhotoFrame
-            src="/photos/img8.avif"
-            alt="Tres ciclistas pedalean por un camino de campo al atardecer"
-            ratio="4/5"
-          />
-        </motion.div>
-
-        <motion.div
-          :initial="{ opacity: 0, y: REVEAL_Y }"
-          :while-in-view="{ opacity: 1, y: 0 }"
-          :viewport="{ once: true, amount: 0.2 }"
-          :transition="{ duration: REVEAL_DURATION, ease: EASE, delay: STAGGER_DELAY }"
         >
           <h2
             id="gallery-title"
@@ -278,42 +267,31 @@ onBeforeUnmount(() => {
             Así se vive una salida
           </h2>
 
-          <p class="mt-4 max-w-xl leading-7 text-graphite">
+          <p class="mt-3 max-w-xl leading-7 text-graphite">
             Desde paseos por la mañana hasta rutas de montaña con desnivel. Mira la dificultad y el
             ritmo de cada salida antes de apuntarte.
           </p>
-
-          <div class="mt-8 grid grid-cols-2 gap-4">
-            <motion.div
-              :initial="{ opacity: 0, y: REVEAL_Y }"
-              :while-in-view="{ opacity: 1, y: 0 }"
-              :viewport="{ once: true, amount: 0.2 }"
-              :transition="{ duration: REVEAL_DURATION, ease: EASE, delay: STAGGER_DELAY * 2 }"
-            >
-              <PhotoFrame
-                src="/photos/grupeta-sepia.webp"
-                alt="Dos ciclistas recorren un camino rural entre campos"
-                ratio="1/1"
-              />
-            </motion.div>
-            <motion.div
-              :initial="{ opacity: 0, y: REVEAL_Y }"
-              :while-in-view="{ opacity: 1, y: 0 }"
-              :viewport="{ once: true, amount: 0.2 }"
-              :transition="{ duration: REVEAL_DURATION, ease: EASE, delay: STAGGER_DELAY * 3 }"
-            >
-              <PhotoFrame
-                src="/photos/img10.avif"
-                alt="Dos ciclistas sonríen en una carretera de costa con el océano al fondo"
-                ratio="1/1"
-              />
-            </motion.div>
-          </div>
-
-          <div class="mt-8">
-            <Button variant="primary" size="lg" to="/rides"> Ver próximas salidas </Button>
-          </div>
         </motion.div>
+
+        <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <motion.div
+            v-for="(ride, index) in latestRides"
+            :key="ride.id"
+            :initial="{ opacity: 0, y: REVEAL_Y }"
+            :while-in-view="{ opacity: 1, y: 0 }"
+            :viewport="{ once: true, amount: 0.15 }"
+            :transition="{ duration: REVEAL_DURATION, ease: EASE, delay: index * STAGGER_DELAY }"
+          >
+            <RideCard :ride="ride" />
+          </motion.div>
+        </div>
+
+        <div class="mt-8">
+          <Button variant="primary" size="lg" to="/rides">
+            Ver próximas salidas
+            <IconArrow direction="right" />
+          </Button>
+        </div>
       </div>
     </section>
 
@@ -330,7 +308,7 @@ onBeforeUnmount(() => {
       />
 
       <div
-        class="relative mx-auto flex max-w-7xl flex-col gap-8 px-4 py-16 sm:px-6 sm:py-20 lg:flex-row lg:items-end lg:justify-between lg:gap-12 lg:px-8 lg:py-24"
+        class="relative mx-auto flex max-w-7xl flex-col gap-6 px-4 py-10 sm:px-6 sm:py-12 lg:flex-row lg:items-end lg:justify-between lg:gap-12 lg:px-8 lg:py-14"
       >
         <motion.div
           :initial="{ opacity: 0, y: REVEAL_Y }"
