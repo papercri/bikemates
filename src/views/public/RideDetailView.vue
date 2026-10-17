@@ -89,7 +89,7 @@ useHead({
   <AppPage>
     <RouterLink
       to="/rides"
-      class="inline-flex items-center gap-1.5 text-sm text-trail-ink hover:text-trail-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
+      class="inline-flex items-center gap-1.5 text-sm text-trail-ink hover:text-trail-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
     >
       <IconArrow direction="left" />
       Volver a las rutas
@@ -177,7 +177,7 @@ useHead({
           :href="ride.wikilocUrl"
           target="_blank"
           rel="noopener noreferrer"
-          class="inline-flex items-center gap-2 text-sm font-medium text-trail-ink underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
+          class="inline-flex items-center gap-2 text-sm font-medium text-trail-ink underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
           :aria-label="`Ver recorrido de ${ride.title} en Wikiloc`"
         >
           <FontAwesomeIcon :icon="faMap" aria-hidden="true" />
@@ -212,7 +212,7 @@ useHead({
               :href="`https://www.openstreetmap.org/?mlat=${ride.latitude}&mlon=${ride.longitude}#map=15/${ride.latitude}/${ride.longitude}`"
               target="_blank"
               rel="noopener noreferrer"
-              class="border border-line px-3 py-1.5 text-sm font-medium text-ink transition-colors hover:border-trail focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
+              class="inline-flex items-center rounded-full border border-ink px-3.5 py-1.5 text-sm font-medium text-ink transition-colors hover:bg-snow focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
             >
               Abrir en OpenStreetMap
               <span class="sr-only">(se abre en una pestaña nueva)</span>

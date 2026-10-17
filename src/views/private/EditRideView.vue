@@ -48,7 +48,7 @@ async function handleSubmit(payload: RideFormSubmission): Promise<void> {
       <header class="mb-6">
         <button
           type="button"
-          class="inline-flex items-center gap-1.5 text-sm text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
+          class="inline-flex items-center gap-1.5 text-sm text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
           @click="router.back()"
         >
           <IconArrow direction="left" />

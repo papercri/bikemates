@@ -89,7 +89,7 @@ function handleSelectPlace(place: GeocodingResult): void {
       <li v-for="place in results" :key="place.id">
         <button
           type="button"
-          class="w-full px-3 py-2.5 text-left text-sm text-ink transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-trail"
+          class="w-full px-3 py-2.5 text-left text-sm text-ink transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ink/60"
           @click="handleSelectPlace(place)"
         >
           {{ place.label }}

@@ -69,7 +69,7 @@ useHead({
     <Typography as="p" variant="body-sm" class="mt-3">
       <a
         href="mailto:cristiana.sollini@gmail.com"
-        class="font-medium text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
+        class="font-medium text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
       >
         cristiana.sollini@gmail.com
       </a>
