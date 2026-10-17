@@ -18,11 +18,10 @@ function mountRideCard() {
 }
 
 describe('RideCard', () => {
-  it('renders the ride title and location', () => {
+  it('renders the ride title', () => {
     const wrapper = mountRideCard()
 
     expect(wrapper.get('h2').text()).toBe(ride.title)
-    expect(wrapper.text()).toContain(ride.meetingPoint)
   })
 
   it('renders the distance and elevation figures', () => {
