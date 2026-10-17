@@ -119,6 +119,7 @@ const { scrollYProgress } = useScroll({
 
 const heroImageY = useTransform(scrollYProgress, [0, 1], ['0%', HERO_PARALLAX_Y])
 
+// Con reduced-motion se omite el parallax (objeto sin y).
 const heroImageStyle = computed(() => (reduceMotion.value ? {} : { y: heroImageY }))
 
 // Avance del slideshow; con reduced-motion se queda en la primera foto.
@@ -145,7 +146,7 @@ onBeforeUnmount(() => {
       class="relative isolate -mx-4 min-h-[100svh] overflow-hidden sm:-mx-6 lg:-mx-8"
       aria-labelledby="hero-title"
     >
-      <div class="absolute inset-0" :style="heroImageStyle" aria-hidden="true">
+      <motion.div class="absolute inset-0" :style="heroImageStyle" aria-hidden="true">
         <motion.img
           v-for="(slide, index) in heroSlides"
           :key="slide.src"
@@ -169,7 +170,7 @@ onBeforeUnmount(() => {
             },
           }"
         />
-      </div>
+      </motion.div>
       <div class="absolute inset-0 bg-ink/40" />
 
       <div

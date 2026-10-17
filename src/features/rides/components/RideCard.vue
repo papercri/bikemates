@@ -8,19 +8,11 @@ import { RIDE_BIKE_TYPE_LABELS } from '@/features/rides/constants/rideOptions'
 import type { Ride } from '@/features/rides/types'
 import { formatRideDate, getRideDateParts } from '@/utils/dates'
 
-const props = withDefaults(
-  defineProps<{
-    ride: Ride
-    /** La salida ya se celebró: se atenúa el contraste frente a las próximas rutas. */
-    past?: boolean
-    /** Altura del cuerpo de la tarjeta para el ritmo visual del masonry. */
-    height?: 'md' | 'lg'
-  }>(),
-  {
-    past: false,
-    height: 'md',
-  },
-)
+const props = defineProps<{
+  ride: Ride
+  /** La salida ya se celebró: se atenúa el contraste frente a las próximas rutas. */
+  past?: boolean
+}>()
 
 /** Fotografías propias del proyecto para las salidas sin imagen en la base de datos. */
 const FALLBACK_COVERS = [
@@ -41,17 +33,12 @@ const dateParts = computed(() => getRideDateParts(props.ride.startsAt))
 
 <template>
   <article
-    class="overflow-hidden rounded-photo border border-line"
+    class="h-full overflow-hidden rounded-photo border border-line"
     :class="past ? 'opacity-75' : ''"
   >
     <RouterLink
       :to="{ name: 'ride-detail', params: { id: ride.id } }"
-      class="group relative flex flex-col justify-between gap-6 bg-ink p-4 focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-trail sm:p-5"
-      :class="
-        height === 'lg'
-          ? 'min-h-[17rem] sm:min-h-[19.5rem]'
-          : 'min-h-[13.5rem] sm:min-h-[15rem]'
-      "
+      class="group relative flex h-full min-h-[15rem] flex-col justify-between gap-6 bg-ink p-4 focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-trail sm:p-5"
     >
       <img
         :src="cover"
@@ -89,13 +76,13 @@ const dateParts = computed(() => getRideDateParts(props.ride.startsAt))
 
       <!-- Entrada -->
       <div class="relative min-w-0">
-        <h2 class="font-display text-lg font-medium tracking-[-0.01em] text-canvas sm:text-xl">
+        <h2
+          class="line-clamp-3 font-display text-lg font-medium tracking-[-0.01em] text-canvas sm:text-xl"
+        >
           {{ ride.title }}
         </h2>
 
-        <p class="mt-1 text-sm text-canvas/85">{{ ride.meetingPoint }}</p>
-
-        <p class="text-sm text-canvas/85">
+        <p class="mt-1 text-sm text-canvas/85">
           <time :datetime="ride.startsAt">{{ formatRideDate(ride.startsAt) }}</time>
         </p>
 

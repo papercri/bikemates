@@ -154,14 +154,8 @@ onBeforeUnmount(() => {
           </template>
         </Typography>
 
-        <div v-if="paginatedRides.length > 0" class="mt-4 grid items-start gap-4" :style="gridStyle">
-          <RideCard
-            v-for="(ride, index) in paginatedRides"
-            :key="ride.id"
-            :ride="ride"
-            :past="isPastTab"
-            :height="index % 3 === 1 ? 'lg' : 'md'"
-          />
+        <div v-if="paginatedRides.length > 0" class="mt-4 grid gap-4" :style="gridStyle">
+          <RideCard v-for="ride in paginatedRides" :key="ride.id" :ride="ride" :past="isPastTab" />
         </div>
 
         <!-- Centinela de scroll: carga el siguiente lote al entrar en pantalla. -->
