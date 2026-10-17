@@ -129,7 +129,9 @@ const { isInView: bandVisible } = useInView(bandSection)
           </div>
         </div>
 
-        <div class="relative mx-auto w-full max-w-md border-4 border-trail p-3 sm:p-5 lg:max-w-none">
+        <div
+          class="relative mx-auto w-full max-w-md border-4 border-trail p-3 sm:p-5 lg:max-w-none"
+        >
           <CyclistScene />
         </div>
       </div>
