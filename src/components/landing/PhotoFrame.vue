@@ -23,7 +23,7 @@ const frameClasses = computed(() => ratioClasses[props.ratio])
 </script>
 
 <template>
-  <div class="relative overflow-hidden rounded-card bg-canvas" :class="frameClasses">
+  <div class="relative overflow-hidden rounded-photo bg-canvas" :class="frameClasses">
     <!-- Hueco reservado para la próxima foto: se ve un patrón en vez de un hueco roto -->
     <div v-if="hasError" aria-hidden="true" class="photo-fallback absolute inset-0" />
 

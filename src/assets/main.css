@@ -5,26 +5,29 @@
 @theme {
   /*
    * Editorial minimalista outdoor: hueso cálido, filetes ultrafinos,
-   * tinta off-black y un único acento naranja desaturado.
-   * Paleta derivada de public/example1-3.png + protocolo minimalist-ui.
+   * tinta casi negra y un único acento naranja desaturado.
+   * Colores de marca fijados por producto: naranja #EB9A52, tinta #000106.
+   * Estructura y radios según protocolo minimalist-ui + public/example1-2.png.
    */
   --color-canvas: #fbfbfa;
   --color-snow: #f7f6f3;
   --color-surface: #f2f1ed;
   --color-line: #e8e6e1;
   --color-line-strong: #d6d3cc;
+  /* Filete de controles: gris cálido que identifica el campo sin gritar (≈3.3:1). */
+  --color-line-input: #8e8d87;
 
-  --color-ink: #111111;
-  --color-graphite: #787774;
+  --color-ink: #000106;
+  --color-graphite: #6b6b68;
 
-  --color-trail: #e08a3c;
-  --color-trail-deep: #b4651f;
-  --color-trail-ink: #8c4a12;
-  --color-trail-dark: #7a3f10;
-  --color-route: #e08a3c;
-  --color-route-ink: #8c4a12;
-  --color-route-dark: #7a3f10;
-  --color-turf: #141414;
+  --color-trail: #eb9a52;
+  --color-trail-deep: #d98a3f;
+  --color-trail-ink: #8a4514;
+  --color-trail-dark: #5e2f0e;
+  --color-route: #eb9a52;
+  --color-route-ink: #8a4514;
+  --color-route-dark: #5e2f0e;
+  --color-turf: #000106;
 
   --animate-trail-dash: trail-dash 24s linear infinite;
 
@@ -38,13 +41,18 @@
   --font-display: 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, monospace;
 
-  /* Esquinas crisp: tarjetas 12px, controles 6px; sin píldoras en primarios. */
+  /*
+   * Escala de radios con intención distinta por elemento (nunca todo igual):
+   * fotos 8px, tarjetas 12px, campos 8px, botones y badges a píldora.
+   */
+  --radius-photo: 8px;
   --radius-card: 12px;
-  --radius-btn: 6px;
+  --radius-field: 8px;
+  --radius-btn: 9999px;
 
   /* Profundidad casi nula: solo un halo difuso de baja opacidad. */
-  --shadow-card: 0 1px 2px rgb(17 17 17 / 0.03);
-  --shadow-lift: 0 2px 8px rgb(17 17 17 / 0.04);
+  --shadow-card: 0 1px 2px rgb(0 1 6 / 0.04);
+  --shadow-lift: 0 2px 8px rgb(0 1 6 / 0.05);
 }
 
 @layer base {

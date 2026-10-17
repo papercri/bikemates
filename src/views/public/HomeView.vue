@@ -108,20 +108,18 @@ const { isInView: bandVisible } = useInView(bandSection)
         <div>
           <h1
             id="hero-title"
-            class="hero-rise max-w-3xl font-display text-[clamp(2.4rem,6vw,4.4rem)] leading-[0.98] font-extrabold tracking-[-0.03em] text-white"
+            class="max-w-3xl font-display text-[clamp(2.4rem,6vw,4.4rem)] leading-[0.98] font-extrabold tracking-[-0.03em] text-white"
           >
             <span class="block">Encuentra tu grupeta.</span>
             <span class="block text-trail">Comparte la ruta.</span>
           </h1>
 
-          <p
-            class="hero-rise hero-rise-delay-1 mt-6 max-w-xl text-base leading-7 text-white/85 sm:text-lg"
-          >
+          <p class="mt-6 max-w-xl text-base leading-7 text-white/85 sm:text-lg">
             Conecta con ciclistas cerca de ti, organiza salidas y descubre nuevas rutas para
             disfrutar de la bici en compañía.
           </p>
 
-          <div class="hero-rise hero-rise-delay-2 mt-8 flex flex-col gap-3 sm:flex-row">
+          <div class="mt-8 flex flex-col gap-3 sm:flex-row">
             <Button
               v-for="cta in heroCtas"
               :key="cta.to"
@@ -282,26 +280,6 @@ const { isInView: bandVisible } = useInView(bandSection)
 </template>
 
 <style scoped>
-/* Entrada del hero: jerarquía de lectura, no decoración. */
-@keyframes rise {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-}
-
-.hero-rise {
-  animation: rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.hero-rise-delay-1 {
-  animation-delay: 0.08s;
-}
-
-.hero-rise-delay-2 {
-  animation-delay: 0.16s;
-}
-
 /* Revelado por scroll de las bandas informativas. */
 .reveal {
   opacity: 0;
@@ -334,10 +312,8 @@ const { isInView: bandVisible } = useInView(bandSection)
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-rise,
   .reveal,
   .reveal-photo {
-    animation: none;
     transition: none;
     opacity: 1;
     transform: none;

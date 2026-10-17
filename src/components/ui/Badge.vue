@@ -18,7 +18,7 @@ const classes = createVariant({
   // Pastel apagado en píldora: el color es escaso y solo marca significado.
   base: 'inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium tracking-[0.03em]',
   variants: {
-    variant: { soft: '', muted: '' },
+    variant: { soft: '', muted: '', inverse: '' },
     color: { trail: '', route: '', ink: '' },
   },
   defaultVariants: {
@@ -33,6 +33,10 @@ const classes = createVariant({
     { variant: 'muted', color: 'trail', class: 'bg-surface text-graphite' },
     { variant: 'muted', color: 'route', class: 'bg-surface text-graphite' },
     { variant: 'muted', color: 'ink', class: 'bg-surface text-graphite' },
+    // Sobre fotografía: chip translúcido oscuro que nunca depende del tono de la foto.
+    { variant: 'inverse', color: 'trail', class: 'bg-ink/55 text-canvas' },
+    { variant: 'inverse', color: 'route', class: 'bg-ink/55 text-canvas' },
+    { variant: 'inverse', color: 'ink', class: 'bg-ink/55 text-canvas' },
   ],
 })
 
@@ -50,7 +54,7 @@ const dotColorClasses: Record<BadgeColor, string> = {
       v-if="dot"
       aria-hidden="true"
       class="h-1.5 w-1.5 rounded-full"
-      :class="dotColorClasses[color]"
+      :class="variant === 'inverse' ? 'bg-trail' : dotColorClasses[color]"
     />
     <slot />
   </span>

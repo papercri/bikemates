@@ -2,7 +2,6 @@
 import { computed } from 'vue'
 import Badge from '@/components/ui/Badge.vue'
 import IconArrow from '@/components/icons/IconArrow.vue'
-import ElevationSparkline from '@/features/rides/components/ElevationSparkline.vue'
 import RideAudienceBadge from '@/features/rides/components/RideAudienceBadge.vue'
 import { RIDE_LEVEL_BADGE_COLORS } from '@/features/rides/constants/rideLevels'
 import { RIDE_BIKE_TYPE_LABELS } from '@/features/rides/constants/rideOptions'
@@ -15,98 +14,95 @@ const props = defineProps<{
   past?: boolean
 }>()
 
+/** Fotografías propias del proyecto para las salidas sin imagen en la base de datos. */
+const FALLBACK_COVERS = [
+  '/photos/grupeta-camino.webp',
+  '/photos/grupeta-sepia.webp',
+  '/photos/hero-bosque.webp',
+]
+
+function pickFallbackCover(rideId: string): string {
+  const hash = [...rideId].reduce((total, char) => total + char.charCodeAt(0), 0)
+  return FALLBACK_COVERS[hash % FALLBACK_COVERS.length] ?? '/photos/grupeta-camino.webp'
+}
+
+const cover = computed(() => props.ride.imageUrl ?? pickFallbackCover(props.ride.id))
+
 const dateParts = computed(() => getRideDateParts(props.ride.startsAt))
-
-// En salidas pasadas la cifra grande y el título bajan de contraste sin perder legibilidad.
-const dayClasses = computed(() => (props.past ? 'text-graphite' : 'text-ink'))
-
-const titleClasses = computed(() =>
-  props.past ? 'text-graphite group-hover:text-trail-ink' : 'text-ink group-hover:text-trail-ink',
-)
-
-const figureClasses = computed(() => (props.past ? 'text-graphite' : 'text-ink'))
 </script>
 
 <template>
-  <article class="border-b border-line">
+  <article
+    class="overflow-hidden rounded-photo shadow-card transition-shadow duration-200 hover:shadow-lift"
+    :class="past ? 'opacity-75' : ''"
+  >
     <RouterLink
       :to="{ name: 'ride-detail', params: { id: ride.id } }"
-      class="group grid gap-3 px-2 py-4 transition-colors duration-200 hover:bg-canvas focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-trail sm:px-4 lg:grid-cols-[4rem_minmax(0,1fr)_auto] lg:items-start lg:gap-6"
+      class="group relative flex min-h-[13.5rem] flex-col justify-between gap-6 bg-ink p-4 focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-trail sm:min-h-[15rem] sm:p-5"
     >
-      <!-- Raíl de fecha -->
-      <div class="flex items-baseline gap-2 lg:block">
+      <img
+        :src="cover"
+        alt=""
+        aria-hidden="true"
+        loading="lazy"
+        decoding="async"
+        class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 motion-safe:group-hover:scale-[1.03]"
+      />
+      <div class="absolute inset-0 bg-ink/60" aria-hidden="true" />
+
+      <!-- Raíl de fecha + cifras -->
+      <div class="relative flex items-start justify-between gap-3">
         <span
-          class="font-display text-2xl font-extrabold leading-none tracking-tight tabular-nums lg:text-3xl"
-          :class="dayClasses"
+          class="rounded-full bg-canvas px-2.5 py-1 font-mono text-xs font-semibold tracking-[0.08em] text-ink uppercase tabular-nums"
         >
-          {{ dateParts.day }}
+          {{ dateParts.day }} {{ dateParts.month }}
         </span>
-        <span class="text-sm text-graphite lg:mt-0.5 lg:block">{{ dateParts.month }}</span>
+
+        <div class="flex items-baseline gap-4 text-canvas">
+          <span class="flex items-baseline gap-1">
+            <span class="font-display text-xl font-extrabold tabular-nums">
+              {{ ride.distanceKm }}
+            </span>
+            <span class="text-xs font-semibold text-canvas/80">km</span>
+          </span>
+          <span class="flex items-baseline gap-1">
+            <span class="font-display text-xl font-extrabold tabular-nums">
+              +{{ ride.elevationM }}
+            </span>
+            <span class="text-xs font-semibold text-canvas/80">m</span>
+          </span>
+        </div>
       </div>
 
       <!-- Entrada -->
-      <div class="min-w-0">
+      <div class="relative min-w-0">
         <h2
-          class="font-display text-base font-bold tracking-tight transition-colors sm:text-lg"
-          :class="titleClasses"
+          class="font-display text-lg font-bold tracking-tight text-canvas transition-colors group-hover:text-trail sm:text-xl"
         >
           {{ ride.title }}
         </h2>
 
-        <p class="mt-0.5 text-sm text-graphite">{{ ride.meetingPoint }}</p>
+        <p class="mt-1 text-sm text-canvas/85">{{ ride.meetingPoint }}</p>
 
-        <p class="text-sm text-graphite">
+        <p class="text-sm text-canvas/85">
           <time :datetime="ride.startsAt">{{ formatRideDate(ride.startsAt) }}</time>
         </p>
 
-        <div class="mt-2 flex flex-wrap gap-1.5">
-          <Badge :color="RIDE_LEVEL_BADGE_COLORS[ride.level]" dot>
+        <div class="mt-3 flex flex-wrap items-center gap-1.5">
+          <Badge variant="inverse" :color="RIDE_LEVEL_BADGE_COLORS[ride.level]" dot>
             {{ ride.level }}
           </Badge>
-          <Badge variant="muted">
-            {{ RIDE_BIKE_TYPE_LABELS[ride.bikeType] }}
-          </Badge>
-          <RideAudienceBadge :audience="ride.audience" />
+          <Badge variant="inverse">{{ RIDE_BIKE_TYPE_LABELS[ride.bikeType] }}</Badge>
+          <RideAudienceBadge :audience="ride.audience" variant="inverse" />
+
+          <IconArrow
+            class="ml-auto text-canvas/75 transition-transform duration-200 group-hover:translate-x-1 group-hover:text-trail"
+            aria-hidden="true"
+          />
+
+          <span class="sr-only">Ver detalles</span>
         </div>
-      </div>
-
-      <!-- Cifras de la ruta -->
-      <div class="flex items-end gap-5 lg:items-start lg:gap-8">
-        <div class="flex items-baseline gap-1">
-          <span
-            class="font-display text-xl font-extrabold leading-none tracking-tight tabular-nums sm:text-2xl"
-            :class="figureClasses"
-          >
-            {{ ride.distanceKm }}
-          </span>
-          <span class="text-xs font-semibold text-graphite">km</span>
-        </div>
-
-        <div class="flex items-baseline gap-1">
-          <span
-            class="font-display text-xl font-extrabold leading-none tracking-tight tabular-nums sm:text-2xl"
-            :class="figureClasses"
-          >
-            +{{ ride.elevationM }}
-          </span>
-          <span class="text-xs font-semibold text-graphite">m</span>
-        </div>
-
-        <IconArrow
-          class="ml-auto hidden text-graphite transition-transform duration-200 group-hover:translate-x-1 group-hover:text-trail-ink lg:block"
-          aria-hidden="true"
-        />
-
-        <span class="sr-only">Ver detalles</span>
       </div>
     </RouterLink>
-
-    <div class="px-2 pb-2 sm:px-4" aria-hidden="true">
-      <ElevationSparkline
-        :distance-km="ride.distanceKm"
-        :elevation-m="ride.elevationM"
-        :class="past ? 'opacity-30' : 'opacity-50'"
-      />
-    </div>
   </article>
 </template>

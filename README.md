@@ -2,7 +2,7 @@
 
 Aplicación web para ciclistas en España: descubre rutas, encuentra compañeros de pedaleo y organiza salidas en grupo.
 
-BikeMates es una SPA **mobile-first** construida con Vue 3 y TypeScript estricto, con acceso a datos sobre **Supabase** (autenticación, base de datos y Edge Functions), SEO técnico en las páginas públicas y una interfaz clara y luminosa según el design system **Clean Alpine & Light** (lienzo blanco en página, header y footer; superficies y filetes crema-oliva; acentos rojo `trail` y verdes `route`/`turf`; tipografía Inter; esquinas rectas en toda la interfaz).
+BikeMates es una SPA **mobile-first** construida con Vue 3 y TypeScript estricto, con acceso a datos sobre **Supabase** (autenticación, base de datos y Edge Functions), SEO técnico en las páginas públicas y una interfaz editorial minimalista (lienzo hueso `#FBFBFA`, tarjetas blancas con filete ultrafino y esquinas de 12px, tinta off-black `#111111`, único acento naranja desaturado `trail`, tipografía Archivo y JetBrains Mono para datos, profundidad casi nula).
 
 ## Funcionalidades
 

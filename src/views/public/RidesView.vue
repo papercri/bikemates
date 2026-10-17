@@ -66,20 +66,19 @@ const isPastTab = computed(() => timeframe.value === 'past')
     </section>
 
     <section class="mt-6" aria-label="Listado de rutas">
-      <div v-if="isLoading" class="border-t border-line" role="status" aria-live="polite">
+      <div
+        v-if="isLoading"
+        class="mt-4 grid gap-4 sm:grid-cols-2"
+        role="status"
+        aria-live="polite"
+      >
         <span class="sr-only">Cargando rutas…</span>
         <div
-          v-for="n in 3"
+          v-for="n in 4"
           :key="n"
-          class="flex items-center gap-6 border-b border-line px-2 py-5 sm:px-4"
+          class="h-56 rounded-photo bg-surface motion-safe:animate-pulse"
           aria-hidden="true"
-        >
-          <div class="h-8 w-8 shrink-0 rounded-card bg-surface motion-safe:animate-pulse" />
-          <div class="min-w-0 flex-1 space-y-2">
-            <div class="h-5 w-2/5 rounded-card bg-surface motion-safe:animate-pulse" />
-            <div class="h-4 w-1/4 rounded-card bg-surface motion-safe:animate-pulse" />
-          </div>
-        </div>
+        />
       </div>
 
       <EmptyState
@@ -102,7 +101,7 @@ const isPastTab = computed(() => timeframe.value === 'past')
           </template>
         </Typography>
 
-        <div v-if="visibleRides.length > 0" class="mt-3 border-t border-line">
+        <div v-if="visibleRides.length > 0" class="mt-4 grid gap-4 sm:grid-cols-2">
           <RideCard v-for="ride in visibleRides" :key="ride.id" :ride="ride" :past="isPastTab" />
         </div>
 

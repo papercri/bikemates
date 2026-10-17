@@ -30,14 +30,14 @@ const classes = createVariant({
   base: 'inline-flex items-center justify-center gap-2 rounded-btn font-semibold transition-[color,background-color,border-color,transform] focus-visible:outline-2 focus-visible:outline-offset-2 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100 sm:whitespace-nowrap',
   variants: {
     variant: {
-      // Tinta sólida con texto blanco: la CTA principal del mundo editorial.
-      primary: 'bg-ink text-white hover:bg-[#333333] focus-visible:outline-ink',
-      // Sobre fondos oscuros: papel sólido.
-      sun: 'bg-canvas text-ink hover:bg-white focus-visible:outline-canvas',
+      // CTA principal del mundo example2: píldora de tinta sólida, sin filete.
+      primary: 'bg-ink text-canvas hover:bg-ink/80 focus-visible:outline-ink',
+      // Sobre fotos y fondos oscuros: píldora naranja de marca (example1).
+      sun: 'bg-trail text-ink hover:bg-trail-deep focus-visible:outline-canvas',
       'sun-outline':
-        'border border-white/40 bg-transparent text-canvas hover:bg-canvas hover:text-ink focus-visible:outline-canvas',
-      outline:
-        'border border-line-strong bg-white text-ink hover:bg-snow focus-visible:outline-ink',
+        'border border-canvas/50 bg-transparent text-canvas hover:bg-canvas hover:text-ink focus-visible:outline-canvas',
+      // Acción secundaria de example2: píldora blanca con filete fino.
+      outline: 'border border-ink bg-white text-ink hover:bg-snow focus-visible:outline-ink',
       destructive:
         'border border-red-300 bg-white text-red-700 hover:bg-red-700 hover:text-white focus-visible:outline-red-700',
       // Acción destructiva de bajo peso: el color solo aparece al interactuar.

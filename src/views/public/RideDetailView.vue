@@ -139,7 +139,7 @@ useHead({
       <img
         :src="ride.imageUrl || '/default.webp'"
         :alt="`Imagen de la ruta ${ride.title}`"
-        class="mt-4 h-44 w-full rounded-card border border-line object-cover sm:h-56"
+        class="mt-4 h-44 w-full rounded-photo object-cover sm:h-56"
         loading="eager"
         fetchpriority="high"
       />

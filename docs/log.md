@@ -452,3 +452,68 @@ comportamiento. Paleta extraída de `public/layout-black-orange.webp`.
 - Nota: los cambios se recogieron en commits automáticos del hook de la sesión (`67912`
   y `286eb`); el segundo incluye además `public/photos/img*` (~20 MB, sin referencias en
   el código) aparecidos en el árbol de trabajo por un proceso concurrente.
+
+## 2026-10-17 — Repintado a editorial minimalista outdoor (impeccable + minimalist-ui)
+
+Sustituye el brutalismo industrial por el mundo visual fijado por el usuario en
+`public/example1-3.png` con el protocolo **minimalist-ui**: hueso cálido, filetes
+ultrafinos, tinta off-black y un único acento naranja desaturado. Solo estilo y
+marcado imprescindible: sin cambios de lógica, estado, rutas ni comportamiento.
+
+### Tokens y tipografía (`src/assets/main.css`, `src/design-system/field.ts`)
+
+- Nueva paleta: canvas `#FBFBFA`, snow `#F7F6F3`, surface `#F2F1ED`, línea
+  `#E8E6E1`/`#D6D3CC`, tinta `#111111`, grafito `#787774`, naranja `trail #E08A3C`
+  (ink `#8C4A12` para texto AA), banda oscura `turf #141414`.
+- Se elimina la importación de Inter (veto del protocolo): Archivo Variable cubre
+  display y cuerpo, JetBrains Mono queda para datos y etiquetas mono.
+- Radios: tarjeta 12px, control 6px (sin píldoras en primarios); sombras
+  `shadow-card` y `shadow-lift` difusas de opacidad ≤4%.
+- `FIELD_CLASSES`: borde 1px, fondo blanco, foco tinta en lugar de naranja.
+
+### Primitivas
+
+- `Button`: primaria tinta sólida/blanca con hover `#333` y `scale(0.98)`; `sun`
+  papel sólido; `sun-outline` con borde blanco translúcido; `outline` con filete
+  claro; destructiva con rojo apagado.
+- `Badge`: píldora con pastel apagado (`bg-trail/15`), escala de intensidad
+  `soft+route` en gris y `soft+ink` en losa negra.
+- `Card`: filete 1px, fondo blanco, halo difuso en hover; peligro en rojo suave.
+- `Alert` boxed y recetas de `MeetingPointPicker`, `RideForm` y
+  `RideTimeframeTabs` a filete 1px.
+- `PhotoFrame`: tinte cálido bajado al 6% y desaturación editorial.
+- Header/footer: filete 1px, navegación en sans medium (mono reservado a datos),
+  header con `backdrop-blur` sutil. `AppPage` sobre canvas.
+- Se eliminan los componentes muertos `CyclistScene`, `HeroBackdrop` y
+  `RidgeDivider` (eran del héroe negro anterior).
+
+### Landing (`HomeView.vue`)
+
+- Hero a sangre con foto real (`public/photos/hero-bosque.webp`, optimizada desde
+  `img1.jpg`) y velo degradado de tinta; titular title-case con la segunda frase
+  en naranja, como las referencias.
+- Features en tarjetas blancas con icono en pastel circular y revelado por scroll.
+- Galería con foto grande (`img8.avif`) y dos cuadradas (`grupeta-sepia.webp`
+  optimizada desde `img3.jpg`, `img10.avif`), marcos de 12px.
+- Banda final en `turf` con botón papel y halo naranja radial al 5% (profundidad
+  sin gradientes decorativos).
+- Nuevos assets optimizados: `hero-bosque.webp`, `grupeta-sepia.webp`,
+  `grupeta-camino.webp` (esta última queda disponible, sin usar aún). Se evitó
+  `img5` por llevar marcas de agua de stock.
+
+### Tests
+
+- `Badge.spec`, `Button.spec`, `Card.spec` y `RideCard.spec` ajustados a las
+  recetas nuevas.
+
+### Verificación
+
+- `vitest`: 248/248 en verde (42 archivos).
+- `oxlint src` y `eslint src` en verde; `vite build` correcto.
+- `vue-tsc --build`: mismos 11 errores preexistentes (`imageUrl` en `mockRides.ts`
+  y specs, commit `4cbe9`); ninguno en ficheros tocados.
+- `impeccable detect` sobre los 16 ficheros de UI cambiados: 0 hallazgos.
+- Revisión visual con Playwright (1440×900 y 375×812): home (con scroll para
+  disparar los reveals), listado, login y privacidad.
+- Pendiente conocido: `@fontsource-variable/inter` sigue en `package.json` sin
+  importarse; retirarlo requiere aprobación (cambio de dependencias).
