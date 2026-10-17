@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useHead } from '@unhead/vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faBicycle } from '@fortawesome/free-solid-svg-icons'
@@ -16,12 +16,23 @@ import type { ButtonVariant } from '@/design-system'
 
 // Constantes de animación (curva Cowboy: expo-out suave)
 const EASE = [0.25, 1, 0.5, 1] as const
-const HERO_INITIAL_SCALE = 1.08
-const HERO_ZOOM_DURATION = 1.6
 const HERO_PARALLAX_Y = '12%'
 const REVEAL_Y = 32
 const REVEAL_DURATION = 0.8
 const STAGGER_DELAY = 0.1
+
+// Slideshow del hero: crossfade + zoom lento (Ken Burns) por foto.
+const HERO_SLIDE_MS = 6000
+const HERO_FADE_S = 1.2
+const HERO_ZOOM_FROM = 1
+const HERO_ZOOM_TO = 1.08
+
+const heroSlides = [
+  { src: '/photos/hero-bosque.webp', position: 'object-center' },
+  { src: '/photos/grupeta-camino.webp', position: 'object-center' },
+  { src: '/photos/img4.avif', position: 'object-center' },
+  { src: '/photos/img10.avif', position: 'object-center' },
+] as const
 
 const authStore = useAuthStore()
 const { user, isInitialized } = storeToRefs(authStore)
@@ -85,7 +96,7 @@ const features = [
   },
 ]
 
-// Parallax del hero: la imagen se desplaza un 12 % mientras la sección sale de pantalla.
+// Parallax del hero: el contenedor de fotos se desplaza un 12 % al salir de pantalla.
 const heroSection = ref<HTMLElement | null>(null)
 const reduceMotion = useReducedMotion()
 
@@ -97,6 +108,22 @@ const { scrollYProgress } = useScroll({
 const heroImageY = useTransform(scrollYProgress, [0, 1], ['0%', HERO_PARALLAX_Y])
 
 const heroImageStyle = computed(() => (reduceMotion.value ? {} : { y: heroImageY }))
+
+// Avance del slideshow; con reduced-motion se queda en la primera foto.
+const activeSlide = ref(0)
+let slideTimer: ReturnType<typeof setInterval> | null = null
+
+onMounted(() => {
+  if (reduceMotion.value) return
+
+  slideTimer = setInterval(() => {
+    activeSlide.value = (activeSlide.value + 1) % heroSlides.length
+  }, HERO_SLIDE_MS)
+})
+
+onBeforeUnmount(() => {
+  if (slideTimer) clearInterval(slideTimer)
+})
 </script>
 
 <template>
@@ -106,18 +133,31 @@ const heroImageStyle = computed(() => (reduceMotion.value ? {} : { y: heroImageY
       class="relative isolate -mx-4 min-h-[100svh] overflow-hidden sm:-mx-6 lg:-mx-8"
       aria-labelledby="hero-title"
     >
-      <motion.img
-        src="/photos/hero-bosque.webp"
-        alt=""
-        aria-hidden="true"
-        fetchpriority="high"
-        decoding="async"
-        class="absolute inset-0 h-full w-full object-cover object-center"
-        :initial="{ scale: HERO_INITIAL_SCALE }"
-        :animate="{ scale: 1 }"
-        :transition="{ duration: HERO_ZOOM_DURATION, ease: EASE }"
-        :style="heroImageStyle"
-      />
+      <div class="absolute inset-0" :style="heroImageStyle" aria-hidden="true">
+        <motion.img
+          v-for="(slide, index) in heroSlides"
+          :key="slide.src"
+          :src="slide.src"
+          alt=""
+          :loading="index === 0 ? 'eager' : 'lazy'"
+          :fetchpriority="index === 0 ? 'high' : 'auto'"
+          decoding="async"
+          class="absolute inset-0 h-full w-full object-cover"
+          :class="slide.position"
+          :initial="{ opacity: index === 0 ? 1 : 0, scale: HERO_ZOOM_FROM }"
+          :animate="{
+            opacity: index === activeSlide ? 1 : 0,
+            scale: index === activeSlide ? HERO_ZOOM_TO : HERO_ZOOM_FROM,
+          }"
+          :transition="{
+            opacity: { duration: HERO_FADE_S, ease: EASE },
+            scale: {
+              duration: index === activeSlide ? HERO_SLIDE_MS / 1000 : 0,
+              ease: 'linear',
+            },
+          }"
+        />
+      </div>
       <div class="absolute inset-0 bg-ink/40" />
 
       <div
