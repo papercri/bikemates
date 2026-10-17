@@ -136,8 +136,13 @@ Separación de responsabilidades: las vistas orquestan, los componentes presenta
 - Los componentes visuales viven en `src/components/` y no contienen lógica de negocio.
 - Los SVG decorativos e iconográficos viven en `src/components/icons/` como componentes propios (`CyclistScene`, `RidgeDivider`, `HeroBackdrop`, `Icon*`); las vistas y componentes solo los componen.
 - Los tokens (colores, radios, sombras, tipografías) se definen una sola vez en `src/assets/main.css`.
-- Diseño lineal: `--radius-card` y `--radius-btn` están a `0px`, así que botones, campos,
-  tarjetas e insignias tienen esquinas rectas; la jerarquía la marcan filetes y tonos, no sombras ni redondeos.
+- Estilo industrial claro: paleta de papel (`canvas`, `snow`, `surface`), tinta negra
+  (`ink`, `turf`) y naranja (`trail`); filetes de 2px en controles y 4px en secciones.
+  `--radius-card` sigue a `0px` (tarjetas y campos con esquinas rectas) y `--radius-btn` es
+  píldora para botones; la jerarquía la marcan filetes, bloques invertidos y sombra sólida,
+  no redondeos ni degradados.
+- Tipografía: Archivo para titulares y cifras, Inter para el cuerpo y JetBrains Mono para
+  etiquetas, navegación y datos en mayúsculas.
 - Contenedor único: `AppPage` envuelve todas las páginas con `max-w-7xl` (el mismo que header
   y footer); la prop `bleed` queda reservada a las bandas a sangre de la landing y la anchura
   de lectura se controla dentro de cada vista (`max-w-lg`, `max-w-3xl`…).

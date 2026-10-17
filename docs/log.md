@@ -389,3 +389,66 @@ Rediseño visual de la landing y del sistema base, sin tocar lógica de negocio 
   detalle, crear ruta, login y footer con fondo blanco y contenedor común.
 - Pendiente conocido: `npm run lint` sigue fallando por el fichero ignorado
   `.agents/skills/impeccable/scripts/live-browser.js`.
+
+## 2026-10-17 — Restyling "Clean Alpine" → industrial brutalism (papel, negro y naranja)
+
+Solo estilo y el marcado imprescindible: sin cambios de lógica, estado, rutas ni
+comportamiento. Paleta extraída de `public/layout-black-orange.webp`.
+
+### Tokens y tipografía (`src/assets/main.css`, `src/design-system/`)
+
+- Nueva paleta: papel (`canvas #F7F6F3`, `snow #F0EFEB`, `surface #E5E2D9`), tinta
+  (`ink`/`line`/`line-strong`/`turf #0A0A0A`), `graphite #525252` y naranja
+  (`trail #EA580C`, `trail-deep/trail-ink/trail-dark`); `route` pasa a la misma familia
+  naranja.
+- Radios: `--radius-btn` (píldora) y `--radius-card` (0px); sombras: `--shadow-card`
+  anulada y `--shadow-lift` sólida de 4px en `ink`.
+- Fuentes: Archivo Variable (display/macro), Inter Variable (cuerpo) y JetBrains Mono
+  Variable (etiquetas mono), ya instaladas.
+
+### Primitivas
+
+- `Button`: píldora con borde de 2px en `ink`; primaria naranja con texto negro (5,9:1)
+  e hover que invierte a tinta/papel; `sun` papel para fondos oscuros; foco `ink` en
+  claros y `canvas` en oscuros.
+- `Badge`: escalera de intensidad corregida para que el nivel lea de menor a mayor
+  (`soft+trail` naranja pálido, `soft+route` gris `bg-ink/10`, `soft+ink` losa negra); el
+  punto de `ink` es papel para no fundirse con la losa.
+- `Card`, `Alert`, `FormError`, `MeetingPointPicker` y `RideForm`: filetes de 2px,
+  esquinas cuadradas y errores en `red-700` (5,9:1 en papel) en lugar de `red-600`.
+- `Typography`: display/heading en Archivo extrabold con tracking negativo; `eyebrow`,
+  `eyebrow-wide` y `label-xs` en JetBrains Mono uppercase.
+- `AppHeader` y `AppFooter`: filete de 4px, navegación y links en mono uppercase, foco
+  visible en `ink` y menú móvil enmarcado.
+
+### Landing (`HomeView.vue`)
+
+- Hero a sangre negra (`bg-turf`) con titular macro en cuatro líneas (segunda frase en
+  naranja), ilustración enmarcada en `trail`, entrada escalonada con `@keyframes rise` y
+  `prefers-reduced-motion`.
+- Features en rejilla suiza (`gap-1` sobre negro dentro de un marco de 4px) con la
+  primera celda invertida para dar profundidad.
+- Galería con foto grande y dos cuadradas enmarcadas en negro; revelado por scroll con
+  `useInView` (`clip-path`) y CTA primaria.
+- Banda final naranja con trazo discontinuo en `ink` y contraste del párrafo corregido a
+  `text-ink/90` (5,9:1).
+- Nuevas fotos `public/photos/salida-amanecer.webp` y `salida-pista.webp` (Picsum:
+  Alejandro Escamilla y Paul Jarvis vía Unsplash).
+
+### Tests
+
+- `Badge.spec`, `Button.spec`, `Card.spec`, `Alert.spec`, `Typography.spec` y
+  `RideCard.spec` ajustados a las recetas nuevas.
+
+### Verificación
+
+- `vitest`: 248/248 en verde; `oxlint src` y `eslint src` en verde; `vite build` correcto.
+- `vue-tsc --build`: mismos 11 errores preexistentes (`imageUrl` en `mockRides.ts` y sus
+  specs, commit `4cbe9`); ninguno en ficheros tocados.
+- `impeccable detect` contra el dev server: 0 anti-patrones y sin avisos (se corrigió el
+  único aviso de contraste detectado en la banda naranja).
+- Revisión visual con Playwright (1440×900 y 375×812): home como invitado y autenticado,
+  y listado de rutas con el nuevo badge de nivel.
+- Nota: los cambios se recogieron en commits automáticos del hook de la sesión (`67912`
+  y `286eb`); el segundo incluye además `public/photos/img*` (~20 MB, sin referencias en
+  el código) aparecidos en el árbol de trabajo por un proceso concurrente.
