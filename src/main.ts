@@ -4,7 +4,9 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './app/router'
 import { useAuthStore } from '@/features/auth/stores/authStore'
+import { vReveal } from '@/directives/vReveal'
 import './assets/main.css'
+import './assets/reveal.css'
 
 async function bootstrap(): Promise<void> {
   const app = createApp(App)
@@ -12,6 +14,7 @@ async function bootstrap(): Promise<void> {
 
   app.use(pinia)
   app.use(createHead())
+  app.directive('reveal', vReveal)
 
   const authStore = useAuthStore(pinia)
 

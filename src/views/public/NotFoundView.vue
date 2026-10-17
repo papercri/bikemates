@@ -22,6 +22,7 @@ useHead({
 <template>
   <AppPage>
     <EmptyState
+      v-reveal
       title-as="h1"
       title="Página no encontrada"
       description="La página que buscas no existe o ha cambiado de dirección. Puedes volver al inicio o explorar las rutas disponibles."

@@ -56,6 +56,7 @@ async function handleSubmit(): Promise<void> {
 <template>
   <AppPage>
     <AuthCard
+      v-reveal
       title="Nueva contraseña"
       description="Introduce una nueva contraseña para tu cuenta de BikeMates."
     >

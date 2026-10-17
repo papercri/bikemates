@@ -24,7 +24,11 @@ const { isProcessing, isConfirmed, errorMessage } = useEmailLinkConfirmation(
     <AppHeader />
 
     <main class="flex flex-1 items-center justify-center px-4 py-12">
-      <Card aria-labelledby="confirmation-title" class="w-full max-w-md p-8 text-center sm:p-10">
+      <Card
+        v-reveal
+        aria-labelledby="confirmation-title"
+        class="w-full max-w-md p-8 text-center sm:p-10"
+      >
         <Typography id="confirmation-title" as="h1" variant="heading-md">
           {{
             isProcessing

@@ -11,7 +11,7 @@ import PhotoFrame from '@/components/landing/PhotoFrame.vue'
 import Button from '@/components/ui/Button.vue'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/features/auth/stores/authStore'
-import { useInView } from '@/composables/useInView'
+import { useParallax } from '@/composables/useParallax'
 import type { ButtonVariant } from '@/design-system'
 
 const authStore = useAuthStore()
@@ -76,14 +76,8 @@ const features = [
   },
 ]
 
-const featuresSection = ref<HTMLElement | null>(null)
-const { isInView: featuresVisible } = useInView(featuresSection)
-
-const gallerySection = ref<HTMLElement | null>(null)
-const { isInView: galleryVisible } = useInView(gallerySection)
-
-const bandSection = ref<HTMLElement | null>(null)
-const { isInView: bandVisible } = useInView(bandSection)
+const heroImage = ref<HTMLElement | null>(null)
+useParallax(heroImage, { speed: 0.35, maxOffset: 56 })
 </script>
 
 <template>
@@ -93,19 +87,20 @@ const { isInView: bandVisible } = useInView(bandSection)
       aria-labelledby="hero-title"
     >
       <img
+        ref="heroImage"
         src="/photos/hero-bosque.webp"
         alt=""
         aria-hidden="true"
         fetchpriority="high"
         decoding="async"
-        class="absolute inset-0 h-full w-full object-cover object-center"
+        class="parallax-layer absolute inset-0 h-full w-full object-cover object-center"
       />
       <div class="absolute inset-0 bg-ink/40" />
 
       <div
         class="relative mx-auto grid max-w-7xl gap-10 px-4 pb-20 pt-14 sm:px-6 sm:pb-24 sm:pt-16 lg:grid-cols-[1.06fr_0.94fr] lg:items-center lg:gap-12 lg:px-8 lg:pb-28 lg:pt-20"
       >
-        <div>
+        <div v-reveal>
           <h1
             id="hero-title"
             class="max-w-3xl font-display text-[clamp(2.4rem,6vw,4.4rem)] leading-[0.95] font-medium tracking-[-0.025em] text-white"
@@ -134,9 +129,9 @@ const { isInView: bandVisible } = useInView(bandSection)
       </div>
     </section>
 
-    <section ref="featuresSection" class="-mx-4 sm:-mx-6 lg:-mx-8" aria-labelledby="features-title">
+    <section class="-mx-4 sm:-mx-6 lg:-mx-8" aria-labelledby="features-title">
       <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
-        <div class="reveal" :class="featuresVisible ? 'is-revealed' : ''">
+        <div v-reveal>
           <h2
             id="features-title"
             class="max-w-3xl font-display text-3xl leading-[1.05] font-medium tracking-[-0.025em] text-ink sm:text-5xl"
@@ -152,10 +147,10 @@ const { isInView: bandVisible } = useInView(bandSection)
 
         <div class="mt-10 grid gap-3 sm:grid-cols-3">
           <div
-            v-for="feature in features"
+            v-for="(feature, index) in features"
             :key="feature.title"
-            class="reveal reveal-cell rounded-card border border-line bg-white p-7"
-            :class="featuresVisible ? 'is-revealed' : ''"
+            v-reveal="{ delay: index * 80 }"
+            class="rounded-card border border-line bg-white p-7"
           >
             <span
               class="inline-flex rounded-full bg-trail/10 p-3 text-trail-ink"
@@ -178,23 +173,19 @@ const { isInView: bandVisible } = useInView(bandSection)
       </div>
     </section>
 
-    <section
-      ref="gallerySection"
-      class="-mx-4 bg-snow sm:-mx-6 lg:-mx-8"
-      aria-labelledby="gallery-title"
-    >
+    <section class="-mx-4 bg-snow sm:-mx-6 lg:-mx-8" aria-labelledby="gallery-title">
       <div
         class="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1fr)] lg:items-center lg:gap-14 lg:px-8 lg:py-24"
       >
         <PhotoFrame
+          v-reveal="{ variant: 'photo' }"
           src="/photos/img8.avif"
           alt="Tres ciclistas pedalean por un camino de campo al atardecer"
           ratio="4/5"
-          class="reveal-photo"
-          :class="galleryVisible ? 'is-revealed' : ''"
+          parallax
         />
 
-        <div>
+        <div v-reveal="{ delay: 100 }">
           <h2
             id="gallery-title"
             class="max-w-xl font-display text-3xl leading-[1.05] font-medium tracking-[-0.025em] text-ink sm:text-4xl"
@@ -209,14 +200,18 @@ const { isInView: bandVisible } = useInView(bandSection)
 
           <div class="mt-8 grid grid-cols-2 gap-4">
             <PhotoFrame
+              v-reveal="{ delay: 160, variant: 'photo' }"
               src="/photos/grupeta-sepia.webp"
               alt="Dos ciclistas recorren un camino rural entre campos"
               ratio="1/1"
+              parallax
             />
             <PhotoFrame
+              v-reveal="{ delay: 240, variant: 'photo' }"
               src="/photos/img10.avif"
               alt="Dos ciclistas sonríen en una carretera de costa con el océano al fondo"
               ratio="1/1"
+              parallax
             />
           </div>
 
@@ -228,7 +223,6 @@ const { isInView: bandVisible } = useInView(bandSection)
     </section>
 
     <section
-      ref="bandSection"
       class="relative isolate -mx-4 overflow-hidden bg-turf sm:-mx-6 lg:-mx-8"
       aria-labelledby="cta-title"
     >
@@ -243,7 +237,7 @@ const { isInView: bandVisible } = useInView(bandSection)
       <div
         class="relative mx-auto flex max-w-7xl flex-col gap-8 px-4 py-16 sm:px-6 sm:py-20 lg:flex-row lg:items-end lg:justify-between lg:gap-12 lg:px-8 lg:py-24"
       >
-        <div class="max-w-2xl reveal" :class="bandVisible ? 'is-revealed' : ''">
+        <div v-reveal class="max-w-2xl">
           <h2
             id="cta-title"
             class="font-display text-3xl leading-[1.05] font-medium tracking-[-0.025em] text-white sm:text-4xl"
@@ -255,10 +249,7 @@ const { isInView: bandVisible } = useInView(bandSection)
           </p>
         </div>
 
-        <div
-          class="flex flex-col gap-4 sm:flex-row sm:items-center reveal"
-          :class="bandVisible ? 'is-revealed' : ''"
-        >
+        <div v-reveal="{ delay: 120 }" class="flex flex-col gap-4 sm:flex-row sm:items-center">
           <Button :to="bandCta.to" :variant="bandCta.variant" size="lg">
             {{ bandCta.label }}
           </Button>
@@ -275,46 +266,3 @@ const { isInView: bandVisible } = useInView(bandSection)
     </section>
   </AppPage>
 </template>
-
-<style scoped>
-/* Revelado por scroll de las bandas informativas. */
-.reveal {
-  opacity: 0;
-  transform: translateY(12px);
-  transition:
-    opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.reveal.is-revealed {
-  opacity: 1;
-  transform: none;
-}
-
-.reveal-cell:nth-child(2) {
-  transition-delay: 0.08s;
-}
-
-.reveal-cell:nth-child(3) {
-  transition-delay: 0.16s;
-}
-
-.reveal-photo {
-  clip-path: inset(0 0 100% 0);
-  transition: clip-path 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.reveal-photo.is-revealed {
-  clip-path: inset(0 0 0 0);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .reveal,
-  .reveal-photo {
-    transition: none;
-    opacity: 1;
-    transform: none;
-    clip-path: none;
-  }
-}
-</style>

@@ -584,3 +584,60 @@ tests existentes; los valores siguen la paleta Cowboy.
 - `vue-tsc --build`: mismos 11 errores preexistentes (`imageUrl` en
   `mockRides.ts` y specs); ninguno en ficheros tocados.
 - `vite build` (`build-only`) correcto con Inter Variable incluida.
+
+## 2026-10-17 — Motion nativo estilo Cowboy (reveal + parallax)
+
+Efectos de scroll de la referencia Cowboy (es.cowboy.com) implementados con
+APIs nativas, sin dependencias nuevas. La interpolación de scroll tipo Lenis
+queda diferida a una pasada posterior con aprobación explícita.
+
+### Infraestructura nueva
+
+- Directiva global `v-reveal` (`src/directives/vReveal.ts`, registrada en
+  `main.ts`): añade `.reveal`/`.reveal-photo` y observa una vez con
+  IntersectionObserver; al entrar añade `is-revealed` y desconecta. Binding
+  `v-reveal="{ delay, variant }"` (o solo número para el retardo) para
+  stagger. Con `prefers-reduced-motion` o sin IO se revela al instante: el
+  contenido nunca depende de la animación.
+- CSS compartido `src/assets/reveal.css`: `.reveal` (opacity + translateY,
+  curva `cubic-bezier(0.16, 1, 0.3, 1)` a 0.7s), `.reveal-photo` (clip-path)
+  y utilidad `.parallax-layer` (translate3d vía `--parallax-y` + scale 1.1);
+  todo desactivado bajo `prefers-reduced-motion`.
+- Composable `useParallax` (`src/composables/useParallax.ts`): escribe
+  `--parallax-y` en rAF solo mientras el elemento es visible (IO con margen
+  del 20%), pasivo en scroll/resize, limpieza al desmontar; off con
+  movimiento reducido o sin IO.
+
+### Aplicación (solo páginas públicas)
+
+- `HomeView`: parallax en la foto del hero (0.35×, máx. 56px); revelados con
+  stagger en el copy del hero, cabecera y cards de features (80ms por celda),
+  galería (variant photo, delays 0/160/240), texto y CTA de la banda final.
+  Se elimina el CSS scoped de reveals y el uso previo de `useInView` en la
+  vista (el composable se mantiene para otros consumidores).
+- `PhotoFrame`: prop `parallax` (por defecto off) que aplica la capa con
+  desplazamiento lento a la imagen interna.
+- `RidesView`: cabecera y stagger de `RideCard` por índice (`% 8 × 70ms`).
+- `RideDetailView`: reveals encadenados de cabecera, portada, datos, descripción
+  y bloque de punto de encuentro.
+- Auth (`Login`, `Register`, `ForgotPassword`, `ResetPassword`), confirmación
+  de email, privacidad y 404: reveal del bloque principal.
+
+### Tests y docs
+
+- Nuevos: `vReveal.spec.ts` (7 casos) y `useParallax.spec.ts` (6 casos) con
+  IntersectionObserver y rAF mockeados.
+- `README.md`: nota de motion en la sección de design system.
+
+### Verificación
+
+- `vitest`: 262/262 en verde (44 archivos; +14 tests nuevos).
+- `npx oxlint src`, `npx eslint src` y Prettier en verde.
+- `vue-tsc --build`: mismos 11 errores preexistentes (`imageUrl`); ninguno
+  en ficheros tocados.
+- `vite build` (`build-only`) correcto.
+
+### Pendiente (aprobado por dirección, paso siguiente)
+
+- Lenis para interpolación de scroll de rueda (~2KB): init en `App.vue`,
+  `stop()` con `prefers-reduced-motion`, sin romper menú móvil ni diálogos.
