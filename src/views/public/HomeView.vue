@@ -11,7 +11,7 @@ import IconMeetup from '@/components/icons/IconMeetup.vue'
 import IconRoutes from '@/components/icons/IconRoutes.vue'
 import Button from '@/components/ui/Button.vue'
 import RideCard from '@/features/rides/components/RideCard.vue'
-import { mockRides } from '@/features/rides/data/mockRides'
+import { useRideList } from '@/features/rides/composables/useRideList'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/features/auth/stores/authStore'
 import type { ButtonVariant } from '@/design-system'
@@ -98,7 +98,15 @@ const features = [
   },
 ]
 
-const latestRides = mockRides.slice(0, 3)
+const { rides: publishedRides, isLoading: isLoadingRides } = useRideList()
+
+// Tres próximas salidas reales, ordenadas por fecha.
+const latestRides = computed(() =>
+  [...publishedRides.value]
+    .filter((ride) => new Date(ride.startsAt).getTime() >= Date.now())
+    .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime())
+    .slice(0, 3),
+)
 
 // Parallax del hero: el contenedor de fotos se desplaza un 12 % al salir de pantalla.
 const heroSection = ref<HTMLElement | null>(null)
@@ -273,7 +281,22 @@ onBeforeUnmount(() => {
           </p>
         </motion.div>
 
-        <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div
+          v-if="isLoadingRides"
+          class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+          role="status"
+          aria-live="polite"
+        >
+          <span class="sr-only">Cargando salidas…</span>
+          <div
+            v-for="n in 3"
+            :key="n"
+            class="h-[13.5rem] rounded-photo bg-surface motion-safe:animate-pulse"
+            aria-hidden="true"
+          />
+        </div>
+
+        <div v-else-if="latestRides.length > 0" class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <motion.div
             v-for="(ride, index) in latestRides"
             :key="ride.id"
@@ -296,16 +319,18 @@ onBeforeUnmount(() => {
     </section>
 
     <section
-      class="relative isolate -mx-4 overflow-hidden bg-turf sm:-mx-6 lg:-mx-8"
+      class="relative isolate -mx-4 overflow-hidden sm:-mx-6 lg:-mx-8"
       aria-labelledby="cta-title"
     >
-      <div
-        class="pointer-events-none absolute inset-0 opacity-[0.05]"
-        style="
-          background: radial-gradient(60% 80% at 85% 20%, var(--color-canvas), transparent 70%);
-        "
+      <img
+        src="/photos/salida-pista.webp"
+        alt=""
         aria-hidden="true"
+        loading="lazy"
+        decoding="async"
+        class="absolute inset-0 h-full w-full object-cover object-center"
       />
+      <div class="absolute inset-0 bg-ink/75" aria-hidden="true" />
 
       <div
         class="relative mx-auto flex max-w-7xl flex-col gap-6 px-4 py-10 sm:px-6 sm:py-12 lg:flex-row lg:items-end lg:justify-between lg:gap-12 lg:px-8 lg:py-14"
