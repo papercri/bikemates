@@ -8,11 +8,19 @@ import { RIDE_BIKE_TYPE_LABELS } from '@/features/rides/constants/rideOptions'
 import type { Ride } from '@/features/rides/types'
 import { formatRideDate, getRideDateParts } from '@/utils/dates'
 
-const props = defineProps<{
-  ride: Ride
-  /** La salida ya se celebró: se atenúa el contraste frente a las próximas rutas. */
-  past?: boolean
-}>()
+const props = withDefaults(
+  defineProps<{
+    ride: Ride
+    /** La salida ya se celebró: se atenúa el contraste frente a las próximas rutas. */
+    past?: boolean
+    /** Altura del cuerpo de la tarjeta para el ritmo visual del masonry. */
+    height?: 'md' | 'lg'
+  }>(),
+  {
+    past: false,
+    height: 'md',
+  },
+)
 
 /** Fotografías propias del proyecto para las salidas sin imagen en la base de datos. */
 const FALLBACK_COVERS = [
@@ -38,7 +46,12 @@ const dateParts = computed(() => getRideDateParts(props.ride.startsAt))
   >
     <RouterLink
       :to="{ name: 'ride-detail', params: { id: ride.id } }"
-      class="group relative flex min-h-[13.5rem] flex-col justify-between gap-6 bg-ink p-4 focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-trail sm:min-h-[15rem] sm:p-5"
+      class="group relative flex flex-col justify-between gap-6 bg-ink p-4 focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-trail sm:p-5"
+      :class="
+        height === 'lg'
+          ? 'min-h-[17rem] sm:min-h-[19.5rem]'
+          : 'min-h-[13.5rem] sm:min-h-[15rem]'
+      "
     >
       <img
         :src="cover"
