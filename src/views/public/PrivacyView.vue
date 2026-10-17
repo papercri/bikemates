@@ -17,17 +17,17 @@ useHead({
 
 <template>
   <AppPage>
-    <div>
+    <div class="mx-auto max-w-xl text-justify">
       <Typography as="h1" variant="heading-xl">Compromiso de privacidad</Typography>
 
-      <Typography variant="body-sm" tone="muted" class="mt-5">
+      <Typography variant="body-sm" tone="muted" class="mt-5 text-justify">
         Este sitio web es un proyecto personal y de carácter informativo. Tu privacidad es
         importante. Por eso, te explico cómo manejo tus datos de forma transparente:
       </Typography>
 
-      <ul class="mt-6 max-w-3xl space-y-4">
+      <ul class="mt-6 space-y-4">
         <li>
-          <Typography variant="body-sm" tone="muted">
+          <Typography variant="body-sm" tone="muted" class="text-justify">
             <Typography as="span" class="font-semibold text-ink">Registro mínimo:</Typography>
             Solo solicito tu correo electrónico cuando creas una cuenta o inicias sesión mediante
             Supabase Auth. Este dato se usa únicamente para permitir tu acceso a la plataforma.
@@ -35,7 +35,7 @@ useHead({
         </li>
 
         <li>
-          <Typography variant="body-sm" tone="muted">
+          <Typography variant="body-sm" tone="muted" class="text-justify">
             <Typography as="span" class="font-semibold text-ink">Sin fines comerciales:</Typography>
             No vendo, alquilo ni comparto tu correo electrónico ni ningún otro dato con empresas,
             marcas ni terceros con fines publicitarios o comerciales.
@@ -43,7 +43,7 @@ useHead({
         </li>
 
         <li>
-          <Typography variant="body-sm" tone="muted">
+          <Typography variant="body-sm" tone="muted" class="text-justify">
             <Typography as="span" class="font-semibold text-ink"
               >Sin cookies de rastreo:</Typography
             >
@@ -53,7 +53,7 @@ useHead({
         </li>
 
         <li>
-          <Typography variant="body-sm" tone="muted">
+          <Typography variant="body-sm" tone="muted" class="text-justify">
             <Typography as="span" class="font-semibold text-ink"
               >Seguridad de los datos:</Typography
             >
@@ -63,9 +63,9 @@ useHead({
         </li>
       </ul>
 
-      <Typography as="h2" variant="heading-sm" class="mt-10">Contacto</Typography>
+      <Typography as="h2" variant="heading-sm" class="mt-8">Contacto</Typography>
 
-      <Typography variant="body-sm" tone="muted" class="mt-3 max-w-3xl">
+      <Typography variant="body-sm" tone="muted" class="mt-3 text-justify">
         Si tienes cualquier duda sobre tu cuenta, el funcionamiento de la web o el manejo de tus
         datos, puedes ponerte en contacto conmigo a través de la siguiente dirección de correo
         electrónico:
