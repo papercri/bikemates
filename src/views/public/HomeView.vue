@@ -158,7 +158,7 @@ const { isInView: bandVisible } = useInView(bandSection)
 
         <div class="mt-10 grid gap-3 sm:grid-cols-3">
           <div
-            v-for="(feature, index) in features"
+            v-for="feature in features"
             :key="feature.title"
             class="reveal reveal-cell rounded-card border border-line bg-white p-7 shadow-card"
             :class="featuresVisible ? 'is-revealed' : ''"

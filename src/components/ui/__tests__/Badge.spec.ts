@@ -13,7 +13,7 @@ describe('Badge', () => {
     const wrapper = mount(Badge, { slots: { default: 'Intermedio' } })
 
     expect(wrapper.classes()).toContain('bg-trail/15')
-    expect(wrapper.classes()).toContain('text-trail-dark')
+    expect(wrapper.classes()).toContain('text-trail-ink')
   })
 
   it('applies the compound classes for the selected color', () => {
@@ -22,7 +22,7 @@ describe('Badge', () => {
       slots: { default: 'Intermedio' },
     })
 
-    expect(wrapper.classes()).toContain('bg-ink/10')
+    expect(wrapper.classes()).toContain('bg-ink/8')
     expect(wrapper.classes()).toContain('text-ink')
   })
 

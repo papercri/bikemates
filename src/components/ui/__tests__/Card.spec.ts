@@ -7,10 +7,10 @@ describe('Card', () => {
     const wrapper = mount(Card, { slots: { default: 'Contenido' } })
 
     expect(wrapper.element.tagName).toBe('DIV')
-    expect(wrapper.classes()).toContain('border-ink')
-    expect(wrapper.classes()).toContain('bg-canvas')
-    expect(wrapper.classes()).not.toContain('hover:bg-surface')
-    expect(wrapper.classes()).not.toContain('shadow-card')
+    expect(wrapper.classes()).toContain('border-line')
+    expect(wrapper.classes()).toContain('bg-white')
+    expect(wrapper.classes()).toContain('shadow-card')
+    expect(wrapper.classes()).not.toContain('hover:shadow-lift')
   })
 
   it('renders the requested element', () => {
@@ -28,9 +28,9 @@ describe('Card', () => {
       slots: { default: 'Contenido' },
     })
 
-    expect(wrapper.classes()).toContain('border-red-600')
+    expect(wrapper.classes()).toContain('border-red-200')
     expect(wrapper.classes()).toContain('bg-red-50')
-    expect(wrapper.classes()).not.toContain('bg-canvas')
+    expect(wrapper.classes()).not.toContain('bg-white')
   })
 
   it('adds the surface shift only when interactive', () => {
@@ -39,8 +39,8 @@ describe('Card', () => {
       slots: { default: 'Contenido' },
     })
 
-    expect(wrapper.classes()).toContain('hover:bg-surface')
-    expect(wrapper.classes()).toContain('hover:border-ink')
+    expect(wrapper.classes()).toContain('hover:shadow-lift')
+    expect(wrapper.classes()).toContain('hover:border-line-strong')
   })
 
   it('renders the slot content', () => {

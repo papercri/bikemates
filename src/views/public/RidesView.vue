@@ -74,10 +74,10 @@ const isPastTab = computed(() => timeframe.value === 'past')
           class="flex items-center gap-6 border-b border-line px-2 py-5 sm:px-4"
           aria-hidden="true"
         >
-          <div class="h-8 w-8 shrink-0 bg-surface motion-safe:animate-pulse" />
+          <div class="h-8 w-8 shrink-0 rounded-card bg-surface motion-safe:animate-pulse" />
           <div class="min-w-0 flex-1 space-y-2">
-            <div class="h-5 w-2/5 bg-surface motion-safe:animate-pulse" />
-            <div class="h-4 w-1/4 bg-surface motion-safe:animate-pulse" />
+            <div class="h-5 w-2/5 rounded-card bg-surface motion-safe:animate-pulse" />
+            <div class="h-4 w-1/4 rounded-card bg-surface motion-safe:animate-pulse" />
           </div>
         </div>
       </div>

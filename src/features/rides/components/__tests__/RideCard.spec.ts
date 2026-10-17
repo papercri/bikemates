@@ -40,7 +40,7 @@ describe('RideCard', () => {
     const badge = wrapper.findComponent(Badge)
 
     expect(badge.text()).toBe(ride.level)
-    expect(badge.classes()).toContain('bg-ink/10')
+    expect(badge.classes()).toContain('bg-ink/8')
   })
 
   it('links to the ride detail route', () => {
