@@ -284,7 +284,7 @@ function handleSubmit(): void {
           <img
             :src="imagePreviewUrl || props.initialImageUrl || ''"
             alt="Vista previa de la imagen de portada"
-            class="h-20 w-28 rounded-btn object-cover"
+            class="h-20 w-28 rounded-card border-2 border-ink object-cover"
           />
 
           <Button type="button" variant="outline" size="sm" @click="clearSelectedImage">

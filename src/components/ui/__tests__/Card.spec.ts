@@ -7,7 +7,7 @@ describe('Card', () => {
     const wrapper = mount(Card, { slots: { default: 'Contenido' } })
 
     expect(wrapper.element.tagName).toBe('DIV')
-    expect(wrapper.classes()).toContain('border-line')
+    expect(wrapper.classes()).toContain('border-ink')
     expect(wrapper.classes()).toContain('bg-canvas')
     expect(wrapper.classes()).not.toContain('hover:bg-surface')
     expect(wrapper.classes()).not.toContain('shadow-card')
@@ -28,7 +28,7 @@ describe('Card', () => {
       slots: { default: 'Contenido' },
     })
 
-    expect(wrapper.classes()).toContain('border-red-200')
+    expect(wrapper.classes()).toContain('border-red-600')
     expect(wrapper.classes()).toContain('bg-red-50')
     expect(wrapper.classes()).not.toContain('bg-canvas')
   })
@@ -40,7 +40,7 @@ describe('Card', () => {
     })
 
     expect(wrapper.classes()).toContain('hover:bg-surface')
-    expect(wrapper.classes()).toContain('hover:border-line-strong')
+    expect(wrapper.classes()).toContain('hover:border-ink')
   })
 
   it('renders the slot content', () => {

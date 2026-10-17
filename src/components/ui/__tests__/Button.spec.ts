@@ -56,12 +56,12 @@ describe('Button', () => {
     expect(wrapper.classes()).not.toContain('px-5')
   })
 
-  it('renders the primary variant with readable brand colors', () => {
+  it('renders the primary variant with AA readable colors', () => {
     const wrapper = mount(Button, { props: { variant: 'primary' } })
 
     expect(wrapper.classes()).toContain('bg-trail')
-    expect(wrapper.classes()).toContain('text-white')
-    expect(wrapper.classes()).not.toContain('text-ink')
+    expect(wrapper.classes()).toContain('text-ink')
+    expect(wrapper.classes()).toContain('border-ink')
   })
 
   it('renders the sun variants for dark surfaces', () => {
@@ -73,8 +73,8 @@ describe('Button', () => {
     const sunOutline = mount(Button, { props: { variant: 'sun-outline' } })
 
     expect(sunOutline.classes()).toContain('text-canvas')
-    expect(sunOutline.classes()).toContain('border-canvas/70')
-    expect(sunOutline.classes()).not.toContain('bg-canvas')
+    expect(sunOutline.classes()).toContain('border-canvas')
+    expect(sunOutline.classes()).toContain('bg-transparent')
   })
 
   it('renders the quiet-destructive variant as a discreet action', () => {

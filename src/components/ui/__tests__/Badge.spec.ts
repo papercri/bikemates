@@ -22,8 +22,8 @@ describe('Badge', () => {
       slots: { default: 'Intermedio' },
     })
 
-    expect(wrapper.classes()).toContain('bg-route/15')
-    expect(wrapper.classes()).toContain('text-route-dark')
+    expect(wrapper.classes()).toContain('bg-ink')
+    expect(wrapper.classes()).toContain('text-canvas')
   })
 
   it('applies muted surface classes for the muted variant', () => {

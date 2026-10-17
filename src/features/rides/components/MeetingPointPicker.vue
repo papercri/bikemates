@@ -77,14 +77,14 @@ function handleSelectPlace(place: GeocodingResult): void {
       Busca un lugar y selecciona un resultado para guardar sus coordenadas.
     </FormHelp>
 
-    <p v-if="errorMessage" role="alert" class="text-sm text-red-600">
+    <p v-if="errorMessage" role="alert" class="text-sm text-red-700">
       {{ errorMessage }}
     </p>
 
     <ul
       v-if="results.length"
       aria-label="Resultados de lugares"
-      class="divide-y divide-line overflow-hidden rounded-btn border border-line bg-canvas"
+      class="divide-y divide-line overflow-hidden rounded-card border-2 border-ink bg-canvas"
     >
       <li v-for="place in results" :key="place.id">
         <button
@@ -100,7 +100,7 @@ function handleSelectPlace(place: GeocodingResult): void {
     <div
       v-if="selectedPlace"
       role="status"
-      class="rounded-btn border border-trail/30 bg-trail/5 p-3"
+      class="rounded-card border-2 border-ink bg-trail/15 p-3"
     >
       <p class="text-sm font-semibold text-ink">Lugar seleccionado</p>
       <p class="mt-1 text-sm text-ink">

@@ -5,27 +5,27 @@
 
 @theme {
   /*
-   * Vibrant Nature con fondo blanco en página, header y footer:
-   * lima como superficie secundaria, café como tinta, escarlate como acción.
-   * El color queda en superficies, filetes y acentos, no en el lienzo.
+   * Industrial brutalism sobre papel: filete negro, naranja quemado como
+   * única llamada a la acción y bloques profundos invertidos.
+   * Paleta tomada de public/layout-black-orange.webp.
    */
-  --color-canvas: #ffffff;
-  --color-snow: #ffffff;
-  --color-surface: #f1edc3;
-  --color-line: #cec378;
-  --color-line-strong: #a1954c;
+  --color-canvas: #f7f6f3;
+  --color-snow: #f0efeb;
+  --color-surface: #e5e2d9;
+  --color-line: #0a0a0a;
+  --color-line-strong: #0a0a0a;
 
-  --color-ink: #2c1710;
-  --color-graphite: #55402f;
+  --color-ink: #0a0a0a;
+  --color-graphite: #525252;
 
-  --color-trail: #da2c38;
-  --color-trail-deep: #b8202e;
-  --color-trail-ink: #a51c2a;
-  --color-trail-dark: #84131f;
-  --color-route: #87c38f;
-  --color-route-ink: #1f6b4f;
-  --color-route-dark: #14563f;
-  --color-turf: #226f54;
+  --color-trail: #ea580c;
+  --color-trail-deep: #c2410c;
+  --color-trail-ink: #9a3412;
+  --color-trail-dark: #7c2d12;
+  --color-route: #ea580c;
+  --color-route-ink: #9a3412;
+  --color-route-dark: #7c2d12;
+  --color-turf: #0a0a0a;
 
   --animate-trail-dash: trail-dash 24s linear infinite;
 
@@ -39,12 +39,12 @@
   --font-display: 'Archivo Variable', 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, monospace;
 
-  /* Diseño lineal: esquinas rectas en toda la interfaz. */
+  /* Dos niveles declarados: los controles son píldora, el resto es esquina viva. */
   --radius-card: 0px;
-  --radius-btn: 0px;
+  --radius-btn: 9999px;
 
-  --shadow-card: 0 1px 2px rgb(44 23 16 / 0.05), 0 8px 24px rgb(44 23 16 / 0.07);
-  --shadow-lift: 0 2px 4px rgb(44 23 16 / 0.06), 0 16px 32px rgb(44 23 16 / 0.12);
+  --shadow-card: 0 0 #0000;
+  --shadow-lift: 4px 4px 0 0 #0a0a0a;
 }
 
 @layer base {
@@ -80,7 +80,7 @@
   }
 
   ::selection {
-    background: color-mix(in oklab, var(--color-trail) 28%, transparent);
+    background: color-mix(in oklab, var(--color-trail) 32%, transparent);
   }
 
   ::-webkit-scrollbar {

@@ -47,7 +47,7 @@ const frameClasses = computed(() => ratioClasses[props.ratio])
 }
 
 .photo-tint {
-  background: color-mix(in oklab, var(--color-turf) 14%, transparent);
+  background: color-mix(in oklab, var(--color-trail) 11%, transparent);
   mix-blend-mode: multiply;
 }
 

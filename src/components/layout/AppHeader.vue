@@ -32,7 +32,10 @@ const menuId = 'primary-mobile-nav'
 const menuButton = ref<HTMLButtonElement | null>(null)
 
 const menuLinkClasses =
-  'flex items-center gap-3 rounded-btn px-3 py-3 text-base text-ink transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail'
+  'flex items-center gap-3 rounded-btn px-3 py-3 font-mono text-sm uppercase tracking-[0.1em] text-ink transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink'
+
+const navLinkClasses =
+  'inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.14em] text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink'
 
 async function handleLogout(): Promise<void> {
   isLoggingOut.value = true
@@ -82,13 +85,13 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <header class="sticky top-0 z-40 border-b border-line bg-canvas text-ink">
+  <header class="sticky top-0 z-40 border-b-4 border-ink bg-canvas text-ink">
     <div
       class="mx-auto flex max-w-7xl items-center justify-between gap-x-4 px-4 py-3 sm:px-6 lg:px-8"
     >
       <RouterLink
         to="/"
-        class="flex shrink-0 items-center gap-2.5 text-xl font-bold tracking-tight text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
+        class="flex shrink-0 items-center gap-2.5 text-xl font-bold tracking-tight text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
         aria-label="BikeMates, página de inicio"
       >
         <BrandLogo />
@@ -96,18 +99,11 @@ onBeforeUnmount(() => {
       </RouterLink>
 
       <nav aria-label="Navegación principal" class="hidden items-center gap-5 sm:flex">
-        <RouterLink
-          to="/rides"
-          class="inline-flex items-center gap-2 text-sm text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
-        >
+        <RouterLink to="/rides" :class="navLinkClasses">
           <FontAwesomeIcon :icon="faBicycle" aria-hidden="true" />
           Explorar rutas
         </RouterLink>
-        <RouterLink
-          v-if="user"
-          to="/rides/create"
-          class="inline-flex items-center gap-2 text-sm text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail"
-        >
+        <RouterLink v-if="user" to="/rides/create" :class="navLinkClasses">
           <FontAwesomeIcon :icon="faCirclePlus" aria-hidden="true" />
           Publicar ruta
         </RouterLink>
@@ -144,7 +140,7 @@ onBeforeUnmount(() => {
       <button
         ref="menuButton"
         type="button"
-        class="-mr-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-btn text-lg text-ink transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trail sm:hidden"
+        class="-mr-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-btn border-2 border-transparent text-lg text-ink transition-colors hover:border-ink hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink sm:hidden"
         :aria-expanded="isMenuOpen"
         :aria-controls="menuId"
         @click="toggleMenu"
@@ -160,7 +156,7 @@ onBeforeUnmount(() => {
       leave-active-class="motion-safe:ease-in motion-safe:transition motion-safe:duration-150"
       leave-to-class="motion-safe:opacity-0"
     >
-      <div v-show="isMenuOpen" :id="menuId" class="border-t border-line bg-canvas sm:hidden">
+      <div v-show="isMenuOpen" :id="menuId" class="border-t-2 border-ink bg-canvas sm:hidden">
         <nav aria-label="Navegación principal" class="mx-auto max-w-7xl px-4 py-3 sm:px-6">
           <ul class="flex flex-col">
             <li>
@@ -177,7 +173,7 @@ onBeforeUnmount(() => {
             </li>
           </ul>
 
-          <div class="flex flex-col gap-2 border-t border-line pt-3">
+          <div class="flex flex-col gap-2 border-t-2 border-ink pt-3">
             <span v-if="!isInitialized" class="px-3 py-2 text-sm text-graphite">
               Comprobando sesión…
             </span>

@@ -27,20 +27,21 @@ const props = withDefaults(
 )
 
 const classes = createVariant({
-  base: 'inline-flex items-center justify-center gap-2 rounded-btn font-semibold transition-[color,background-color,border-color,transform] focus-visible:outline-2 focus-visible:outline-offset-2 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60 disabled:active:translate-y-0',
+  base: 'inline-flex items-center justify-center gap-2 rounded-btn font-semibold transition-[color,background-color,border-color,transform] focus-visible:outline-2 focus-visible:outline-offset-2 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60 disabled:active:translate-y-0 sm:whitespace-nowrap',
   variants: {
     variant: {
-      primary: 'bg-trail text-white hover:bg-trail-deep focus-visible:outline-ink',
-      sun: 'bg-canvas text-ink hover:bg-surface focus-visible:outline-canvas',
+      // Naranja con tinta negra: 5.9:1, cumple AA a 16px.
+      primary: 'bg-trail text-ink border-2 border-ink hover:bg-ink hover:text-canvas focus-visible:outline-ink',
+      sun: 'bg-canvas text-ink border-2 border-ink hover:bg-trail hover:text-ink focus-visible:outline-canvas',
       'sun-outline':
-        'border border-canvas/70 bg-transparent text-canvas hover:border-canvas hover:bg-canvas/12 focus-visible:outline-canvas',
+        'border-2 border-canvas bg-transparent text-canvas hover:bg-canvas hover:text-ink focus-visible:outline-canvas',
       outline:
-        'border border-line-strong bg-canvas text-ink hover:border-trail hover:text-trail-ink focus-visible:outline-trail',
+        'border-2 border-ink bg-transparent text-ink hover:bg-ink hover:text-canvas focus-visible:outline-ink',
       destructive:
-        'border border-red-300 bg-canvas text-red-700 hover:bg-red-100 focus-visible:outline-red-600',
+        'border-2 border-red-700 bg-canvas text-red-700 hover:bg-red-700 hover:text-canvas focus-visible:outline-red-700',
       // Acción destructiva de bajo peso: el color solo aparece al interactuar.
       'quiet-destructive': 'text-graphite hover:text-red-700 focus-visible:outline-red-600',
-      link: 'text-trail-ink hover:text-trail-dark focus-visible:outline-trail',
+      link: 'text-trail-ink underline-offset-4 hover:underline focus-visible:outline-ink',
     },
     size: {
       xs: 'px-2.5 py-1 text-xs',

@@ -26,7 +26,8 @@ describe('Typography', () => {
     })
 
     expect(wrapper.classes()).toContain('text-3xl')
-    expect(wrapper.classes()).toContain('font-bold')
+    expect(wrapper.classes()).toContain('font-extrabold')
+    expect(wrapper.classes()).toContain('font-display')
   })
 
   it('applies the tone classes', () => {
