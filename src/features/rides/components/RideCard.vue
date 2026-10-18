@@ -12,6 +12,8 @@ const props = defineProps<{
   ride: Ride
   /** La salida ya se celebró: se atenúa el contraste frente a las próximas rutas. */
   past?: boolean
+  /** Sin borde ni redondeado: la tarjeta se integra en un contenedor propio. */
+  bare?: boolean
 }>()
 
 /** Fotografías propias del proyecto para las salidas sin imagen en la base de datos. */
@@ -33,8 +35,8 @@ const dateParts = computed(() => getRideDateParts(props.ride.startsAt))
 
 <template>
   <article
-    class="h-full overflow-hidden rounded-photo border border-line sm:aspect-square"
-    :class="past ? 'opacity-75' : ''"
+    class="h-full overflow-hidden sm:aspect-square"
+    :class="[props.bare ? '' : 'rounded-photo border border-line', past ? 'opacity-75' : '']"
   >
     <RouterLink
       :to="{ name: 'ride-detail', params: { id: ride.id } }"

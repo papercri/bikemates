@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useHead } from '@unhead/vue'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import AppPage from '@/components/layout/AppPage.vue'
 import BrandLogo from '@/components/icons/BrandLogo.vue'
 import RidgeStrip from '@/components/icons/RidgeStrip.vue'
@@ -16,7 +17,30 @@ useHead({
 
 type ProfileTab = 'details' | 'my-rides'
 
-const activeTab = ref<ProfileTab>('details')
+/** El query es entrada no confiable: cualquier valor desconocido vuelve a "Mis datos". */
+function tabFromQuery(value: unknown): ProfileTab {
+  return value === 'my-rides' ? 'my-rides' : 'details'
+}
+
+const route = useRoute()
+const router = useRouter()
+
+const activeTab = ref<ProfileTab>(tabFromQuery(route.query.tab))
+
+// La pestaña activa vive en la URL: al volver atrás desde una ruta se restaura "Mis rutas".
+watch(activeTab, (tab) => {
+  if (tab === tabFromQuery(route.query.tab)) return
+
+  const query: Record<string, unknown> = { ...route.query }
+
+  if (tab === 'details') {
+    delete query.tab
+  } else {
+    query.tab = tab
+  }
+
+  void router.replace({ query })
+})
 
 // "Rutas guardadas" queda fuera de la navegación hasta que se implemente la función.
 const tabs: { id: ProfileTab; label: string }[] = [

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import { RouterLink } from 'vue-router'
 import { faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import IconMeetup from '@/components/icons/IconMeetup.vue'
@@ -175,23 +176,31 @@ async function confirmRideDeletion(): Promise<void> {
         v-if="visibleRides.length > 0"
         class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
       >
-        <div v-for="ride in visibleRides" :key="ride.id" class="flex flex-col gap-2">
-          <RideCard :ride="ride" :past="isRidePast(ride.startsAt)" />
+        <div
+          v-for="ride in visibleRides"
+          :key="ride.id"
+          class="flex h-full flex-col overflow-hidden rounded-photo border border-line bg-white transition-colors hover:border-line-strong"
+        >
+          <RideCard :ride="ride" bare :past="isRidePast(ride.startsAt)" class="flex-1" />
 
-          <div class="flex items-center justify-end gap-2">
-            <Button
+          <!-- Acciones discretas: dos mitades simétricas integradas al pie de la tarjeta. -->
+          <div class="grid grid-cols-2 border-t border-line bg-snow/60">
+            <RouterLink
               :to="{ name: 'ride-edit', params: { id: ride.id } }"
-              variant="outline"
-              size="sm"
+              class="flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium text-graphite transition-colors hover:bg-surface hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ink"
             >
               <FontAwesomeIcon :icon="faPenToSquare" aria-hidden="true" class="size-3.5" />
               Modificar
-            </Button>
+            </RouterLink>
 
-            <Button variant="destructive" size="sm" @click="requestRideDeletion(ride)">
+            <button
+              type="button"
+              class="flex items-center justify-center gap-1.5 border-l border-line py-2.5 text-xs font-medium text-graphite transition-colors hover:bg-red-50 hover:text-red-700 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-red-700"
+              @click="requestRideDeletion(ride)"
+            >
               <FontAwesomeIcon :icon="faTrashCan" aria-hidden="true" class="size-3.5" />
               Eliminar
-            </Button>
+            </button>
           </div>
         </div>
       </div>
