@@ -700,3 +700,17 @@ Corrección de diseño de `RideCard` (aplica en home y en `/rides`, mismo compon
 ### Verificación
 
 - `eslint`, `oxlint` y Prettier check en verde.
+
+## 2026-10-18 — RideFilters: panel plegable en móvil
+
+- En pantallas `<sm` los controles de filtrado se pliegan detrás de un botón
+  "Filtros" (icono `faSliders`, `aria-expanded`/`aria-controls`) con contador
+  de filtros activos en píldora mono y texto sr-only. En `sm+` la fila sigue
+  visible y siempre desplegada, sin cambios.
+- Los controles permanecen en el DOM (solo se alterna `display`), por lo que
+  los `defineModel` y la accesibilidad del formulario no cambian.
+- Specs: +2 casos (plegado/despliegue del panel y contador de activos).
+
+### Verificación
+
+- `vitest` RideFilters: 6/6 en verde. `eslint` y Prettier en verde.
