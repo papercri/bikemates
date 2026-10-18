@@ -4,6 +4,8 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import AppPage from '@/components/layout/AppPage.vue'
 import BrandLogo from '@/components/icons/BrandLogo.vue'
+import IconMeetup from '@/components/icons/IconMeetup.vue'
+import IconRoutes from '@/components/icons/IconRoutes.vue'
 import RidgeStrip from '@/components/icons/RidgeStrip.vue'
 import Alert from '@/components/ui/Alert.vue'
 import Button from '@/components/ui/Button.vue'
@@ -92,7 +94,7 @@ async function confirmAccountDeletion(): Promise<void> {
 
       <div class="flex items-center gap-4 p-6 pt-4 sm:p-8 sm:pt-5">
         <div
-          class="flex h-16 w-16 shrink-0 items-center justify-center rounded-card bg-surface text-ink ring-1 ring-line-strong"
+          class="flex h-16 w-16 shrink-0 items-center justify-center rounded-card bg-level-easy/10 text-ink ring-1 ring-level-easy/25"
         >
           <BrandLogo variant="simple" />
         </div>
@@ -123,7 +125,7 @@ async function confirmAccountDeletion(): Promise<void> {
         class="shrink-0 border-b border-line-strong px-4 py-3 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ink"
         :class="
           activeTab === tab.id
-            ? 'border-trail text-trail-ink'
+            ? 'border-level-easy text-level-easy-ink'
             : 'border-transparent text-graphite hover:text-ink'
         "
         @click="activeTab = tab.id"
@@ -174,6 +176,13 @@ async function confirmAccountDeletion(): Promise<void> {
       </template>
 
       <template v-else-if="tab.id === 'saved-rides'">
+        <span
+          class="mb-4 inline-flex rounded-full bg-level-easy/10 p-3 text-level-easy-ink"
+          aria-hidden="true"
+        >
+          <IconRoutes class="size-6" />
+        </span>
+
         <EmptyState
           title="Rutas guardadas"
           description="Todavía no has guardado ninguna ruta. Las que marques desde Explorar rutas aparecerán aquí."
@@ -183,6 +192,13 @@ async function confirmAccountDeletion(): Promise<void> {
       </template>
 
       <template v-else>
+        <span
+          class="mb-4 inline-flex rounded-full bg-level-medium/10 p-3 text-level-medium"
+          aria-hidden="true"
+        >
+          <IconMeetup class="size-6" />
+        </span>
+
         <EmptyState
           title="Rutas publicadas"
           description="Todavía no has publicado ninguna ruta. Crea la primera y aparecerá aquí."
