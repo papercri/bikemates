@@ -15,23 +15,28 @@ test.describe('profile', () => {
     await expect(page.getByRole('tab', { name: 'Rutas guardadas' })).toHaveCount(0)
   })
 
-  test('shows the account deletion warning on the details tab', async ({ page, supabase }) => {
+  test('shows the account data sections on the details tab', async ({ page, supabase }) => {
     supabase.state.users.push(ORGANIZER)
     await supabase.signInAs(ORGANIZER)
 
     await page.goto('/profile')
 
+    const panel = page.getByRole('tabpanel', { name: 'Mis datos' })
+
+    await expect(panel.getByRole('heading', { name: 'Foto de perfil' })).toBeVisible()
+    await expect(panel.getByRole('heading', { name: 'Nombre' })).toBeVisible()
+    await expect(panel.getByRole('heading', { name: 'Correo electrónico' })).toBeVisible()
+    await expect(panel.getByRole('heading', { name: 'Contraseña' })).toBeVisible()
+
+    await expect(panel.getByRole('textbox', { name: 'Nombre' })).toHaveValue('Ana Pedal')
+    await expect(panel.getByText('ana@example.com')).toBeVisible()
+
     await expect(
-      page.getByText(
-        'La edición de tus datos personales estará disponible en una próxima versión.',
-      ),
-    ).toBeVisible()
-    await expect(
-      page.getByText(
+      panel.getByText(
         'Eliminar tu cuenta borra de forma permanente tu perfil y tus datos asociados. Esta acción es irreversible.',
       ),
     ).toBeVisible()
-    await expect(page.getByRole('button', { name: 'Eliminar mi cuenta' })).toBeVisible()
+    await expect(panel.getByRole('button', { name: 'Eliminar mi cuenta' })).toBeVisible()
   })
 
   test('switches between the details and my rides tabs', async ({ page, supabase }) => {

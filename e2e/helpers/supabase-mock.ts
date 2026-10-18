@@ -34,6 +34,14 @@ export interface DbRide {
   updated_at: string
 }
 
+export interface DbProfile {
+  id: string
+  display_name: string
+  avatar_url: string | null
+  created_at: string
+  updated_at: string
+}
+
 export interface DbParticipant {
   ride_id: string
   user_id: string
@@ -58,6 +66,7 @@ export interface MockState {
   /** Usuario con sesión activa; `null` para visitantes anónimos. */
   currentUser: E2eUser | null
   rides: DbRide[]
+  profiles: DbProfile[]
   participants: DbParticipant[]
   places: PlaceResult[]
   /** Indica si el registro devuelve sesión activa o exige confirmación por email. */
@@ -187,6 +196,7 @@ export async function mockSupabase(page: Page): Promise<SupabaseMock> {
     users: [],
     currentUser: null,
     rides: [],
+    profiles: [],
     participants: [],
     places: [],
     signUpCreatesSession: false,
@@ -558,7 +568,78 @@ export async function mockSupabase(page: Page): Promise<SupabaseMock> {
     }
 
     if (path === `${REST_PATH}profiles`) {
-      return fulfill(route, json([]))
+      const body = ((): Record<string, unknown> | null => {
+        try {
+          return route.request().postDataJSON()
+        } catch {
+          return null
+        }
+      })()
+      const now = new Date().toISOString()
+
+      if (method === 'GET') {
+        const id = requestUrl.searchParams.get('id')?.replace('eq.', '') ?? ''
+        const rows = state.profiles.filter((profile) => profile.id === id)
+
+        // maybeSingle espera un array; single espera el objeto directamente.
+        if (accept.includes('vnd.pgrst.object')) {
+          const row = rows[0]
+
+          if (!row) {
+            return fulfill(
+              route,
+              json({ code: 'PGRST116', message: 'Results contain 0 rows' }, 406),
+            )
+          }
+
+          return fulfill(route, json(row))
+        }
+
+        return fulfill(route, json(rows))
+      }
+
+      if (method === 'POST') {
+        const created: DbProfile = {
+          avatar_url: null,
+          created_at: now,
+          updated_at: now,
+          ...(body as Partial<DbProfile> | null),
+        } as DbProfile
+
+        const existing = state.profiles.findIndex((profile) => profile.id === created.id)
+
+        if (existing >= 0) {
+          state.profiles[existing] = created
+        } else {
+          state.profiles.push(created)
+        }
+
+        if (accept.includes('vnd.pgrst.object')) {
+          return fulfill(route, json(created))
+        }
+
+        return fulfill(route, json([created]))
+      }
+
+      if (method === 'PATCH') {
+        const id = requestUrl.searchParams.get('id')?.replace('eq.', '') ?? ''
+        const target = state.profiles.find((profile) => profile.id === id)
+
+        if (!target) {
+          if (accept.includes('nulls=stripped')) {
+            return fulfill(route, json([]))
+          }
+          return fulfill(route, json({ code: 'PGRST116', message: 'No rows' }, 406))
+        }
+
+        Object.assign(target, body ?? {}, { updated_at: now })
+
+        if (accept.includes('vnd.pgrst.object')) {
+          return fulfill(route, json(target))
+        }
+
+        return fulfill(route, json([target]))
+      }
     }
 
     return false
