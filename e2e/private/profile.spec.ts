@@ -10,8 +10,9 @@ test.describe('profile', () => {
 
     await expect(page.getByRole('heading', { level: 1, name: 'Mi perfil' })).toBeVisible()
     await expect(page.getByRole('tab', { name: 'Mis datos' })).toBeVisible()
-    await expect(page.getByRole('tab', { name: 'Rutas guardadas' })).toBeVisible()
-    await expect(page.getByRole('tab', { name: 'Rutas publicadas' })).toBeVisible()
+    await expect(page.getByRole('tab', { name: 'Mis rutas' })).toBeVisible()
+    // La pestaña de rutas guardadas queda oculta hasta su implementación.
+    await expect(page.getByRole('tab', { name: 'Rutas guardadas' })).toHaveCount(0)
   })
 
   test('shows the account deletion warning on the details tab', async ({ page, supabase }) => {
@@ -33,20 +34,20 @@ test.describe('profile', () => {
     await expect(page.getByRole('button', { name: 'Eliminar mi cuenta' })).toBeVisible()
   })
 
-  test('switches between the saved and published rides tabs', async ({ page, supabase }) => {
+  test('switches between the details and my rides tabs', async ({ page, supabase }) => {
     supabase.state.users.push(ORGANIZER)
     await supabase.signInAs(ORGANIZER)
 
     await page.goto('/profile')
 
-    await page.getByRole('tab', { name: 'Rutas guardadas' }).click()
-    await expect(page.locator('#panel-saved-rides')).toBeVisible()
-    await expect(page.getByText('Todavía no has guardado ninguna ruta.')).toBeVisible()
+    await page.getByRole('tab', { name: 'Mis rutas' }).click()
+    await expect(page.locator('#panel-my-rides')).toBeVisible()
+    await expect(page.getByText('Todavía no has publicado ninguna ruta.')).toBeVisible()
     await expect(page.locator('#panel-details')).toBeHidden()
 
-    await page.getByRole('tab', { name: 'Rutas publicadas' }).click()
-    await expect(page.locator('#panel-published-rides')).toBeVisible()
-    await expect(page.getByText('Todavía no has publicado ninguna ruta.')).toBeVisible()
+    await page.getByRole('tab', { name: 'Mis datos' }).click()
+    await expect(page.locator('#panel-details')).toBeVisible()
+    await expect(page.locator('#panel-my-rides')).toBeHidden()
   })
 
   test('supports arrow-key navigation between tabs', async ({ page, supabase }) => {
@@ -59,10 +60,15 @@ test.describe('profile', () => {
     await detailsTab.focus()
     await page.keyboard.press('ArrowRight')
 
-    await expect(page.getByRole('tab', { name: 'Rutas guardadas' })).toHaveAttribute(
+    await expect(page.getByRole('tab', { name: 'Mis rutas' })).toHaveAttribute(
       'aria-selected',
       'true',
     )
+
+    // Con dos pestañas, ArrowRight en la última vuelve a la primera.
+    await page.keyboard.press('ArrowRight')
+
+    await expect(detailsTab).toHaveAttribute('aria-selected', 'true')
   })
 
   test('deletes the account and returns home', async ({ page, supabase }) => {
@@ -127,25 +133,15 @@ test.describe('profile', () => {
     await expect(page).toHaveURL('/profile')
   })
 
-  test('links from the empty states to the public rides and the create form', async ({
-    page,
-    supabase,
-  }) => {
+  test('links from the my rides empty state to the create form', async ({ page, supabase }) => {
     supabase.state.users.push(ORGANIZER)
     await supabase.signInAs(ORGANIZER)
 
     await page.goto('/profile')
 
-    const savedPanel = page.getByRole('tabpanel', { name: 'Rutas guardadas' })
-    await page.getByRole('tab', { name: 'Rutas guardadas' }).click()
-    await expect(savedPanel.getByRole('link', { name: 'Explorar rutas' })).toHaveAttribute(
-      'href',
-      '/rides',
-    )
-
-    const publishedPanel = page.getByRole('tabpanel', { name: 'Rutas publicadas' })
-    await page.getByRole('tab', { name: 'Rutas publicadas' }).click()
-    await expect(publishedPanel.getByRole('link', { name: 'Publicar ruta' })).toHaveAttribute(
+    const myRidesPanel = page.getByRole('tabpanel', { name: 'Mis rutas' })
+    await page.getByRole('tab', { name: 'Mis rutas' }).click()
+    await expect(myRidesPanel.getByRole('link', { name: 'Publicar ruta' })).toHaveAttribute(
       'href',
       '/rides/create',
     )

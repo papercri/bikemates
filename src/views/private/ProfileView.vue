@@ -5,7 +5,6 @@ import { useRouter } from 'vue-router'
 import AppPage from '@/components/layout/AppPage.vue'
 import BrandLogo from '@/components/icons/BrandLogo.vue'
 import IconMeetup from '@/components/icons/IconMeetup.vue'
-import IconRoutes from '@/components/icons/IconRoutes.vue'
 import RidgeStrip from '@/components/icons/RidgeStrip.vue'
 import Alert from '@/components/ui/Alert.vue'
 import Button from '@/components/ui/Button.vue'
@@ -20,7 +19,7 @@ useHead({
   meta: [{ name: 'robots', content: 'noindex, nofollow' }],
 })
 
-type ProfileTab = 'details' | 'saved-rides' | 'published-rides'
+type ProfileTab = 'details' | 'my-rides'
 
 const activeTab = ref<ProfileTab>('details')
 const isDeletingAccount = ref(false)
@@ -30,10 +29,10 @@ const deleteAccountError = ref('')
 const authStore = useAuthStore()
 const router = useRouter()
 
+// "Rutas guardadas" queda fuera de la navegación hasta que se implemente la función.
 const tabs: { id: ProfileTab; label: string }[] = [
   { id: 'details', label: 'Mis datos' },
-  { id: 'saved-rides', label: 'Rutas guardadas' },
-  { id: 'published-rides', label: 'Rutas publicadas' },
+  { id: 'my-rides', label: 'Mis rutas' },
 ]
 
 function handleTabKeydown(event: KeyboardEvent, index: number): void {
@@ -175,22 +174,6 @@ async function confirmAccountDeletion(): Promise<void> {
         </div>
       </template>
 
-      <template v-else-if="tab.id === 'saved-rides'">
-        <span
-          class="mb-4 inline-flex rounded-full bg-level-easy/10 p-3 text-level-easy-ink"
-          aria-hidden="true"
-        >
-          <IconRoutes class="size-6" />
-        </span>
-
-        <EmptyState
-          title="Rutas guardadas"
-          description="Todavía no has guardado ninguna ruta. Las que marques desde Explorar rutas aparecerán aquí."
-        >
-          <Button to="/rides" variant="outline">Explorar rutas</Button>
-        </EmptyState>
-      </template>
-
       <template v-else>
         <span
           class="mb-4 inline-flex rounded-full bg-level-medium/10 p-3 text-level-medium"
@@ -200,7 +183,7 @@ async function confirmAccountDeletion(): Promise<void> {
         </span>
 
         <EmptyState
-          title="Rutas publicadas"
+          title="Mis rutas"
           description="Todavía no has publicado ninguna ruta. Crea la primera y aparecerá aquí."
         >
           <Button to="/rides/create">Publicar ruta</Button>
