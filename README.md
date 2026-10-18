@@ -24,12 +24,22 @@ BikeMates es una SPA **mobile-first** construida con Vue 3 y TypeScript estricto
 - **Inicio y cierre de sesión** con Supabase Auth; el header refleja el estado de sesión en tiempo real.
 - **Confirmación de correo** en `/auth/confirm`.
 - **Recuperación y restablecimiento de contraseña** (flujos `/forgot-password` y `/reset-password`, con detección de sesión de recuperación).
-- **Perfil autenticado** con pestañas accesibles (detalles, rutas guardadas y publicadas), cierre de sesión y **borrado de cuenta** mediante Edge Function `delete-account`.
+- **Perfil autenticado** con dos pestañas sincronizadas con la URL (`/profile` y
+  `/profile?tab=my-rides`): **Mis datos** (avatar, nombre, email en solo lectura,
+  cambio de contraseña y **borrado de cuenta** mediante Edge Function `delete-account`)
+  y **Mis rutas** (buscador sin mayúsculas ni tildes, orden por fecha/distancia/desnivel,
+  rejilla con tarjetas y acciones **Modificar**/**Eliminar** integradas en cada tarjeta,
+  con confirmación modal antes de borrar).
 
 ### Páginas y infraestructura
 
 - Landing pública con hero a pantalla completa (zoom de entrada y parallax al scroll), header transparente superpuesto, CTA, **política de privacidad** y **404** con `noindex`.
 - Header con navegación principal y footer global en todas las vistas con shell.
+- Navegación auxiliar: **breadcrumb** (`AppBreadcrumb`, alimentado por `meta.breadcrumb`
+  del router, con la pestaña activa del perfil reflejada en la URL) y **barra de volver**
+  (`AppBackBar`, historial del navegador con salida de respaldo) en las vistas
+  internas; preloader gráfico compartido (`BikeLoader`, bici animada con rastro)
+  para los estados de carga de rutas y perfil.
 - Título y meta por ruta con `@unhead/vue`: la ruta de detalle genera un título dinámico y el perfil es `noindex`.
 - Favicon SVG propio (marca sin texto) en `public/favicon.svg`.
 
@@ -111,14 +121,19 @@ src/
     ui/                    # primitivos: Button, Input, Textarea, Card, Badge, Alert,
                            # Typography, EmptyState, ConfirmDialog (modal de
                            # confirmación), FormLabel, FormError, FormHelp,
-                           # FormSelect, FormSelectField, PasswordInput
-    layout/                # AppHeader, AppFooter, AppPage (shell de página)
+                           # FormSelect, FormSelectField, PasswordInput, BikeLoader
+    layout/                # AppHeader, AppFooter, AppPage (shell de página),
+                           # AppBreadcrumb, AppBackBar, CookieBanner
     icons/                 # BrandLogo, RidgeStrip, CyclistScene, RidgeDivider,
                            # HeroBackdrop, Icon*
   features/
     auth/                  # components (AuthCard), composables (useAuthForm),
                            # services (Supabase Auth), stores (authStore),
                            # utils (emailLinkParams), validators
+    profile/               # components (ProfileDetailsTab, ProfileMyRidesTab,
+                           # ProfileAvatarField, ProfileNameForm, ProfilePasswordForm,
+                           # ProfileDeleteAccount), composables, services
+                           # (profileService), validators y types
     rides/                 # types, components (RideCard, RideFilters,
                            # RideTimeframeTabs, RideForm…), composables
                            # (useRideFilters, useRideList, useRideDetail…),
@@ -171,6 +186,6 @@ Separación de responsabilidades: las vistas orquestan, los componentes presenta
 
 ## Calidad y tests
 
-- **Unit**: `npm run test:unit` — 248 tests en 42 archivos (design system, validadores, servicios y composables de rutas, servicio de autenticación, store de sesión, primitivos de UI, filtros del listado e iconos SVG).
-- **E2E**: `npm run test:e2e` — Playwright (configurado en `playwright.config.ts`).
+- **Unit**: `npm run test:unit` — 525 tests en 78 archivos (design system, validadores, servicios y composables de rutas, servicio de autenticación, store de sesión, primitivos de UI, filtros del listado, iconos SVG, pestañas del perfil, vistas privadas y componentes de navegación).
+- **E2E**: `npm run test:e2e` — Playwright en Chromium y móvil (138 tests en verde: autenticación, perfil, creación de ruta, listado, detalle y navegación).
 - Gates antes de dar por completa una tarea: `npm run test:unit -- --run`, `npm run type-check`, `npx eslint .`, `npx oxlint .`, Prettier y, cuando toca, `npm run build`.
