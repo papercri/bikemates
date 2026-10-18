@@ -36,7 +36,10 @@ test.describe('ride detail', () => {
     await expect(
       page.getByRole('heading', { level: 1, name: 'No se ha podido cargar la ruta' }),
     ).toBeVisible()
-    await expect(page.getByRole('link', { name: 'Ver todas las rutas' })).toBeVisible()
+    // Hay dos accesos: el de la barra superior y el del estado de error.
+    await expect(
+      page.getByRole('link', { name: 'Ver todas las rutas' }).first(),
+    ).toBeVisible()
   })
 
   test('lets an authenticated non-participant join the ride', async ({ page, supabase }) => {
