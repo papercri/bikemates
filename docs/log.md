@@ -736,3 +736,21 @@ Corrección de diseño de `RideCard` (aplica en home y en `/rides`, mismo compon
 
 - `vitest` 196/196 (+2 en Badge.spec), `eslint`/`oxlint`, Prettier y
   `type-check` en verde.
+
+## 2026-10-18 — Filtros móvil: botón circular solo-icono sticky bajo la header
+
+- El toggle de filtros en `<sm` pasa de botón de texto completo a botón
+  circular de 40 px solo con icono (`faSliders`), alineado a la izquierda y
+  con `sticky top-[4.5rem] z-30` (la header sticky mide ~4.25rem): queda
+  siempre accesible al hacer scroll en `/rides`.
+- Elegancia Cowboy: fondo `canvas/90` + `backdrop-blur` y `shadow-card`
+  (elevación por sombra, sin borde); al desplegar se invierte a losa
+  (`bg-ink text-canvas`) como estado visible del toggle.
+- Contador de filtros activos en píldora mono minúscula (invierte con el
+  botón) más texto sr-only "(N activos)" para lectores de pantalla.
+- El panel mantiene los controles en el DOM (solo alterna `display`) y en
+  `sm+` sigue desplegado como hasta ahora.
+
+### Verificación
+
+- `vitest` 196/196, `eslint`/`oxlint`, Prettier y `type-check` en verde.

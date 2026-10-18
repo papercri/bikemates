@@ -34,18 +34,24 @@ const activeFilterCount = computed(() => {
 
 <template>
   <div>
+    <!-- Botón de filtros en móvil: circular, a la izquierda y sticky bajo la header. -->
     <button
       type="button"
-      class="flex w-full items-center justify-center gap-2 rounded-btn border border-ink bg-white px-4 py-2 text-sm font-semibold text-ink transition-colors hover:bg-snow focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink sm:hidden"
+      class="sticky top-[4.5rem] z-30 flex size-10 items-center justify-center rounded-full shadow-card transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink sm:hidden"
+      :class="
+        isExpanded ? 'bg-ink text-canvas' : 'bg-canvas/90 text-ink backdrop-blur-sm hover:bg-snow'
+      "
       :aria-expanded="isExpanded"
       aria-controls="ride-filters-panel"
       @click="isExpanded = !isExpanded"
     >
+      <span class="sr-only">Filtros</span>
       <FontAwesomeIcon :icon="faSliders" aria-hidden="true" class="size-4" />
-      Filtros
+
       <span
         v-if="activeFilterCount > 0"
-        class="inline-flex size-5 items-center justify-center rounded-full bg-ink font-mono text-[0.65rem] font-semibold text-canvas tabular-nums"
+        class="absolute -top-0.5 -right-0.5 flex min-w-4 items-center justify-center rounded-full px-0.5 font-mono text-[0.6rem] font-semibold tabular-nums"
+        :class="isExpanded ? 'bg-canvas text-ink' : 'bg-ink text-canvas'"
         aria-hidden="true"
       >
         {{ activeFilterCount }}
@@ -58,7 +64,7 @@ const activeFilterCount = computed(() => {
     <!-- Sin labels visibles: el significado vive en el placeholder de cada control. -->
     <div
       id="ride-filters-panel"
-      class="grid-cols-2 gap-2 [&_input]:text-sm [&_select]:text-sm sm:flex sm:items-center sm:gap-2"
+      class="mt-2 grid-cols-2 gap-2 [&_input]:text-sm [&_select]:text-sm sm:mt-0 sm:flex sm:items-center sm:gap-2"
       :class="isExpanded ? 'grid' : 'hidden'"
     >
       <div class="col-span-2 sm:w-44">
