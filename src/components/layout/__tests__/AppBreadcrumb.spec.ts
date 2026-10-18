@@ -3,16 +3,19 @@ import { describe, expect, it } from 'vitest'
 import { createRouter, createWebHistory } from 'vue-router'
 import AppBreadcrumb from '../AppBreadcrumb.vue'
 
-async function mountBreadcrumb(path: string, meta?: Record<string, unknown>) {
+async function mountBreadcrumb(
+  location: string | { path: string; query?: Record<string, string> },
+  meta?: Record<string, unknown>,
+) {
   const router = createRouter({
     history: createWebHistory(),
     routes: [
       { path: '/', name: 'home', component: { template: '<div />' } },
       { path: '/rides', name: 'rides', component: { template: '<div />' }, meta },
-      { path: '/profile', name: 'profile', component: { template: '<div />' } },
+      { path: '/profile', name: 'profile', component: { template: '<div />' }, meta },
     ],
   })
-  await router.push(path)
+  await router.push(location)
   await router.isReady()
 
   return mount(AppBreadcrumb, { global: { plugins: [router] } })
@@ -21,10 +24,7 @@ async function mountBreadcrumb(path: string, meta?: Record<string, unknown>) {
 describe('AppBreadcrumb', () => {
   it('renders the trail defined in the route meta with the last item as current page', async () => {
     const wrapper = await mountBreadcrumb('/rides', {
-      breadcrumb: [
-        { label: 'Inicio', to: '/' },
-        { label: 'Explorar rutas' },
-      ],
+      breadcrumb: [{ label: 'Inicio', to: '/' }, { label: 'Explorar rutas' }],
     })
 
     const links = wrapper.findAll('a')
@@ -45,12 +45,12 @@ describe('AppBreadcrumb', () => {
   })
 
   it('appends the active profile tab reflected in the URL', async () => {
-    const wrapper = await mountBreadcrumb('/profile?tab=my-rides', {
-      breadcrumb: [
-        { label: 'Inicio', to: '/' },
-        { label: 'Mi perfil' },
-      ],
-    })
+    const wrapper = await mountBreadcrumb(
+      { path: '/profile', query: { tab: 'my-rides' } },
+      {
+        breadcrumb: [{ label: 'Inicio', to: '/' }, { label: 'Mi perfil' }],
+      },
+    )
 
     expect(wrapper.text()).toContain('Mi perfil')
     expect(wrapper.get('[aria-current="page"]').text()).toBe('Mis rutas')

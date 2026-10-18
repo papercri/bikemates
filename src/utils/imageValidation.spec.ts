@@ -36,7 +36,9 @@ describe('validateImageFile', () => {
   })
 
   it('rejects images above the 5 MB limit', () => {
-    expect(validateImageFile(imageOf('image/png', MAX_IMAGE_SIZE + 1))).toBe(IMAGE_TOO_LARGE_MESSAGE)
+    expect(validateImageFile(imageOf('image/png', MAX_IMAGE_SIZE + 1))).toBe(
+      IMAGE_TOO_LARGE_MESSAGE,
+    )
   })
 
   it('rejects empty files that carry an allowed type', () => {

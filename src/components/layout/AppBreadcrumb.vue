@@ -51,7 +51,11 @@ const items = computed<BreadcrumbItem[]>(() => {
           {{ item.label }}
         </RouterLink>
 
-        <span v-else aria-current="page" class="text-ink">
+        <span
+          v-else
+          :aria-current="index === items.length - 1 ? 'page' : undefined"
+          :class="index === items.length - 1 ? 'text-ink' : 'text-graphite'"
+        >
           {{ item.label }}
         </span>
 

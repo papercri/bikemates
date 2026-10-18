@@ -21,10 +21,7 @@ const router = createRouter({
       name: 'rides',
       component: RidesView,
       meta: {
-        breadcrumb: [
-          { label: 'Inicio', to: '/' },
-          { label: 'Explorar rutas' },
-        ],
+        breadcrumb: [{ label: 'Inicio', to: '/' }, { label: 'Explorar rutas' }],
       },
     },
     {
@@ -44,10 +41,7 @@ const router = createRouter({
       name: 'register',
       component: RegisterView,
       meta: {
-        breadcrumb: [
-          { label: 'Inicio', to: '/' },
-          { label: 'Crear cuenta' },
-        ],
+        breadcrumb: [{ label: 'Inicio', to: '/' }, { label: 'Crear cuenta' }],
       },
     },
     {
@@ -55,10 +49,7 @@ const router = createRouter({
       name: 'login',
       component: () => import('@/views/public/LoginView.vue'),
       meta: {
-        breadcrumb: [
-          { label: 'Inicio', to: '/' },
-          { label: 'Iniciar sesión' },
-        ],
+        breadcrumb: [{ label: 'Inicio', to: '/' }, { label: 'Iniciar sesión' }],
       },
     },
     {
@@ -66,10 +57,7 @@ const router = createRouter({
       name: 'reset-password',
       component: () => import('@/views/public/ResetPasswordView.vue'),
       meta: {
-        breadcrumb: [
-          { label: 'Inicio', to: '/' },
-          { label: 'Restablecer contraseña' },
-        ],
+        breadcrumb: [{ label: 'Inicio', to: '/' }, { label: 'Restablecer contraseña' }],
       },
     },
     {
@@ -77,10 +65,7 @@ const router = createRouter({
       name: 'forgot-password',
       component: () => import('@/views/public/ForgotPasswordView.vue'),
       meta: {
-        breadcrumb: [
-          { label: 'Inicio', to: '/' },
-          { label: 'Recuperar contraseña' },
-        ],
+        breadcrumb: [{ label: 'Inicio', to: '/' }, { label: 'Recuperar contraseña' }],
       },
     },
     {
@@ -89,10 +74,7 @@ const router = createRouter({
       component: ProfileView,
       meta: {
         requiresAuth: true,
-        breadcrumb: [
-          { label: 'Inicio', to: '/' },
-          { label: 'Mi perfil' },
-        ],
+        breadcrumb: [{ label: 'Inicio', to: '/' }, { label: 'Mi perfil' }],
       },
     },
     {
@@ -105,10 +87,7 @@ const router = createRouter({
       name: 'privacy',
       component: () => import('@/views/public/PrivacyView.vue'),
       meta: {
-        breadcrumb: [
-          { label: 'Inicio', to: '/' },
-          { label: 'Privacidad' },
-        ],
+        breadcrumb: [{ label: 'Inicio', to: '/' }, { label: 'Privacidad' }],
       },
     },
     {
