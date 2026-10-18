@@ -5,6 +5,7 @@ import { useHead } from '@unhead/vue'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import AppBackBar from '@/components/layout/AppBackBar.vue'
+import type { BreadcrumbItem } from '@/components/layout/AppBreadcrumb.vue'
 import AppPage from '@/components/layout/AppPage.vue'
 import Badge from '@/components/ui/Badge.vue'
 import BikeLoader from '@/components/ui/BikeLoader.vue'
@@ -111,10 +112,17 @@ useHead({
     ride.value ? `${ride.value.title} | BikeMates` : 'Detalle de ruta | BikeMates',
   ),
 })
+
+// La última miga es el título real de la ruta; AppBreadcrumb la muestra acortada.
+const rideBreadcrumb = computed<BreadcrumbItem[] | undefined>(() =>
+  ride.value
+    ? [{ label: 'Inicio', to: '/' }, { label: 'Rutas', to: '/rides' }, { label: ride.value.title }]
+    : undefined,
+)
 </script>
 
 <template>
-  <AppPage>
+  <AppPage :breadcrumb="rideBreadcrumb">
     <AppBackBar fallback="/rides" show-all-rides-link />
 
     <BikeLoader v-if="isLoading" class="mt-8" label="Cargando los detalles de la ruta…" />

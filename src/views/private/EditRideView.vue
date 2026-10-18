@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import RideForm from '@/features/rides/components/RideForm.vue'
 import AppBackBar from '@/components/layout/AppBackBar.vue'
+import type { BreadcrumbItem } from '@/components/layout/AppBreadcrumb.vue'
 import AppPage from '@/components/layout/AppPage.vue'
 import Alert from '@/components/ui/Alert.vue'
 import BikeLoader from '@/components/ui/BikeLoader.vue'
@@ -55,6 +56,13 @@ const deleteDialogTitle = computed(() =>
   ride.value ? `¿Eliminar «${ride.value.title}»?` : '¿Eliminar esta ruta?',
 )
 
+// La última miga es el título real de la ruta; AppBreadcrumb la muestra acortada.
+const rideBreadcrumb = computed<BreadcrumbItem[] | undefined>(() =>
+  ride.value
+    ? [{ label: 'Inicio', to: '/' }, { label: 'Rutas', to: '/rides' }, { label: ride.value.title }]
+    : undefined,
+)
+
 function requestRideDeletion(): void {
   if (isDeletingRide.value) return
   deleteRideError.value = ''
@@ -86,7 +94,7 @@ async function confirmRideDeletion(): Promise<void> {
 </script>
 
 <template>
-  <AppPage spacing="compact">
+  <AppPage spacing="compact" :breadcrumb="rideBreadcrumb">
     <div class="mx-auto max-w-3xl">
       <header class="mb-5">
         <AppBackBar fallback="/rides" show-all-rides-link />

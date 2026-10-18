@@ -6,6 +6,7 @@ import AppBreadcrumb from '../AppBreadcrumb.vue'
 async function mountBreadcrumb(
   location: string | { path: string; query?: Record<string, string> },
   meta?: Record<string, unknown>,
+  props?: { items?: { label: string; to?: string }[] },
 ) {
   const router = createRouter({
     history: createWebHistory(),
@@ -18,7 +19,7 @@ async function mountBreadcrumb(
   await router.push(location)
   await router.isReady()
 
-  return mount(AppBreadcrumb, { global: { plugins: [router] } })
+  return mount(AppBreadcrumb, { global: { plugins: [router] }, props })
 }
 
 describe('AppBreadcrumb', () => {
@@ -54,5 +55,24 @@ describe('AppBreadcrumb', () => {
 
     expect(wrapper.text()).toContain('Mi perfil')
     expect(wrapper.get('[aria-current="page"]').text()).toBe('Mis rutas')
+  })
+
+  it('overrides the route meta trail with the items prop and truncates long labels', async () => {
+    const title = 'Vuelta por Collserola al atardecer con la grupeta'
+    const wrapper = await mountBreadcrumb(
+      '/rides',
+      { breadcrumb: [{ label: 'Inicio', to: '/' }, { label: 'Detalle de ruta' }] },
+      {
+        items: [{ label: 'Inicio', to: '/' }, { label: 'Rutas', to: '/rides' }, { label: title }],
+      },
+    )
+
+    // La última miga es un span (sin enlace): RouterLink añade su propio
+    // aria-current cuando la ruta coincide exactamente con el enlace.
+    const current = wrapper.get('span[aria-current="page"]')
+    expect(current.text()).toBe(title)
+    expect(current.attributes('title')).toBe(title)
+    expect(current.classes()).toContain('truncate')
+    expect(wrapper.findAll('a').map((link) => link.text())).toEqual(['Inicio', 'Rutas'])
   })
 })

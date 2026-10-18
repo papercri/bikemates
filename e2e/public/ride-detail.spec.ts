@@ -11,6 +11,10 @@ test.describe('ride detail', () => {
     await expect(
       page.getByRole('heading', { level: 1, name: 'Vuelta por Collserola' }),
     ).toBeVisible()
+    // Las migas terminan en el título real de la ruta (acortado con elipsis en CSS).
+    await expect(page.getByRole('navigation', { name: 'Migas de pan' })).toContainText(
+      'Vuelta por Collserola',
+    )
     // El punto de encuentro aparece en la cabecera y en la sección de mapa.
     await expect(page.getByText('Plaça de l’Església, Barcelona').first()).toBeVisible()
     await expect(page.getByText('32', { exact: true }).first()).toBeVisible()
@@ -37,9 +41,7 @@ test.describe('ride detail', () => {
       page.getByRole('heading', { level: 1, name: 'No se ha podido cargar la ruta' }),
     ).toBeVisible()
     // Hay dos accesos: el de la barra superior y el del estado de error.
-    await expect(
-      page.getByRole('link', { name: 'Ver todas las rutas' }).first(),
-    ).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Ver todas las rutas' }).first()).toBeVisible()
   })
 
   test('lets an authenticated non-participant join the ride', async ({ page, supabase }) => {

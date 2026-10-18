@@ -1,11 +1,15 @@
-<script setup lang="ts">
-import { computed } from 'vue'
-import { RouterLink, useRoute, type RouteLocationRaw } from 'vue-router'
+<script lang="ts">
+import type { RouteLocationRaw } from 'vue-router'
 
-interface BreadcrumbItem {
+export interface BreadcrumbItem {
   label: string
   to?: RouteLocationRaw
 }
+</script>
+
+<script setup lang="ts">
+import { computed } from 'vue'
+import { RouterLink, useRoute } from 'vue-router'
 
 const props = defineProps<{
   /** Sobrescribe las migas derivadas de la ruta (p. ej. con el título de una ruta). */
@@ -46,7 +50,8 @@ const items = computed<BreadcrumbItem[]>(() => {
         <RouterLink
           v-if="item.to"
           :to="item.to"
-          class="transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+          :title="item.label"
+          class="max-w-[9rem] truncate transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink sm:max-w-[20rem]"
         >
           {{ item.label }}
         </RouterLink>
@@ -55,6 +60,8 @@ const items = computed<BreadcrumbItem[]>(() => {
           v-else
           :aria-current="index === items.length - 1 ? 'page' : undefined"
           :class="index === items.length - 1 ? 'text-ink' : 'text-graphite'"
+          :title="item.label"
+          class="max-w-[9rem] truncate sm:max-w-[20rem]"
         >
           {{ item.label }}
         </span>
