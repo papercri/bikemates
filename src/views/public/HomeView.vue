@@ -76,8 +76,8 @@ const heroCtas = computed<LandingCta[]>(() => {
 
 const bandCta = computed<LandingCta>(() =>
   isInitialized.value && user.value
-    ? { label: 'Publicar una salida', to: '/rides/create', variant: 'sun' }
-    : { label: 'Crear cuenta gratis', to: '/register', variant: 'sun' },
+    ? { label: 'Publicar una salida', to: '/rides/create', variant: 'primary' }
+    : { label: 'Crear cuenta gratis', to: '/register', variant: 'primary' },
 )
 
 const features = [
@@ -320,21 +320,49 @@ onBeforeUnmount(() => {
     </section>
 
     <section
-      class="relative isolate -mx-4 overflow-hidden sm:-mx-6 lg:-mx-8"
+      class="relative isolate -mx-4 overflow-hidden border-y border-line bg-snow sm:-mx-6 lg:-mx-8"
       aria-labelledby="cta-title"
     >
-      <img
-        src="/photos/salida-pista.webp"
-        alt=""
+      <!-- Traza de ruta en line-art: sendero discontinuo animado sobre filete hairline. -->
+      <svg
+        viewBox="0 0 1200 260"
+        preserveAspectRatio="xMidYMid slice"
+        class="absolute inset-0 h-full w-full"
         aria-hidden="true"
-        loading="lazy"
-        decoding="async"
-        class="absolute inset-0 h-full w-full object-cover object-center"
-      />
-      <div class="absolute inset-0 bg-ink/75" aria-hidden="true" />
+        focusable="false"
+      >
+        <path
+          d="M 20 235 Q 260 220 420 170 T 820 175 T 1180 60"
+          fill="none"
+          stroke="var(--color-line-strong)"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+        <path
+          d="M 20 235 Q 260 220 420 170 T 820 175 T 1180 60"
+          fill="none"
+          stroke="var(--color-graphite)"
+          stroke-width="2"
+          stroke-dasharray="6 9"
+          stroke-linecap="round"
+          vector-effect="non-scaling-stroke"
+          class="motion-safe:animate-trail-dash"
+        />
+        <circle cx="420" cy="170" r="4" fill="var(--color-line-strong)" />
+        <circle cx="820" cy="175" r="4" fill="var(--color-line-strong)" />
+        <circle cx="1180" cy="60" r="7" fill="var(--color-ink)" />
+        <circle
+          cx="1180"
+          cy="60"
+          r="14"
+          fill="none"
+          stroke="var(--color-ink)"
+          stroke-opacity="0.35"
+        />
+      </svg>
 
       <div
-        class="relative mx-auto flex max-w-7xl flex-col gap-6 px-4 py-10 sm:px-6 sm:py-12 lg:flex-row lg:items-end lg:justify-between lg:gap-12 lg:px-8 lg:py-14"
+        class="relative mx-auto flex max-w-7xl flex-col gap-6 px-4 py-12 sm:px-6 sm:py-14 lg:flex-row lg:items-end lg:justify-between lg:gap-12 lg:px-8 lg:py-16"
       >
         <motion.div
           :initial="{ opacity: 0, y: REVEAL_Y }"
@@ -345,11 +373,11 @@ onBeforeUnmount(() => {
         >
           <h2
             id="cta-title"
-            class="font-display text-3xl leading-[1.05] font-medium tracking-[-0.025em] text-white sm:text-4xl"
+            class="font-display text-3xl leading-[1.05] font-medium tracking-[-0.025em] text-ink sm:text-4xl"
           >
             Tu próxima salida empieza aquí
           </h2>
-          <p class="mt-4 max-w-xl leading-7 text-white/70">
+          <p class="mt-4 max-w-xl leading-7 text-graphite">
             Crea tu cuenta, elige una ruta cerca de ti y sal a pedalear con gente nueva.
           </p>
         </motion.div>
@@ -359,19 +387,16 @@ onBeforeUnmount(() => {
           :while-in-view="{ opacity: 1, y: 0 }"
           :viewport="{ once: true, amount: 0.25 }"
           :transition="{ duration: REVEAL_DURATION, ease: EASE, delay: STAGGER_DELAY }"
-          class="flex flex-col gap-4 sm:flex-row sm:items-center"
+          class="flex flex-col gap-3 sm:flex-row sm:items-center"
         >
           <Button :to="bandCta.to" :variant="bandCta.variant" size="lg">
             {{ bandCta.label }}
           </Button>
 
-          <RouterLink
-            to="/rides"
-            class="inline-flex items-center gap-2 text-canvas underline-offset-4 transition-colors hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-canvas"
-          >
+          <Button to="/rides" variant="outline" size="lg">
             <FontAwesomeIcon :icon="faBicycle" aria-hidden="true" />
             Explorar rutas
-          </RouterLink>
+          </Button>
         </motion.div>
       </div>
     </section>

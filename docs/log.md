@@ -664,3 +664,24 @@ queda diferida a una pasada posterior con aprobación explícita.
 
 - Lenis para interpolación de scroll de rueda (~2KB): init en `App.vue`,
   `stop()` con `prefers-reduced-motion`, sin romper menú móvil ni diálogos.
+
+## 2026-10-18 — Home: banda CTA sin foto, grafismo de traza y botón con filete
+
+Corrección de diseño en la banda final "Tu próxima salida empieza aquí"
+(`HomeView`):
+
+- Se elimina la foto de fondo (`salida-pista.webp`) y el velo `bg-ink/75`.
+  La banda pasa a fondo gris (`bg-snow`) con filete superior e inferior.
+- Nuevo grafismo SVG a sangre: traza de ruta en line-art hairline
+  (`line-strong`) con sendero discontinuo animado (`animate-trail-dash`,
+  ya existente en tokens) y nodos de waypoint/destino. Respeta
+  `prefers-reduced-motion`.
+- El CTA principal cambia de variante `sun` (píldora clara pensada para
+  fondos oscuros) a `primary` (carbón sólido) sobre el fondo claro.
+- "Explorar rutas" deja de ser un enlace subrayado (`RouterLink` con
+  `hover:underline`) y pasa a ser un `Button` variante `outline` con
+  filete, hover de superficie y foco visible, conservando el icono de bici.
+
+### Verificación
+
+- `eslint`/`oxlint` en el fichero y `vitest` (App.spec) en verde.
