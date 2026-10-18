@@ -754,3 +754,33 @@ Corrección de diseño de `RideCard` (aplica en home y en `/rides`, mismo compon
 ### Verificación
 
 - `vitest` 196/196, `eslint`/`oxlint`, Prettier y `type-check` en verde.
+
+## 2026-10-18 — Detalle de ruta: descripción plegable justificada, portada a la derecha y baja con modal
+
+**`RideDetailView`:**
+
+- Nuevo bloque principal en rejilla `lg:[1.05fr_0.95fr]`: descripción a la
+  izquierda con `text-justify` + `hyphens-auto`, e imagen de portada a la
+  derecha (`aspect-[4/3]`, `lg:order-2`). En móvil la imagen sigue primero.
+- La descripción se limita a un extracto de 70 palabras (`Leer más` /
+  `Leer menos` con `aria-expanded`); el texto completo nunca se muestra de
+  forma infinita por defecto.
+- Acciones inferioras centradas (`sm:justify-center`) con filete superior:
+  "Editar ruta" (organizador) y "Explorar más rutas".
+
+**`RideParticipants`:**
+
+- La lista de participantes se deshace del `Card` con borde: pasa a lista
+  editorial con `divide-y` y filete superior.
+- Avatares redondos (`rounded-full`, antes `rounded-photo` cuasi cuadrado);
+  el fallback de iniciales invierte a texto `graphite` sobre `surface`.
+- Baja de la plaza: desaparece el botón "Dejar de participar"; cada fila del
+  usuario actual lleva una `×` (`faXmark`, `aria-label="Dejar de participar"`,
+  hover rojo) que abre el `ConfirmDialog` (tono danger) de UI en lugar de
+  `window.confirm`. El diálogo se cierra al confirmar y el `isBusy` del
+  composable controla el spinner.
+
+### Verificación
+
+- `vitest` en verde (196 tests en la rama), `eslint`/`oxlint`, Prettier y
+  `type-check` sin errores nuevos.

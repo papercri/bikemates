@@ -2,7 +2,7 @@
 import { faMap } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { useHead } from '@unhead/vue'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import AppPage from '@/components/layout/AppPage.vue'
 import IconArrow from '@/components/icons/IconArrow.vue'
@@ -24,6 +24,11 @@ import { useRideParticipants } from '@/features/rides/composables/useRidePartici
 
 const route = useRoute()
 const authStore = useAuthStore()
+
+/** Máximo de palabras del extracto de descripción; el resto se despliega con "Leer más". */
+const DESCRIPTION_PREVIEW_WORDS = 70
+
+const showFullDescription = ref(false)
 
 const rideId = computed(() => {
   const id = route.params.id
@@ -63,6 +68,21 @@ const googleMapsUrl = computed(() =>
     ? `https://www.google.com/maps?q=${ride.value.latitude},${ride.value.longitude}`
     : null,
 )
+
+const descriptionWords = computed(() =>
+  (ride.value?.description ?? '').trim().split(/\s+/).filter(Boolean),
+)
+
+const isDescriptionTruncated = computed(
+  () => descriptionWords.value.length > DESCRIPTION_PREVIEW_WORDS,
+)
+
+const visibleDescription = computed(() => {
+  if (!isDescriptionTruncated.value || showFullDescription.value) {
+    return descriptionWords.value.join(' ')
+  }
+  return `${descriptionWords.value.slice(0, DESCRIPTION_PREVIEW_WORDS).join(' ')}…`
+})
 
 interface RideStatItem {
   label: string
@@ -143,14 +163,6 @@ useHead({
         </Typography>
       </header>
 
-      <img
-        :src="ride.imageUrl || '/default.webp'"
-        :alt="`Imagen de la ruta ${ride.title}`"
-        class="mt-3 h-36 w-full rounded-photo object-cover sm:h-44"
-        loading="eager"
-        fetchpriority="high"
-      />
-
       <dl class="mt-3 grid grid-cols-3 border-y border-line">
         <div
           v-for="item in statItems"
@@ -175,23 +187,48 @@ useHead({
         </div>
       </dl>
 
-      <Typography class="mt-3 max-w-2xl leading-6" tone="muted">
-        {{ ride.description }}
-      </Typography>
+      <!-- Portada a la derecha y descripción (justificada, con extracto plegable) a la izquierda -->
+      <div class="mt-4 grid gap-5 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
+        <img
+          :src="ride.imageUrl || '/default.webp'"
+          :alt="`Imagen de la ruta ${ride.title}`"
+          class="aspect-[4/3] w-full rounded-photo object-cover lg:order-2"
+          loading="eager"
+          fetchpriority="high"
+        />
 
-      <p v-if="ride.wikilocUrl" class="mt-2">
-        <a
-          :href="ride.wikilocUrl"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-flex items-center gap-2 text-sm font-medium text-trail-ink underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
-          :aria-label="`Ver recorrido de ${ride.title} en Wikiloc`"
-        >
-          <FontAwesomeIcon :icon="faMap" aria-hidden="true" />
-          Ver recorrido en Wikiloc
-          <span class="sr-only">(se abre en una pestaña nueva)</span>
-        </a>
-      </p>
+        <div class="lg:order-1">
+          <Typography as="h2" variant="heading-sm" class="mb-2"> Descripción </Typography>
+
+          <p class="text-justify text-[0.95rem] leading-7 hyphens-auto text-graphite">
+            {{ visibleDescription }}
+          </p>
+
+          <button
+            v-if="isDescriptionTruncated"
+            type="button"
+            class="mt-2 text-sm font-semibold text-ink underline decoration-line-strong underline-offset-4 transition-colors hover:decoration-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+            :aria-expanded="showFullDescription"
+            @click="showFullDescription = !showFullDescription"
+          >
+            {{ showFullDescription ? 'Leer menos' : 'Leer más' }}
+          </button>
+
+          <p v-if="ride.wikilocUrl" class="mt-3">
+            <a
+              :href="ride.wikilocUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-2 text-sm font-medium text-trail-ink underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+              :aria-label="`Ver recorrido de ${ride.title} en Wikiloc`"
+            >
+              <FontAwesomeIcon :icon="faMap" aria-hidden="true" />
+              Ver recorrido en Wikiloc
+              <span class="sr-only">(se abre en una pestaña nueva)</span>
+            </a>
+          </p>
+        </div>
+      </div>
 
       <!-- Mapa y participantes en paralelo en pantallas medianas+ -->
       <div class="mt-5 grid gap-4 lg:grid-cols-2 lg:items-start">
@@ -279,7 +316,9 @@ useHead({
         </section>
       </div>
 
-      <div class="mt-5 flex flex-wrap gap-3">
+      <div
+        class="mt-6 flex flex-col items-center gap-3 border-t border-line pt-5 sm:flex-row sm:justify-center"
+      >
         <Button v-if="isOrganizer" :to="{ name: 'ride-edit', params: { id: ride.id } }">
           Editar ruta
         </Button>

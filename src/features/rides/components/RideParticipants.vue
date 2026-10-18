@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import { faXmark } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import Alert from '@/components/ui/Alert.vue'
 import Badge from '@/components/ui/Badge.vue'
 import Button from '@/components/ui/Button.vue'
-import Card from '@/components/ui/Card.vue'
+import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
 import Typography from '@/components/ui/Typography.vue'
 import type { RideParticipant } from '../types'
 
@@ -32,6 +34,8 @@ const isParticipant = computed(
     props.participants.some((participant) => participant.id === props.currentUserId),
 )
 
+const isLeaveDialogOpen = ref(false)
+
 function getInitials(name: string): string {
   return name
     .trim()
@@ -41,18 +45,25 @@ function getInitials(name: string): string {
     .join('')
 }
 
-function confirmLeave(): void {
-  const confirmed = window.confirm('¿Seguro que quieres dejar de participar en esta ruta?')
+function requestLeave(): void {
+  if (props.isSubmitting) return
+  isLeaveDialogOpen.value = true
+}
 
-  if (confirmed) {
-    emit('leave')
-  }
+function cancelLeave(): void {
+  if (props.isSubmitting) return
+  isLeaveDialogOpen.value = false
+}
+
+function confirmLeave(): void {
+  isLeaveDialogOpen.value = false
+  emit('leave')
 }
 </script>
 
 <template>
   <section aria-labelledby="participants-title">
-    <div class="mb-4 flex flex-wrap items-center justify-between gap-4">
+    <div class="mb-3 flex flex-wrap items-center justify-between gap-4">
       <Typography id="participants-title" as="h2" variant="heading-sm"> Participantes </Typography>
 
       <Typography variant="body-sm" tone="muted" aria-live="polite">
@@ -61,14 +72,14 @@ function confirmLeave(): void {
       </Typography>
     </div>
 
-    <Card class="p-5 sm:p-6">
-      <div class="mb-5">
+    <div>
+      <div class="mb-4">
         <template v-if="!isAuthenticated">
           <Typography variant="body-sm" tone="muted">
             Inicia sesión para ver la lista y participar en esta ruta.
           </Typography>
 
-          <Button to="/login" class="mt-4"> Iniciar sesión </Button>
+          <Button to="/login" class="mt-3"> Iniciar sesión </Button>
         </template>
 
         <template v-else-if="isOrganizer">
@@ -78,16 +89,8 @@ function confirmLeave(): void {
           </Typography>
         </template>
 
-        <template v-else-if="isParticipant">
-          <Typography variant="body-sm" tone="muted"> Ya estás inscrito en esta ruta. </Typography>
-
-          <Button variant="outline" class="mt-3" :disabled="isSubmitting" @click="confirmLeave">
-            {{ isSubmitting ? 'Procesando…' : 'Dejar de participar' }}
-          </Button>
-        </template>
-
         <Button
-          v-else
+          v-else-if="!isParticipant"
           :disabled="isSubmitting || isLoading || Boolean(errorMessage)"
           @click="emit('join')"
         >
@@ -105,23 +108,23 @@ function confirmLeave(): void {
         Todavía no hay ciclistas inscritos en esta ruta.
       </Typography>
 
-      <ul v-else class="divide-y divide-line">
+      <ul v-else class="divide-y divide-line border-t border-line">
         <li
           v-for="participant in participants"
           :key="participant.id"
-          class="flex items-center gap-3 py-4 first:pt-0 last:pb-0"
+          class="flex items-center gap-3 py-3"
         >
           <img
             v-if="participant.avatarUrl"
             :src="participant.avatarUrl"
             :alt="`Foto de ${participant.displayName}`"
-            class="size-11 shrink-0 rounded-photo object-cover"
+            class="size-10 shrink-0 rounded-full object-cover"
             loading="lazy"
           />
 
           <div
             v-else
-            class="flex size-11 shrink-0 items-center justify-center rounded-photo bg-surface text-sm font-semibold text-trail-ink"
+            class="flex size-10 shrink-0 items-center justify-center rounded-full bg-surface text-sm font-semibold text-graphite"
             aria-hidden="true"
           >
             {{ getInitials(participant.displayName) }}
@@ -134,8 +137,31 @@ function confirmLeave(): void {
 
             <Badge v-if="participant.isOrganizer" variant="muted"> Organizador </Badge>
           </div>
+
+          <button
+            v-if="participant.id === currentUserId"
+            type="button"
+            class="shrink-0 rounded-btn p-1.5 text-graphite transition-colors hover:text-red-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+            :disabled="isSubmitting"
+            aria-label="Dejar de participar"
+            @click="requestLeave"
+          >
+            <FontAwesomeIcon :icon="faXmark" aria-hidden="true" class="size-4" />
+          </button>
         </li>
       </ul>
-    </Card>
+    </div>
+
+    <ConfirmDialog
+      :open="isLeaveDialogOpen"
+      tone="danger"
+      title="¿Dejar de participar?"
+      description="Perderás tu plaza en esta ruta. Puedes inscribirte de nuevo si quedan plazas libres."
+      confirm-label="Dejar de participar"
+      cancel-label="Cancelar"
+      :is-busy="isSubmitting"
+      @confirm="confirmLeave"
+      @cancel="cancelLeave"
+    />
   </section>
 </template>
