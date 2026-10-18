@@ -70,4 +70,41 @@ describe('RideFilters', () => {
     const selectedLabels = wrapper.findAll('option:checked').map((option) => option.text())
     expect(selectedLabels).toEqual(['Intermedio', 'Mujeres', 'Por desnivel'])
   })
+
+  it('folds the controls behind the mobile toggle and expands them on demand', async () => {
+    const wrapper = mountFilters()
+
+    const toggle = wrapper.get('button[aria-controls="ride-filters-panel"]')
+    const panel = wrapper.get('#ride-filters-panel')
+
+    expect(toggle.attributes('aria-expanded')).toBe('false')
+    expect(panel.classes()).toContain('hidden')
+    expect(toggle.text()).toContain('Filtros')
+
+    await toggle.trigger('click')
+
+    expect(toggle.attributes('aria-expanded')).toBe('true')
+    expect(panel.classes()).toContain('grid')
+    expect(panel.classes()).not.toContain('hidden')
+
+    await toggle.trigger('click')
+
+    expect(toggle.attributes('aria-expanded')).toBe('false')
+    expect(panel.classes()).toContain('hidden')
+  })
+
+  it('counts the active filters on the mobile toggle', async () => {
+    const wrapper = mountFilters({
+      query: 'collserola',
+      level: 'Intermedio',
+    })
+
+    const toggle = wrapper.get('button[aria-controls="ride-filters-panel"]')
+    expect(toggle.text()).toContain('2 activos')
+
+    await wrapper.get('input[type="search"]').setValue('')
+
+    expect(toggle.text()).toContain('1 activo')
+    expect(toggle.text()).not.toContain('2 activos')
+  })
 })
