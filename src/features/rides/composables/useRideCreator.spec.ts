@@ -81,10 +81,14 @@ describe('useRideCreator', () => {
 
     const { createPublishedRide } = useRideCreator()
 
-    await createPublishedRide(submission({ image: new File(['x'], 'p.png', { type: 'image/png' }) }))
+    await createPublishedRide(
+      submission({ image: new File(['x'], 'p.png', { type: 'image/png' }) }),
+    )
 
     expect(mocks.uploadRideImage).toHaveBeenCalledTimes(1)
-    expect(mocks.createRide).toHaveBeenCalledWith(expect.objectContaining({ imagePath: 'user-1/portada.jpg' }))
+    expect(mocks.createRide).toHaveBeenCalledWith(
+      expect.objectContaining({ imagePath: 'user-1/portada.jpg' }),
+    )
   })
 
   it('rejects a payload without a valid meeting point before touching the services', async () => {
@@ -104,7 +108,9 @@ describe('useRideCreator', () => {
 
     const { createPublishedRide, errorMessage } = useRideCreator()
 
-    await createPublishedRide(submission({ image: new File(['x'], 'p.png', { type: 'image/png' }) }))
+    await createPublishedRide(
+      submission({ image: new File(['x'], 'p.png', { type: 'image/png' }) }),
+    )
 
     expect(mocks.deleteRideImage).toHaveBeenCalledWith('user-1/portada.jpg')
     expect(errorMessage.value).toBe('No se pudo crear la ruta: denied')
@@ -116,7 +122,9 @@ describe('useRideCreator', () => {
 
     const { createPublishedRide, errorMessage } = useRideCreator()
 
-    await createPublishedRide(submission({ image: new File(['x'], 'p.png', { type: 'image/png' }) }))
+    await createPublishedRide(
+      submission({ image: new File(['x'], 'p.png', { type: 'image/png' }) }),
+    )
 
     expect(mocks.deleteRideImage).not.toHaveBeenCalled()
     expect(errorMessage.value).toBe(
@@ -158,7 +166,9 @@ describe('useRideCreator', () => {
 
     const { createPublishedRide, errorMessage } = useRideCreator()
 
-    await createPublishedRide(submission({ image: new File(['x'], 'p.png', { type: 'image/png' }) }))
+    await createPublishedRide(
+      submission({ image: new File(['x'], 'p.png', { type: 'image/png' }) }),
+    )
 
     expect(mocks.deleteRideImage).toHaveBeenCalledWith('user-1/portada.jpg')
     expect(errorMessage.value).toBe('No se pudo crear la ruta: denied')

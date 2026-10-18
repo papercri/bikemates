@@ -46,7 +46,9 @@ test.describe('register', () => {
     await page.getByLabel('Confirmar contraseña').fill('otracosa123')
     await page.getByRole('button', { name: 'Crear cuenta' }).click()
 
-    await expect(page.locator('#confirm-password-error')).toHaveText('Las contraseñas no coinciden.')
+    await expect(page.locator('#confirm-password-error')).toHaveText(
+      'Las contraseñas no coinciden.',
+    )
   })
 
   test('rejects a password without a number', async ({ page }) => {

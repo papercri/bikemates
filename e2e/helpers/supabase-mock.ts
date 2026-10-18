@@ -92,8 +92,7 @@ const STORAGE_PATH = '/storage/v1/'
 
 /** Firma JWT falsa: el cliente no verifica la firma, solo el payload y `exp`. */
 function createJwt(payload: Record<string, unknown>): string {
-  const encode = (value: object): string =>
-    Buffer.from(JSON.stringify(value)).toString('base64url')
+  const encode = (value: object): string => Buffer.from(JSON.stringify(value)).toString('base64url')
 
   return `${encode({ alg: 'HS256', typ: 'JWT' })}.${encode(payload)}.e2e`
 }
@@ -237,7 +236,11 @@ export async function mockSupabase(page: Page): Promise<SupabaseMock> {
     }
 
     if (method === 'POST' && path === `${AUTH_PATH}signup`) {
-      const payload = body as { email?: string; password?: string; data?: { display_name?: string } } | null
+      const payload = body as {
+        email?: string
+        password?: string
+        data?: { display_name?: string }
+      } | null
       const email = payload?.email?.trim().toLowerCase() ?? ''
 
       if (!email || !payload?.password) {
@@ -248,7 +251,8 @@ export async function mockSupabase(page: Page): Promise<SupabaseMock> {
 
       if (existing) {
         // Supabase devuelve un usuario sin identidades cuando el email ya existe.
-        return fulfill(route, 
+        return fulfill(
+          route,
           json({ id: existing.id, aud: 'authenticated', email, identities: [] }),
         )
       }
@@ -411,7 +415,8 @@ export async function mockSupabase(page: Page): Promise<SupabaseMock> {
 
         if (accept.includes('vnd.pgrst.object')) {
           if (rows.length === 0) {
-            return fulfill(route, 
+            return fulfill(
+              route,
               json(
                 {
                   code: 'PGRST116',

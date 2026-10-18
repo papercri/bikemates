@@ -77,7 +77,12 @@ describe('RideForm', () => {
     const wrapper = mountForm()
 
     const legends = wrapper.findAll('legend').map((legend) => legend.text())
-    expect(legends).toEqual(['Datos básicos', 'Recorrido', 'Detalles de la salida', 'Imagen de portada'])
+    expect(legends).toEqual([
+      'Datos básicos',
+      'Recorrido',
+      'Detalles de la salida',
+      'Imagen de portada',
+    ])
 
     expect(fieldValue(wrapper, '#title')).toBe('Vuelta por Collserola')
     expect(fieldValue(wrapper, '#distanceKm')).toBe('30')
@@ -217,7 +222,9 @@ describe('RideForm', () => {
 
     expect(wrapper.get('img').attributes('src')).toBe('https://cdn.example/antigua.png')
 
-    const removeButton = wrapper.findAll('button').find((button) => button.text().includes('Quitar imagen'))
+    const removeButton = wrapper
+      .findAll('button')
+      .find((button) => button.text().includes('Quitar imagen'))
 
     if (!removeButton) {
       throw new Error('Falta el botón de quitar imagen.')

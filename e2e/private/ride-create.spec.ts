@@ -39,7 +39,9 @@ test.describe('create ride', () => {
     await page.goto('/rides/create')
     await page.getByRole('button', { name: 'Publicar ruta' }).click()
 
-    await expect(page.getByRole('alert')).toHaveText('El título debe tener entre 5 y 100 caracteres.')
+    await expect(page.getByRole('alert')).toHaveText(
+      'El título debe tener entre 5 y 100 caracteres.',
+    )
   })
 
   test('validates the description length', async ({ page, supabase }) => {

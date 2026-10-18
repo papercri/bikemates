@@ -1,5 +1,21 @@
 import { test, expect } from '../helpers/fixtures'
+import type { Page } from '@playwright/test'
 import { makeRide } from '../helpers/seeds'
+
+/**
+ * En móvil el panel de filtros está colapsado tras un botón; en escritorio
+ * siempre está visible. Abre el panel cuando hace falta.
+ */
+async function openFilters(page: Page, isMobile: boolean): Promise<void> {
+  if (!isMobile) return
+
+  const panel = page.locator('#ride-filters-panel')
+
+  if (await panel.isVisible()) return
+
+  await page.getByRole('button', { name: /Filtros/ }).click()
+  await expect(panel).toBeVisible()
+}
 
 test.describe('rides list', () => {
   test('shows the heading and empty state when there are no rides', async ({ page }) => {
@@ -48,13 +64,14 @@ test.describe('rides list', () => {
     await expect(page.getByText('2 rutas encontradas')).toBeVisible()
   })
 
-  test('filters by level and shows only matching rides', async ({ page, supabase }) => {
+  test('filters by level and shows only matching rides', async ({ page, supabase, isMobile }) => {
     supabase.state.rides = [
       makeRide({ id: 'ride-1', title: 'Ruta fácil', level: 'Iniciación' }),
       makeRide({ id: 'ride-2', title: 'Ruta dura', level: 'Avanzado' }),
     ]
 
     await page.goto('/rides')
+    await openFilters(page, isMobile)
     await page.selectOption('#ride-level-filter', 'Avanzado')
 
     await expect(page.getByRole('link', { name: /Ruta dura/ })).toBeVisible()
@@ -62,13 +79,14 @@ test.describe('rides list', () => {
     await expect(page.getByText('1 ruta encontrada')).toBeVisible()
   })
 
-  test('filters by bike type', async ({ page, supabase }) => {
+  test('filters by bike type', async ({ page, supabase, isMobile }) => {
     supabase.state.rides = [
       makeRide({ id: 'ride-1', title: 'Ruta gravel', bike_type: 'gravel' }),
       makeRide({ id: 'ride-2', title: 'Ruta mtb', bike_type: 'mtb' }),
     ]
 
     await page.goto('/rides')
+    await openFilters(page, isMobile)
     await page.selectOption('#ride-audience-filter', 'women')
 
     // El filtro por público no afecta a estas rutas (ambas son "everyone").
@@ -82,17 +100,20 @@ test.describe('rides list', () => {
     await page.goto('/rides')
     await page.getByRole('button', { name: /Pasadas/ }).click()
 
-    await expect(page.getByRole('heading', { name: 'Sin salidas pasadas con estos filtros' })).toBeVisible()
+    await expect(
+      page.getByRole('heading', { name: 'Sin salidas pasadas con estos filtros' }),
+    ).toBeVisible()
     await expect(page.getByText('Todavía no hay salidas celebradas')).toBeVisible()
   })
 
-  test('sorts by distance when requested', async ({ page, supabase }) => {
+  test('sorts by distance when requested', async ({ page, supabase, isMobile }) => {
     supabase.state.rides = [
       makeRide({ id: 'ride-1', title: 'Larga', distance_km: 80 }),
       makeRide({ id: 'ride-2', title: 'Corta', distance_km: 15 }),
     ]
 
     await page.goto('/rides')
+    await openFilters(page, isMobile)
     await page.selectOption('#ride-sort-filter', 'distance')
 
     // El orden no por fecha se aplica de forma descendente en la ventana activa.

@@ -193,7 +193,9 @@ describe('rideService', () => {
         createQueryChain({ data: rideRow({ level: 'Legendario' }), error: null }),
       )
 
-      await expect(createRide(createInput())).rejects.toThrow('La ruta contiene valores no válidos.')
+      await expect(createRide(createInput())).rejects.toThrow(
+        'La ruta contiene valores no válidos.',
+      )
     })
   })
 
@@ -216,9 +218,7 @@ describe('rideService', () => {
     it('wraps query errors with a user-facing message', async () => {
       mocks.from.mockReturnValue(createQueryChain({ data: null, error: { message: 'offline' } }))
 
-      await expect(getPublishedRides()).rejects.toThrow(
-        'No se pudieron cargar las rutas: offline',
-      )
+      await expect(getPublishedRides()).rejects.toThrow('No se pudieron cargar las rutas: offline')
     })
   })
 
@@ -439,7 +439,9 @@ describe('rideService', () => {
     })
 
     it('throws when a participant profile could not be fetched', async () => {
-      mocks.from.mockReturnValue(createQueryChain({ data: [{ user_id: 'x', profiles: null }], error: null }))
+      mocks.from.mockReturnValue(
+        createQueryChain({ data: [{ user_id: 'x', profiles: null }], error: null }),
+      )
 
       await expect(getRideParticipants('ride-1', 'user-1')).rejects.toThrow(
         'No se ha podido recuperar el perfil de un participante.',

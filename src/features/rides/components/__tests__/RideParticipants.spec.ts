@@ -6,7 +6,12 @@ import RideParticipants from '../RideParticipants.vue'
 
 const participants: RideParticipant[] = [
   { id: 'user-1', displayName: 'Cristiana Sollini', avatarUrl: null, isOrganizer: true },
-  { id: 'user-2', displayName: 'Marc', avatarUrl: 'https://cdn.example/marc.png', isOrganizer: false },
+  {
+    id: 'user-2',
+    displayName: 'Marc',
+    avatarUrl: 'https://cdn.example/marc.png',
+    isOrganizer: false,
+  },
 ]
 
 function mountParticipants(props?: Record<string, unknown>, attachToBody = false) {

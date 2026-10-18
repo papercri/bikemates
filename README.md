@@ -2,7 +2,7 @@
 
 Aplicación web para ciclistas en España: descubre rutas, encuentra compañeros de pedaleo y organiza salidas en grupo.
 
-BikeMates es una SPA **mobile-first** construida con Vue 3 y TypeScript estricto, con acceso a datos sobre **Supabase** (autenticación, base de datos y Edge Functions), SEO técnico en las páginas públicas y una interfaz editorial minimalista de showroom (lienzo porcelana `#FFFFFF`, tarjetas blancas con filete hairline `#e5e7eb` y esquinas de 8px, tinta carbón `#1d1d1d`, interfaz acromática sin CTA cromático, tipografía Inter con tracking negativo en titulares y JetBrains Mono para datos).
+BikeMates es una SPA **mobile-first** construida con Vue 3 y TypeScript estricto, con acceso a datos sobre **Supabase** (autenticación, base de datos y Edge Functions), SEO técnico en las páginas públicas y una interfaz editorial minimalista.
 
 ## Funcionalidades
 
@@ -30,22 +30,22 @@ BikeMates es una SPA **mobile-first** construida con Vue 3 y TypeScript estricto
 
 - Landing pública con hero a pantalla completa (zoom de entrada y parallax al scroll), header transparente superpuesto, CTA, **política de privacidad** y **404** con `noindex`.
 - Header con navegación principal y footer global en todas las vistas con shell.
-- Título y meta por ruta con `@unhead/vue`: ninguna página muestra el título por defecto de Vite, la ruta de detalle genera un título dinámico y el perfil es `noindex`.
+- Título y meta por ruta con `@unhead/vue`: la ruta de detalle genera un título dinámico y el perfil es `noindex`.
 - Favicon SVG propio (marca sin texto) en `public/favicon.svg`.
 
 ## Stack
 
-| Capa     | Tecnología                                                                   |
-| -------- | ---------------------------------------------------------------------------- |
-| Frontend | Vue 3 (Composition API, `<script setup lang="ts">`), Vite, Vue Router, Pinia |
+| Capa        | Tecnología                                                                                    |
+| ----------- | --------------------------------------------------------------------------------------------- |
+| Frontend    | Vue 3 (Composition API, `<script setup lang="ts">`), Vite, Vue Router, Pinia                  |
 | Animaciones | `motion-v` (Motion for Vue): parallax con `useScroll`/`useTransform`, revelados `whileInView` |
-| Lenguaje | TypeScript estricto (sin `any`, `noUncheckedIndexedAccess`)                  |
-| Estilos  | Tailwind CSS v4 (tokens en `src/assets/main.css` vía `@theme`)               |
-| SEO      | `@unhead/vue`                                                                |
-| Iconos   | Font Awesome free-solid (`@fortawesome/vue-fontawesome`)                     |
-| Backend  | Supabase: Auth, PostgreSQL con RLS, Edge Functions                           |
-| Tests    | Vitest + Vue Test Utils, Playwright                                          |
-| Calidad  | ESLint, oxlint, Prettier                                                     |
+| Lenguaje    | TypeScript estricto (sin `any`, `noUncheckedIndexedAccess`)                                   |
+| Estilos     | Tailwind CSS v4 (tokens en `src/assets/main.css` vía `@theme`)                                |
+| SEO         | `@unhead/vue`                                                                                 |
+| Iconos      | Font Awesome free-solid (`@fortawesome/vue-fontawesome`)                                      |
+| Backend     | Supabase: Auth, PostgreSQL con RLS, Edge Functions                                            |
+| Tests       | Vitest + Vue Test Utils, Playwright                                                           |
+| Calidad     | ESLint, oxlint, Prettier                                                                      |
 
 ## Requisitos
 
@@ -174,8 +174,3 @@ Separación de responsabilidades: las vistas orquestan, los componentes presenta
 - **Unit**: `npm run test:unit` — 248 tests en 42 archivos (design system, validadores, servicios y composables de rutas, servicio de autenticación, store de sesión, primitivos de UI, filtros del listado e iconos SVG).
 - **E2E**: `npm run test:e2e` — Playwright (configurado en `playwright.config.ts`).
 - Gates antes de dar por completa una tarea: `npm run test:unit -- --run`, `npm run type-check`, `npx eslint .`, `npx oxlint .`, Prettier y, cuando toca, `npm run build`.
-
-## Documentación
-
-- `docs/log.md`: historial de cambios fechado.
-- `AGENTS.md`: convenciones de código, seguridad, accesibilidad y flujo de trabajo del proyecto.

@@ -99,7 +99,7 @@ describe('useRideEditor', () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
     mocks.push.mockResolvedValue(undefined)
     mocks.getRideForEdit.mockResolvedValue(rideOf())
-    mocks.updateRide.mockImplementation(async (id: string) => ({ id } as Ride))
+    mocks.updateRide.mockImplementation(async (id: string) => ({ id }) as Ride)
   })
 
   afterEach(() => {
@@ -166,7 +166,9 @@ describe('useRideEditor', () => {
       const wrapper = mountEditor('ride-1')
       await flushPromises()
 
-      await wrapper.vm.saveRide(submission({ image: new File(['x'], 'n.png', { type: 'image/png' }) }))
+      await wrapper.vm.saveRide(
+        submission({ image: new File(['x'], 'n.png', { type: 'image/png' }) }),
+      )
 
       expect(mocks.updateRide).toHaveBeenCalledWith(
         'ride-1',
@@ -195,10 +197,14 @@ describe('useRideEditor', () => {
       const wrapper = mountEditor('ride-1')
       await flushPromises()
 
-      await wrapper.vm.saveRide(submission({ image: new File(['x'], 'n.png', { type: 'image/png' }) }))
+      await wrapper.vm.saveRide(
+        submission({ image: new File(['x'], 'n.png', { type: 'image/png' }) }),
+      )
 
       expect(mocks.deleteRideImage).toHaveBeenCalledWith('user-1/nueva.jpg')
-      expect(wrapper.vm.errorMessage).toBe('No se han podido guardar los cambios. Inténtalo de nuevo.')
+      expect(wrapper.vm.errorMessage).toBe(
+        'No se han podido guardar los cambios. Inténtalo de nuevo.',
+      )
       expect(wrapper.vm.isSubmitting).toBe(false)
     })
 

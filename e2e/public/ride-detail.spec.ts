@@ -8,7 +8,9 @@ test.describe('ride detail', () => {
 
     await page.goto('/rides/ride-1')
 
-    await expect(page.getByRole('heading', { level: 1, name: 'Vuelta por Collserola' })).toBeVisible()
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Vuelta por Collserola' }),
+    ).toBeVisible()
     // El punto de encuentro aparece en la cabecera y en la sección de mapa.
     await expect(page.getByText('Plaça de l’Església, Barcelona').first()).toBeVisible()
     await expect(page.getByText('32', { exact: true }).first()).toBeVisible()
@@ -22,7 +24,9 @@ test.describe('ride detail', () => {
       page.getByText('Inicia sesión para ver quién participa en esta ruta.'),
     ).toBeVisible()
     // El CTA de acceso del bloque de participantes es un enlace (Button con `to`).
-    await expect(page.locator('#main-content').getByRole('link', { name: 'Iniciar sesión' })).toBeVisible()
+    await expect(
+      page.locator('#main-content').getByRole('link', { name: 'Iniciar sesión' }),
+    ).toBeVisible()
   })
 
   test('shows the error state for an unknown ride', async ({ page }) => {

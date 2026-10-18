@@ -21,7 +21,9 @@ test.describe('profile', () => {
     await page.goto('/profile')
 
     await expect(
-      page.getByText('La edición de tus datos personales estará disponible en una próxima versión.'),
+      page.getByText(
+        'La edición de tus datos personales estará disponible en una próxima versión.',
+      ),
     ).toBeVisible()
     await expect(
       page.getByText(
@@ -78,9 +80,8 @@ test.describe('profile', () => {
     await dialog.locator('[data-dialog-confirm]').click()
 
     await expect(page).toHaveURL('/')
-    await expect(
-      page.getByRole('navigation', { name: 'Navegación principal' }).first(),
-    ).toContainText('Explorar rutas')
+    // Tras volver al inicio, el usuario ya no tiene sesión activa.
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Encuentra tu grupeta.')
   })
 
   test('cancels the account deletion', async ({ page, supabase }) => {

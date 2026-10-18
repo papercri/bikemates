@@ -1,11 +1,22 @@
 import { test, expect } from '../helpers/fixtures'
 
 test.describe('navigation', () => {
-  test('shows the public header links for anonymous visitors', async ({ page }) => {
+  test('shows the public header links for anonymous visitors', async ({ page, isMobile }) => {
     await page.goto('/')
 
-    // "Explorar rutas" vive dentro del <nav>; el acceso y el registro, en el
-    // bloque de sesión contiguo.
+    if (isMobile) {
+      // En móvil los enlaces viven dentro del panel desplegable.
+      await page.getByRole('button', { name: 'Abrir menú' }).click()
+
+      const mobileNav = page.locator('#primary-mobile-nav')
+      await expect(mobileNav.getByRole('link', { name: 'Explorar rutas' })).toBeVisible()
+      await expect(mobileNav.getByRole('link', { name: 'Iniciar sesión' })).toBeVisible()
+      await expect(mobileNav.getByRole('link', { name: 'Registrarse' })).toBeVisible()
+      return
+    }
+
+    // En escritorio "Explorar rutas" vive dentro del <nav>; el acceso y el
+    // registro, en el bloque de sesión contiguo.
     const nav = page.getByRole('navigation', { name: 'Navegación principal' }).first()
     await expect(nav.getByRole('link', { name: 'Explorar rutas' })).toBeVisible()
 

@@ -17,7 +17,9 @@ test.describe('email confirmation', () => {
 
     await expect(page.getByRole('heading', { level: 1, name: '¡Email confirmado!' })).toBeVisible()
     await expect(
-      page.getByText('Tu dirección de correo se ha confirmado. Ya puedes iniciar sesión en BikeMates.'),
+      page.getByText(
+        'Tu dirección de correo se ha confirmado. Ya puedes iniciar sesión en BikeMates.',
+      ),
     ).toBeVisible()
     await expect(page.getByRole('link', { name: 'Ir al inicio de sesión' })).toBeVisible()
   })
@@ -26,7 +28,9 @@ test.describe('email confirmation', () => {
     // Sin sesión activa y sin token, la vista informa del fallo.
     await page.goto('/auth/confirm')
 
-    await expect(page.getByRole('heading', { level: 1, name: 'No se ha podido verificar' })).toBeVisible()
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'No se ha podido verificar' }),
+    ).toBeVisible()
     await expect(
       page.getByText('No se ha podido confirmar el email. Comprueba el enlace recibido.'),
     ).toBeVisible()
@@ -36,9 +40,7 @@ test.describe('email confirmation', () => {
   test('offers a new recovery request after a failed link', async ({ page }) => {
     await page.goto('/auth/confirm?error_code=otp_expired')
 
-    await expect(
-      page.getByRole('link', { name: 'Solicitar nueva contraseña' }),
-    ).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Solicitar nueva contraseña' })).toBeVisible()
   })
 
   test('shows the processing state briefly while verifying', async ({ page, supabase }) => {

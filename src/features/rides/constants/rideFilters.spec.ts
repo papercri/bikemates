@@ -10,7 +10,10 @@ import { RIDE_AUDIENCES, RIDE_AUDIENCE_LABELS } from './rideOptions'
 
 describe('rideFilters', () => {
   it('starts every filter list with the sentinel option', () => {
-    expect(RIDE_LEVEL_FILTER_OPTIONS[0]).toEqual({ value: RIDE_FILTER_ALL, label: 'Cualquier nivel' })
+    expect(RIDE_LEVEL_FILTER_OPTIONS[0]).toEqual({
+      value: RIDE_FILTER_ALL,
+      label: 'Cualquier nivel',
+    })
     expect(RIDE_AUDIENCE_FILTER_OPTIONS[0]).toEqual({
       value: RIDE_FILTER_ALL,
       label: 'Cualquier público',
@@ -22,7 +25,9 @@ describe('rideFilters', () => {
     expect(RIDE_LEVEL_FILTER_OPTIONS.slice(1).map((option) => option.value)).toEqual([
       ...RIDE_LEVELS,
     ])
-    expect(RIDE_LEVEL_FILTER_OPTIONS.slice(1).map((option) => option.label)).toEqual([...RIDE_LEVELS])
+    expect(RIDE_LEVEL_FILTER_OPTIONS.slice(1).map((option) => option.label)).toEqual([
+      ...RIDE_LEVELS,
+    ])
   })
 
   it('offers one audience option per domain audience, labelled with its visible name', () => {

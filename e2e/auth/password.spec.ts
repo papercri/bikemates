@@ -5,7 +5,9 @@ test.describe('password recovery', () => {
   test('requests a reset link and shows the neutral confirmation', async ({ page }) => {
     await page.goto('/forgot-password')
 
-    await expect(page.getByRole('heading', { level: 1, name: 'Recuperar contraseña' })).toBeVisible()
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Recuperar contraseña' }),
+    ).toBeVisible()
     await expect(page.getByLabel('Correo electrónico')).toBeVisible()
     await expect(page.getByRole('button', { name: 'Enviar instrucciones' })).toBeVisible()
 
@@ -99,7 +101,9 @@ test.describe('password recovery', () => {
   test('reports an expired recovery link', async ({ page }) => {
     await page.goto(`/auth/confirm?error_code=otp_expired`)
 
-    await expect(page.getByRole('heading', { level: 1, name: 'No se ha podido verificar' })).toBeVisible()
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'No se ha podido verificar' }),
+    ).toBeVisible()
     await expect(
       page.getByText('El enlace ha caducado o ya no es válido. Solicita uno nuevo.'),
     ).toBeVisible()

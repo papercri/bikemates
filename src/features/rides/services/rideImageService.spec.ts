@@ -111,9 +111,9 @@ describe('rideImageService', () => {
     it('maps a storage failure to a user-facing message', async () => {
       mocks.remove.mockResolvedValue({ data: null, error: new Error('missing') })
 
-      await expect(deleteRideImage('user-1/00000000-0000-4000-8000-000000000000.png')).rejects.toThrow(
-        'No se ha podido eliminar la imagen.',
-      )
+      await expect(
+        deleteRideImage('user-1/00000000-0000-4000-8000-000000000000.png'),
+      ).rejects.toThrow('No se ha podido eliminar la imagen.')
     })
   })
 

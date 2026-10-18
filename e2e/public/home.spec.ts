@@ -20,7 +20,10 @@ test.describe('home', () => {
     await expect(page.getByRole('link', { name: 'Únete a BikeMates' })).toBeVisible()
   })
 
-  test('shows the published ride preview and links to the rides list', async ({ page, supabase }) => {
+  test('shows the published ride preview and links to the rides list', async ({
+    page,
+    supabase,
+  }) => {
     supabase.state.rides = [makeRide({ title: 'Ruta de prueba' })]
 
     await page.goto('/')
@@ -58,8 +61,12 @@ test.describe('home', () => {
   test('renders the feature and CTA sections', async ({ page }) => {
     await page.goto('/')
 
-    await expect(page.getByRole('heading', { level: 2, name: 'Todo empieza con una ruta' })).toBeVisible()
-    await expect(page.getByRole('heading', { level: 2, name: 'Así se vive una salida' })).toBeVisible()
+    await expect(
+      page.getByRole('heading', { level: 2, name: 'Todo empieza con una ruta' }),
+    ).toBeVisible()
+    await expect(
+      page.getByRole('heading', { level: 2, name: 'Así se vive una salida' }),
+    ).toBeVisible()
     await expect(
       page.getByRole('heading', { level: 2, name: 'Tu próxima salida empieza aquí' }),
     ).toBeVisible()

@@ -21,14 +21,16 @@ const participants: RideParticipant[] = [
   { id: 'user-2', displayName: 'Marc', avatarUrl: 'a.png', isOrganizer: false },
 ]
 
-function setup(options: {
-  rideId?: string | null
-  organizerId?: string | null
-  isAuthenticated?: boolean
-} = {}) {
-  const rideId = ref<string | null>('rideId' in options ? options.rideId ?? null : 'ride-1')
+function setup(
+  options: {
+    rideId?: string | null
+    organizerId?: string | null
+    isAuthenticated?: boolean
+  } = {},
+) {
+  const rideId = ref<string | null>('rideId' in options ? (options.rideId ?? null) : 'ride-1')
   const organizerId = ref<string | null>(
-    'organizerId' in options ? options.organizerId ?? null : 'organizer-1',
+    'organizerId' in options ? (options.organizerId ?? null) : 'organizer-1',
   )
   const isAuthenticated = ref(options.isAuthenticated ?? true)
 
@@ -191,9 +193,7 @@ describe('useRideParticipants', () => {
     })
 
     it('reports a failed cancellation with the service message', async () => {
-      mocks.leaveRide.mockRejectedValue(
-        new Error('No se pudo cancelar la inscripción: not found'),
-      )
+      mocks.leaveRide.mockRejectedValue(new Error('No se pudo cancelar la inscripción: not found'))
       mocks.getRideParticipants.mockResolvedValue(participants)
 
       const { leave, errorMessage, isSubmitting } = setup()
