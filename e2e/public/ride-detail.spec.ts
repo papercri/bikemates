@@ -21,8 +21,8 @@ test.describe('ride detail', () => {
     await expect(
       page.getByText('Inicia sesión para ver quién participa en esta ruta.'),
     ).toBeVisible()
-    // El CTA de acceso es un enlace (Button con `to`).
-    await expect(page.getByRole('link', { name: 'Iniciar sesión' })).toBeVisible()
+    // El CTA de acceso del bloque de participantes es un enlace (Button con `to`).
+    await expect(page.locator('#main-content').getByRole('link', { name: 'Iniciar sesión' })).toBeVisible()
   })
 
   test('shows the error state for an unknown ride', async ({ page }) => {

@@ -51,22 +51,19 @@ test.describe('login', () => {
     await page.getByRole('button', { name: 'Iniciar sesión' }).click()
 
     await expect(page).toHaveURL('/rides')
-    await expect(page.getByRole('navigation', { name: 'Navegación principal' }).first()).toContainText(
-      'Mi perfil',
-    )
+    // "Mi perfil" vive en el bloque de sesión, fuera del <nav>.
+    await expect(page.getByRole('banner')).toContainText('Mi perfil')
   })
 
-  test('shows the busy label while the request is running', async ({ page, supabase }) => {
-    supabase.state.users.push({
-      id: 'user-1',
-      email: 'ana@example.com',
-      displayName: 'Ana Pedal',
-      password: 'pedaleando123',
-    })
-    // Retrasamos la respuesta para poder observar el estado de carga.
+  test('shows the busy label while the request is running', async ({ page }) => {
+    // Retrasamos la respuesta y la devolvemos desde el mock del test.
     await page.route('**/auth/v1/token?grant_type=password', async (route) => {
-      await new Promise((resolve) => setTimeout(resolve, 400))
-      await route.continue()
+      await new Promise((resolve) => setTimeout(resolve, 500))
+      await route.fulfill({
+        status: 400,
+        contentType: 'application/json',
+        body: JSON.stringify({ code: 400, error_code: 'invalid_credentials', msg: 'Demorado.' }),
+      })
     })
 
     await page.goto('/login')
@@ -74,7 +71,7 @@ test.describe('login', () => {
     await page.getByLabel('Contraseña', { exact: true }).fill('pedaleando123')
     await page.getByRole('button', { name: 'Iniciar sesión' }).click()
 
-    await expect(page.getByRole('button', { name: 'Iniciando sesión…' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Iniciando sesión…' })).toBeDisabled()
   })
 
   test('links to the registration page', async ({ page }) => {
