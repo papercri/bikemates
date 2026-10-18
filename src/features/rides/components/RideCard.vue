@@ -33,12 +33,12 @@ const dateParts = computed(() => getRideDateParts(props.ride.startsAt))
 
 <template>
   <article
-    class="h-full overflow-hidden rounded-photo border border-line"
+    class="h-full overflow-hidden rounded-photo border border-line sm:aspect-square"
     :class="past ? 'opacity-75' : ''"
   >
     <RouterLink
       :to="{ name: 'ride-detail', params: { id: ride.id } }"
-      class="group relative flex h-full min-h-[15rem] flex-col justify-between gap-6 bg-ink p-4 focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-trail sm:p-5"
+      class="group relative flex h-full min-h-[16rem] flex-col justify-between gap-4 bg-ink p-4 focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-trail sm:p-5"
     >
       <img
         :src="cover"
@@ -74,10 +74,10 @@ const dateParts = computed(() => getRideDateParts(props.ride.startsAt))
         </div>
       </div>
 
-      <!-- Entrada -->
-      <div class="relative min-w-0">
+      <!-- Entrada sobre panel oscuro semitransparente -->
+      <div class="relative rounded-card bg-ink/55 p-3 sm:p-3.5">
         <h2
-          class="line-clamp-3 font-display text-lg font-medium tracking-[-0.01em] text-canvas sm:text-xl"
+          class="line-clamp-2 font-display text-lg leading-[1.15] font-medium tracking-[-0.01em] text-canvas sm:text-xl"
         >
           {{ ride.title }}
         </h2>
