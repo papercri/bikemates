@@ -19,7 +19,7 @@ function jsonResponse(body: unknown, init: { ok?: boolean } = {}): Response {
 }
 
 describe('searchPlaces', () => {
-  const fetchMock = vi.fn()
+  const fetchMock = vi.fn<(input: RequestInfo | URL, init?: RequestInit) => Promise<Response>>()
 
   beforeEach(() => {
     vi.stubGlobal('fetch', fetchMock)

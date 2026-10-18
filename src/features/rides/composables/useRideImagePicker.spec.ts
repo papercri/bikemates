@@ -30,8 +30,8 @@ function setupPicker(initialImageUrl: MaybeRefOrGetter<string | null | undefined
 }
 
 describe('useRideImagePicker', () => {
-  const createObjectURL = vi.fn(() => 'blob:preview-1')
-  const revokeObjectURL = vi.fn()
+  const createObjectURL = vi.fn<() => string>(() => 'blob:preview-1')
+  const revokeObjectURL = vi.fn<() => void>()
 
   beforeEach(() => {
     vi.clearAllMocks()

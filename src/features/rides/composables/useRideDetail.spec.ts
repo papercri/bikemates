@@ -18,8 +18,8 @@ function mountDetail(rideId: string | null) {
       id: { type: String as PropType<string | null>, default: null },
     },
     setup(props) {
-      const id = ref<string | null>(props.id)
-      return { ...useRideDetail(id), id }
+      const rideId = ref<string | null>(props.id)
+      return { ...useRideDetail(rideId), rideId }
     },
     render: () => null,
   })
@@ -83,7 +83,7 @@ describe('useRideDetail', () => {
     await flushPromises()
 
     mocks.getRideById.mockResolvedValue({ id: 'ride-2' } as Ride)
-    wrapper.vm.id = 'ride-2'
+    wrapper.vm.rideId = 'ride-2'
     await flushPromises()
 
     expect(mocks.getRideById).toHaveBeenLastCalledWith('ride-2')

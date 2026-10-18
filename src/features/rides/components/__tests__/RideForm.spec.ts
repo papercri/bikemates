@@ -240,8 +240,8 @@ describe('RideForm', () => {
   })
 
   it('emits the selected image with the submission', async () => {
-    URL.createObjectURL = vi.fn(() => 'blob:preview-1')
-    URL.revokeObjectURL = vi.fn()
+    URL.createObjectURL = vi.fn<() => string>(() => 'blob:preview-1')
+    URL.revokeObjectURL = vi.fn<() => void>()
 
     const wrapper = mountForm()
     const file = new File(['x'], 'portada.png', { type: 'image/png' })

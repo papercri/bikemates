@@ -1,17 +1,25 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+type StorageResult = { data: unknown; error: Error | null }
+
+type StorageBucket = {
+  upload: typeof mocks.upload
+  remove: typeof mocks.remove
+  getPublicUrl: typeof mocks.getPublicUrl
+}
+
 const mocks = vi.hoisted(() => ({
-  getUser: vi.fn(),
-  upload: vi.fn(),
-  remove: vi.fn(),
-  getPublicUrl: vi.fn(),
+  getUser: vi.fn<() => Promise<{ data: { user: { id: string } | null }; error: Error | null }>>(),
+  upload: vi.fn<() => Promise<StorageResult>>(),
+  remove: vi.fn<() => Promise<StorageResult>>(),
+  getPublicUrl: vi.fn<() => { data: { publicUrl: string } }>(),
 }))
 
 vi.mock('@/services/supabase', () => ({
   supabase: {
     auth: { getUser: mocks.getUser },
     storage: {
-      from: vi.fn(() => ({
+      from: vi.fn<() => StorageBucket>(() => ({
         upload: mocks.upload,
         remove: mocks.remove,
         getPublicUrl: mocks.getPublicUrl,

@@ -7,10 +7,10 @@ interface SupabaseResult {
 }
 
 const mocks = vi.hoisted(() => ({
-  getUser: vi.fn(),
-  from: vi.fn(),
-  rpc: vi.fn(),
-  getPublicUrl: vi.fn(),
+  getUser: vi.fn<() => Promise<{ data: { user: { id: string } | null }; error: null }>>(),
+  from: vi.fn<(table: string) => QueryChain>(),
+  rpc: vi.fn<() => Promise<SupabaseResult>>(),
+  getPublicUrl: vi.fn<(path: string) => { data: { publicUrl: string } }>(),
 }))
 
 vi.mock('@/services/supabase', () => ({
@@ -19,7 +19,9 @@ vi.mock('@/services/supabase', () => ({
     from: mocks.from,
     rpc: mocks.rpc,
     storage: {
-      from: vi.fn(() => ({ getPublicUrl: mocks.getPublicUrl })),
+      from: vi.fn<() => { getPublicUrl: typeof mocks.getPublicUrl }>(() => ({
+        getPublicUrl: mocks.getPublicUrl,
+      })),
     },
   },
 }))
@@ -39,24 +41,47 @@ import {
 } from './rideService'
 
 /** Cadena consultable que devuelve el resultado al esperarse (single, maybeSingle o await). */
-function createQueryChain(result: SupabaseResult) {
-  const chain = {
-    select: vi.fn(() => chain),
-    eq: vi.fn(() => chain),
-    in: vi.fn(() => chain),
-    order: vi.fn(() => chain),
-    insert: vi.fn(() => chain),
-    update: vi.fn(() => chain),
-    delete: vi.fn(() => chain),
-    single: vi.fn(() => Promise.resolve(result)),
-    maybeSingle: vi.fn(() => Promise.resolve(result)),
+interface QueryChain {
+  select: () => QueryChainBase
+  eq: () => QueryChainBase
+  in: () => QueryChainBase
+  order: () => QueryChainBase
+  insert: () => QueryChainBase
+  update: () => QueryChainBase
+  delete: () => QueryChainBase
+  single: () => Promise<SupabaseResult>
+  maybeSingle: () => Promise<SupabaseResult>
+  then: (
+    onFulfilled?: (value: SupabaseResult) => unknown,
+    onRejected?: (reason: unknown) => unknown,
+  ) => Promise<unknown>
+}
+
+type QueryChainBase = Omit<QueryChain, 'then'>
+
+function createQueryChain(result: SupabaseResult): QueryChain {
+  const chain: QueryChainBase = {
+    select: vi.fn<() => QueryChainBase>(() => chain),
+    eq: vi.fn<() => QueryChainBase>(() => chain),
+    in: vi.fn<() => QueryChainBase>(() => chain),
+    order: vi.fn<() => QueryChainBase>(() => chain),
+    insert: vi.fn<() => QueryChainBase>(() => chain),
+    update: vi.fn<() => QueryChainBase>(() => chain),
+    delete: vi.fn<() => QueryChainBase>(() => chain),
+    single: vi.fn<() => Promise<SupabaseResult>>(() => Promise.resolve(result)),
+    maybeSingle: vi.fn<() => Promise<SupabaseResult>>(() => Promise.resolve(result)),
+  }
+
+  // El builder de Supabase real es "thenable" (los servicios hacen `await
+  // supabase.from(...).insert(...)` sin `.single()`), así que el doble debe
+  // reproducir ese contrato. La supresión es local y justificada.
+  return Object.assign(chain, {
+    // oxlint-disable-next-line unicorn/no-thenable
     then: (
       onFulfilled?: (value: SupabaseResult) => unknown,
       onRejected?: (reason: unknown) => unknown,
-    ) => Promise.resolve(result).then(onFulfilled, onRejected),
-  }
-
-  return chain
+    ): Promise<unknown> => Promise.resolve(result).then(onFulfilled, onRejected),
+  })
 }
 
 function rideRow(overrides: Partial<Record<string, unknown>> = {}): Record<string, unknown> {

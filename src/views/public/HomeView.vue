@@ -30,10 +30,12 @@ const HERO_ZOOM_FROM = 1
 const HERO_ZOOM_TO = 1.08
 
 const heroSlides = [
-  { src: '/photos/hero-bosque.webp', position: 'object-center' },
   { src: '/photos/grupeta-camino.webp', position: 'object-center' },
   { src: '/photos/img4.avif', position: 'object-center' },
   { src: '/photos/img10.avif', position: 'object-center' },
+  { src: '/photos/img14.jpg', position: 'object-center' },
+  { src: '/photos/img12.jpg', position: 'object-center' },
+  { src: '/photos/hero-bosque.webp', position: 'object-center' },
 ] as const
 
 const authStore = useAuthStore()

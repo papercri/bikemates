@@ -4,22 +4,37 @@ import L from 'leaflet'
 import RideMap from '../RideMap.vue'
 
 vi.mock('leaflet', () => {
-  const setView = vi.fn(() => mapInstance)
-  const remove = vi.fn()
-  const addTo = vi.fn(() => markerInstance)
-  const bindPopup = vi.fn(() => markerInstance)
-  const setLatLng = vi.fn()
-  const setPopupContent = vi.fn()
+  type MarkerInstance = {
+    addTo: () => MarkerInstance
+    bindPopup: () => MarkerInstance
+    setLatLng: () => void
+    setPopupContent: () => void
+  }
 
-  const mapInstance = { setView, remove }
-  const markerInstance = { addTo, bindPopup, setLatLng, setPopupContent }
+  type MapInstance = { setView: () => MapInstance; remove: () => void }
+
+  const setView = vi.fn<MapInstance['setView']>()
+  const remove = vi.fn<MapInstance['remove']>()
+  const addTo = vi.fn<MarkerInstance['addTo']>()
+  const bindPopup = vi.fn<MarkerInstance['bindPopup']>()
+  const setLatLng = vi.fn<MarkerInstance['setLatLng']>()
+  const setPopupContent = vi.fn<MarkerInstance['setPopupContent']>()
+
+  const mapInstance: MapInstance = { setView, remove }
+  const markerInstance: MarkerInstance = { addTo, bindPopup, setLatLng, setPopupContent }
+
+  // Leaflet encadena `L.map(el).setView(...)` y devuelve el propio mapa; el
+  // doble debe preservar ese contrato porque la vista guarda el resultado.
+  addTo.mockImplementation(() => markerInstance)
+  bindPopup.mockImplementation(() => markerInstance)
+  setView.mockImplementation(() => mapInstance)
 
   return {
     default: {
-      map: vi.fn(() => mapInstance),
-      tileLayer: vi.fn(() => ({ addTo: vi.fn() })),
-      marker: vi.fn(() => markerInstance),
-      divIcon: vi.fn(() => ({})),
+      map: vi.fn<() => MapInstance>(() => mapInstance),
+      tileLayer: vi.fn<() => { addTo: () => void }>(() => ({ addTo: vi.fn<() => void>() })),
+      marker: vi.fn<() => MarkerInstance>(() => markerInstance),
+      divIcon: vi.fn<() => Record<string, never>>(() => ({})),
       __mocks: { mapInstance, markerInstance },
     },
   }
