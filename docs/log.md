@@ -784,3 +784,27 @@ Corrección de diseño de `RideCard` (aplica en home y en `/rides`, mismo compon
 
 - `vitest` en verde (196 tests en la rama), `eslint`/`oxlint`, Prettier y
   `type-check` sin errores nuevos.
+
+## 2026-10-18 — RideForm: pulido editorial del formulario de ruta
+
+Mejoras visuales del formulario (create/edit), sin tocar la lógica ni el
+validador:
+
+- **Leyendas de campo** en versalitas mono (`font-mono text-xs uppercase
+  tracking-[0.18em] text-graphite`) con regla hairline, en consonancia con la
+  voz tipográfica editorial del resto de la app.
+- **Ritmo de espaciado:** `space-y-6` entre bloques y grids con `gap-4` en
+  `sm+` (antes todo `gap-3`).
+- **Imagen de portada:** el input de archivo nativo se sustituye por un label
+  estilizado tipo dropzone (borde discontinuo, icono `faImage`, hover de
+  superficie y `focus-within` ring) con el input subyacente en `sr-only`;
+  la ayuda de formato pasa a sr-only porque ya es visible en la zona. Se
+  conservan vista previa, "Quitar imagen" y el Alert de error.
+- ** contador** de descripción con cifras tabulares.
+- **Envío alineado a la derecha en `sm+`** (ancho completo en móvil) sobre
+  filete superior.
+
+### Verificación
+
+- `eslint`/`oxlint`, Prettier, `type-check` y `vitest` (validadores, 17) en
+  verde.
