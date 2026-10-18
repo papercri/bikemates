@@ -161,12 +161,7 @@ onBeforeUnmount(() => {
         <!-- Centinela de scroll: carga el siguiente lote al entrar en pantalla. -->
         <div ref="sentinelEl" class="h-px" aria-hidden="true" />
 
-        <div
-          v-if="hasMore"
-          class="mt-4 flex justify-center py-4"
-          role="status"
-          aria-live="polite"
-        >
+        <div v-if="hasMore" class="mt-4 flex justify-center py-4" role="status" aria-live="polite">
           <span class="sr-only">Cargando más rutas…</span>
           <span
             class="size-6 rounded-full border-2 border-line border-t-ink motion-safe:animate-spin"
