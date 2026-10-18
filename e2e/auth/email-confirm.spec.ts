@@ -43,12 +43,7 @@ test.describe('email confirmation', () => {
 
   test('shows the processing state briefly while verifying', async ({ page, supabase }) => {
     supabase.state.users.push(ORGANIZER)
-
-    // Retrasamos la verificación para observar el estado de procesamiento.
-    await page.route('**/auth/v1/verify', async (route) => {
-      await new Promise((resolve) => setTimeout(resolve, 500))
-      await route.continue()
-    })
+    supabase.state.authDelayMs = 700
 
     await page.goto(`/auth/confirm?type=recovery&token_hash=lento`)
 

@@ -55,16 +55,14 @@ test.describe('login', () => {
     await expect(page.getByRole('banner')).toContainText('Mi perfil')
   })
 
-  test('shows the busy label while the request is running', async ({ page }) => {
-    // Retrasamos la respuesta y la devolvemos desde el mock del test.
-    await page.route('**/auth/v1/token?grant_type=password', async (route) => {
-      await new Promise((resolve) => setTimeout(resolve, 500))
-      await route.fulfill({
-        status: 400,
-        contentType: 'application/json',
-        body: JSON.stringify({ code: 400, error_code: 'invalid_credentials', msg: 'Demorado.' }),
-      })
+  test('shows the busy label while the request is running', async ({ page, supabase }) => {
+    supabase.state.users.push({
+      id: 'user-1',
+      email: 'ana@example.com',
+      displayName: 'Ana Pedal',
+      password: 'pedaleando123',
     })
+    supabase.state.authDelayMs = 600
 
     await page.goto('/login')
     await page.getByLabel('Correo electrónico').fill('ana@example.com')
