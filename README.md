@@ -36,8 +36,9 @@ BikeMates es una SPA **mobile-first** construida con Vue 3 y TypeScript estricto
 - Landing pública con hero a pantalla completa (zoom de entrada y parallax al scroll), header transparente superpuesto, CTA, **política de privacidad** y **404** con `noindex`.
 - Header con navegación principal y footer global en todas las vistas con shell.
 - Navegación auxiliar: **breadcrumb** (`AppBreadcrumb`, alimentado por `meta.breadcrumb`
-  del router, con la pestaña activa del perfil reflejada en la URL) y **barra de volver**
-  (`AppBackBar`, historial del navegador con salida de respaldo) en las vistas
+  del router y sobrescrito por la vista con el **título de la ruta** en detalle y edición,
+  acortado con elipsis; la pestaña activa del perfil se refleja en la URL) y **barra de
+  volver** (`AppBackBar`, historial del navegador con salida de respaldo) en las vistas
   internas; preloader gráfico compartido (`BikeLoader`, bici animada con rastro)
   para los estados de carga de rutas y perfil.
 - Título y meta por ruta con `@unhead/vue`: la ruta de detalle genera un título dinámico y el perfil es `noindex`.
