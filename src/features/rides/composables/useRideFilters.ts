@@ -9,19 +9,8 @@ import {
 } from '../constants/rideFilters'
 import type { Ride } from '../types'
 import { sortRides, sortRidesByDate } from '../utils/rideOrdering'
+import { normalizeSearchText } from '../utils/searchText'
 import { isRidePast } from '@/utils/dates'
-
-/**
- * Minúsculas, sin acentos y sin espacios sobrantes, para que "collserola" encuentre
- * "Vuelta por Collsérrola" sin exigir al usuario la tilde exacta.
- */
-function normalizeSearchText(value: string): string {
-  return value
-    .trim()
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/\p{Diacritic}/gu, '')
-}
 
 /**
  * Estado de los filtros del listado: búsqueda, nivel, público, orden y ventana

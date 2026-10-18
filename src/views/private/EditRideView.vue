@@ -1,16 +1,21 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useHead } from '@unhead/vue'
+import { faTrashCan } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import RideForm from '@/features/rides/components/RideForm.vue'
 import AppPage from '@/components/layout/AppPage.vue'
+import Alert from '@/components/ui/Alert.vue'
 import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
+import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
 import IconArrow from '@/components/icons/IconArrow.vue'
 import Typography from '@/components/ui/Typography.vue'
 
 import { getRideImageUrl } from '@/features/rides/services/rideImageService'
+import { deleteRide } from '@/features/rides/services/rideService'
 import { useRideEditor } from '@/features/rides/composables/useRideEditor'
 import type { RideFormSubmission } from '@/features/rides/types'
 
@@ -39,6 +44,43 @@ const { ride, isLoading, isSubmitting, errorMessage, initialValues, saveRide } =
 
 async function handleSubmit(payload: RideFormSubmission): Promise<void> {
   await saveRide(payload)
+}
+
+const isDeleteDialogOpen = ref(false)
+const isDeletingRide = ref(false)
+const deleteRideError = ref('')
+
+const deleteDialogTitle = computed(() =>
+  ride.value ? `¿Eliminar «${ride.value.title}»?` : '¿Eliminar esta ruta?',
+)
+
+function requestRideDeletion(): void {
+  if (isDeletingRide.value) return
+  deleteRideError.value = ''
+  isDeleteDialogOpen.value = true
+}
+
+function cancelRideDeletion(): void {
+  if (isDeletingRide.value) return
+  isDeleteDialogOpen.value = false
+}
+
+async function confirmRideDeletion(): Promise<void> {
+  if (!rideId.value) return
+
+  isDeletingRide.value = true
+  deleteRideError.value = ''
+
+  try {
+    await deleteRide(rideId.value)
+    isDeleteDialogOpen.value = false
+    await router.push({ name: 'profile', query: { tab: 'my-rides' } })
+  } catch {
+    deleteRideError.value = 'No se ha podido eliminar la ruta. Inténtalo de nuevo.'
+    isDeleteDialogOpen.value = false
+  } finally {
+    isDeletingRide.value = false
+  }
 }
 </script>
 
@@ -84,6 +126,44 @@ async function handleSubmit(payload: RideFormSubmission): Promise<void> {
           @submit="handleSubmit"
         />
       </Card>
+
+      <section v-if="ride && !isLoading" class="mt-8 border-t border-line pt-5">
+        <Typography as="h2" variant="heading-sm">Eliminar ruta</Typography>
+
+        <Typography variant="body-sm" tone="muted" class="mt-1.5 max-w-2xl">
+          Eliminar la ruta borra de forma permanente la salida y deja de aparecer para el resto de
+          ciclistas. Esta acción es irreversible.
+        </Typography>
+
+        <div class="mt-3 flex flex-wrap items-center gap-4">
+          <Button
+            variant="destructive"
+            size="sm"
+            :loading="isDeletingRide"
+            :disabled="isDeletingRide"
+            @click="requestRideDeletion"
+          >
+            <FontAwesomeIcon :icon="faTrashCan" aria-hidden="true" class="size-3.5" />
+            {{ isDeletingRide ? 'Eliminando…' : 'Eliminar ruta' }}
+          </Button>
+
+          <Alert v-if="deleteRideError">
+            {{ deleteRideError }}
+          </Alert>
+        </div>
+
+        <ConfirmDialog
+          :open="isDeleteDialogOpen"
+          tone="danger"
+          :title="deleteDialogTitle"
+          description="La ruta se eliminará de forma permanente y sus participantes perderán el acceso a ella. Esta acción es irreversible."
+          confirm-label="Eliminar ruta"
+          cancel-label="Cancelar"
+          :is-busy="isDeletingRide"
+          @confirm="confirmRideDeletion"
+          @cancel="cancelRideDeletion"
+        />
+      </section>
     </div>
   </AppPage>
 </template>

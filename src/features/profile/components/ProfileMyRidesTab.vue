@@ -1,23 +1,28 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import { faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import IconMeetup from '@/components/icons/IconMeetup.vue'
 import Alert from '@/components/ui/Alert.vue'
 import Button from '@/components/ui/Button.vue'
 import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import FormSelectField from '@/components/ui/FormSelectField.vue'
+import Input from '@/components/ui/Input.vue'
 import Typography from '@/components/ui/Typography.vue'
 import RideCard from '@/features/rides/components/RideCard.vue'
 import { RIDE_SORT_OPTIONS, type RideSortOption } from '@/features/rides/constants/rideFilters'
 import { deleteRide, getMyRides } from '@/features/rides/services/rideService'
 import type { Ride } from '@/features/rides/types'
 import { sortRides, sortRidesByDate } from '@/features/rides/utils/rideOrdering'
+import { normalizeSearchText } from '@/features/rides/utils/searchText'
 import { isRidePast } from '@/utils/dates'
 
 const rides = ref<Ride[]>([])
 const isLoading = ref(false)
 const errorMessage = ref('')
 const sortBy = ref<RideSortOption>('date')
+const query = ref('')
 
 const rideToDelete = ref<Ride | null>(null)
 const isDeleteDialogOpen = ref(false)
@@ -39,12 +44,18 @@ async function loadMyRides(): Promise<void> {
 
 onMounted(loadMyRides)
 
-/** Por fecha, de la más próxima a la más lejana; por distancia o desnivel, de mayor a menor. */
-const sortedRides = computed(() =>
-  sortBy.value === 'date'
-    ? sortRidesByDate(rides.value)
-    : sortRides(rides.value, sortBy.value, 'desc'),
-)
+/** Filtra por título (búsqueda en vivo) y ordena: por fecha ascendente, por métrica descendente. */
+const visibleRides = computed(() => {
+  const needle = normalizeSearchText(query.value)
+  const matching =
+    needle === ''
+      ? rides.value
+      : rides.value.filter((ride) => normalizeSearchText(ride.title).includes(needle))
+
+  return sortBy.value === 'date'
+    ? sortRidesByDate(matching)
+    : sortRides(matching, sortBy.value, 'desc')
+})
 
 const deleteDialogTitle = computed(() =>
   rideToDelete.value ? `¿Eliminar «${rideToDelete.value.title}»?` : '',
@@ -89,13 +100,13 @@ async function confirmRideDeletion(): Promise<void> {
   <div>
     <div
       v-if="isLoading"
-      class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+      class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
       role="status"
       aria-live="polite"
     >
       <span class="sr-only">Cargando tus rutas…</span>
       <div
-        v-for="n in 3"
+        v-for="n in 4"
         :key="n"
         class="h-56 rounded-photo bg-surface motion-safe:animate-pulse"
         aria-hidden="true"
@@ -127,34 +138,67 @@ async function confirmRideDeletion(): Promise<void> {
     </div>
 
     <div v-else>
-      <div class="flex flex-wrap items-end justify-between gap-4">
+      <div class="flex flex-wrap items-end justify-between gap-3">
         <Typography variant="body-sm" tone="muted" aria-live="polite">
-          {{ sortedRides.length }}
-          {{ sortedRides.length === 1 ? 'ruta publicada' : 'rutas publicadas' }}
+          {{ visibleRides.length }}
+          {{ visibleRides.length === 1 ? 'ruta publicada' : 'rutas publicadas' }}
         </Typography>
 
-        <div class="w-52">
-          <FormSelectField
-            id="my-rides-sort"
-            v-model="sortBy"
-            label="Ordenar por"
-            label-hidden
-            :options="RIDE_SORT_OPTIONS"
-          />
+        <div class="flex flex-wrap items-end gap-2">
+          <div class="w-56">
+            <label for="my-rides-search" class="sr-only">
+              Buscar por título
+            </label>
+
+            <Input
+              id="my-rides-search"
+              v-model="query"
+              type="search"
+              name="my-rides-search"
+              placeholder="Buscar por título"
+            />
+          </div>
+
+          <div class="w-48">
+            <FormSelectField
+              id="my-rides-sort"
+              v-model="sortBy"
+              label="Ordenar por"
+              label-hidden
+              :options="RIDE_SORT_OPTIONS"
+            />
+          </div>
         </div>
       </div>
 
-      <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <div v-for="ride in sortedRides" :key="ride.id" class="flex flex-col gap-2">
+      <div
+        v-if="visibleRides.length > 0"
+        class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+      >
+        <div v-for="ride in visibleRides" :key="ride.id" class="flex flex-col gap-2">
           <RideCard :ride="ride" :past="isRidePast(ride.startsAt)" />
 
-          <div class="flex justify-end">
-            <Button variant="quiet-destructive" size="sm" @click="requestRideDeletion(ride)">
+          <div class="flex items-center justify-end gap-2">
+            <Button
+              :to="{ name: 'ride-edit', params: { id: ride.id } }"
+              variant="outline"
+              size="sm"
+            >
+              <FontAwesomeIcon :icon="faPenToSquare" aria-hidden="true" class="size-3.5" />
+              Modificar
+            </Button>
+
+            <Button variant="destructive" size="sm" @click="requestRideDeletion(ride)">
+              <FontAwesomeIcon :icon="faTrashCan" aria-hidden="true" class="size-3.5" />
               Eliminar
             </Button>
           </div>
         </div>
       </div>
+
+      <p v-else class="mt-4 text-sm text-graphite">
+        Ninguna ruta coincide con la búsqueda.
+      </p>
     </div>
 
     <Alert v-if="deleteRideError" class="mt-4">
