@@ -147,9 +147,7 @@ async function confirmRideDeletion(): Promise<void> {
 
         <div class="flex flex-wrap items-end gap-2">
           <div class="w-56">
-            <label for="my-rides-search" class="sr-only">
-              Buscar por título
-            </label>
+            <label for="my-rides-search" class="sr-only"> Buscar por título </label>
 
             <Input
               id="my-rides-search"
@@ -205,9 +203,7 @@ async function confirmRideDeletion(): Promise<void> {
         </div>
       </div>
 
-      <p v-else class="mt-4 text-sm text-graphite">
-        Ninguna ruta coincide con la búsqueda.
-      </p>
+      <p v-else class="mt-4 text-sm text-graphite">Ninguna ruta coincide con la búsqueda.</p>
     </div>
 
     <Alert v-if="deleteRideError" class="mt-4">

@@ -49,10 +49,13 @@ test.describe('profile', () => {
     await expect(page.locator('#panel-my-rides')).toBeVisible()
     await expect(page.getByText('Todavía no has publicado ninguna ruta.')).toBeVisible()
     await expect(page.locator('#panel-details')).toBeHidden()
+    // La pestaña activa queda registrada en la URL para poder volver a ella.
+    await expect(page).toHaveURL(/tab=my-rides/)
 
     await page.getByRole('tab', { name: 'Mis datos' }).click()
     await expect(page.locator('#panel-details')).toBeVisible()
     await expect(page.locator('#panel-my-rides')).toBeHidden()
+    await expect(page).toHaveURL(/\/profile$/)
   })
 
   test('supports arrow-key navigation between tabs', async ({ page, supabase }) => {
@@ -154,10 +157,7 @@ test.describe('profile', () => {
 
   test('lists my published rides and deletes one with confirmation', async ({ page, supabase }) => {
     supabase.state.users.push(ORGANIZER)
-    supabase.state.rides.push(
-      makeRide(),
-      makeRide({ id: 'ride-2', title: 'Subida al turó' }),
-    )
+    supabase.state.rides.push(makeRide(), makeRide({ id: 'ride-2', title: 'Subida al turó' }))
     await supabase.signInAs(ORGANIZER)
 
     await page.goto('/profile')

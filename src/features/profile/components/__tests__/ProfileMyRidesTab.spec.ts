@@ -21,6 +21,7 @@ const RideCardStub = defineComponent({
   props: {
     ride: { type: Object as PropType<Ride>, required: true },
     past: { type: Boolean, default: false },
+    bare: { type: Boolean, default: false },
   },
   setup(props) {
     return () =>
@@ -58,6 +59,7 @@ const routes = [
   { path: '/', name: 'home', component: { template: '<div />' } },
   { path: '/rides/create', name: 'ride-create', component: { template: '<div />' } },
   { path: '/rides/:id', name: 'ride-detail', component: { template: '<div />' } },
+  { path: '/rides/:id/edit', name: 'ride-edit', component: { template: '<div />' } },
 ]
 
 async function mountComponent() {
@@ -155,6 +157,50 @@ describe('ProfileMyRidesTab', () => {
 
     // Por distancia descendente: la larga primero.
     expect(cardTitles(wrapper)).toEqual(['Ruta larga', 'Ruta corta'])
+
+    wrapper.unmount()
+  })
+
+  it('shows the integrated card actions for each ride', async () => {
+    mocks.getMyRides.mockResolvedValue([
+      rideOf({ id: 'a', title: 'Ruta del río' }),
+      rideOf({ id: 'b', title: 'Ruta de la sierra' }),
+    ])
+    const wrapper = await mountComponent()
+    await flushPromises()
+
+    const editLinks = wrapper.findAll('a').filter((link) => link.text().trim() === 'Modificar')
+    expect(editLinks).toHaveLength(2)
+    expect(editLinks[0]!.attributes('href')).toBe('/rides/a/edit')
+    expect(editLinks[1]!.attributes('href')).toBe('/rides/b/edit')
+
+    const deleteButtons = wrapper
+      .findAll('button')
+      .filter((button) => button.text().trim() === 'Eliminar')
+    expect(deleteButtons).toHaveLength(2)
+
+    wrapper.unmount()
+  })
+
+  it('filters the rides by title while typing', async () => {
+    mocks.getMyRides.mockResolvedValue([
+      rideOf({ id: 'a', title: 'Ruta del río' }),
+      rideOf({ id: 'b', title: 'Ruta de la sierra' }),
+    ])
+    const wrapper = await mountComponent()
+    await flushPromises()
+
+    await wrapper.get('input[type="search"]').setValue('sierra')
+    await flushPromises()
+
+    expect(cardTitles(wrapper)).toEqual(['Ruta de la sierra'])
+    expect(wrapper.text()).toContain('1 ruta publicada')
+
+    await wrapper.get('input[type="search"]').setValue('zzz')
+    await flushPromises()
+
+    expect(cardTitles(wrapper)).toEqual([])
+    expect(wrapper.text()).toContain('Ninguna ruta coincide con la búsqueda.')
 
     wrapper.unmount()
   })

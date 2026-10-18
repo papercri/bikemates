@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useHead } from '@unhead/vue'
 import { ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute, useRouter, type LocationQuery } from 'vue-router'
 import AppPage from '@/components/layout/AppPage.vue'
 import BrandLogo from '@/components/icons/BrandLogo.vue'
 import RidgeStrip from '@/components/icons/RidgeStrip.vue'
@@ -31,7 +31,7 @@ const activeTab = ref<ProfileTab>(tabFromQuery(route.query.tab))
 watch(activeTab, (tab) => {
   if (tab === tabFromQuery(route.query.tab)) return
 
-  const query: Record<string, unknown> = { ...route.query }
+  const query: LocationQuery = { ...route.query }
 
   if (tab === 'details') {
     delete query.tab
