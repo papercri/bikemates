@@ -122,9 +122,7 @@ useHead({
       Volver a las rutas
     </RouterLink>
 
-    <div v-if="isLoading" class="mt-8 py-12 text-center" role="status" aria-live="polite">
-      <Typography tone="muted">Cargando los detalles de la ruta...</Typography>
-    </div>
+    <BikeLoader v-if="isLoading" class="mt-8" label="Cargando los detalles de la ruta…" />
 
     <EmptyState
       v-else-if="errorMessage"

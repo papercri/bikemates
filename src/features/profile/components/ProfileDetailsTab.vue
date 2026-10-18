@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import Alert from '@/components/ui/Alert.vue'
+import BikeLoader from '@/components/ui/BikeLoader.vue'
 import Button from '@/components/ui/Button.vue'
 import Typography from '@/components/ui/Typography.vue'
 import { useAuthStore } from '@/features/auth/stores/authStore'
@@ -28,25 +29,7 @@ const sectionTitleClasses =
   <div>
     <Typography as="h2" variant="heading-sm">Mis datos</Typography>
 
-    <div v-if="isLoading" class="mt-4 space-y-6" role="status" aria-live="polite">
-      <span class="sr-only">Cargando tu perfil…</span>
-
-      <div class="flex items-center gap-5">
-        <div
-          class="h-20 w-20 shrink-0 rounded-full bg-surface motion-safe:animate-pulse"
-          aria-hidden="true"
-        />
-        <div
-          class="h-10 w-32 rounded-field bg-surface motion-safe:animate-pulse"
-          aria-hidden="true"
-        />
-      </div>
-
-      <div
-        class="h-24 max-w-md rounded-card bg-surface motion-safe:animate-pulse"
-        aria-hidden="true"
-      />
-    </div>
+    <BikeLoader v-if="isLoading" class="mt-4" label="Cargando tu perfil…" />
 
     <div v-else-if="errorMessage" class="mt-4">
       <Alert boxed>

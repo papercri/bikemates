@@ -5,6 +5,7 @@ import { faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import IconMeetup from '@/components/icons/IconMeetup.vue'
 import Alert from '@/components/ui/Alert.vue'
+import BikeLoader from '@/components/ui/BikeLoader.vue'
 import Button from '@/components/ui/Button.vue'
 import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
@@ -99,20 +100,7 @@ async function confirmRideDeletion(): Promise<void> {
 
 <template>
   <div>
-    <div
-      v-if="isLoading"
-      class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-      role="status"
-      aria-live="polite"
-    >
-      <span class="sr-only">Cargando tus rutas…</span>
-      <div
-        v-for="n in 4"
-        :key="n"
-        class="h-56 rounded-photo bg-surface motion-safe:animate-pulse"
-        aria-hidden="true"
-      />
-    </div>
+    <BikeLoader v-if="isLoading" label="Cargando tus rutas…" />
 
     <div v-else-if="errorMessage" class="max-w-md">
       <Alert boxed>

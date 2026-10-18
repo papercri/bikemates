@@ -6,12 +6,13 @@ import { faTrashCan } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import RideForm from '@/features/rides/components/RideForm.vue'
+import AppBackBar from '@/components/layout/AppBackBar.vue'
 import AppPage from '@/components/layout/AppPage.vue'
 import Alert from '@/components/ui/Alert.vue'
+import BikeLoader from '@/components/ui/BikeLoader.vue'
 import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
 import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
-import IconArrow from '@/components/icons/IconArrow.vue'
 import Typography from '@/components/ui/Typography.vue'
 
 import { getRideImageUrl } from '@/features/rides/services/rideImageService'
@@ -88,14 +89,7 @@ async function confirmRideDeletion(): Promise<void> {
   <AppPage spacing="compact">
     <div class="mx-auto max-w-3xl">
       <header class="mb-5">
-        <button
-          type="button"
-          class="inline-flex items-center gap-1.5 text-sm text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
-          @click="router.back()"
-        >
-          <IconArrow direction="left" />
-          Volver
-        </button>
+        <AppBackBar fallback="/rides" show-all-rides-link />
 
         <Typography as="h1" variant="heading-lg" class="mt-3"> Editar ruta </Typography>
 
@@ -104,9 +98,7 @@ async function confirmRideDeletion(): Promise<void> {
         </Typography>
       </header>
 
-      <Card v-if="isLoading" class="p-6" role="status">
-        <Typography variant="body-sm" tone="muted">Cargando ruta…</Typography>
-      </Card>
+      <BikeLoader v-if="isLoading" label="Cargando ruta…" />
 
       <Card v-else-if="errorMessage && !ride" variant="danger" class="p-6" role="alert">
         <Typography variant="body-sm" class="text-red-700">{{ errorMessage }}</Typography>
