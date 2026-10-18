@@ -1,5 +1,5 @@
 import { flushPromises, mount } from '@vue/test-utils'
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, type PropType } from 'vue'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Ride } from '../types'
 import { useRideDetail } from './useRideDetail'
@@ -15,7 +15,7 @@ vi.mock('../services/rideService', () => ({
 function mountDetail(rideId: string | null) {
   const Harness = defineComponent({
     props: {
-      id: { type: String, default: null },
+      id: { type: String as PropType<string | null>, default: null },
     },
     setup(props) {
       const id = ref<string | null>(props.id)

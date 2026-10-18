@@ -57,6 +57,10 @@ function fileInput(wrapper: ReturnType<typeof mountForm>) {
   return wrapper.get('input#ride-image')
 }
 
+function fieldValue(wrapper: ReturnType<typeof mountForm>, selector: string): string {
+  return wrapper.get<HTMLInputElement | HTMLSelectElement>(selector).element.value
+}
+
 function selectFile(wrapper: ReturnType<typeof mountForm>, file: File): void {
   Object.defineProperty(fileInput(wrapper).element, 'files', {
     value: [file],
@@ -75,11 +79,11 @@ describe('RideForm', () => {
     const legends = wrapper.findAll('legend').map((legend) => legend.text())
     expect(legends).toEqual(['Datos básicos', 'Recorrido', 'Detalles de la salida', 'Imagen de portada'])
 
-    expect(wrapper.get('#title').element.value).toBe('Vuelta por Collserola')
-    expect(wrapper.get('#distanceKm').element.value).toBe('30')
-    expect(wrapper.get('#bikeType').element.value).toBe('gravel')
-    expect(wrapper.get('#level').element.value).toBe('Intermedio')
-    expect(wrapper.get('#audience').element.value).toBe('everyone')
+    expect(fieldValue(wrapper, '#title')).toBe('Vuelta por Collserola')
+    expect(fieldValue(wrapper, '#distanceKm')).toBe('30')
+    expect(fieldValue(wrapper, '#bikeType')).toBe('gravel')
+    expect(fieldValue(wrapper, '#level')).toBe('Intermedio')
+    expect(fieldValue(wrapper, '#audience')).toBe('everyone')
   })
 
   it('emits a valid submission with the current values and no image', async () => {
@@ -109,7 +113,7 @@ describe('RideForm', () => {
     const wrapper = mountForm({ initialValues: validValues({ distanceKm: '0' }) })
 
     await wrapper.get('form').trigger('submit')
-    expect(wrapper.get('[role="alert"]').exists()).toBe(true)
+    expect(wrapper.find('[role="alert"]').exists()).toBe(true)
 
     await wrapper.get('#distanceKm').setValue('25')
     expect(wrapper.find('[role="alert"]').exists()).toBe(false)
@@ -161,9 +165,13 @@ describe('RideForm', () => {
     await wrapper.get('form').trigger('submit')
 
     const payload = wrapper.emitted('submit')?.[0]?.[0]
-    expect(payload?.values.meetingPoint).toBe('Monistrol de Montserrat')
-    expect(payload?.values.latitude).toBe(41.7633)
-    expect(payload?.values.longitude).toBe(1.8428)
+    expect(payload).toMatchObject({
+      values: expect.objectContaining({
+        meetingPoint: 'Monistrol de Montserrat',
+        latitude: 41.7633,
+        longitude: 1.8428,
+      }),
+    })
   })
 
   it('clears the meeting point when the picker emits a null place', async () => {
@@ -243,6 +251,6 @@ describe('RideForm', () => {
 
     await wrapper.setProps({ initialValues: validValues({ title: 'Ruta reeditada' }) })
 
-    expect(wrapper.get('#title').element.value).toBe('Ruta reeditada')
+    expect(fieldValue(wrapper, '#title')).toBe('Ruta reeditada')
   })
 })
