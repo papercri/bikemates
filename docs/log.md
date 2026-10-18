@@ -685,3 +685,18 @@ Corrección de diseño en la banda final "Tu próxima salida empieza aquí"
 ### Verificación
 
 - `eslint`/`oxlint` en el fichero y `vitest` (App.spec) en verde.
+
+## 2026-10-18 — RideCard: formato cuadrado en desktop y panel de título
+
+Corrección de diseño de `RideCard` (aplica en home y en `/rides`, mismo componente):
+
+- En `sm+` la tarjeta pasa a `aspect-square` (antes `min-h-[15rem]`, contenido
+  a bandera sobre la foto). En móvil se mantiene alto mínimo de 16rem.
+- El bloque de título/badges se apoya ahora en un panel oscuro semitransparente
+  (`bg-ink/55` redondeado) para mejorar la legibilidad sobre cualquier foto.
+- Título limitado a 2 líneas (`line-clamp-2`, antes 3) con interlineado
+  más ceñido (`leading-[1.15]`).
+
+### Verificación
+
+- `eslint`, `oxlint` y Prettier check en verde.
