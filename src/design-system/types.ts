@@ -1,8 +1,11 @@
-export type ButtonVariant = 'primary' | 'outline' | 'destructive' | 'link'
-export type ButtonSize = 'sm' | 'md' | 'lg'
+export type ButtonVariant =
+  'primary' | 'sun' | 'sun-outline' | 'outline' | 'destructive' | 'quiet-destructive' | 'link'
+export type ButtonSize = 'xs' | 'sm' | 'md' | 'lg'
 
-export type BadgeVariant = 'soft' | 'muted'
-export type BadgeColor = 'trail' | 'route' | 'ink'
+/** `inverse` es la variante para texto sobre fotografía (fondo oscuro translúcido). */
+export type BadgeVariant = 'soft' | 'muted' | 'inverse'
+/** `green`/`orange`/`red` son la escala de nivel de salida; los demás, neutros de marca. */
+export type BadgeColor = 'trail' | 'route' | 'ink' | 'green' | 'orange' | 'red'
 
 export type AlertVariant = 'error' | 'success'
 

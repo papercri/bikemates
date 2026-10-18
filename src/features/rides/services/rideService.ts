@@ -1,12 +1,20 @@
 import { supabase } from '@/services/supabase'
-import type { CreateRideInput, UpdateRideInput, Ride } from '../types'
+import type { CreateRideInput, UpdateRideInput, Ride, RideParticipant } from '../types'
 import {
   isBikeType,
   isRideAudience,
   isRideLevel,
   isRideStatus,
 } from '../validators/rideValueGuards'
+function getRideImageUrl(imagePath: string | null): string | null {
+  if (!imagePath) {
+    return null
+  }
 
+  const { data } = supabase.storage.from('ride-images').getPublicUrl(imagePath)
+
+  return data.publicUrl
+}
 function mapRide(data: {
   id: string
   organizer_id: string
@@ -59,6 +67,7 @@ function mapRide(data: {
     status: data.status,
     createdAt: data.created_at,
     updatedAt: data.updated_at,
+    imageUrl: getRideImageUrl(data.image_path),
   }
 }
 
@@ -252,4 +261,72 @@ export async function updateRide(id: string, input: UpdateRideInput): Promise<Ri
   }
 
   return mapRide(data)
+}
+
+export async function getRideParticipants(
+  rideId: string,
+  organizerId: string,
+): Promise<RideParticipant[]> {
+  const { data, error } = await supabase
+    .from('ride_participants')
+    .select(
+      `
+      user_id,
+      profiles (
+        id,
+        display_name,
+        avatar_url
+      )
+    `,
+    )
+    .eq('ride_id', rideId)
+    .order('joined_at', { ascending: true })
+
+  if (error) {
+    throw new Error(`No se pudieron cargar los participantes: ${error.message}`)
+  }
+
+  return data.map((participant) => {
+    const profile = participant.profiles
+
+    if (!profile) {
+      throw new Error('No se ha podido recuperar el perfil de un participante.')
+    }
+
+    return {
+      id: profile.id,
+      displayName: profile.display_name,
+      avatarUrl: profile.avatar_url,
+      isOrganizer: profile.id === organizerId,
+    }
+  })
+}
+
+export async function getRideParticipantCount(rideId: string): Promise<number> {
+  const { data, error } = await supabase.rpc('get_ride_participant_count', { p_ride_id: rideId })
+
+  if (error) {
+    throw new Error(`No se pudo cargar el número de participantes: ${error.message}`)
+  }
+
+  return Number(data)
+}
+export async function joinRide(rideId: string): Promise<void> {
+  const { error } = await supabase.rpc('join_ride', {
+    p_ride_id: rideId,
+  })
+
+  if (error) {
+    throw error
+  }
+}
+
+export async function leaveRide(rideId: string): Promise<void> {
+  const { error } = await supabase.rpc('leave_ride', {
+    p_ride_id: rideId,
+  })
+
+  if (error) {
+    throw new Error(`No se pudo cancelar la inscripción: ${error.message}`)
+  }
 }

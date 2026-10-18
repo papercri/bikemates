@@ -219,7 +219,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_ride_participant_count: {
+        Args: { p_ride_id: string }
+        Returns: number
+      }
       join_ride: { Args: { p_ride_id: string }; Returns: undefined }
+      leave_ride: { Args: { p_ride_id: string }; Returns: undefined }
     }
     Enums: {
       [_ in never]: never

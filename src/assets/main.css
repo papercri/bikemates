@@ -3,21 +3,44 @@
 @import '@fontsource-variable/jetbrains-mono';
 
 @theme {
+  /*
+   * Estilo Cowboy: porcelana blanca, filetes hairline, tinta carbón y
+   * cero cromatismo en la interfaz — la fotografía aporta todo el color.
+   * SuisseIntl se sustituye por Inter Variable (sustituto aprobado).
+   * Los nombres de token se conservan por compatibilidad con las clases
+   * existentes; los valores siguen la paleta Cowboy.
+   */
   --color-canvas: #ffffff;
-  --color-snow: #f8f9fa;
-  --color-surface: #f1f3f5;
-  --color-line: #e9ecef;
-  --color-line-strong: #dee2e6;
+  --color-snow: #f3f4f6;
+  --color-surface: #f3f4f6;
+  --color-line: #e5e7eb;
+  --color-line-strong: #d1d5db;
+  /* Filete de controles: neutral slate de Cowboy para bordes en reposo. */
+  --color-line-input: #6b7280;
 
-  --color-ink: #1a1d20;
-  --color-graphite: #6c757d;
+  --color-ink: #1d1d1d;
+  --color-graphite: #5e5e5e;
 
-  --color-trail: #22c55e;
-  --color-trail-deep: #10b981;
-  --color-trail-ink: #15803d;
-  --color-trail-dark: #166534;
-  --color-route: #f97316;
-  --color-route-ink: #c2410c;
+  /* Acento de marca mapeado al carbón Cowboy: sin CTA cromático. */
+  --color-trail: #1d1d1d;
+  --color-trail-deep: #5e5e5e;
+  --color-trail-ink: #1d1d1d;
+  --color-trail-dark: #5e5e5e;
+  --color-route: #1d1d1d;
+  --color-route-ink: #1d1d1d;
+  --color-route-dark: #5e5e5e;
+  --color-turf: #1d1d1d;
+
+  /* Estados semánticos reservados (nada decorativo). */
+  --color-moss: #569d5f;
+  --color-signal-blue: #2563eb;
+
+  /* Escala de nivel de salida: verde → naranja → rojo (significado, no decoración). */
+  --color-level-easy: #22c55e;
+  /* Tinta verde accesible (AA) para texto e iconos sobre fondos claros. */
+  --color-level-easy-ink: #15803d;
+  --color-level-medium: #f97316;
+  --color-level-hard: #dc2626;
 
   --animate-trail-dash: trail-dash 24s linear infinite;
 
@@ -28,17 +51,25 @@
   }
 
   --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, monospace;
 
-  --radius-card: 1.25rem;
-  --radius-btn: 0.875rem;
+  /*
+   * Radios: solo 8px (tarjetas, fotos, campos) y píldora (botones, badges).
+   */
+  --radius-photo: 8px;
+  --radius-card: 8px;
+  --radius-field: 8px;
+  --radius-btn: 9999px;
 
-  --shadow-card: 0 1px 2px rgb(26 29 32 / 0.04), 0 8px 24px rgb(26 29 32 / 0.06);
+  /* Superficie plana: sin sombras en tarjetas; elevación solo flotantes. */
+  --shadow-card: 0 1px 6px rgb(0 0 0 / 0.06);
+  --shadow-lift: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
 @layer base {
   body {
-    @apply bg-snow font-sans text-ink antialiased;
+    @apply bg-canvas font-sans text-ink antialiased;
     text-rendering: optimizeLegibility;
     box-sizing: border-box;
   }
@@ -46,6 +77,13 @@
   *::before,
   *::after {
     box-sizing: border-box;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
   }
 
   a[href],
@@ -59,5 +97,25 @@
   input:disabled,
   select:disabled {
     cursor: not-allowed;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--color-ink) 15%, transparent);
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-line-strong);
+    border: 2px solid var(--color-canvas);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-graphite);
   }
 }

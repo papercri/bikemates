@@ -21,22 +21,22 @@ const props = withDefaults(
 )
 
 const variantClasses: Record<TypographyVariant, string> = {
-  display: 'text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl',
-  'heading-xl': 'text-3xl font-bold sm:text-4xl',
-  'heading-lg': 'text-3xl font-bold',
-  'heading-md': 'text-2xl font-bold sm:text-3xl',
-  'heading-sm': 'text-xl font-semibold',
-  'heading-xs': 'text-lg font-semibold',
+  display: 'font-display text-4xl font-medium leading-[0.95] tracking-[-0.025em] sm:text-6xl',
+  'heading-xl': 'font-display text-3xl font-medium leading-[1.02] tracking-[-0.025em] sm:text-4xl',
+  'heading-lg': 'font-display text-2xl font-medium leading-[1.05] tracking-[-0.02em] sm:text-3xl',
+  'heading-md': 'font-display text-xl font-medium leading-tight tracking-[-0.015em] sm:text-2xl',
+  'heading-sm': 'text-lg font-medium tracking-tight sm:text-xl',
+  'heading-xs': 'text-base font-medium sm:text-lg',
   body: '',
   'body-sm': 'text-sm',
   caption: 'text-xs leading-5',
-  eyebrow: 'text-sm font-semibold uppercase tracking-widest',
-  'eyebrow-wide': 'text-sm font-semibold uppercase tracking-[0.2em]',
-  'label-xs': 'text-xs font-semibold uppercase tracking-widest',
-  'numeric-xl': 'font-mono text-4xl font-bold leading-none tracking-tight',
-  'numeric-lg': 'font-mono text-2xl font-bold tracking-tight sm:text-3xl',
-  'numeric-md': 'font-mono text-xl font-bold leading-none tracking-tight',
-  'numeric-inline': 'font-mono font-bold',
+  eyebrow: 'font-mono text-xs font-semibold uppercase tracking-[0.18em]',
+  'eyebrow-wide': 'font-mono text-xs font-semibold uppercase tracking-[0.22em]',
+  'label-xs': 'font-mono text-[0.7rem] font-semibold uppercase tracking-[0.18em]',
+  'numeric-xl': 'font-display text-4xl font-semibold leading-none tracking-tight tabular-nums',
+  'numeric-lg': 'font-display text-2xl font-semibold tracking-tight tabular-nums sm:text-3xl',
+  'numeric-md': 'font-display text-xl font-semibold leading-none tracking-tight tabular-nums',
+  'numeric-inline': 'font-display font-medium tabular-nums',
 }
 
 const toneClasses: Record<TypographyTone, string> = {

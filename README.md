@@ -2,14 +2,18 @@
 
 Aplicación web para ciclistas en España: descubre rutas, encuentra compañeros de pedaleo y organiza salidas en grupo.
 
-BikeMates es una SPA **mobile-first** construida con Vue 3 y TypeScript estricto, con acceso a datos sobre **Supabase** (autenticación, base de datos y Edge Functions), SEO técnico en las páginas públicas y una interfaz clara y luminosa según el design system **Clean Alpine & Light** (fondo claro, acentos verde `trail` y naranja `route`, tipografía Inter).
+BikeMates es una SPA **mobile-first** construida con Vue 3 y TypeScript estricto, con acceso a datos sobre **Supabase** (autenticación, base de datos y Edge Functions), SEO técnico en las páginas públicas y una interfaz editorial minimalista de showroom (lienzo porcelana `#FFFFFF`, tarjetas blancas con filete hairline `#e5e7eb` y esquinas de 8px, tinta carbón `#1d1d1d`, interfaz acromática sin CTA cromático, tipografía Inter con tracking negativo en titulares y JetBrains Mono para datos).
 
 ## Funcionalidades
 
 ### Descubrimiento de rutas
 
 - Listado de rutas con tarjeta por salida: localización, distancia, desnivel acumulado y nivel.
-- Filtro por nivel: `Iniciación`, `Intermedio` y `Avanzado`.
+- Filtros compactos con etiquetas solo para lectores de pantalla: búsqueda por título (sin
+  distinguir mayúsculas ni tildes), nivel, público y orden (`Por fecha`, `Por distancia`,
+  `Por desnivel`).
+- Dos páginas en el listado: `Próximas` y `Pasadas`, con sus recuentos; las pasadas salen
+  ordenadas de la más reciente a la más antigua y atenuadas en la tarjeta.
 - Detalle de ruta con perfil del recorrido (gráfico de desnivel), descripción y datos clave.
 - Estado vacío y enlace de retorno cuando la ruta no existe.
 - Los datos de rutas son de ejemplo (`src/features/rides/data/mockRides.ts`) hasta conectar con la base de datos.
@@ -24,7 +28,7 @@ BikeMates es una SPA **mobile-first** construida con Vue 3 y TypeScript estricto
 
 ### Páginas y infraestructura
 
-- Landing pública con CTA, **política de privacidad** y **404** con `noindex`.
+- Landing pública con hero a pantalla completa (zoom de entrada y parallax al scroll), header transparente superpuesto, CTA, **política de privacidad** y **404** con `noindex`.
 - Header con navegación principal y footer global en todas las vistas con shell.
 - Título y meta por ruta con `@unhead/vue`: ninguna página muestra el título por defecto de Vite, la ruta de detalle genera un título dinámico y el perfil es `noindex`.
 - Favicon SVG propio (marca sin texto) en `public/favicon.svg`.
@@ -34,9 +38,11 @@ BikeMates es una SPA **mobile-first** construida con Vue 3 y TypeScript estricto
 | Capa     | Tecnología                                                                   |
 | -------- | ---------------------------------------------------------------------------- |
 | Frontend | Vue 3 (Composition API, `<script setup lang="ts">`), Vite, Vue Router, Pinia |
+| Animaciones | `motion-v` (Motion for Vue): parallax con `useScroll`/`useTransform`, revelados `whileInView` |
 | Lenguaje | TypeScript estricto (sin `any`, `noUncheckedIndexedAccess`)                  |
 | Estilos  | Tailwind CSS v4 (tokens en `src/assets/main.css` vía `@theme`)               |
 | SEO      | `@unhead/vue`                                                                |
+| Iconos   | Font Awesome free-solid (`@fortawesome/vue-fontawesome`)                     |
 | Backend  | Supabase: Auth, PostgreSQL con RLS, Edge Functions                           |
 | Tests    | Vitest + Vue Test Utils, Playwright                                          |
 | Calidad  | ESLint, oxlint, Prettier                                                     |
@@ -97,13 +103,15 @@ El guard de router resuelve la sesión antes de navegar y redirige a `/login?red
 
 ```text
 src/
-  assets/main.css          # tokens del Design System (@theme) y estilos globales
+  assets/                  # main.css (tokens @theme)
+  composables/              # useInView…
   design-system/           # cn(), createVariant (equivalente mínimo de CVA) y tipos
   app/router/              # rutas y guards
   components/
     ui/                    # primitivos: Button, Input, Textarea, Card, Badge, Alert,
-                           # Typography, EmptyState, FormLabel, FormError, FormHelp,
-                           # FormSelect, PasswordInput
+                           # Typography, EmptyState, ConfirmDialog (modal de
+                           # confirmación), FormLabel, FormError, FormHelp,
+                           # FormSelect, FormSelectField, PasswordInput
     layout/                # AppHeader, AppFooter, AppPage (shell de página)
     icons/                 # BrandLogo, RidgeStrip, CyclistScene, RidgeDivider,
                            # HeroBackdrop, Icon*
@@ -111,9 +119,11 @@ src/
     auth/                  # components (AuthCard), composables (useAuthForm),
                            # services (Supabase Auth), stores (authStore),
                            # utils (emailLinkParams), validators
-    rides/                 # types, components, composables (useRideImagePicker,
-                           # usePlaceSearch, useRideDetail, useRideList),
-                           # constants, data, services, utils, validators
+    rides/                 # types, components (RideCard, RideFilters,
+                           # RideTimeframeTabs, RideForm…), composables
+                           # (useRideFilters, useRideList, useRideDetail…),
+                           # constants (rideFilters), data, services, utils
+                           # (rideOrdering), validators
   services/                # cliente Supabase (único punto de acceso)
   utils/                   # utilidades puras (dates, validators…)
   views/                   # public/ y private/
@@ -128,7 +138,28 @@ Separación de responsabilidades: las vistas orquestan, los componentes presenta
 - Los componentes visuales viven en `src/components/` y no contienen lógica de negocio.
 - Los SVG decorativos e iconográficos viven en `src/components/icons/` como componentes propios (`CyclistScene`, `RidgeDivider`, `HeroBackdrop`, `Icon*`); las vistas y componentes solo los componen.
 - Los tokens (colores, radios, sombras, tipografías) se definen una sola vez en `src/assets/main.css`.
+- Estilo showroom editorial claro (referencia Cowboy): paleta acromática de
+  porcelana (`canvas` `#FFFFFF`, `snow`/`surface` `#f3f4f6`), tinta carbón
+  (`ink` `#1d1d1d`, `graphite` `#5e5e5e`) y filetes hairline (`line` `#e5e7eb`);
+  los tokens de marca (`trail`, `route`, `turf`) conservan sus nombres y
+  apuntan al carbón, de modo que no existe CTA cromático. `moss` y
+  `signal-blue` quedan reservados a estados semánticos (el foco de los campos
+  usa `signal-blue`). Estructura con filetes de 1px, sin sombras en tarjetas;
+  solo `ConfirmDialog` conserva elevación. Radios: 8px en tarjetas, fotos y
+  campos (`--radius-card`, `--radius-photo`, `--radius-field`); píldora en
+  botones y badges (`--radius-btn`).
+- Tipografía: Inter (sustituto de SuisseIntl) para todo el UI; titulares en
+  peso 500 con tracking negativo (`-0.025em` a display), cuerpo en 400 y
+  JetBrains Mono para etiquetas y datos tabulares.
+- Contenedor único: `AppPage` envuelve todas las páginas con `max-w-7xl` (el mismo que header
+  y footer); la prop `bleed` queda reservada a las bandas a sangre de la landing y la anchura
+  de lectura se controla dentro de cada vista (`max-w-lg`, `max-w-3xl`…).
+- La receta de campos de formulario (`FIELD_CLASSES` en `src/design-system/field.ts`) se comparte entre `Input`, `Textarea` y `FormSelect` para mantener borde, radio, foco y estados idénticos.
 - Los primitivos exponen variantes homogéneas (`variant`, `size`, `tone`, `loading`, `block`, `dot`…) construidas con `createVariant`, sin dependencias externas.
+- `Button` incluye los tamaños `xs`–`lg` y, además de `primary`/`outline`/`destructive`, las variantes `sun`/`sun-outline` (sobre fotos y fondos oscuros: píldora blanca con texto carbón, o contorno blanco) y `quiet-destructive` (acción peligrosa discreta, el color solo aparece al interactuar).
+- `ConfirmDialog` es el modal estándar de confirmaciones y acciones irreversibles (`role="dialog"`, `aria-modal`, trampa de foco, Escape y clic en el fondo para cancelar). Los mensajes de formulario se mantienen como `Alert` inline con `role="alert"`.
+- Los iconos de navegación y acciones usan Font Awesome (free-solid) con `FontAwesomeIcon`; los SVG ilustrativos y de datos siguen en `src/components/icons/`.
+- Motion con `motion-v` (Motion for Vue): la home usa `useScroll`/`useTransform` para el parallax del hero (offset por sección, rango 12 %) y componentes `motion.div` con `whileInView` (`opacity` + `y`) para revelar bloques; el zoom de entrada del hero es un `scale` animado al montar. `MotionConfig reduced-motion="user"` en `App.vue` respeta `prefers-reduced-motion` en toda la app. El header de la home es transparente (`meta.overlayHeader` en el router) y se superpone al hero a pantalla completa.
 - Los componentes de UI reciben datos por props y emiten eventos; el estado compartido vive en Pinia (`authStore`).
 
 ## Seguridad
@@ -140,7 +171,7 @@ Separación de responsabilidades: las vistas orquestan, los componentes presenta
 
 ## Calidad y tests
 
-- **Unit**: `npm run test:unit` — 110 tests en 19 archivos (design system, validadores, servicio de autenticación, store de sesión, primitivos de UI e iconos SVG).
+- **Unit**: `npm run test:unit` — 248 tests en 42 archivos (design system, validadores, servicios y composables de rutas, servicio de autenticación, store de sesión, primitivos de UI, filtros del listado e iconos SVG).
 - **E2E**: `npm run test:e2e` — Playwright (configurado en `playwright.config.ts`).
 - Gates antes de dar por completa una tarea: `npm run test:unit -- --run`, `npm run type-check`, `npx eslint .`, `npx oxlint .`, Prettier y, cuando toca, `npm run build`.
 

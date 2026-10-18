@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { useHead } from '@unhead/vue'
-import { RouterLink } from 'vue-router'
+import { useRouter } from 'vue-router'
 
 import AppPage from '@/components/layout/AppPage.vue'
+import Card from '@/components/ui/Card.vue'
+import IconArrow from '@/components/icons/IconArrow.vue'
 import Typography from '@/components/ui/Typography.vue'
 import RideForm from '@/features/rides/components/RideForm.vue'
 
@@ -21,6 +23,8 @@ useHead({
   ],
 })
 
+const router = useRouter()
+
 const initialValues = createEmptyRideFormValues({
   bikeType: 'gravel',
   level: 'Intermedio',
@@ -37,32 +41,33 @@ async function handleSubmit(payload: RideFormSubmission): Promise<void> {
 </script>
 
 <template>
-  <AppPage size="detail" spacing="compact">
+  <AppPage spacing="compact">
     <div class="mx-auto max-w-3xl">
-      <RouterLink
-        :to="{ name: 'rides' }"
-        class="inline-flex items-center gap-1.5 text-sm font-medium text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-trail"
-      >
-        <span aria-hidden="true">←</span>
-        Volver a las rutas
-      </RouterLink>
+      <header class="mb-5">
+        <button
+          type="button"
+          class="inline-flex items-center gap-1.5 text-sm text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+          @click="router.back()"
+        >
+          <IconArrow direction="left" />
+          Volver
+        </button>
 
-      <header class="mb-4 mt-3">
-        <Typography variant="eyebrow" tone="accent"> Comunidad BikeMates </Typography>
+        <Typography as="h1" variant="heading-lg" class="mt-3"> Publica una ruta </Typography>
 
-        <Typography as="h1" variant="heading-xl" class="mt-1"> Publica una ruta </Typography>
-
-        <Typography variant="body-sm" tone="muted" class="mt-1 max-w-2xl">
+        <Typography variant="body-sm" tone="muted" class="mt-1.5">
           Organiza tu próxima salida y encuentra ciclistas con quienes pedalear.
         </Typography>
       </header>
 
-      <RideForm
-        :initial-values="initialValues"
-        :is-submitting="isSubmitting"
-        :error-message="errorMessage"
-        @submit="handleSubmit"
-      />
+      <Card class="p-5 sm:p-6">
+        <RideForm
+          :initial-values="initialValues"
+          :is-submitting="isSubmitting"
+          :error-message="errorMessage"
+          @submit="handleSubmit"
+        />
+      </Card>
     </div>
   </AppPage>
 </template>

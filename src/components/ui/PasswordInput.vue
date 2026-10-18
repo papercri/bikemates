@@ -36,7 +36,7 @@ const inputType = computed(() => (visible.value ? 'text' : 'password'))
 
     <button
       type="button"
-      class="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-r-btn text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-trail"
+      class="absolute inset-y-0 right-0 flex w-12 items-center justify-center text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ink"
       :aria-label="visible ? 'Ocultar contraseña' : 'Mostrar contraseña'"
       :aria-pressed="visible"
       @click="visible = !visible"

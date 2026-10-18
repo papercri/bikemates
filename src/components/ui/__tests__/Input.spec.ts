@@ -75,7 +75,7 @@ describe('Input', () => {
     const withTrailing = mount(Input, { props: { id: 'a', modelValue: '', trailing: true } })
     const withoutTrailing = mount(Input, { props: { id: 'a', modelValue: '' } })
 
-    expect(withTrailing.get('input').classes()).toContain('pr-12')
-    expect(withoutTrailing.get('input').classes()).not.toContain('pr-12')
+    expect(withTrailing.get('input').classes()).toContain('pr-10')
+    expect(withoutTrailing.get('input').classes()).not.toContain('pr-10')
   })
 })

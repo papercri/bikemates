@@ -8,8 +8,8 @@ describe('Card', () => {
 
     expect(wrapper.element.tagName).toBe('DIV')
     expect(wrapper.classes()).toContain('border-line')
-    expect(wrapper.classes()).toContain('bg-canvas')
-    expect(wrapper.classes()).not.toContain('hover:shadow-lg')
+    expect(wrapper.classes()).toContain('bg-white')
+    expect(wrapper.classes()).not.toContain('shadow-card')
   })
 
   it('renders the requested element', () => {
@@ -29,16 +29,17 @@ describe('Card', () => {
 
     expect(wrapper.classes()).toContain('border-red-200')
     expect(wrapper.classes()).toContain('bg-red-50')
-    expect(wrapper.classes()).not.toContain('bg-canvas')
+    expect(wrapper.classes()).not.toContain('bg-white')
   })
 
-  it('adds the hover elevation only when interactive', () => {
+  it('adds the border shift only when interactive', () => {
     const wrapper = mount(Card, {
       props: { interactive: true },
       slots: { default: 'Contenido' },
     })
 
-    expect(wrapper.classes()).toContain('hover:shadow-lg')
+    expect(wrapper.classes()).not.toContain('hover:shadow-lift')
+    expect(wrapper.classes()).toContain('hover:border-line-strong')
   })
 
   it('renders the slot content', () => {

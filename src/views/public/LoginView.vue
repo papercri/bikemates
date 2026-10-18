@@ -43,9 +43,9 @@ async function handleSubmit(): Promise<void> {
 </script>
 
 <template>
-  <AppPage size="narrow">
+  <AppPage>
     <AuthCard title="Inicia sesión" description="Accede a tu cuenta de BikeMates.">
-      <form class="mt-8 space-y-5" novalidate @submit.prevent="handleSubmit">
+      <form class="mt-6 space-y-4" novalidate @submit.prevent="handleSubmit">
         <div>
           <FormLabel id="email">Correo electrónico</FormLabel>
 
@@ -64,7 +64,10 @@ async function handleSubmit(): Promise<void> {
           <div class="mb-2 flex items-center justify-between gap-3">
             <FormLabel id="password" :margin="false">Contraseña</FormLabel>
 
-            <RouterLink to="/forgot-password" class="text-sm text-trail-ink hover:text-trail-dark">
+            <RouterLink
+              to="/forgot-password"
+              class="text-sm text-trail-ink hover:text-trail-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+            >
               ¿La has olvidado?
             </RouterLink>
           </div>
@@ -88,9 +91,12 @@ async function handleSubmit(): Promise<void> {
         </Button>
       </form>
 
-      <Typography as="p" variant="body-sm" tone="muted" class="mt-6 text-center">
+      <Typography as="p" variant="body-sm" tone="muted" class="mt-5 text-center">
         ¿Todavía no tienes cuenta?
-        <RouterLink to="/register" class="font-medium text-trail-ink hover:text-trail-dark">
+        <RouterLink
+          to="/register"
+          class="font-medium text-trail-ink hover:text-trail-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+        >
           Regístrate
         </RouterLink>
       </Typography>

@@ -26,7 +26,8 @@ describe('Typography', () => {
     })
 
     expect(wrapper.classes()).toContain('text-3xl')
-    expect(wrapper.classes()).toContain('font-bold')
+    expect(wrapper.classes()).toContain('font-medium')
+    expect(wrapper.classes()).toContain('font-display')
   })
 
   it('applies the tone classes', () => {
@@ -44,7 +45,8 @@ describe('Typography', () => {
       slots: { default: '650' },
     })
 
-    expect(wrapper.classes()).toContain('font-mono')
+    expect(wrapper.classes()).toContain('font-display')
+    expect(wrapper.classes()).toContain('tabular-nums')
     expect(wrapper.classes()).toContain('text-trail-ink')
   })
 

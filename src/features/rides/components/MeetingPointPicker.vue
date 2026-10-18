@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { watch } from 'vue'
 import Button from '@/components/ui/Button.vue'
+import FormHelp from '@/components/ui/FormHelp.vue'
 import FormLabel from '@/components/ui/FormLabel.vue'
 import Input from '@/components/ui/Input.vue'
 import { usePlaceSearch } from '@/features/rides/composables/usePlaceSearch'
@@ -72,23 +73,23 @@ function handleSelectPlace(place: GeocodingResult): void {
       </Button>
     </div>
 
-    <p id="meeting-point-help" class="text-xs text-graphite">
+    <FormHelp id="meeting-point-help">
       Busca un lugar y selecciona un resultado para guardar sus coordenadas.
-    </p>
+    </FormHelp>
 
-    <p v-if="errorMessage" role="status" class="text-sm text-red-700">
+    <p v-if="errorMessage" role="alert" class="text-sm text-red-700">
       {{ errorMessage }}
     </p>
 
     <ul
       v-if="results.length"
       aria-label="Resultados de lugares"
-      class="divide-y divide-line overflow-hidden rounded-xl border border-line bg-canvas"
+      class="divide-y divide-line overflow-hidden rounded-card border border-line bg-white"
     >
       <li v-for="place in results" :key="place.id">
         <button
           type="button"
-          class="w-full px-3 py-2.5 text-left text-sm text-ink transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-trail"
+          class="w-full px-3 py-2.5 text-left text-sm text-ink transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ink/60"
           @click="handleSelectPlace(place)"
         >
           {{ place.label }}
@@ -99,7 +100,7 @@ function handleSelectPlace(place: GeocodingResult): void {
     <div
       v-if="selectedPlace"
       role="status"
-      class="rounded-xl border border-trail/30 bg-trail/5 p-3"
+      class="rounded-card border border-line bg-trail/10 p-3"
     >
       <p class="text-sm font-semibold text-ink">Lugar seleccionado</p>
       <p class="mt-1 text-sm text-ink">

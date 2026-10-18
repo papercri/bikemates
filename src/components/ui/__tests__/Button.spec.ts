@@ -52,8 +52,37 @@ describe('Button', () => {
   it('omits size padding for the link variant', () => {
     const wrapper = mount(Button, { props: { variant: 'link' } })
 
-    expect(wrapper.classes()).toContain('text-trail-ink')
+    expect(wrapper.classes()).toContain('text-ink')
     expect(wrapper.classes()).not.toContain('px-5')
+  })
+
+  it('renders the primary variant as a solid ink action', () => {
+    const wrapper = mount(Button, { props: { variant: 'primary' } })
+
+    expect(wrapper.classes()).toContain('bg-ink')
+    expect(wrapper.classes()).toContain('text-canvas')
+    expect(wrapper.classes()).toContain('rounded-btn')
+  })
+
+  it('renders the sun variants for dark surfaces', () => {
+    const sun = mount(Button, { props: { variant: 'sun' } })
+
+    expect(sun.classes()).toContain('bg-canvas')
+    expect(sun.classes()).toContain('text-ink')
+
+    const sunOutline = mount(Button, { props: { variant: 'sun-outline' } })
+
+    expect(sunOutline.classes()).toContain('text-canvas')
+    expect(sunOutline.classes()).toContain('border-canvas/50')
+    expect(sunOutline.classes()).toContain('bg-transparent')
+  })
+
+  it('renders the quiet-destructive variant as a discreet action', () => {
+    const wrapper = mount(Button, { props: { variant: 'quiet-destructive', size: 'sm' } })
+
+    expect(wrapper.classes()).toContain('text-graphite')
+    expect(wrapper.classes()).not.toContain('bg-red-100')
+    expect(wrapper.classes()).not.toContain('border-red-300')
   })
 
   it('renders a router link when to is provided', () => {

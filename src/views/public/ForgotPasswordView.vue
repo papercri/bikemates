@@ -36,12 +36,12 @@ async function handleSubmit(): Promise<void> {
 </script>
 
 <template>
-  <AppPage size="narrow">
+  <AppPage>
     <AuthCard
       title="Recuperar contraseña"
       description="Introduce el email de tu cuenta y te enviaremos las instrucciones para establecer una nueva contraseña."
     >
-      <form class="mt-8 space-y-5" novalidate @submit.prevent="handleSubmit">
+      <form class="mt-6 space-y-4" novalidate @submit.prevent="handleSubmit">
         <div>
           <FormLabel id="email">Correo electrónico</FormLabel>
 
@@ -69,8 +69,11 @@ async function handleSubmit(): Promise<void> {
         </Button>
       </form>
 
-      <Typography as="p" variant="body-sm" tone="muted" class="mt-6 text-center">
-        <RouterLink to="/login" class="text-trail-ink hover:text-trail-dark">
+      <Typography as="p" variant="body-sm" tone="muted" class="mt-5 text-center">
+        <RouterLink
+          to="/login"
+          class="text-trail-ink hover:text-trail-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+        >
           Volver al inicio de sesión
         </RouterLink>
       </Typography>

@@ -22,8 +22,8 @@ describe('Badge', () => {
       slots: { default: 'Intermedio' },
     })
 
-    expect(wrapper.classes()).toContain('bg-route/15')
-    expect(wrapper.classes()).toContain('text-route-ink')
+    expect(wrapper.classes()).toContain('bg-ink/8')
+    expect(wrapper.classes()).toContain('text-ink')
   })
 
   it('applies muted surface classes for the muted variant', () => {
@@ -46,6 +46,30 @@ describe('Badge', () => {
 
     expect(dot.exists()).toBe(true)
     expect(dot.classes()).toContain('bg-route')
+  })
+
+  it('keeps the level hue for the dot on the inverse variant', () => {
+    const wrapper = mount(Badge, {
+      props: { variant: 'inverse', color: 'green', dot: true },
+      slots: { default: 'Iniciación' },
+    })
+
+    const dot = wrapper.find('[aria-hidden="true"]')
+
+    expect(dot.exists()).toBe(true)
+    expect(dot.classes()).toContain('bg-level-easy')
+  })
+
+  it('falls back to a light dot for monochrome colors on the inverse variant', () => {
+    const wrapper = mount(Badge, {
+      props: { variant: 'inverse', color: 'trail', dot: true },
+      slots: { default: 'Iniciación' },
+    })
+
+    const dot = wrapper.find('[aria-hidden="true"]')
+
+    expect(dot.classes()).toContain('bg-canvas')
+    expect(dot.classes()).not.toContain('bg-trail')
   })
 
   it('omits the dot by default', () => {

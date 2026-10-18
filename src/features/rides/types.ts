@@ -27,6 +27,7 @@ export interface Ride {
   status: RideStatus
   createdAt: string
   updatedAt: string
+  imageUrl: string | null
 }
 
 export interface CreateRideInput {
@@ -68,6 +69,13 @@ export interface RideFormSubmission {
   values: RideFormValues
   image: File | null
   removeCurrentImage: boolean
+}
+
+export interface RideParticipant {
+  id: string
+  displayName: string
+  avatarUrl: string | null
+  isOrganizer: boolean
 }
 
 export type UpdateRideInput = Omit<CreateRideInput, 'status'>
