@@ -3,13 +3,11 @@ import { useHead } from '@unhead/vue'
 import { ref } from 'vue'
 import AppPage from '@/components/layout/AppPage.vue'
 import BrandLogo from '@/components/icons/BrandLogo.vue'
-import IconMeetup from '@/components/icons/IconMeetup.vue'
 import RidgeStrip from '@/components/icons/RidgeStrip.vue'
-import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
-import EmptyState from '@/components/ui/EmptyState.vue'
 import Typography from '@/components/ui/Typography.vue'
 import ProfileDetailsTab from '@/features/profile/components/ProfileDetailsTab.vue'
+import ProfileMyRidesTab from '@/features/profile/components/ProfileMyRidesTab.vue'
 
 useHead({
   title: 'Mi perfil | BikeMates',
@@ -113,19 +111,7 @@ function handleTabKeydown(event: KeyboardEvent, index: number): void {
       </template>
 
       <template v-else>
-        <span
-          class="mb-4 inline-flex rounded-full bg-level-medium/10 p-3 text-level-medium"
-          aria-hidden="true"
-        >
-          <IconMeetup class="size-6" />
-        </span>
-
-        <EmptyState
-          title="Mis rutas"
-          description="Todavía no has publicado ninguna ruta. Crea la primera y aparecerá aquí."
-        >
-          <Button to="/rides/create">Publicar ruta</Button>
-        </EmptyState>
+        <ProfileMyRidesTab />
       </template>
     </section>
   </AppPage>

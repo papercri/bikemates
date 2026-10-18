@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures'
-import { ORGANIZER } from '../helpers/seeds'
+import { makeRide, ORGANIZER } from '../helpers/seeds'
 
 test.describe('profile', () => {
   test('requires authentication and shows the profile tabs', async ({ page, supabase }) => {
@@ -150,5 +150,30 @@ test.describe('profile', () => {
       'href',
       '/rides/create',
     )
+  })
+
+  test('lists my published rides and deletes one with confirmation', async ({ page, supabase }) => {
+    supabase.state.users.push(ORGANIZER)
+    supabase.state.rides.push(
+      makeRide(),
+      makeRide({ id: 'ride-2', title: 'Subida al turó' }),
+    )
+    await supabase.signInAs(ORGANIZER)
+
+    await page.goto('/profile')
+    await page.getByRole('tab', { name: 'Mis rutas' }).click()
+
+    const panel = page.getByRole('tabpanel', { name: 'Mis rutas' })
+    await expect(panel.getByRole('article')).toHaveCount(2)
+    await expect(panel.getByText('2 rutas publicadas')).toBeVisible()
+
+    await panel.getByRole('button', { name: 'Eliminar' }).first().click()
+
+    const dialog = page.getByRole('dialog', { name: '¿Eliminar «Vuelta por Collserola»?' })
+    await dialog.locator('[data-dialog-confirm]').click()
+
+    await expect(panel.getByRole('article')).toHaveCount(1)
+    await expect(panel.getByText('Subida al turó')).toBeVisible()
+    await expect(panel.getByText('1 ruta publicada')).toBeVisible()
   })
 })
