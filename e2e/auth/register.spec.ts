@@ -97,25 +97,8 @@ test.describe('register', () => {
     )
   })
 
-  test('shows the busy label while creating the account', async ({ page }) => {
-    // Retrasamos la respuesta y la devolvemos directamente desde el mock del
-    // test para no depender del encadenamiento de rutas.
-    await page.route('**/auth/v1/signup', async (route) => {
-      await new Promise((resolve) => setTimeout(resolve, 500))
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          user: {
-            id: 'user-n',
-            aud: 'authenticated',
-            email: 'lenta@example.com',
-            identities: [{ identity_id: 'id-1', id: 'user-n', user_id: 'user-n', provider: 'email' }],
-          },
-          session: null,
-        }),
-      })
-    })
+  test('shows the busy label while creating the account', async ({ page, supabase }) => {
+    supabase.state.authDelayMs = 600
 
     await page.goto('/register')
     await page.getByLabel('Nombre').fill('Ana Pedal')

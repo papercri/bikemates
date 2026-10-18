@@ -68,6 +68,11 @@ export interface MockState {
   participantCountError: string | null
   joinError: string | null
   deleteAccountError: string | null
+  /**
+   * Retraso en ms aplicado a las respuestas de auth (signup, login, verify…).
+   * Permite observar los estados de carga sin depender del encadenamiento de rutas.
+   */
+  authDelayMs: number
   /** Última petición de inserción de ruta recibida (para asserts). */
   lastInsertedRide: Record<string, unknown> | null
 }
@@ -191,6 +196,7 @@ export async function mockSupabase(page: Page): Promise<SupabaseMock> {
     participantCountError: null,
     joinError: null,
     deleteAccountError: null,
+    authDelayMs: 0,
     lastInsertedRide: null,
   }
 
@@ -213,6 +219,10 @@ export async function mockSupabase(page: Page): Promise<SupabaseMock> {
   }
 
   async function handleAuth(route: Route, requestUrl: URL, method: string): Promise<boolean> {
+    if (state.authDelayMs > 0) {
+      await new Promise((resolve) => setTimeout(resolve, state.authDelayMs))
+    }
+
     const path = requestUrl.pathname.replace(origin, '')
     const body = ((): unknown => {
       try {
