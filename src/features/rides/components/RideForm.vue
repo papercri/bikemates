@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
+import { faImage } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import type { RideFormSubmission, RideFormValues } from '@/features/rides/types'
 import type { GeocodingResult } from '@/features/rides/services/geocodingService'
@@ -37,8 +39,10 @@ const emit = defineEmits<{
 
 const isEditMode = computed(() => props.mode === 'edit')
 
-// Filete que encabeza cada bloque del formulario y aporta su nombre de grupo.
-const legendClasses = 'w-full border-b border-line pb-2 text-sm font-semibold text-ink'
+// Filete que encabeza cada bloque del formulario: etiqueta mono en versalitas
+// con regla hairline, en línea con la voz editorial del resto de la app.
+const legendClasses =
+  'w-full border-b border-line pb-2 font-mono text-xs font-semibold tracking-[0.18em] text-graphite uppercase'
 
 const form = reactive<RideFormValues>({
   ...props.initialValues,
@@ -102,7 +106,7 @@ function handleSubmit(): void {
 </script>
 
 <template>
-  <form novalidate class="space-y-5" @submit.prevent="handleSubmit">
+  <form novalidate class="space-y-6" @submit.prevent="handleSubmit">
     <Alert v-if="validationError" boxed>
       {{ validationError }}
     </Alert>
@@ -114,7 +118,7 @@ function handleSubmit(): void {
     <fieldset class="min-w-0 border-0 p-0">
       <legend :class="legendClasses">Datos básicos</legend>
 
-      <div class="mt-2.5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div class="mt-3.5 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
         <div>
           <FormLabel id="title">Nombre de la ruta</FormLabel>
           <Input
@@ -152,7 +156,9 @@ function handleSubmit(): void {
             required
             placeholder="Describe el recorrido, el terreno y qué deben llevar los participantes..."
           />
-          <p class="mt-1 text-right text-xs text-graphite">{{ form.description.length }}/3000</p>
+          <p class="mt-1 text-right text-xs text-graphite tabular-nums">
+            {{ form.description.length }}/3000
+          </p>
         </div>
       </div>
     </fieldset>
@@ -160,7 +166,7 @@ function handleSubmit(): void {
     <fieldset class="min-w-0 border-0 p-0">
       <legend :class="legendClasses">Recorrido</legend>
 
-      <div class="mt-2.5 space-y-3">
+      <div class="mt-3.5 space-y-3 sm:space-y-4">
         <div>
           <MeetingPointPicker :initial-value="form.meetingPoint" @select="handlePlaceSelect" />
 
@@ -169,7 +175,7 @@ function handleSubmit(): void {
           </FormHelp>
         </div>
 
-        <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
           <div>
             <FormLabel id="distanceKm">Distancia (km)</FormLabel>
             <Input
@@ -222,7 +228,7 @@ function handleSubmit(): void {
     <fieldset class="min-w-0 border-0 p-0">
       <legend :class="legendClasses">Detalles de la salida</legend>
 
-      <div class="mt-2.5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div class="mt-3.5 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
         <div>
           <FormLabel id="bikeType">Tipo de bicicleta</FormLabel>
           <FormSelect id="bikeType" v-model="form.bikeType" name="bikeType" required>
@@ -266,8 +272,18 @@ function handleSubmit(): void {
     <fieldset class="min-w-0 border-0 p-0">
       <legend :class="legendClasses">Imagen de portada</legend>
 
-      <div class="mt-2.5">
+      <div class="mt-3.5">
         <FormLabel id="ride-image" :margin="false" class="sr-only">Imagen de portada</FormLabel>
+
+        <!-- Zona de selección: el label estilizado abre el diálogo de archivos. -->
+        <label
+          for="ride-image"
+          class="flex cursor-pointer flex-col items-center justify-center gap-1 rounded-field border border-dashed border-line-strong bg-surface/40 px-4 py-8 text-center transition-colors hover:border-ink hover:bg-surface focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ink"
+        >
+          <FontAwesomeIcon :icon="faImage" aria-hidden="true" class="size-5 text-graphite" />
+          <span class="text-sm font-medium text-ink">Pulsa para elegir la imagen de portada</span>
+          <span class="text-xs text-graphite">JPEG, PNG, WebP o AVIF. Máximo 5 MB.</span>
+        </label>
 
         <input
           id="ride-image"
@@ -276,7 +292,7 @@ function handleSubmit(): void {
           accept="image/jpeg,image/png,image/webp,image/avif"
           aria-describedby="image-help"
           :aria-invalid="Boolean(imageError)"
-          class="block w-full text-sm text-graphite file:mr-3 file:rounded-btn file:border-0 file:bg-surface file:px-3 file:py-1.5 file:font-medium file:text-ink"
+          class="sr-only"
           @change="handleImageChange"
         />
 
@@ -296,20 +312,28 @@ function handleSubmit(): void {
           {{ imageError }}
         </Alert>
 
-        <FormHelp id="image-help">JPEG, PNG, WebP o AVIF. Máximo 5 MB.</FormHelp>
+        <FormHelp id="image-help" class="sr-only"> JPEG, PNG, WebP o AVIF. Máximo 5 MB. </FormHelp>
       </div>
     </fieldset>
 
-    <Button type="submit" :loading="isSubmitting" :disabled="isSubmitting" block>
-      {{
-        isSubmitting
-          ? isEditMode
-            ? 'Guardando…'
-            : 'Publicando…'
-          : isEditMode
-            ? 'Guardar cambios'
-            : 'Publicar ruta'
-      }}
-    </Button>
+    <div class="flex justify-end border-t border-line pt-5">
+      <Button
+        type="submit"
+        :loading="isSubmitting"
+        :disabled="isSubmitting"
+        block
+        class="sm:w-auto"
+      >
+        {{
+          isSubmitting
+            ? isEditMode
+              ? 'Guardando…'
+              : 'Publicando…'
+            : isEditMode
+              ? 'Guardar cambios'
+              : 'Publicar ruta'
+        }}
+      </Button>
+    </div>
   </form>
 </template>
