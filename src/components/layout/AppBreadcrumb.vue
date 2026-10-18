@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { RouterLink, useRoute, type RouteLocationRaw } from 'vue-router'
 
-export interface BreadcrumbItem {
+interface BreadcrumbItem {
   label: string
   to?: RouteLocationRaw
 }
@@ -12,20 +12,26 @@ const props = defineProps<{
   items?: BreadcrumbItem[]
 }>()
 
+function isBreadcrumbItem(value: unknown): value is BreadcrumbItem {
+  if (typeof value !== 'object' || value === null || !('label' in value)) return false
+  return typeof value.label === 'string'
+}
+
 const route = useRoute()
 
 const items = computed<BreadcrumbItem[]>(() => {
   if (props.items) return props.items
 
-  const meta = route.meta.breadcrumb
-  if (!meta) return []
+  // En vue-router v5 meta se tipa como unknown: se estrecha en runtime.
+  const meta: unknown = route.meta.breadcrumb
+  const trail = Array.isArray(meta) ? meta.filter(isBreadcrumbItem) : []
 
   // La pestaña activa del perfil vive en la URL y también se refleja en las migas.
   if (route.name === 'profile' && route.query.tab === 'my-rides') {
-    return [...meta, { label: 'Mis rutas' }]
+    return [...trail, { label: 'Mis rutas' }]
   }
 
-  return [...meta]
+  return trail
 })
 </script>
 

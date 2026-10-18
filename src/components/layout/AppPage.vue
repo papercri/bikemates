@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import AppBreadcrumb from '@/components/layout/AppBreadcrumb.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
 import AppHeader from '@/components/layout/AppHeader.vue'
 
@@ -45,6 +46,7 @@ const mainClasses = computed(() =>
     <AppHeader />
 
     <main id="main-content" :class="mainClasses">
+      <AppBreadcrumb />
       <slot />
     </main>
 
