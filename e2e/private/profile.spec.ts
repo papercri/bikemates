@@ -89,14 +89,19 @@ test.describe('profile', () => {
 
     await page.goto('/profile')
 
-    await page.getByRole('button', { name: 'Eliminar mi cuenta' }).click()
-    await page
-      .getByRole('dialog', { name: '¿Eliminar tu cuenta?' })
-      .locator('[data-dialog-cancel]')
-      .click()
+    const dialog = page.getByRole('dialog', { name: '¿Eliminar tu cuenta?' })
+    const deleteButton = page.getByRole('tabpanel', { name: 'Mis datos' }).getByRole('button', {
+      name: 'Eliminar mi cuenta',
+    })
+
+    await deleteButton.click()
+    await expect(dialog).toBeVisible()
+
+    await dialog.locator('[data-dialog-cancel]').click()
+    await expect(dialog).toBeHidden()
 
     await expect(page).toHaveURL('/profile')
-    await expect(page.getByRole('button', { name: 'Eliminar mi cuenta' })).toBeVisible()
+    await expect(deleteButton).toBeVisible()
   })
 
   test('surfaces an account deletion error', async ({ page, supabase }) => {
@@ -106,7 +111,10 @@ test.describe('profile', () => {
 
     await page.goto('/profile')
 
-    await page.getByRole('button', { name: 'Eliminar mi cuenta' }).click()
+    await page
+      .getByRole('tabpanel', { name: 'Mis datos' })
+      .getByRole('button', { name: 'Eliminar mi cuenta' })
+      .click()
     await page
       .getByRole('dialog', { name: '¿Eliminar tu cuenta?' })
       .locator('[data-dialog-confirm]')
@@ -127,11 +135,16 @@ test.describe('profile', () => {
 
     await page.goto('/profile')
 
+    const savedPanel = page.getByRole('tabpanel', { name: 'Rutas guardadas' })
     await page.getByRole('tab', { name: 'Rutas guardadas' }).click()
-    await expect(page.getByRole('link', { name: 'Explorar rutas' })).toHaveAttribute('href', '/rides')
+    await expect(savedPanel.getByRole('link', { name: 'Explorar rutas' })).toHaveAttribute(
+      'href',
+      '/rides',
+    )
 
+    const publishedPanel = page.getByRole('tabpanel', { name: 'Rutas publicadas' })
     await page.getByRole('tab', { name: 'Rutas publicadas' }).click()
-    await expect(page.getByRole('link', { name: 'Publicar ruta' })).toHaveAttribute(
+    await expect(publishedPanel.getByRole('link', { name: 'Publicar ruta' })).toHaveAttribute(
       'href',
       '/rides/create',
     )

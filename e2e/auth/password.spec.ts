@@ -37,14 +37,16 @@ test.describe('password recovery', () => {
     await page.goto('/reset-password')
 
     await expect(page.getByRole('heading', { level: 1, name: 'Nueva contraseña' })).toBeVisible()
-    await expect(page.getByRole('button', { name: 'Guardar nueva contraseña' })).toBeDisabled()
 
-    // Aunque se envíe el formulario, el guard de sesión de recuperación lo bloquea.
+    // El guard vive en el envío, no en el estado del botón.
     await page.getByLabel('Nueva contraseña', { exact: true }).fill('nuevapassword1')
     await page.getByLabel('Confirmar nueva contraseña').fill('nuevapassword1')
+    await page.getByRole('button', { name: 'Guardar nueva contraseña' }).click()
 
-    // El botón está deshabilitado, por lo que no hay envío real.
-    await expect(page.getByRole('button', { name: 'Guardar nueva contraseña' })).toBeDisabled()
+    await expect(page.getByRole('alert')).toHaveText(
+      'Debes acceder desde un enlace válido de recuperación enviado por email.',
+    )
+    await expect(page).toHaveURL('/reset-password')
   })
 
   test('updates the password after a valid recovery link', async ({ page, supabase }) => {

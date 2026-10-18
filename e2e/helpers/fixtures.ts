@@ -1,14 +1,37 @@
+import type { Page } from '@playwright/test'
 import { test as base, expect } from '@playwright/test'
 import { mockSupabase, type SupabaseMock } from './supabase-mock'
 
 /**
- * Fixture que instala el mock de Supabase (y de Nominatim/OSM) antes de cada
- * test y lo expone para que el test pueda sembrar datos y cambiar el estado.
+ * Un único mock por página. El fixture automático lo instala siempre (cualquier
+ * petición que escape del mock terminaría en el proyecto real de Supabase), y el
+ * fixture `supabase` lo reutiliza para que el test pueda sembrar datos.
  */
-export const test = base.extend<{ supabase: SupabaseMock }>({
+const mocksByPage = new WeakMap<Page, SupabaseMock>()
+
+async function installMock(page: Page): Promise<SupabaseMock> {
+  const existing = mocksByPage.get(page)
+
+  if (existing) {
+    return existing
+  }
+
+  const created = await mockSupabase(page)
+  mocksByPage.set(page, created)
+
+  return created
+}
+
+export const test = base.extend<{ supabase: SupabaseMock }, { autoSupabase: void }>({
+  autoSupabase: [
+    async ({ page }, use) => {
+      await installMock(page)
+      await use()
+    },
+    { auto: true },
+  ],
   supabase: async ({ page }, use) => {
-    const mock = await mockSupabase(page)
-    await use(mock)
+    await use(await installMock(page))
   },
 })
 

@@ -21,7 +21,8 @@ test.describe('ride detail', () => {
     await expect(
       page.getByText('Inicia sesión para ver quién participa en esta ruta.'),
     ).toBeVisible()
-    await expect(page.getByRole('button', { name: 'Iniciar sesión' })).toBeVisible()
+    // El CTA de acceso es un enlace (Button con `to`).
+    await expect(page.getByRole('link', { name: 'Iniciar sesión' })).toBeVisible()
   })
 
   test('shows the error state for an unknown ride', async ({ page }) => {
@@ -84,13 +85,16 @@ test.describe('ride detail', () => {
 
     await page.goto('/rides/ride-1')
 
-    await page.getByRole('button', { name: 'Dejar de participar' }).click()
-    await page
-      .getByRole('dialog', { name: '¿Dejar de participar?' })
-      .locator('[data-dialog-cancel]')
-      .click()
+    const dialog = page.getByRole('dialog', { name: '¿Dejar de participar?' })
 
-    await expect(page.getByRole('button', { name: 'Dejar de participar' })).toBeVisible()
+    await page.getByRole('button', { name: 'Dejar de participar' }).click()
+    await expect(dialog).toBeVisible()
+
+    await dialog.locator('[data-dialog-cancel]').click()
+    await expect(dialog).toBeHidden()
+
+    // Tras cancelar, el botón de la fila sigue presente y no se ha dado de baja.
+    await expect(page.getByLabel('Dejar de participar', { exact: true })).toBeVisible()
     expect(supabase.state.participants).toHaveLength(1)
   })
 
