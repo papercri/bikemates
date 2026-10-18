@@ -38,7 +38,7 @@ const dateParts = computed(() => getRideDateParts(props.ride.startsAt))
   >
     <RouterLink
       :to="{ name: 'ride-detail', params: { id: ride.id } }"
-      class="group relative flex h-full min-h-[16rem] flex-col justify-between gap-4 bg-ink p-4 focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-trail sm:p-5"
+      class="group relative flex h-full min-h-[16rem] flex-col justify-between gap-4 bg-ink focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-trail"
     >
       <img
         :src="cover"
@@ -51,7 +51,7 @@ const dateParts = computed(() => getRideDateParts(props.ride.startsAt))
       <div class="absolute inset-0 bg-ink/60" aria-hidden="true" />
 
       <!-- Raíl de fecha + cifras -->
-      <div class="relative flex items-start justify-between gap-3">
+      <div class="relative flex items-start justify-between gap-3 p-4 sm:p-5">
         <span
           class="rounded-full bg-canvas px-2.5 py-1 font-mono text-xs font-semibold tracking-[0.08em] text-ink uppercase tabular-nums"
         >
@@ -74,8 +74,8 @@ const dateParts = computed(() => getRideDateParts(props.ride.startsAt))
         </div>
       </div>
 
-      <!-- Entrada sobre panel oscuro semitransparente -->
-      <div class="relative rounded-card bg-ink/55 p-3 sm:p-3.5">
+      <!-- Entrada: capa oscura a sangre, pegada a los bordes de la foto -->
+      <div class="relative bg-ink/55 px-4 pt-3 pb-4 sm:px-5 sm:pt-3.5 sm:pb-5">
         <h2
           class="line-clamp-2 font-display text-lg leading-[1.15] font-medium tracking-[-0.01em] text-canvas sm:text-xl"
         >

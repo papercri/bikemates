@@ -4,7 +4,8 @@ export type ButtonSize = 'xs' | 'sm' | 'md' | 'lg'
 
 /** `inverse` es la variante para texto sobre fotografía (fondo oscuro translúcido). */
 export type BadgeVariant = 'soft' | 'muted' | 'inverse'
-export type BadgeColor = 'trail' | 'route' | 'ink'
+/** `green`/`orange`/`red` son la escala de nivel de salida; los demás, neutros de marca. */
+export type BadgeColor = 'trail' | 'route' | 'ink' | 'green' | 'orange' | 'red'
 
 export type AlertVariant = 'error' | 'success'
 

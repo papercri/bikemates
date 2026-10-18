@@ -9,9 +9,9 @@ describe('rideLevels', () => {
 
   it('maps every level to a badge color', () => {
     expect(RIDE_LEVEL_BADGE_COLORS).toEqual({
-      Iniciación: 'trail',
-      Intermedio: 'route',
-      Avanzado: 'ink',
+      Iniciación: 'green',
+      Intermedio: 'orange',
+      Avanzado: 'red',
     })
   })
 
