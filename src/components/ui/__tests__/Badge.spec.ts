@@ -48,6 +48,30 @@ describe('Badge', () => {
     expect(dot.classes()).toContain('bg-route')
   })
 
+  it('keeps the level hue for the dot on the inverse variant', () => {
+    const wrapper = mount(Badge, {
+      props: { variant: 'inverse', color: 'green', dot: true },
+      slots: { default: 'Iniciación' },
+    })
+
+    const dot = wrapper.find('[aria-hidden="true"]')
+
+    expect(dot.exists()).toBe(true)
+    expect(dot.classes()).toContain('bg-level-easy')
+  })
+
+  it('falls back to a light dot for monochrome colors on the inverse variant', () => {
+    const wrapper = mount(Badge, {
+      props: { variant: 'inverse', color: 'trail', dot: true },
+      slots: { default: 'Iniciación' },
+    })
+
+    const dot = wrapper.find('[aria-hidden="true"]')
+
+    expect(dot.classes()).toContain('bg-canvas')
+    expect(dot.classes()).not.toContain('bg-trail')
+  })
+
   it('omits the dot by default', () => {
     const wrapper = mount(Badge, { slots: { default: 'Intermedio' } })
 

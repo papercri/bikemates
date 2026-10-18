@@ -35,6 +35,11 @@
   --color-moss: #569d5f;
   --color-signal-blue: #2563eb;
 
+  /* Escala de nivel de salida: verde → naranja → rojo (significado, no decoración). */
+  --color-level-easy: #22c55e;
+  --color-level-medium: #f97316;
+  --color-level-hard: #dc2626;
+
   --animate-trail-dash: trail-dash 24s linear infinite;
 
   @keyframes trail-dash {

@@ -714,3 +714,25 @@ Corrección de diseño de `RideCard` (aplica en home y en `/rides`, mismo compon
 ### Verificación
 
 - `vitest` RideFilters: 6/6 en verde. `eslint` y Prettier en verde.
+
+## 2026-10-18 — Cards: capa oscura a sangre y puntos de nivel con color real
+
+- **`RideCard`:** la capa oscura del título (`bg-ink/55`) va ahora pegada a
+  los bordes de la foto (sin margen ni radio interior): el padding vive
+  dentro del raíl superior y de la capa inferior, no en el enlace.
+- **Escala de nivel coloreada** (tokens nuevos en `main.css`):
+  `--color-level-easy: #22c55e`, `--color-level-medium: #f97316`,
+  `--color-level-hard: #dc2626`.
+- **`BadgeColor`** ampliado con `'green' | 'orange' | 'red'` y `Badge` con
+  sus combinaciones soft/muted/inverse. El punto del chip `inverse` deja de
+  ser siempre `bg-trail` (negro sobre losa negra, invisible): los neutros
+  trail/route caen a `canvas` y los colores de nivel conservan su tono, que
+  sí contrasta sobre `bg-ink/55`.
+- **`RIDE_LEVEL_BADGE_COLORS`:** Iniciación → green, Intermedio → orange,
+  Avanzado → red. El nombre del nivel sigue en el chip: el color es
+  refuerzo, nunca el único canal (WCAG).
+
+### Verificación
+
+- `vitest` 196/196 (+2 en Badge.spec), `eslint`/`oxlint`, Prettier y
+  `type-check` en verde.
