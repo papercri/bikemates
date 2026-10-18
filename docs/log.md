@@ -808,3 +808,33 @@ validador:
 
 - `eslint`/`oxlint`, Prettier, `type-check` y `vitest` (validadores, 17) en
   verde.
+
+## 2026-10-18 — Perfil y RidgeStrip: bici que pedalea, color de marca y gráficos
+
+- **Nuevo token** `--color-level-easy-ink: #15803d` (tinta verde AA sobre
+  fondos claros, documentada en AGENTS.md).
+- **`RidgeStrip` rediseñado** (perfil y authCard):
+  - viewBox 800×80 con contenido concentrado en la banda central y
+    `xMidYMid slice`: el recorte a cualquier ancho nunca corta el grafismo
+    (antes la bici quedaba recortada/escalada de forma impredecible).
+  - Color de marca: sendero discontinuo verde `level-easy` con el token
+    `animate-trail-dash` ya existente y sol naranja `level-medium`.
+  - Animación con sentido: la bici rueda por el sendero de izquierda a
+    derecha (keyframes `bm-bike-ride`, 13 s, sale por ambos extremos para
+    que el reinicio del bucle no se vea) con ruedas girando
+    (`bm-ridge-wheel-spin`, `transform-box: fill-box`). Todo bajo
+    `prefers-reduced-motion: no-preference`; con reduce, la bici aparece
+    estática sobre el sendero.
+- **`ProfileView` menos soso:**
+  - Tile del logo con tinte verde (`bg-level-easy/10` + anillo
+    `level-easy/25`).
+  - Pestaña activa con acento verde (`border-level-easy` +
+    `text-level-easy-ink`), accesible AA sobre canvas.
+  - Empty states de "Rutas guardadas" y "Rutas publicadas" con icono
+    gráfico en círculo tintado (verde / naranja) sobre los textos existentes.
+
+### Verificación
+
+- `vitest` 196/196, `eslint`/`oxlint`, Prettier y `type-check` en verde.
+  El movimiento de la bici y el recorte del strip requieren revisión visual
+  en el dev server (sin browser en esta sesión).

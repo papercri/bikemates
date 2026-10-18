@@ -37,6 +37,8 @@
 
   /* Escala de nivel de salida: verde → naranja → rojo (significado, no decoración). */
   --color-level-easy: #22c55e;
+  /* Tinta verde accesible (AA) para texto e iconos sobre fondos claros. */
+  --color-level-easy-ink: #15803d;
   --color-level-medium: #f97316;
   --color-level-hard: #dc2626;
 
