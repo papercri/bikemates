@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {
   faFacebook,
+  faGoogle,
   faTelegram,
   faWhatsapp,
   faXTwitter,
@@ -35,6 +36,7 @@ const TARGET_ICONS: Record<RideShareTarget, IconDefinition> = {
   telegram: faTelegram,
   x: faXTwitter,
   facebook: faFacebook,
+  gmail: faGoogle,
   email: faEnvelope,
 }
 

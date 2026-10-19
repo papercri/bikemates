@@ -1,5 +1,5 @@
 /** Destinos de compartir soportados; el orden define el orden del menú. */
-export type RideShareTarget = 'whatsapp' | 'telegram' | 'x' | 'facebook' | 'email'
+export type RideShareTarget = 'whatsapp' | 'telegram' | 'x' | 'facebook' | 'gmail' | 'email'
 
 export interface RideShareInput {
   /** Título de la salida, usado como mensaje o asunto del enlace. */
@@ -42,9 +42,21 @@ function buildEmailUrl({ title, url }: RideShareInput): string {
   return `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
 }
 
+/** Composición de Gmail con asunto y cuerpo precargados. */
+function buildGmailUrl({ title, url }: RideShareInput): string {
+  const params = new URLSearchParams({
+    view: 'cm',
+    fs: '1',
+    to: '',
+    su: title,
+    body: `${title}\n${url}`,
+  })
+  return `https://mail.google.com/mail/?${params.toString()}`
+}
+
 /**
  * Construye los enlaces de compartir en el orden del menú:
- * WhatsApp, Telegram, X, Facebook y correo electrónico.
+ * WhatsApp, Telegram, X, Facebook, Gmail y correo electrónico del sistema.
  */
 export function buildRideShareLinks(input: RideShareInput): RideShareLink[] {
   return [
@@ -67,6 +79,11 @@ export function buildRideShareLinks(input: RideShareInput): RideShareLink[] {
       target: 'facebook',
       label: 'Facebook',
       href: buildFacebookUrl(input),
+    },
+    {
+      target: 'gmail',
+      label: 'Gmail',
+      href: buildGmailUrl(input),
     },
     {
       target: 'email',

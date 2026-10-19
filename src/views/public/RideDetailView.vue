@@ -110,11 +110,58 @@ const statItems = computed<RideStatItem[]>(() => {
   ]
 })
 
-useHead({
-  title: computed(() =>
-    ride.value ? `${ride.value.title} | BikeMates` : 'Detalle de ruta | BikeMates',
-  ),
+/**
+ * URL absoluta de la página de detalle: base de compartir, calendario y
+ * metadatos Open Graph. Se construye desde el origen de la aplicación.
+ */
+const rideUrl = computed(() => {
+  const id = rideId.value
+  if (id === null) return null
+  const origin = window.location.origin
+  return `${origin}/rides/${id}`
 })
+
+/**
+ * Extracto breve para redes y buscadores: la descripción completa es larga
+ * y los scrapers esperan un resumen corto.
+ */
+const rideSocialDescription = computed(() => {
+  const description = ride.value?.description.trim() ?? ''
+  if (description === '') {
+    return 'Salida en bicicleta organizada en BikeMates.'
+  }
+  return description.length > 160 ? `${description.slice(0, 157).trimEnd()}…` : description
+})
+
+useHead(
+  computed(() => {
+    const current = ride.value
+    if (current === null) return {}
+
+    const url = rideUrl.value
+    const image = current.imageUrl
+
+    return {
+      title: `${current.title} | BikeMates`,
+      meta: [
+        { name: 'description', content: rideSocialDescription.value },
+        // Open Graph: previsualización en Facebook, WhatsApp, Telegram…
+        { property: 'og:type', content: 'article' },
+        { property: 'og:title', content: current.title },
+        { property: 'og:description', content: rideSocialDescription.value },
+        { property: 'og:site_name', content: 'BikeMates' },
+        ...(url !== null ? [{ property: 'og:url', content: url }] : []),
+        ...(image !== null ? [{ property: 'og:image', content: image }] : []),
+        // Twitter/X: sin imagen propia de la app se usa la de la salida.
+        { name: 'twitter:card', content: image !== null ? 'summary_large_image' : 'summary' },
+        { name: 'twitter:title', content: current.title },
+        { name: 'twitter:description', content: rideSocialDescription.value },
+        ...(image !== null ? [{ name: 'twitter:image', content: image }] : []),
+      ],
+      link: url !== null ? [{ rel: 'canonical', href: url }] : [],
+    }
+  }),
+)
 
 // La última miga es el título real de la ruta; AppBreadcrumb la muestra acortada.
 const rideBreadcrumb = computed<BreadcrumbItem[] | undefined>(() =>
@@ -139,14 +186,6 @@ function setActionStatus(message: string): void {
 
 onBeforeUnmount(() => {
   if (actionStatusTimer !== null) clearTimeout(actionStatusTimer)
-})
-
-// URL absoluta de la página de detalle, base de compartir y calendario web.
-const rideUrl = computed(() => {
-  const id = rideId.value
-  if (id === null) return null
-  const origin = window.location.origin
-  return `${origin}/rides/${id}`
 })
 
 const calendarEntry = computed<RideCalendarEntry | null>(() => {

@@ -31,7 +31,7 @@ function downloadIcs(): void {
     const url = URL.createObjectURL(blob)
     const anchor = document.createElement('a')
     anchor.href = url
-    anchor.download = `bikemates-ride-${props.entry.id}.ics`
+    anchor.download = `bikemates-${props.entry.id}.ics`
     document.body.appendChild(anchor)
     anchor.click()
     anchor.remove()

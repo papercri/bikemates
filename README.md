@@ -14,13 +14,15 @@ BikeMates es una SPA **mobile-first** construida con Vue 3 y TypeScript estricto
   `Por desnivel`).
 - Dos páginas en el listado: `Próximas` y `Pasadas`, con sus recuentos; las pasadas salen
   ordenadas de la más reciente a la más antigua y atenuadas en la tarjeta.
-- Detalle de ruta maquetado a dos columnas (2/3 + 1/3): portada horizontal con la
+- Detalle de ruta maquetado a dos columnas (2/3 + 1/3): portada con la
   descripción debajo, y en la columna estrecha el mapa de punto de encuentro y los
-  participantes (la cabecera ya no repite el punto de encuentro). La fecha, con
-  icono de reloj, va debajo del título junto a un botón de solo icono para
-  **Añadir al calendario** (descarga de un `.ics` generado en
-  `src/features/rides/utils/rideCalendar.ts`) y, alineado a la derecha, el botón
-  **Compartir** (Web Share API con copia al portapapeles como respaldo).
+  participantes. La fecha, con icono de reloj, va debajo del título junto al menú
+  de solo icono **Añadir al calendario** (Google Calendar, Outlook y descarga de
+  un `.ics` generado en `src/features/rides/utils/rideCalendar.ts`) y, a la
+  derecha, el menú **Compartir** (WhatsApp, Telegram, X, Facebook, Gmail, correo
+  del sistema y copiar enlace; `src/features/rides/utils/rideShare.ts`). La página
+  expone metadatos Open Graph y Twitter (`og:title`, `og:image`, `og:url`…) para
+  que el enlace muestre previsualización en redes sociales.
 - Estado vacío y enlace de retorno cuando la ruta no existe.
 - Los datos de rutas son de ejemplo (`src/features/rides/data/mockRides.ts`) hasta conectar con la base de datos.
 

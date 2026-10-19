@@ -15,6 +15,7 @@ describe('buildRideShareLinks', () => {
       'telegram',
       'x',
       'facebook',
+      'gmail',
       'email',
     ])
     expect(links.map((link) => link.label)).toEqual([
@@ -22,6 +23,7 @@ describe('buildRideShareLinks', () => {
       'Telegram',
       'X',
       'Facebook',
+      'Gmail',
       'Correo electrónico',
     ])
   })
@@ -48,6 +50,17 @@ describe('buildRideShareLinks', () => {
     expect(byTarget.get('facebook')).toBe(
       `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
     )
+  })
+
+  it('builds a Gmail compose link with subject and body', () => {
+    const gmail = buildRideShareLinks(INPUT).find((link) => link.target === 'gmail')
+    const url = new URL(gmail?.href ?? '')
+
+    expect(url.origin + url.pathname).toBe('https://mail.google.com/mail/')
+    expect(url.searchParams.get('view')).toBe('cm')
+    expect(url.searchParams.get('fs')).toBe('1')
+    expect(url.searchParams.get('su')).toBe(INPUT.title)
+    expect(url.searchParams.get('body')).toBe(`${INPUT.title}\n${INPUT.url}`)
   })
 
   it('builds a mailto link with subject and body', () => {

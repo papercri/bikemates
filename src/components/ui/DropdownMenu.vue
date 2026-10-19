@@ -46,8 +46,8 @@ async function open(): Promise<void> {
 function close(options?: { restoreFocus?: boolean }): void {
   isOpen.value = false
   if (options?.restoreFocus === false) return
-  // El foco se devuelve al instante y de nuevo tras el render: retirar el
-  // menú del DOM puede vaciar el foco en algunos entornos.
+  // El foco vuelve al disparador; se repite tras el render porque retirar el
+  // menú del DOM puede vaciar el foco del elemento activo.
   triggerRef.value?.focus()
   void nextTick(() => {
     triggerRef.value?.focus()
@@ -130,6 +130,16 @@ function onMenuClick(event: MouseEvent): void {
 function setTriggerRef(element: unknown): void {
   if (element instanceof HTMLElement) {
     triggerRef.value = element
+    return
+  }
+  // `Button` expone su nodo raíz como `$el`.
+  if (
+    typeof element === 'object' &&
+    element !== null &&
+    '$el' in element &&
+    (element as { $el: unknown }).$el instanceof HTMLElement
+  ) {
+    triggerRef.value = (element as { $el: HTMLElement }).$el
   }
 }
 </script>
@@ -138,7 +148,7 @@ function setTriggerRef(element: unknown): void {
   <div ref="rootRef" class="relative inline-block">
     <Button
       v-if="props.triggerVariant !== undefined"
-      ref="setTriggerRef"
+      :ref="setTriggerRef"
       :variant="props.triggerVariant"
       :size="props.triggerSize ?? 'md'"
       :aria-label="props.triggerLabel"
@@ -152,7 +162,7 @@ function setTriggerRef(element: unknown): void {
     </Button>
     <button
       v-else
-      ref="setTriggerRef"
+      :ref="setTriggerRef"
       type="button"
       :class="props.triggerClass"
       :aria-label="props.triggerLabel"
