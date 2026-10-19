@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { FIELD_CLASSES } from '@/design-system'
+import { ref } from 'vue'
+import { FIELD_BARE_CLASSES, FIELD_CLASSES } from '@/design-system'
 
 withDefaults(
   defineProps<{
@@ -13,6 +14,8 @@ withDefaults(
     disabled?: boolean
     ariaInvalid?: boolean
     ariaDescribedby?: string
+    /** Sin borde ni anillo de foco: el contenedor gestiona su propio chrome. */
+    bare?: boolean
   }>(),
   {
     name: undefined,
@@ -24,14 +27,20 @@ withDefaults(
     disabled: false,
     ariaInvalid: false,
     ariaDescribedby: undefined,
+    bare: false,
   },
 )
 
 const model = defineModel<string>({ required: true })
+
+const el = ref<HTMLTextAreaElement | null>(null)
+
+defineExpose({ el })
 </script>
 
 <template>
   <textarea
+    ref="el"
     :id="id"
     v-model="model"
     :name="name"
@@ -43,6 +52,6 @@ const model = defineModel<string>({ required: true })
     :disabled="disabled"
     :aria-invalid="ariaInvalid"
     :aria-describedby="ariaDescribedby"
-    :class="[FIELD_CLASSES, 'px-3 py-2']"
+    :class="[bare ? FIELD_BARE_CLASSES : FIELD_CLASSES, 'px-3 py-2']"
   />
 </template>

@@ -16,7 +16,7 @@ import FormHelp from '@/components/ui/FormHelp.vue'
 import FormLabel from '@/components/ui/FormLabel.vue'
 import FormSelect from '@/components/ui/FormSelect.vue'
 import Input from '@/components/ui/Input.vue'
-import Textarea from '@/components/ui/Textarea.vue'
+import RichTextarea from '@/components/ui/RichTextarea.vue'
 import {
   RIDE_AUDIENCES,
   RIDE_AUDIENCE_LABELS,
@@ -146,11 +146,11 @@ function handleSubmit(): void {
 
         <div class="sm:col-span-2">
           <FormLabel id="description">Descripción</FormLabel>
-          <Textarea
+          <RichTextarea
             id="description"
             v-model="form.description"
             name="description"
-            :rows="3"
+            :rows="6"
             :minlength="10"
             :maxlength="3000"
             required
