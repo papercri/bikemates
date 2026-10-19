@@ -91,6 +91,14 @@ const router = createRouter({
       },
     },
     {
+      path: '/community-rules',
+      name: 'community-rules',
+      component: () => import('@/views/public/CommunityRulesView.vue'),
+      meta: {
+        breadcrumb: [{ label: 'Inicio', to: '/' }, { label: 'Normas de la comunidad' }],
+      },
+    },
+    {
       path: '/:pathMatch(.*)*',
       name: 'not-found',
       component: () => import('@/views/public/NotFoundView.vue'),

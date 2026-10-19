@@ -20,6 +20,7 @@ const linkClasses =
       >
         <RouterLink to="/rides" :class="linkClasses">Explorar rutas</RouterLink>
         <RouterLink v-if="!user" to="/login" :class="linkClasses">Iniciar sesión</RouterLink>
+        <RouterLink to="/community-rules" :class="linkClasses">Normas de la comunidad</RouterLink>
         <RouterLink to="/privacy" :class="linkClasses">Política de privacidad</RouterLink>
       </nav>
 
