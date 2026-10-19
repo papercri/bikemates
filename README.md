@@ -14,7 +14,12 @@ BikeMates es una SPA **mobile-first** construida con Vue 3 y TypeScript estricto
   `Por desnivel`).
 - Dos páginas en el listado: `Próximas` y `Pasadas`, con sus recuentos; las pasadas salen
   ordenadas de la más reciente a la más antigua y atenuadas en la tarjeta.
-- Detalle de ruta con perfil del recorrido (gráfico de desnivel), descripción y datos clave.
+- Detalle de ruta maquetado a dos columnas (2/3 + 1/3): portada horizontal con la
+  descripción debajo, y en la columna estrecha el mapa de punto de encuentro y los
+  participantes. La fecha lleva icono de reloj y, a su lado, las acciones
+  **Compartir** (Web Share API con copia al portapapeles como respaldo) y
+  **Añadir al calendario** (descarga de un `.ics` generado en
+  `src/features/rides/utils/rideCalendar.ts`).
 - Estado vacío y enlace de retorno cuando la ruta no existe.
 - Los datos de rutas son de ejemplo (`src/features/rides/data/mockRides.ts`) hasta conectar con la base de datos.
 
@@ -154,13 +159,16 @@ Separación de responsabilidades: las vistas orquestan, los componentes presenta
 - Los componentes visuales viven en `src/components/` y no contienen lógica de negocio.
 - Los SVG decorativos e iconográficos viven en `src/components/icons/` como componentes propios (`CyclistScene`, `RidgeDivider`, `HeroBackdrop`, `Icon*`); las vistas y componentes solo los componen.
 - Los tokens (colores, radios, sombras, tipografías) se definen una sola vez en `src/assets/main.css`.
-- Estilo showroom editorial claro (referencia Cowboy): paleta acromática de
-  porcelana (`canvas` `#FFFFFF`, `snow`/`surface` `#f3f4f6`), tinta carbón
-  (`ink` `#1d1d1d`, `graphite` `#5e5e5e`) y filetes hairline (`line` `#e5e7eb`);
-  los tokens de marca (`trail`, `route`, `turf`) conservan sus nombres y
-  apuntan al carbón, de modo que no existe CTA cromático. `moss` y
-  `signal-blue` quedan reservados a estados semánticos (el foco de los campos
-  usa `signal-blue`). Estructura con filetes de 1px, sin sombras en tarjetas;
+- Estilo Clean Alpine & Light: fondo porcelana (`canvas` `#FFFFFF`, `snow`
+  `#F7F8F6`, `surface` `#F0F2EE`), filetes verde pradera (`line` `#E4E8E1`,
+  `line-strong` `#D5DBD2`) y texto (`ink` `#1A1D20`, `graphite` `#5C6560`).
+  Verde de marca para acciones primarias y estados activos (`trail` `#22C55E`,
+  `trail-deep` `#10B981` en hover, `trail-ink` `#15803D` para texto y CTA con
+  texto blanco, `trail-dark` `#166534`) y naranja de ruta para realces de
+  recorrido (`route` `#F97316`, `route-ink` `#C2410C`): pin del mapa, enlace de
+  Wikiloc y botón de Google Maps. Verde y naranja no compiten como primarios en
+  la misma pantalla. `moss` y `signal-blue` quedan reservados a estados
+  semánticos (el foco de los campos usa `signal-blue`). Estructura con filetes de 1px, sin sombras en tarjetas;
   solo `ConfirmDialog` conserva elevación. Radios: 8px en tarjetas, fotos y
   campos (`--radius-card`, `--radius-photo`, `--radius-field`); píldora en
   botones y badges (`--radius-btn`).
@@ -172,7 +180,7 @@ Separación de responsabilidades: las vistas orquestan, los componentes presenta
   de lectura se controla dentro de cada vista (`max-w-lg`, `max-w-3xl`…).
 - La receta de campos de formulario (`FIELD_CLASSES` en `src/design-system/field.ts`) se comparte entre `Input`, `Textarea` y `FormSelect` para mantener borde, radio, foco y estados idénticos.
 - Los primitivos exponen variantes homogéneas (`variant`, `size`, `tone`, `loading`, `block`, `dot`…) construidas con `createVariant`, sin dependencias externas.
-- `Button` incluye los tamaños `xs`–`lg` y, además de `primary`/`outline`/`destructive`, las variantes `sun`/`sun-outline` (sobre fotos y fondos oscuros: píldora blanca con texto carbón, o contorno blanco) y `quiet-destructive` (acción peligrosa discreta, el color solo aparece al interactuar).
+- `Button` incluye los tamaños `xs`–`lg` y, además de `primary`/`outline`/`destructive`, las variantes `sun`/`sun-outline` (sobre fotos y fondos oscuros: píldora blanca con texto carbón, o contorno blanco) y `quiet-destructive` (acción peligrosa discreta, el color solo aparece al interactuar). `primary` es la píldora verde de marca con texto tinta (contraste AA).
 - `ConfirmDialog` es el modal estándar de confirmaciones y acciones irreversibles (`role="dialog"`, `aria-modal`, trampa de foco, Escape y clic en el fondo para cancelar). Los mensajes de formulario se mantienen como `Alert` inline con `role="alert"`.
 - Los iconos de navegación y acciones usan Font Awesome (free-solid) con `FontAwesomeIcon`; los SVG ilustrativos y de datos siguen en `src/components/icons/`.
 - Motion con `motion-v` (Motion for Vue): la home usa `useScroll`/`useTransform` para el parallax del hero (offset por sección, rango 12 %) y componentes `motion.div` con `whileInView` (`opacity` + `y`) para revelar bloques; el zoom de entrada del hero es un `scale` animado al montar. `MotionConfig reduced-motion="user"` en `App.vue` respeta `prefers-reduced-motion` en toda la app. El header de la home es transparente (`meta.overlayHeader` en el router) y se superpone al hero a pantalla completa.

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { faMap } from '@fortawesome/free-solid-svg-icons'
+import { faCalendarPlus, faClock, faMap, faShareNodes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { useHead } from '@unhead/vue'
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import AppBackBar from '@/components/layout/AppBackBar.vue'
 import type { BreadcrumbItem } from '@/components/layout/AppBreadcrumb.vue'
@@ -19,6 +19,7 @@ import RideAudienceBadge from '@/features/rides/components/RideAudienceBadge.vue
 import { useRideDetail } from '@/features/rides/composables/useRideDetail'
 import { RIDE_LEVEL_BADGE_COLORS } from '@/features/rides/constants/rideLevels'
 import { RIDE_BIKE_TYPE_LABELS } from '@/features/rides/constants/rideOptions'
+import { buildRideIcs } from '@/features/rides/utils/rideCalendar'
 import { formatRideDate } from '@/utils/dates'
 import RideParticipants from '@/features/rides/components/RideParticipants.vue'
 import { useRideParticipantCount } from '@/features/rides/composables/useRideParticipantCount'
@@ -119,6 +120,90 @@ const rideBreadcrumb = computed<BreadcrumbItem[] | undefined>(() =>
     ? [{ label: 'Inicio', to: '/' }, { label: 'Rutas', to: '/rides' }, { label: ride.value.title }]
     : undefined,
 )
+
+/** Confirmación visible y anunciada de las acciones de compartir/calendario. */
+const actionStatus = ref<string | null>(null)
+let actionStatusTimer: ReturnType<typeof setTimeout> | null = null
+
+function setActionStatus(message: string): void {
+  actionStatus.value = message
+
+  if (actionStatusTimer !== null) clearTimeout(actionStatusTimer)
+  actionStatusTimer = setTimeout(() => {
+    actionStatus.value = null
+    actionStatusTimer = null
+  }, 5000)
+}
+
+onBeforeUnmount(() => {
+  if (actionStatusTimer !== null) clearTimeout(actionStatusTimer)
+})
+
+/**
+ * Web Share API con respaldo de copia al portapapeles: compartir no puede
+ * depender de que el navegador exponga `navigator.share`.
+ */
+async function handleShare(): Promise<void> {
+  if (!ride.value) return
+
+  const shareData = {
+    title: ride.value.title,
+    text: ride.value.title,
+    url: window.location.href,
+  }
+
+  if (typeof navigator.share === 'function') {
+    try {
+      await navigator.share(shareData)
+      return
+    } catch (error) {
+      // Cancelar el diálogo nativo no es un error para la usuaria.
+      if (error instanceof DOMException && error.name === 'AbortError') return
+    }
+  }
+
+  try {
+    await navigator.clipboard.writeText(shareData.url)
+    setActionStatus('Enlace copiado al portapapeles')
+  } catch {
+    setActionStatus('No se ha podido copiar el enlace')
+  }
+}
+
+function downloadCalendarFile(rideId: string, contents: string): void {
+  const blob = new Blob([contents], { type: 'text/calendar;charset=utf-8' })
+  const objectUrl = URL.createObjectURL(blob)
+  const anchor = document.createElement('a')
+
+  anchor.href = objectUrl
+  anchor.download = `bikemates-${rideId}.ics`
+  document.body.appendChild(anchor)
+  anchor.click()
+  anchor.remove()
+
+  setTimeout(() => URL.revokeObjectURL(objectUrl), 0)
+}
+
+function handleAddToCalendar(): void {
+  if (!ride.value) return
+
+  try {
+    const ics = buildRideIcs({
+      id: ride.value.id,
+      title: ride.value.title,
+      description: ride.value.description,
+      startsAt: ride.value.startsAt,
+      durationMinutes: ride.value.durationMinutes,
+      meetingPoint: ride.value.meetingPoint,
+      url: window.location.href,
+    })
+
+    downloadCalendarFile(ride.value.id, ics)
+    setActionStatus('Archivo de calendario descargado')
+  } catch {
+    setActionStatus('No se ha podido crear el archivo de calendario')
+  }
+}
 </script>
 
 <template>
@@ -155,13 +240,42 @@ const rideBreadcrumb = computed<BreadcrumbItem[] | undefined>(() =>
           </Typography>
         </div>
 
-        <Typography as="h1" variant="heading-lg" class="mt-2 tracking-tight">
-          {{ ride.title }}
-        </Typography>
+        <div
+          class="mt-2 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-6"
+        >
+          <Typography as="h1" variant="heading-lg" class="tracking-tight">
+            {{ ride.title }}
+          </Typography>
 
-        <Typography class="mt-0.5" variant="body-sm" tone="muted">
-          <time :datetime="ride.startsAt">{{ formatRideDate(ride.startsAt) }}</time>
-        </Typography>
+          <div class="flex shrink-0 flex-col items-start gap-2 sm:items-end">
+            <Typography as="p" variant="body-sm" tone="muted" class="flex items-center gap-2">
+              <FontAwesomeIcon :icon="faClock" aria-hidden="true" class="text-sm text-route-ink" />
+              <time :datetime="ride.startsAt" class="font-medium text-ink">
+                {{ formatRideDate(ride.startsAt) }}
+              </time>
+            </Typography>
+
+            <div class="flex flex-wrap gap-2">
+              <Button variant="outline" size="sm" @click="handleShare">
+                <FontAwesomeIcon :icon="faShareNodes" aria-hidden="true" />
+                Compartir
+              </Button>
+
+              <Button variant="outline" size="sm" @click="handleAddToCalendar">
+                <FontAwesomeIcon :icon="faCalendarPlus" aria-hidden="true" />
+                Añadir al calendario
+              </Button>
+            </div>
+
+            <p
+              v-if="actionStatus"
+              role="status"
+              class="text-xs font-medium text-trail-ink sm:text-right"
+            >
+              {{ actionStatus }}
+            </p>
+          </div>
+        </div>
       </header>
 
       <dl class="mt-3 grid grid-cols-3 border-y border-line">
@@ -188,133 +302,135 @@ const rideBreadcrumb = computed<BreadcrumbItem[] | undefined>(() =>
         </div>
       </dl>
 
-      <!-- Portada a la derecha y descripción (justificada, con extracto plegable) a la izquierda -->
-      <div class="mt-4 grid gap-5 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
-        <img
-          :src="ride.imageUrl || '/default.webp'"
-          :alt="`Imagen de la ruta ${ride.title}`"
-          class="aspect-[4/3] w-full rounded-photo object-cover lg:order-2"
-          loading="eager"
-          fetchpriority="high"
-        />
+      <!-- 2/3: portada horizontal con la descripción debajo · 1/3: mapa reducido y participantes -->
+      <div class="mt-4 grid gap-5 lg:grid-cols-3 lg:items-start">
+        <div class="lg:col-span-2">
+          <img
+            :src="ride.imageUrl || '/default.webp'"
+            :alt="`Imagen de la ruta ${ride.title}`"
+            class="aspect-video w-full rounded-photo object-cover"
+            loading="eager"
+            fetchpriority="high"
+          />
 
-        <div class="lg:order-1">
-          <Typography as="h2" variant="heading-sm" class="mb-2"> Descripción </Typography>
+          <section class="mt-4" aria-labelledby="description-title">
+            <Typography id="description-title" as="h2" variant="heading-sm" class="mb-2">
+              Descripción
+            </Typography>
 
-          <p class="text-justify text-[0.95rem] leading-7 hyphens-auto text-graphite">
-            {{ visibleDescription }}
-          </p>
+            <p class="text-justify text-[0.95rem] leading-7 hyphens-auto text-graphite">
+              {{ visibleDescription }}
+            </p>
 
-          <button
-            v-if="isDescriptionTruncated"
-            type="button"
-            class="mt-2 text-sm font-semibold text-ink underline decoration-line-strong underline-offset-4 transition-colors hover:decoration-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
-            :aria-expanded="showFullDescription"
-            @click="showFullDescription = !showFullDescription"
-          >
-            {{ showFullDescription ? 'Leer menos' : 'Leer más' }}
-          </button>
-
-          <p v-if="ride.wikilocUrl" class="mt-3">
-            <a
-              :href="ride.wikilocUrl"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-2 text-sm font-medium text-trail-ink underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
-              :aria-label="`Ver recorrido de ${ride.title} en Wikiloc`"
+            <button
+              v-if="isDescriptionTruncated"
+              type="button"
+              class="mt-2 text-sm font-semibold text-ink underline decoration-line-strong underline-offset-4 transition-colors hover:decoration-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+              :aria-expanded="showFullDescription"
+              @click="showFullDescription = !showFullDescription"
             >
-              <FontAwesomeIcon :icon="faMap" aria-hidden="true" />
-              Ver recorrido en Wikiloc
-              <span class="sr-only">(se abre en una pestaña nueva)</span>
-            </a>
-          </p>
-        </div>
-      </div>
+              {{ showFullDescription ? 'Leer menos' : 'Leer más' }}
+            </button>
 
-      <!-- Mapa y participantes en paralelo en pantallas medianas+ -->
-      <div class="mt-5 grid gap-4 lg:grid-cols-2 lg:items-start">
-        <section aria-labelledby="meeting-point-title">
-          <Typography id="meeting-point-title" as="h2" variant="heading-sm" class="mb-2">
-            Punto de encuentro
-          </Typography>
-
-          <Card>
-            <RideMap
-              :latitude="ride.latitude"
-              :longitude="ride.longitude"
-              :meeting-point="ride.meetingPoint"
-            />
-
-            <div class="flex flex-wrap items-center justify-between gap-2 p-3">
-              <div class="min-w-0">
-                <Typography as="h3" variant="body-sm" class="truncate font-semibold">
-                  {{ ride.meetingPoint }}
-                </Typography>
-              </div>
-
+            <p v-if="ride.wikilocUrl" class="mt-3">
               <a
-                v-if="googleMapsUrl"
-                :href="googleMapsUrl"
+                :href="ride.wikilocUrl"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="inline-flex items-center rounded-full border border-ink px-3 py-1.5 text-sm font-medium text-ink transition-colors hover:bg-snow focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+                class="inline-flex items-center gap-2 text-sm font-medium text-route-ink underline-offset-4 hover:text-route-dark hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+                :aria-label="`Ver recorrido de ${ride.title} en Wikiloc`"
               >
-                Abrir en Google Maps
+                <FontAwesomeIcon :icon="faMap" aria-hidden="true" />
+                Ver recorrido en Wikiloc
                 <span class="sr-only">(se abre en una pestaña nueva)</span>
               </a>
-            </div>
-          </Card>
-        </section>
+            </p>
+          </section>
+        </div>
 
-        <RideParticipants
-          v-if="isAuthenticated"
-          :participants="participants"
-          :is-loading="isLoadingParticipants"
-          :error-message="participantsError"
-          :is-authenticated="isAuthenticated"
-          :current-user-id="authStore.user?.id ?? null"
-          :is-submitting="isSubmitting"
-          :is-organizer="isOrganizer"
-          @join="join"
-          @leave="leave"
-        />
-
-        <section v-else aria-labelledby="participants-title">
-          <div class="mb-2 flex items-center justify-between gap-4">
-            <Typography id="participants-title" as="h2" variant="heading-sm">
-              Participantes
+        <div class="flex flex-col gap-5">
+          <section aria-labelledby="meeting-point-title">
+            <Typography id="meeting-point-title" as="h2" variant="heading-sm" class="mb-2">
+              Punto de encuentro
             </Typography>
 
-            <Typography
-              v-if="participantCount !== null"
-              as="span"
-              variant="numeric-inline"
-              class="text-ink"
-              aria-live="polite"
-            >
-              {{ participantCount }}
-              {{ participantCount === 1 ? 'inscrito' : 'inscritos' }}
-            </Typography>
-          </div>
+            <Card>
+              <RideMap
+                compact
+                :latitude="ride.latitude"
+                :longitude="ride.longitude"
+                :meeting-point="ride.meetingPoint"
+              />
 
-          <Card class="p-4">
-            <Typography v-if="isLoadingCount" variant="body-sm" tone="muted" role="status">
-              Cargando el número de participantes...
-            </Typography>
+              <div class="flex flex-col gap-2 p-3">
+                <Typography as="h3" variant="body-sm" class="font-semibold">
+                  {{ ride.meetingPoint }}
+                </Typography>
 
-            <Typography v-else-if="countError" variant="body-sm" tone="muted" role="status">
-              No se ha podido cargar el número de participantes.
-            </Typography>
+                <a
+                  v-if="googleMapsUrl"
+                  :href="googleMapsUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center self-start rounded-full border border-route-ink px-3 py-1.5 text-sm font-medium text-route-ink transition-colors hover:bg-route/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+                >
+                  Abrir en Google Maps
+                  <span class="sr-only">(se abre en una pestaña nueva)</span>
+                </a>
+              </div>
+            </Card>
+          </section>
 
-            <div v-else>
-              <Typography variant="body-sm" tone="muted">
-                Inicia sesión para ver quién participa en esta ruta.
+          <RideParticipants
+            v-if="isAuthenticated"
+            :participants="participants"
+            :is-loading="isLoadingParticipants"
+            :error-message="participantsError"
+            :is-authenticated="isAuthenticated"
+            :current-user-id="authStore.user?.id ?? null"
+            :is-submitting="isSubmitting"
+            :is-organizer="isOrganizer"
+            @join="join"
+            @leave="leave"
+          />
+
+          <section v-else aria-labelledby="participants-title">
+            <div class="mb-2 flex items-center justify-between gap-4">
+              <Typography id="participants-title" as="h2" variant="heading-sm">
+                Participantes
               </Typography>
 
-              <Button to="/login" size="sm" class="mt-3"> Iniciar sesión </Button>
+              <Typography
+                v-if="participantCount !== null"
+                as="span"
+                variant="numeric-inline"
+                class="text-ink"
+                aria-live="polite"
+              >
+                {{ participantCount }}
+                {{ participantCount === 1 ? 'inscrito' : 'inscritos' }}
+              </Typography>
             </div>
-          </Card>
-        </section>
+
+            <Card class="p-4">
+              <Typography v-if="isLoadingCount" variant="body-sm" tone="muted" role="status">
+                Cargando el número de participantes...
+              </Typography>
+
+              <Typography v-else-if="countError" variant="body-sm" tone="muted" role="status">
+                No se ha podido cargar el número de participantes.
+              </Typography>
+
+              <div v-else>
+                <Typography variant="body-sm" tone="muted">
+                  Inicia sesión para ver quién participa en esta ruta.
+                </Typography>
+
+                <Button to="/login" size="sm" class="mt-3"> Iniciar sesión </Button>
+              </div>
+            </Card>
+          </section>
+        </div>
       </div>
 
       <div

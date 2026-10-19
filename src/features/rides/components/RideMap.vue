@@ -7,9 +7,11 @@ interface Props {
   latitude: number
   longitude: number
   meetingPoint: string
+  /** Mapa reducido para columnas laterales estrechas. */
+  compact?: boolean
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), { compact: false })
 
 const mapContainer = ref<HTMLDivElement | null>(null)
 
@@ -67,7 +69,8 @@ onUnmounted(() => {
 <template>
   <div
     ref="mapContainer"
-    class="h-48 w-full overflow-hidden rounded-photo bg-snow sm:h-60"
+    class="w-full overflow-hidden rounded-photo bg-snow"
+    :class="props.compact ? 'h-40 sm:h-44' : 'h-48 sm:h-60'"
     role="application"
     :aria-label="`Mapa del punto de encuentro: ${meetingPoint}`"
   />

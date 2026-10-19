@@ -44,6 +44,38 @@ test.describe('ride detail', () => {
     await expect(page.getByRole('link', { name: 'Ver todas las rutas' }).first()).toBeVisible()
   })
 
+  test('copies the ride link when the Web Share API is unavailable', async ({
+    page,
+    context,
+    supabase,
+  }) => {
+    await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+    // Fuerza el respaldo de portapapeles: sin navigator.share el botón debe seguir funcionando.
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, 'share', { value: undefined, configurable: true })
+    })
+    supabase.state.rides = [makeRide({ id: 'ride-1' })]
+
+    await page.goto('/rides/ride-1')
+    await page.getByRole('button', { name: 'Compartir' }).click()
+
+    await expect(page.getByRole('status')).toHaveText('Enlace copiado al portapapeles')
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toContain('/rides/ride-1')
+  })
+
+  test('downloads an ics calendar file for the ride', async ({ page, supabase }) => {
+    supabase.state.rides = [makeRide({ id: 'ride-1' })]
+
+    await page.goto('/rides/ride-1')
+
+    const downloadPromise = page.waitForEvent('download')
+    await page.getByRole('button', { name: 'Añadir al calendario' }).click()
+    const download = await downloadPromise
+
+    expect(download.suggestedFilename()).toBe('bikemates-ride-1.ics')
+    await expect(page.getByRole('status')).toHaveText('Archivo de calendario descargado')
+  })
+
   test('lets an authenticated non-participant join the ride', async ({ page, supabase }) => {
     supabase.state.rides = [makeRide({ id: 'ride-1', max_participants: 10 })]
     supabase.state.participants = [makeParticipant('ride-1', ORGANIZER)]
