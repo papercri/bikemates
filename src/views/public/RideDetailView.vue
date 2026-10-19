@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { faClock, faMap } from '@fortawesome/free-solid-svg-icons'
+import { faBicycle, faClock, faMap } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { useHead } from '@unhead/vue'
 import { computed, onBeforeUnmount, ref } from 'vue'
@@ -229,7 +229,8 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
             {{ ride.level }}
           </Badge>
 
-          <Badge variant="muted">
+          <Badge variant="muted" color="trail">
+            <FontAwesomeIcon :icon="faBicycle" aria-hidden="true" class="size-3 text-trail-ink" />
             {{ RIDE_BIKE_TYPE_LABELS[ride.bikeType] }}
           </Badge>
 
