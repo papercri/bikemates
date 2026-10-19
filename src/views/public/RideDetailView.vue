@@ -3,10 +3,12 @@ import { faMap } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { useHead } from '@unhead/vue'
 import { computed, ref } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { useRoute } from 'vue-router'
+import AppBackBar from '@/components/layout/AppBackBar.vue'
+import type { BreadcrumbItem } from '@/components/layout/AppBreadcrumb.vue'
 import AppPage from '@/components/layout/AppPage.vue'
-import IconArrow from '@/components/icons/IconArrow.vue'
 import Badge from '@/components/ui/Badge.vue'
+import BikeLoader from '@/components/ui/BikeLoader.vue'
 import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
@@ -110,21 +112,20 @@ useHead({
     ride.value ? `${ride.value.title} | BikeMates` : 'Detalle de ruta | BikeMates',
   ),
 })
+
+// La última miga es el título real de la ruta; AppBreadcrumb la muestra acortada.
+const rideBreadcrumb = computed<BreadcrumbItem[] | undefined>(() =>
+  ride.value
+    ? [{ label: 'Inicio', to: '/' }, { label: 'Rutas', to: '/rides' }, { label: ride.value.title }]
+    : undefined,
+)
 </script>
 
 <template>
-  <AppPage>
-    <RouterLink
-      to="/rides"
-      class="inline-flex items-center gap-1.5 text-sm text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
-    >
-      <IconArrow direction="left" />
-      Volver a las rutas
-    </RouterLink>
+  <AppPage :breadcrumb="rideBreadcrumb">
+    <AppBackBar fallback="/rides" show-all-rides-link />
 
-    <div v-if="isLoading" class="mt-8 py-12 text-center" role="status" aria-live="polite">
-      <Typography tone="muted">Cargando los detalles de la ruta...</Typography>
-    </div>
+    <BikeLoader v-if="isLoading" class="mt-8" label="Cargando los detalles de la ruta…" />
 
     <EmptyState
       v-else-if="errorMessage"

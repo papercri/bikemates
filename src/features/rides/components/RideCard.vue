@@ -12,6 +12,8 @@ const props = defineProps<{
   ride: Ride
   /** La salida ya se celebró: se atenúa el contraste frente a las próximas rutas. */
   past?: boolean
+  /** Sin borde ni redondeado: la tarjeta se integra en un contenedor propio. */
+  bare?: boolean
 }>()
 
 /** Fotografías propias del proyecto para las salidas sin imagen en la base de datos. */
@@ -33,8 +35,8 @@ const dateParts = computed(() => getRideDateParts(props.ride.startsAt))
 
 <template>
   <article
-    class="h-full overflow-hidden rounded-photo border border-line sm:aspect-square"
-    :class="past ? 'opacity-75' : ''"
+    class="h-full overflow-hidden sm:aspect-square"
+    :class="[props.bare ? '' : 'rounded-photo border border-line', past ? 'opacity-75' : '']"
   >
     <RouterLink
       :to="{ name: 'ride-detail', params: { id: ride.id } }"
@@ -48,10 +50,11 @@ const dateParts = computed(() => getRideDateParts(props.ride.startsAt))
         decoding="async"
         class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 motion-safe:group-hover:scale-[1.03]"
       />
-      <div class="absolute inset-0 bg-ink/60" aria-hidden="true" />
 
-      <!-- Raíl de fecha + cifras -->
-      <div class="relative flex items-start justify-between gap-3 p-4 sm:p-5">
+      <!-- Raíl de fecha + cifras: degradado ligero solo detrás del rail. -->
+      <div
+        class="relative flex items-start justify-between gap-3 bg-gradient-to-b from-ink/55 via-ink/20 to-transparent p-4 sm:p-5"
+      >
         <span
           class="rounded-full bg-canvas px-2.5 py-1 font-mono text-xs font-semibold tracking-[0.08em] text-ink uppercase tabular-nums"
         >

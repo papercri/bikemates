@@ -97,11 +97,7 @@ function handleSelectPlace(place: GeocodingResult): void {
       </li>
     </ul>
 
-    <div
-      v-if="selectedPlace"
-      role="status"
-      class="rounded-card border border-line bg-trail/10 p-3"
-    >
+    <div v-if="selectedPlace" role="status" class="rounded-card border border-line bg-trail/10 p-3">
       <p class="text-sm font-semibold text-ink">Lugar seleccionado</p>
       <p class="mt-1 text-sm text-ink">
         {{ selectedPlace.label }}

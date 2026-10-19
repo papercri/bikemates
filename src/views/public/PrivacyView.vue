@@ -45,16 +45,6 @@ useHead({
         <li>
           <Typography variant="body-sm" tone="muted" class="text-justify">
             <Typography as="span" class="font-semibold text-ink"
-              >Sin cookies de rastreo:</Typography
-            >
-            No utilizo herramientas de seguimiento externo, publicidad intrusiva ni analíticas que
-            rastreen tu comportamiento por la web.
-          </Typography>
-        </li>
-
-        <li>
-          <Typography variant="body-sm" tone="muted" class="text-justify">
-            <Typography as="span" class="font-semibold text-ink"
               >Seguridad de los datos:</Typography
             >
             Tu información de acceso se almacena de forma segura en la infraestructura de Supabase y

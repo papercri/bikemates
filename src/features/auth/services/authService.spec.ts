@@ -32,6 +32,7 @@ const mocks = vi.hoisted(() => ({
     vi.fn<
       () => Promise<AuthResult<{ session: { user: { email_confirmed_at: string | null } } | null }>>
     >(),
+  getUser: vi.fn<() => Promise<AuthResult<{ user: { email: string | null } | null }>>>(),
 }))
 
 vi.mock('@/services/supabase', () => ({
@@ -43,6 +44,7 @@ vi.mock('@/services/supabase', () => ({
       updateUser: mocks.updateUser,
       verifyOtp: mocks.verifyOtp,
       getSession: mocks.getSession,
+      getUser: mocks.getUser,
     },
     functions: {
       invoke: mocks.invoke,
@@ -57,6 +59,7 @@ import {
   requestAccountDeletion,
   requestPasswordReset,
   updatePassword,
+  verifyCurrentUserPassword,
   verifyRecoveryToken,
 } from './authService'
 
@@ -213,6 +216,48 @@ describe('authService', () => {
       mocks.getSession.mockResolvedValue({ data: { session: null }, error: new Error('offline') })
 
       await expect(isEmailConfirmed()).rejects.toThrow('offline')
+    })
+  })
+
+  describe('verifyCurrentUserPassword', () => {
+    it('returns true when the current password is correct', async () => {
+      mocks.getUser.mockResolvedValue({
+        data: { user: { email: 'ana@example.com' } },
+        error: null,
+      })
+      mocks.signInWithPassword.mockResolvedValue({
+        data: { session: { user: { id: 'u1' } } },
+        error: null,
+      })
+
+      await expect(verifyCurrentUserPassword('pedaleando123')).resolves.toBe(true)
+
+      expect(mocks.signInWithPassword).toHaveBeenCalledWith({
+        email: 'ana@example.com',
+        password: 'pedaleando123',
+      })
+    })
+
+    it('returns false when the current password does not match', async () => {
+      mocks.getUser.mockResolvedValue({
+        data: { user: { email: 'ana@example.com' } },
+        error: null,
+      })
+      mocks.signInWithPassword.mockResolvedValue({
+        data: { session: null },
+        error: new Error('bad'),
+      })
+
+      await expect(verifyCurrentUserPassword('otracosa1')).resolves.toBe(false)
+    })
+
+    it('throws when the current user has no email', async () => {
+      mocks.getUser.mockResolvedValue({ data: { user: { email: null } }, error: null })
+
+      await expect(verifyCurrentUserPassword('pedaleando123')).rejects.toThrow(
+        'No se ha podido verificar tu identidad.',
+      )
+      expect(mocks.signInWithPassword).not.toHaveBeenCalled()
     })
   })
 

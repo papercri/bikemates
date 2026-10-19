@@ -111,7 +111,7 @@ const confirmVariant = computed(() => (props.tone === 'danger' ? 'destructive' :
 <template>
   <Teleport to="body">
     <Transition name="confirm-dialog">
-      <div v-if="open" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div v-if="open" class="fixed inset-0 z-[1000] flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-ink/45" aria-hidden="true" @click="handleBackdropClick" />
 
         <div

@@ -10,6 +10,7 @@ function mountPage(props?: Record<string, unknown>, slot?: string) {
       stubs: {
         AppHeader: { template: '<header data-stub="header" />' },
         AppFooter: { template: '<footer data-stub="footer" />' },
+        AppBreadcrumb: true,
       },
     },
   })

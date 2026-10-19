@@ -1,3 +1,5 @@
+import { validatePassword } from './passwordValidator'
+
 export interface RegisterForm {
   name: string
   email: string
@@ -47,19 +49,7 @@ export function validateRegisterForm(form: RegisterForm): RegisterErrors {
     errors.email = 'Introduce un correo electrónico válido.'
   }
 
-  if (!form.password) {
-    errors.password = 'La contraseña es obligatoria.'
-  } else if (form.password.length < 8) {
-    errors.password = 'La contraseña debe tener al menos 8 caracteres.'
-  } else if (form.password.length > 128) {
-    errors.password = 'La contraseña no puede superar los 128 caracteres.'
-  } else if (CONTROL_CHARACTERS.test(form.password)) {
-    errors.password = 'La contraseña contiene caracteres de control no permitidos.'
-  } else if (!/[A-Za-zÀ-ÿ]/.test(form.password)) {
-    errors.password = 'La contraseña debe incluir al menos una letra.'
-  } else if (!/\d/.test(form.password)) {
-    errors.password = 'La contraseña debe incluir al menos un número.'
-  }
+  errors.password = validatePassword(form.password) ?? ''
 
   if (!form.confirmPassword) {
     errors.confirmPassword = 'Confirma tu contraseña.'

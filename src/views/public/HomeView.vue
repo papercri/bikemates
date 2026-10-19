@@ -299,7 +299,10 @@ onBeforeUnmount(() => {
           />
         </div>
 
-        <div v-else-if="latestRides.length > 0" class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div
+          v-else-if="latestRides.length > 0"
+          class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+        >
           <motion.div
             v-for="(ride, index) in latestRides"
             :key="ride.id"

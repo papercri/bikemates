@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures'
-import { ORGANIZER } from '../helpers/seeds'
+import { makeRide, ORGANIZER } from '../helpers/seeds'
 
 test.describe('profile', () => {
   test('requires authentication and shows the profile tabs', async ({ page, supabase }) => {
@@ -10,43 +10,52 @@ test.describe('profile', () => {
 
     await expect(page.getByRole('heading', { level: 1, name: 'Mi perfil' })).toBeVisible()
     await expect(page.getByRole('tab', { name: 'Mis datos' })).toBeVisible()
-    await expect(page.getByRole('tab', { name: 'Rutas guardadas' })).toBeVisible()
-    await expect(page.getByRole('tab', { name: 'Rutas publicadas' })).toBeVisible()
+    await expect(page.getByRole('tab', { name: 'Mis rutas' })).toBeVisible()
+    // La pestaña de rutas guardadas queda oculta hasta su implementación.
+    await expect(page.getByRole('tab', { name: 'Rutas guardadas' })).toHaveCount(0)
   })
 
-  test('shows the account deletion warning on the details tab', async ({ page, supabase }) => {
+  test('shows the account data sections on the details tab', async ({ page, supabase }) => {
     supabase.state.users.push(ORGANIZER)
     await supabase.signInAs(ORGANIZER)
 
     await page.goto('/profile')
 
+    const panel = page.getByRole('tabpanel', { name: 'Mis datos' })
+
+    await expect(panel.getByRole('heading', { name: 'Foto de perfil' })).toBeVisible()
+    await expect(panel.getByRole('heading', { name: 'Nombre' })).toBeVisible()
+    await expect(panel.getByRole('heading', { name: 'Correo electrónico' })).toBeVisible()
+    await expect(panel.getByRole('heading', { name: 'Contraseña' })).toBeVisible()
+
+    await expect(panel.getByRole('textbox', { name: 'Nombre' })).toHaveValue('Ana Pedal')
+    await expect(panel.getByText('ana@example.com')).toBeVisible()
+
     await expect(
-      page.getByText(
-        'La edición de tus datos personales estará disponible en una próxima versión.',
-      ),
-    ).toBeVisible()
-    await expect(
-      page.getByText(
+      panel.getByText(
         'Eliminar tu cuenta borra de forma permanente tu perfil y tus datos asociados. Esta acción es irreversible.',
       ),
     ).toBeVisible()
-    await expect(page.getByRole('button', { name: 'Eliminar mi cuenta' })).toBeVisible()
+    await expect(panel.getByRole('button', { name: 'Eliminar mi cuenta' })).toBeVisible()
   })
 
-  test('switches between the saved and published rides tabs', async ({ page, supabase }) => {
+  test('switches between the details and my rides tabs', async ({ page, supabase }) => {
     supabase.state.users.push(ORGANIZER)
     await supabase.signInAs(ORGANIZER)
 
     await page.goto('/profile')
 
-    await page.getByRole('tab', { name: 'Rutas guardadas' }).click()
-    await expect(page.locator('#panel-saved-rides')).toBeVisible()
-    await expect(page.getByText('Todavía no has guardado ninguna ruta.')).toBeVisible()
-    await expect(page.locator('#panel-details')).toBeHidden()
-
-    await page.getByRole('tab', { name: 'Rutas publicadas' }).click()
-    await expect(page.locator('#panel-published-rides')).toBeVisible()
+    await page.getByRole('tab', { name: 'Mis rutas' }).click()
+    await expect(page.locator('#panel-my-rides')).toBeVisible()
     await expect(page.getByText('Todavía no has publicado ninguna ruta.')).toBeVisible()
+    await expect(page.locator('#panel-details')).toBeHidden()
+    // La pestaña activa queda registrada en la URL para poder volver a ella.
+    await expect(page).toHaveURL(/tab=my-rides/)
+
+    await page.getByRole('tab', { name: 'Mis datos' }).click()
+    await expect(page.locator('#panel-details')).toBeVisible()
+    await expect(page.locator('#panel-my-rides')).toBeHidden()
+    await expect(page).toHaveURL(/\/profile$/)
   })
 
   test('supports arrow-key navigation between tabs', async ({ page, supabase }) => {
@@ -59,10 +68,15 @@ test.describe('profile', () => {
     await detailsTab.focus()
     await page.keyboard.press('ArrowRight')
 
-    await expect(page.getByRole('tab', { name: 'Rutas guardadas' })).toHaveAttribute(
+    await expect(page.getByRole('tab', { name: 'Mis rutas' })).toHaveAttribute(
       'aria-selected',
       'true',
     )
+
+    // Con dos pestañas, ArrowRight en la última vuelve a la primera.
+    await page.keyboard.press('ArrowRight')
+
+    await expect(detailsTab).toHaveAttribute('aria-selected', 'true')
   })
 
   test('deletes the account and returns home', async ({ page, supabase }) => {
@@ -127,27 +141,39 @@ test.describe('profile', () => {
     await expect(page).toHaveURL('/profile')
   })
 
-  test('links from the empty states to the public rides and the create form', async ({
-    page,
-    supabase,
-  }) => {
+  test('links from the my rides empty state to the create form', async ({ page, supabase }) => {
     supabase.state.users.push(ORGANIZER)
     await supabase.signInAs(ORGANIZER)
 
     await page.goto('/profile')
 
-    const savedPanel = page.getByRole('tabpanel', { name: 'Rutas guardadas' })
-    await page.getByRole('tab', { name: 'Rutas guardadas' }).click()
-    await expect(savedPanel.getByRole('link', { name: 'Explorar rutas' })).toHaveAttribute(
-      'href',
-      '/rides',
-    )
-
-    const publishedPanel = page.getByRole('tabpanel', { name: 'Rutas publicadas' })
-    await page.getByRole('tab', { name: 'Rutas publicadas' }).click()
-    await expect(publishedPanel.getByRole('link', { name: 'Publicar ruta' })).toHaveAttribute(
+    const myRidesPanel = page.getByRole('tabpanel', { name: 'Mis rutas' })
+    await page.getByRole('tab', { name: 'Mis rutas' }).click()
+    await expect(myRidesPanel.getByRole('link', { name: 'Publicar ruta' })).toHaveAttribute(
       'href',
       '/rides/create',
     )
+  })
+
+  test('lists my published rides and deletes one with confirmation', async ({ page, supabase }) => {
+    supabase.state.users.push(ORGANIZER)
+    supabase.state.rides.push(makeRide(), makeRide({ id: 'ride-2', title: 'Subida al turó' }))
+    await supabase.signInAs(ORGANIZER)
+
+    await page.goto('/profile')
+    await page.getByRole('tab', { name: 'Mis rutas' }).click()
+
+    const panel = page.getByRole('tabpanel', { name: 'Mis rutas' })
+    await expect(panel.getByRole('article')).toHaveCount(2)
+    await expect(panel.getByText('2 rutas publicadas')).toBeVisible()
+
+    await panel.getByRole('button', { name: 'Eliminar' }).first().click()
+
+    const dialog = page.getByRole('dialog', { name: '¿Eliminar «Vuelta por Collserola»?' })
+    await dialog.locator('[data-dialog-confirm]').click()
+
+    await expect(panel.getByRole('article')).toHaveCount(1)
+    await expect(panel.getByText('Subida al turó')).toBeVisible()
+    await expect(panel.getByText('1 ruta publicada')).toBeVisible()
   })
 })
