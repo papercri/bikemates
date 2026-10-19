@@ -3,6 +3,7 @@ import { computed, ref, type Ref } from 'vue'
 import {
   RIDE_FILTER_ALL,
   type RideAudienceFilter,
+  type RideBikeFilter,
   type RideLevelFilter,
   type RideSortOption,
   type RideTimeframe,
@@ -13,12 +14,14 @@ import { normalizeSearchText } from '../utils/searchText'
 import { isRidePast } from '@/utils/dates'
 
 /**
- * Estado de los filtros del listado: búsqueda, nivel, público, orden y ventana
- * temporal (próximas o pasadas), con los listados ya filtrados y ordenados.
+ * Estado de los filtros del listado: búsqueda, nivel, tipo de bici, público,
+ * orden y ventana temporal (próximas o pasadas), con los listados ya filtrados
+ * y ordenados.
  */
 export function useRideFilters(rides: Ref<Ride[]>) {
   const query = ref('')
   const selectedLevel = ref<RideLevelFilter>(RIDE_FILTER_ALL)
+  const selectedBike = ref<RideBikeFilter>(RIDE_FILTER_ALL)
   const selectedAudience = ref<RideAudienceFilter>(RIDE_FILTER_ALL)
   const sortBy = ref<RideSortOption>('date')
   const timeframe = ref<RideTimeframe>('upcoming')
@@ -30,10 +33,12 @@ export function useRideFilters(rides: Ref<Ride[]>) {
       const matchesQuery = needle === '' || normalizeSearchText(ride.title).includes(needle)
       const matchesLevel =
         selectedLevel.value === RIDE_FILTER_ALL || ride.level === selectedLevel.value
+      const matchesBike =
+        selectedBike.value === RIDE_FILTER_ALL || ride.bikeType === selectedBike.value
       const matchesAudience =
         selectedAudience.value === RIDE_FILTER_ALL || ride.audience === selectedAudience.value
 
-      return matchesQuery && matchesLevel && matchesAudience
+      return matchesQuery && matchesLevel && matchesBike && matchesAudience
     })
   })
 
@@ -59,6 +64,7 @@ export function useRideFilters(rides: Ref<Ride[]>) {
   return {
     query,
     selectedLevel,
+    selectedBike,
     selectedAudience,
     sortBy,
     timeframe,

@@ -33,6 +33,7 @@ const { rides, isLoading, errorMessage, loadRides } = useRideList()
 const {
   query,
   selectedLevel,
+  selectedBike,
   selectedAudience,
   sortBy,
   timeframe,
@@ -46,12 +47,12 @@ const isPastTab = computed(() => timeframe.value === 'past')
 // Columnas adaptativas: 1 en móvil; en pantallas mayores, tantas como tarjetas haya (máx. 4).
 const { width: viewportWidth } = useWindowSize()
 
+// El grid mantiene columnas estables por breakpoint, también con una sola
+// salida: una tarjeta única no debe estirarse a todo el ancho disponible.
 const columnCount = computed(() => {
-  const count = visibleRides.value.length
-  if (count === 0) return 1
   if (viewportWidth.value < 640) return 1
-  if (viewportWidth.value < 1024) return Math.min(count, 2)
-  return Math.min(count, 4)
+  if (viewportWidth.value < 1024) return 2
+  return 3
 })
 
 const gridStyle = computed(() => ({
@@ -113,6 +114,7 @@ onBeforeUnmount(() => {
       <RideFilters
         v-model:query="query"
         v-model:level="selectedLevel"
+        v-model:bike="selectedBike"
         v-model:audience="selectedAudience"
         v-model:sort="sortBy"
       />
@@ -141,7 +143,7 @@ onBeforeUnmount(() => {
           </template>
         </Typography>
 
-        <div v-if="paginatedRides.length > 0" class="mt-4 grid gap-4" :style="gridStyle">
+        <div v-if="paginatedRides.length > 0" class="mt-6 grid gap-6" :style="gridStyle">
           <RideCard v-for="ride in paginatedRides" :key="ride.id" :ride="ride" :past="isPastTab" />
         </div>
 

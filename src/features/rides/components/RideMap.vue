@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 import L from 'leaflet'
+import { icon as faIcon } from '@fortawesome/fontawesome-svg-core'
+import { faBicycle } from '@fortawesome/free-solid-svg-icons'
 import 'leaflet/dist/leaflet.css'
 
 interface Props {
@@ -16,16 +18,19 @@ const props = withDefaults(defineProps<Props>(), { compact: false })
 const mapContainer = ref<HTMLDivElement | null>(null)
 
 /**
- * Pin redondo: el marcador por defecto de Leaflet es una chincheta con sombra.
- * Un punto con aro naranja de ruta resalta el punto de encuentro sobre el mapa.
+ * Pin redondo con icono de bicicleta: el marcador por defecto de Leaflet es
+ * una chincheta con sombra. Un círculo naranja de ruta con la bici resalta el
+ * punto de encuentro y refuerza el icono que ya usan las tarjetas.
  */
 function roundedPinIcon(): L.DivIcon {
+  const bikeSvg = faIcon(faBicycle)?.html.join('') ?? ''
+
   return L.divIcon({
     className: 'bm-map-pin',
-    iconSize: [24, 24],
-    iconAnchor: [12, 12],
-    popupAnchor: [0, -14],
-    html: '<span class="bm-map-pin__dot"></span>',
+    iconSize: [28, 28],
+    iconAnchor: [14, 14],
+    popupAnchor: [0, -16],
+    html: `<span class="bm-map-pin__dot">${bikeSvg}</span>`,
   })
 }
 
@@ -84,13 +89,21 @@ onUnmounted(() => {
 }
 
 :deep(.bm-map-pin__dot) {
-  display: block;
-  width: 24px;
-  height: 24px;
+  display: flex;
+  width: 28px;
+  height: 28px;
   box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
   border: 3px solid var(--color-canvas);
   border-radius: 9999px;
   background: var(--color-route);
   box-shadow: 0 1px 3px rgb(0 1 6 / 0.35);
+  color: var(--color-canvas);
+}
+
+:deep(.bm-map-pin__dot .svg-inline--fa) {
+  width: 12px;
+  height: 12px;
 }
 </style>

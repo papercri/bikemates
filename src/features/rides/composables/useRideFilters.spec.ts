@@ -96,6 +96,19 @@ describe('useRideFilters', () => {
     expect(ids(filters.upcomingRides.value)).toEqual(['match'])
   })
 
+  it('filters by bike type and treats the sentinel as no filter', () => {
+    const { filters } = setup([
+      rideOf({ id: 'gravel-ride', bikeType: 'gravel', startsAt: daysFromNow(2) }),
+      rideOf({ id: 'mtb-ride', bikeType: 'mtb', startsAt: daysFromNow(5) }),
+    ])
+
+    filters.selectedBike.value = 'mtb'
+    expect(ids(filters.upcomingRides.value)).toEqual(['mtb-ride'])
+
+    filters.selectedBike.value = RIDE_FILTER_ALL
+    expect(ids(filters.upcomingRides.value)).toEqual(['gravel-ride', 'mtb-ride'])
+  })
+
   it('treats the sentinel value as no filter', () => {
     const { filters } = setup([rideOf({ id: 'a', level: 'Avanzado', audience: 'lgbt' })])
 

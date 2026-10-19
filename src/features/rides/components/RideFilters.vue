@@ -1,21 +1,24 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { faSliders } from '@fortawesome/free-solid-svg-icons'
+import { faMagnifyingGlass, faSliders } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import FormSelectField from '@/components/ui/FormSelectField.vue'
 import Input from '@/components/ui/Input.vue'
 import {
   RIDE_AUDIENCE_FILTER_OPTIONS,
+  RIDE_BIKE_FILTER_OPTIONS,
   RIDE_FILTER_ALL,
   RIDE_LEVEL_FILTER_OPTIONS,
   RIDE_SORT_OPTIONS,
   type RideAudienceFilter,
+  type RideBikeFilter,
   type RideLevelFilter,
   type RideSortOption,
 } from '@/features/rides/constants/rideFilters'
 
 const query = defineModel<string>('query', { required: true })
 const level = defineModel<RideLevelFilter>('level', { required: true })
+const bike = defineModel<RideBikeFilter>('bike', { required: true })
 const audience = defineModel<RideAudienceFilter>('audience', { required: true })
 const sort = defineModel<RideSortOption>('sort', { required: true })
 
@@ -26,6 +29,7 @@ const activeFilterCount = computed(() => {
   let count = 0
   if (query.value.trim() !== '') count += 1
   if (level.value !== RIDE_FILTER_ALL) count += 1
+  if (bike.value !== RIDE_FILTER_ALL) count += 1
   if (audience.value !== RIDE_FILTER_ALL) count += 1
   if (sort.value !== 'date') count += 1
   return count
@@ -67,15 +71,21 @@ const activeFilterCount = computed(() => {
       class="mt-2 grid-cols-2 gap-2 [&_input]:text-sm [&_select]:text-sm sm:mt-0 sm:flex sm:items-center sm:gap-2"
       :class="isExpanded ? 'grid' : 'hidden'"
     >
-      <div class="col-span-2 sm:w-44">
+      <div class="relative col-span-2 sm:w-56">
         <label for="ride-title-search" class="sr-only"> Buscar por título </label>
+
+        <FontAwesomeIcon
+          :icon="faMagnifyingGlass"
+          aria-hidden="true"
+          class="pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-graphite"
+        />
 
         <Input
           id="ride-title-search"
           v-model="query"
           type="search"
           name="ride-title-search"
-          placeholder="Buscar por título"
+          class="pl-9"
         />
       </div>
 
@@ -86,6 +96,15 @@ const activeFilterCount = computed(() => {
         label="Nivel"
         label-hidden
         :options="RIDE_LEVEL_FILTER_OPTIONS"
+      />
+
+      <FormSelectField
+        id="ride-bike-filter"
+        v-model="bike"
+        class="sm:w-44"
+        label="Tipo de bici"
+        label-hidden
+        :options="RIDE_BIKE_FILTER_OPTIONS"
       />
 
       <FormSelectField

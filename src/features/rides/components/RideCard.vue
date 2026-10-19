@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { faBicycle } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import Badge from '@/components/ui/Badge.vue'
 import IconArrow from '@/components/icons/IconArrow.vue'
 import RideAudienceBadge from '@/features/rides/components/RideAudienceBadge.vue'
@@ -93,7 +95,10 @@ const dateParts = computed(() => getRideDateParts(props.ride.startsAt))
           <Badge variant="inverse" :color="RIDE_LEVEL_BADGE_COLORS[ride.level]" dot>
             {{ ride.level }}
           </Badge>
-          <Badge variant="inverse">{{ RIDE_BIKE_TYPE_LABELS[ride.bikeType] }}</Badge>
+          <Badge variant="inverse">
+            <FontAwesomeIcon :icon="faBicycle" aria-hidden="true" class="size-3" />
+            {{ RIDE_BIKE_TYPE_LABELS[ride.bikeType] }}
+          </Badge>
           <RideAudienceBadge :audience="ride.audience" variant="inverse" />
 
           <IconArrow

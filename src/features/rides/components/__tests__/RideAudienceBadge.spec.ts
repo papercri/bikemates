@@ -13,7 +13,7 @@ describe('RideAudienceBadge', () => {
   it('renders the generic audience label', () => {
     const wrapper = mount(RideAudienceBadge, { props: { audience: 'everyone' } })
 
-    expect(wrapper.text()).toContain('Todo el mundo')
+    expect(wrapper.text()).toContain('Todos')
     expect(wrapper.find('svg').exists()).toBe(true)
   })
 

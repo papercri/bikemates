@@ -1,12 +1,18 @@
-import type { RideAudience, RideLevel } from '../types'
+import type { BikeType, RideAudience, RideLevel } from '../types'
 import { RIDE_LEVELS } from './rideLevels'
-import { RIDE_AUDIENCES, RIDE_AUDIENCE_LABELS } from './rideOptions'
+import {
+  RIDE_AUDIENCES,
+  RIDE_AUDIENCE_LABELS,
+  RIDE_BIKE_TYPES,
+  RIDE_BIKE_TYPE_LABELS,
+} from './rideOptions'
 
 /** Valor sentinela que desactiva un filtro del listado público. */
 export const RIDE_FILTER_ALL = 'Todos'
 
 export type RideLevelFilter = typeof RIDE_FILTER_ALL | RideLevel
 export type RideAudienceFilter = typeof RIDE_FILTER_ALL | RideAudience
+export type RideBikeFilter = typeof RIDE_FILTER_ALL | BikeType
 
 /** Criterio de ordenación del listado. */
 export type RideSortOption = 'date' | 'distance' | 'elevation'
@@ -24,13 +30,20 @@ export interface RideFilterOption<T> {
  * compacto y el nombre accesible se conserva en el componente.
  */
 export const RIDE_LEVEL_FILTER_OPTIONS: readonly RideFilterOption<RideLevelFilter>[] = [
-  { value: RIDE_FILTER_ALL, label: 'Cualquier nivel' },
+  { value: RIDE_FILTER_ALL, label: 'Todos los niveles' },
   ...RIDE_LEVELS.map((level) => ({ value: level, label: level })),
 ]
 
+/** Solo los tipos ofertables en formularios (`other` queda excluido). */
+export const RIDE_BIKE_FILTER_OPTIONS: readonly RideFilterOption<RideBikeFilter>[] = [
+  { value: RIDE_FILTER_ALL, label: 'Todos los tipos de bici' },
+  ...RIDE_BIKE_TYPES.map((bike) => ({ value: bike, label: RIDE_BIKE_TYPE_LABELS[bike] })),
+]
+
+/** El filtro de público excluye `everyone`: ese valor es "Todos los públicos". */
 export const RIDE_AUDIENCE_FILTER_OPTIONS: readonly RideFilterOption<RideAudienceFilter>[] = [
-  { value: RIDE_FILTER_ALL, label: 'Cualquier público' },
-  ...RIDE_AUDIENCES.map((audience) => ({
+  { value: RIDE_FILTER_ALL, label: 'Todos los públicos' },
+  ...RIDE_AUDIENCES.filter((audience) => audience !== 'everyone').map((audience) => ({
     value: audience,
     label: RIDE_AUDIENCE_LABELS[audience],
   })),

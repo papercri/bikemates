@@ -7,6 +7,7 @@ function mountFilters(props?: Record<string, unknown>) {
     props: {
       query: '',
       level: 'Todos',
+      bike: 'Todos',
       audience: 'Todos',
       sort: 'date',
       ...props,
@@ -15,19 +16,26 @@ function mountFilters(props?: Record<string, unknown>) {
 }
 
 describe('RideFilters', () => {
-  it('renders the search field and the three dropdowns with screen-reader-only labels', () => {
+  it('renders the search field and the dropdowns with screen-reader-only labels', () => {
     const wrapper = mountFilters()
 
+    // El buscador no muestra texto: solo la lupa y la etiqueta oculta.
     expect(wrapper.get('input[type="search"]').attributes('id')).toBe('ride-title-search')
-    expect(wrapper.get('input[type="search"]').attributes('placeholder')).toBe('Buscar por título')
+    expect(wrapper.get('input[type="search"]').attributes('placeholder')).toBeUndefined()
 
     const selectIds = wrapper.findAll('select').map((select) => select.attributes('id'))
-    expect(selectIds).toEqual(['ride-level-filter', 'ride-audience-filter', 'ride-sort-filter'])
+    expect(selectIds).toEqual([
+      'ride-level-filter',
+      'ride-bike-filter',
+      'ride-audience-filter',
+      'ride-sort-filter',
+    ])
 
     const labels = wrapper.findAll('label')
     expect(labels.map((label) => label.text())).toEqual([
       'Buscar por título',
       'Nivel',
+      'Tipo de bici',
       'Público',
       'Ordenar',
     ])
@@ -44,15 +52,17 @@ describe('RideFilters', () => {
     expect(wrapper.emitted('update:query')).toEqual([['collserola']])
   })
 
-  it('emits the level, audience and sort selections', async () => {
+  it('emits the level, bike, audience and sort selections', async () => {
     const wrapper = mountFilters()
     const selects = wrapper.findAll('select')
 
     await selects[0]?.setValue('Intermedio')
-    await selects[1]?.setValue('lgbt')
-    await selects[2]?.setValue('distance')
+    await selects[1]?.setValue('mtb')
+    await selects[2]?.setValue('lgbt')
+    await selects[3]?.setValue('distance')
 
     expect(wrapper.emitted('update:level')).toEqual([['Intermedio']])
+    expect(wrapper.emitted('update:bike')).toEqual([['mtb']])
     expect(wrapper.emitted('update:audience')).toEqual([['lgbt']])
     expect(wrapper.emitted('update:sort')).toEqual([['distance']])
   })
@@ -61,6 +71,7 @@ describe('RideFilters', () => {
     const wrapper = mountFilters({
       query: 'collserola',
       level: 'Intermedio',
+      bike: 'gravel',
       audience: 'women',
       sort: 'elevation',
     })
@@ -68,7 +79,7 @@ describe('RideFilters', () => {
     expect(wrapper.get('input').element.value).toBe('collserola')
 
     const selectedLabels = wrapper.findAll('option:checked').map((option) => option.text())
-    expect(selectedLabels).toEqual(['Intermedio', 'Mujeres', 'Por desnivel'])
+    expect(selectedLabels).toEqual(['Intermedio', 'Gravel', 'Mujeres', 'Por desnivel'])
   })
 
   it('folds the controls behind the mobile toggle and expands them on demand', async () => {
