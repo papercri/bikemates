@@ -124,7 +124,7 @@ onBeforeUnmount(revokePreview)
       <div class="flex flex-col items-start gap-2">
         <label
           for="avatar-file"
-          class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-btn border border-ink bg-white px-4 py-2 font-semibold text-ink transition-colors hover:bg-snow focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ink"
+          class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-btn border border-line-strong bg-white px-4 py-2 text-sm font-semibold text-ink transition-colors hover:border-graphite hover:bg-snow focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ink"
         >
           <FontAwesomeIcon :icon="faCamera" aria-hidden="true" class="size-4" />
           Elegir foto

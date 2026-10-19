@@ -56,12 +56,19 @@ describe('Button', () => {
     expect(wrapper.classes()).not.toContain('px-5')
   })
 
-  it('renders the primary variant as a solid brand-green action', () => {
+  it('renders the primary variant as a solid deep-green action', () => {
     const wrapper = mount(Button, { props: { variant: 'primary' } })
 
-    expect(wrapper.classes()).toContain('bg-trail')
-    expect(wrapper.classes()).toContain('text-ink')
+    expect(wrapper.classes()).toContain('bg-trail-ink')
+    expect(wrapper.classes()).toContain('text-canvas')
     expect(wrapper.classes()).toContain('rounded-btn')
+  })
+
+  it('renders the outline variant with a soft neutral border', () => {
+    const wrapper = mount(Button, { props: { variant: 'outline' } })
+
+    expect(wrapper.classes()).toContain('border-line-strong')
+    expect(wrapper.classes()).not.toContain('border-ink')
   })
 
   it('renders the sun variants for dark surfaces', () => {

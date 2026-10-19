@@ -278,7 +278,7 @@ function handleSubmit(): void {
         <!-- Zona de selección: el label estilizado abre el diálogo de archivos. -->
         <label
           for="ride-image"
-          class="flex cursor-pointer flex-col items-center justify-center gap-1 rounded-field border border-dashed border-line-strong bg-surface/40 px-4 py-8 text-center transition-colors hover:border-ink hover:bg-surface focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ink"
+          class="flex cursor-pointer flex-col items-center justify-center gap-1 rounded-field border border-dashed border-line-strong bg-surface/40 px-4 py-8 text-center transition-colors hover:border-graphite hover:bg-surface focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ink"
         >
           <FontAwesomeIcon :icon="faImage" aria-hidden="true" class="size-5 text-graphite" />
           <span class="text-sm font-medium text-ink">Pulsa para elegir la imagen de portada</span>

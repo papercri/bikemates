@@ -57,12 +57,12 @@
   --font-mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, monospace;
 
   /*
-   * Radios: solo 8px (tarjetas, fotos, campos) y píldora (botones, badges).
+   * Radios: 8px para superficies, controles y botones; píldora solo en badges.
    */
   --radius-photo: 8px;
   --radius-card: 8px;
   --radius-field: 8px;
-  --radius-btn: 9999px;
+  --radius-btn: 8px;
 
   /* Superficie plana: sin sombras en tarjetas; elevación solo flotantes. */
   --shadow-card: 0 1px 6px rgb(0 0 0 / 0.06);

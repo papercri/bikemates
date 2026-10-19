@@ -16,10 +16,11 @@ BikeMates es una SPA **mobile-first** construida con Vue 3 y TypeScript estricto
   ordenadas de la más reciente a la más antigua y atenuadas en la tarjeta.
 - Detalle de ruta maquetado a dos columnas (2/3 + 1/3): portada horizontal con la
   descripción debajo, y en la columna estrecha el mapa de punto de encuentro y los
-  participantes. La fecha lleva icono de reloj y, a su lado, las acciones
-  **Compartir** (Web Share API con copia al portapapeles como respaldo) y
+  participantes (la cabecera ya no repite el punto de encuentro). La fecha, con
+  icono de reloj, va debajo del título junto a un botón de solo icono para
   **Añadir al calendario** (descarga de un `.ics` generado en
-  `src/features/rides/utils/rideCalendar.ts`).
+  `src/features/rides/utils/rideCalendar.ts`) y, alineado a la derecha, el botón
+  **Compartir** (Web Share API con copia al portapapeles como respaldo).
 - Estado vacío y enlace de retorno cuando la ruta no existe.
 - Los datos de rutas son de ejemplo (`src/features/rides/data/mockRides.ts`) hasta conectar con la base de datos.
 
@@ -169,9 +170,9 @@ Separación de responsabilidades: las vistas orquestan, los componentes presenta
   Wikiloc y botón de Google Maps. Verde y naranja no compiten como primarios en
   la misma pantalla. `moss` y `signal-blue` quedan reservados a estados
   semánticos (el foco de los campos usa `signal-blue`). Estructura con filetes de 1px, sin sombras en tarjetas;
-  solo `ConfirmDialog` conserva elevación. Radios: 8px en tarjetas, fotos y
-  campos (`--radius-card`, `--radius-photo`, `--radius-field`); píldora en
-  botones y badges (`--radius-btn`).
+  solo `ConfirmDialog` conserva elevación. Radios: 8px en tarjetas, fotos,
+  campos y botones (`--radius-card`, `--radius-photo`, `--radius-field`,
+  `--radius-btn`); píldora solo en badges.
 - Tipografía: Inter (sustituto de SuisseIntl) para todo el UI; titulares en
   peso 500 con tracking negativo (`-0.025em` a display), cuerpo en 400 y
   JetBrains Mono para etiquetas y datos tabulares.
@@ -180,7 +181,7 @@ Separación de responsabilidades: las vistas orquestan, los componentes presenta
   de lectura se controla dentro de cada vista (`max-w-lg`, `max-w-3xl`…).
 - La receta de campos de formulario (`FIELD_CLASSES` en `src/design-system/field.ts`) se comparte entre `Input`, `Textarea` y `FormSelect` para mantener borde, radio, foco y estados idénticos.
 - Los primitivos exponen variantes homogéneas (`variant`, `size`, `tone`, `loading`, `block`, `dot`…) construidas con `createVariant`, sin dependencias externas.
-- `Button` incluye los tamaños `xs`–`lg` y, además de `primary`/`outline`/`destructive`, las variantes `sun`/`sun-outline` (sobre fotos y fondos oscuros: píldora blanca con texto carbón, o contorno blanco) y `quiet-destructive` (acción peligrosa discreta, el color solo aparece al interactuar). `primary` es la píldora verde de marca con texto tinta (contraste AA).
+- `Button` incluye los tamaños `xs`–`lg` (todos en `text-sm`, salvo `xs`; paddings reducidos) y, además de `primary`/`outline`/`destructive`, las variantes `sun`/`sun-outline` (sobre fotos y fondos oscuros: botón blanco con texto tinta, o contorno blanco) y `quiet-destructive` (acción peligrosa discreta, el color solo aparece al interactuar). `primary` es un botón verde profundo de marca (`bg-trail-ink`) con texto blanco (AA); `outline` usa filete neutro `line-strong` sin borde negro.
 - `ConfirmDialog` es el modal estándar de confirmaciones y acciones irreversibles (`role="dialog"`, `aria-modal`, trampa de foco, Escape y clic en el fondo para cancelar). Los mensajes de formulario se mantienen como `Alert` inline con `role="alert"`.
 - Los iconos de navegación y acciones usan Font Awesome (free-solid) con `FontAwesomeIcon`; los SVG ilustrativos y de datos siguen en `src/components/icons/`.
 - Motion con `motion-v` (Motion for Vue): la home usa `useScroll`/`useTransform` para el parallax del hero (offset por sección, rango 12 %) y componentes `motion.div` con `whileInView` (`opacity` + `y`) para revelar bloques; el zoom de entrada del hero es un `scale` animado al montar. `MotionConfig reduced-motion="user"` en `App.vue` respeta `prefers-reduced-motion` en toda la app. El header de la home es transparente (`meta.overlayHeader` en el router) y se superpone al hero a pantalla completa.

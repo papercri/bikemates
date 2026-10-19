@@ -30,15 +30,16 @@ const classes = createVariant({
   base: 'inline-flex items-center justify-center gap-2 rounded-btn font-semibold transition-[color,background-color,border-color,transform] focus-visible:outline-2 focus-visible:outline-offset-2 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100 sm:whitespace-nowrap',
   variants: {
     variant: {
-      // CTA principal Alpine: píldora verde de marca con texto tinta (AA);
-      // el hover desciende a verde emerald más profundo.
-      primary: 'bg-trail text-ink hover:bg-trail-deep focus-visible:outline-ink',
-      // Sobre fotos y fondos oscuros: píldora blanca con texto carbón (Cowboy).
+      // CTA principal: verde profundo de marca con texto blanco (AA 5:1);
+      // el hover oscurece un paso más.
+      primary: 'bg-trail-ink text-canvas hover:bg-trail-dark focus-visible:outline-ink',
+      // Sobre fotos y fondos oscuros: botón blanco con texto tinta.
       sun: 'bg-canvas text-ink hover:bg-canvas/90 focus-visible:outline-canvas',
       'sun-outline':
         'border border-canvas/50 bg-transparent text-canvas hover:bg-canvas hover:text-ink focus-visible:outline-canvas',
-      // Acción secundaria Cowboy: píldora blanca con filete fino.
-      outline: 'border border-ink bg-white text-ink hover:bg-snow focus-visible:outline-ink',
+      // Acción secundaria: filete neutro fino, sin borde negro.
+      outline:
+        'border border-line-strong bg-white text-ink hover:border-graphite hover:bg-snow focus-visible:outline-ink',
       destructive:
         'border border-red-300 bg-white text-red-700 hover:bg-red-700 hover:text-white focus-visible:outline-red-700',
       // Acción destructiva de bajo peso: el color solo aparece al interactuar.
@@ -47,9 +48,9 @@ const classes = createVariant({
     },
     size: {
       xs: 'px-2.5 py-1 text-xs',
-      sm: 'px-3.5 py-1.5 text-sm',
-      md: 'px-4 py-2',
-      lg: 'px-5 py-2.5',
+      sm: 'px-3 py-1.5 text-sm',
+      md: 'px-4 py-1.5 text-sm',
+      lg: 'px-5 py-2 text-sm',
     },
   },
   defaultVariants: {

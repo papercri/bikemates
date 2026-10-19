@@ -234,20 +234,14 @@ function handleAddToCalendar(): void {
           </Badge>
 
           <RideAudienceBadge :audience="ride.audience" />
-
-          <Typography as="span" variant="body-sm" tone="muted">
-            {{ ride.meetingPoint }}
-          </Typography>
         </div>
 
-        <div
-          class="mt-2 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-6"
-        >
-          <Typography as="h1" variant="heading-lg" class="tracking-tight">
-            {{ ride.title }}
-          </Typography>
+        <Typography as="h1" variant="heading-lg" class="mt-2 tracking-tight">
+          {{ ride.title }}
+        </Typography>
 
-          <div class="flex shrink-0 flex-col items-start gap-2 sm:items-end">
+        <div class="mt-1.5 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+          <div class="flex items-center gap-2.5">
             <Typography as="p" variant="body-sm" tone="muted" class="flex items-center gap-2">
               <FontAwesomeIcon :icon="faClock" aria-hidden="true" class="text-sm text-route-ink" />
               <time :datetime="ride.startsAt" class="font-medium text-ink">
@@ -255,27 +249,30 @@ function handleAddToCalendar(): void {
               </time>
             </Typography>
 
-            <div class="flex flex-wrap gap-2">
-              <Button variant="outline" size="sm" @click="handleShare">
-                <FontAwesomeIcon :icon="faShareNodes" aria-hidden="true" />
-                Compartir
-              </Button>
-
-              <Button variant="outline" size="sm" @click="handleAddToCalendar">
-                <FontAwesomeIcon :icon="faCalendarPlus" aria-hidden="true" />
-                Añadir al calendario
-              </Button>
-            </div>
-
-            <p
-              v-if="actionStatus"
-              role="status"
-              class="text-xs font-medium text-trail-ink sm:text-right"
+            <button
+              type="button"
+              class="inline-flex size-8 shrink-0 items-center justify-center rounded-btn border border-line-strong bg-white text-graphite transition-colors hover:border-graphite hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+              aria-label="Añadir al calendario"
+              title="Añadir al calendario"
+              @click="handleAddToCalendar"
             >
-              {{ actionStatus }}
-            </p>
+              <FontAwesomeIcon :icon="faCalendarPlus" aria-hidden="true" class="text-sm" />
+            </button>
           </div>
+
+          <Button variant="outline" size="sm" @click="handleShare">
+            <FontAwesomeIcon :icon="faShareNodes" aria-hidden="true" />
+            Compartir
+          </Button>
         </div>
+
+        <p
+          v-if="actionStatus"
+          role="status"
+          class="mt-1 text-xs font-medium text-trail-ink sm:text-right"
+        >
+          {{ actionStatus }}
+        </p>
       </header>
 
       <dl class="mt-3 grid grid-cols-3 border-y border-line">

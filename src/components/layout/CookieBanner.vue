@@ -32,7 +32,7 @@ function accept(): void {
 
       <button
         type="button"
-        class="shrink-0 rounded-btn border border-ink bg-canvas px-3 py-1.5 text-xs font-medium text-ink transition-colors hover:bg-snow focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+        class="shrink-0 rounded-btn border border-line-strong bg-canvas px-3 py-1.5 text-xs font-medium text-ink transition-colors hover:border-graphite hover:bg-snow focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
         @click="accept"
       >
         Entendido
