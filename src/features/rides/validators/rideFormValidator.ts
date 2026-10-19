@@ -115,8 +115,12 @@ function validateMaxParticipants(value: string): string | null {
   return null
 }
 
-/** Acepta vacío (campo opcional) o una URL HTTPS de wikiloc.com sin credenciales. */
-export function validateWikilocUrl(value: string): boolean {
+/**
+ * Acepta vacío (campo opcional) o una URL HTTPS sin credenciales. El enlace
+ * puede apuntar a cualquier plataforma de recorridos o eventos (Wikiloc,
+ * Strava, Meetup, etc.), no solo a un dominio concreto.
+ */
+export function validateRouteUrl(value: string): boolean {
   const trimmedValue = value.trim()
 
   if (!trimmedValue) return true
@@ -124,20 +128,16 @@ export function validateWikilocUrl(value: string): boolean {
   try {
     const url = new URL(trimmedValue)
 
-    return (
-      url.protocol === 'https:' &&
-      (url.hostname === 'wikiloc.com' || url.hostname.endsWith('.wikiloc.com')) &&
-      url.pathname.length > 1 &&
-      !url.username &&
-      !url.password
-    )
+    return url.protocol === 'https:' && url.hostname.length > 0 && !url.username && !url.password
   } catch {
     return false
   }
 }
 
-function validateWikiloc(value: string): string | null {
-  return validateWikilocUrl(value) ? null : 'Introduce una URL HTTPS válida de Wikiloc.'
+function validateRouteLink(value: string): string | null {
+  return validateRouteUrl(value)
+    ? null
+    : 'Introduce una URL HTTPS válida (Wikiloc, Strava, Meetup…).'
 }
 
 function validateImage(image: File | null): string | null {
@@ -200,7 +200,7 @@ export function validateRideFormFields(
     elevationM: validateElevationM(values.elevationM),
     durationMinutes: validateDurationMinutes(values.durationMinutes),
     maxParticipants: validateMaxParticipants(values.maxParticipants),
-    wikilocUrl: validateWikiloc(values.wikilocUrl),
+    wikilocUrl: validateRouteLink(values.wikilocUrl),
     image: validateImage(image),
   }
 }

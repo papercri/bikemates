@@ -5,7 +5,7 @@ import {
   firstRideFormError,
   validateRideForm,
   validateRideFormFields,
-  validateWikilocUrl,
+  validateRouteUrl,
 } from './rideFormValidator'
 
 function futureDate(daysFromNow = 7): string {
@@ -137,15 +137,18 @@ describe('validateRideForm', () => {
     expect(validateRideForm(validValues({ maxParticipants: '20' }))).toBeNull()
   })
 
-  it('requires an HTTPS wikiloc link when it is filled in', () => {
+  it('requires an HTTPS route link when it is filled in', () => {
     expect(validateRideForm(validValues({ wikilocUrl: 'http://wikiloc.com/ruta' }))).toBe(
-      'Introduce una URL HTTPS válida de Wikiloc.',
+      'Introduce una URL HTTPS válida (Wikiloc, Strava, Meetup…).',
     )
-    expect(validateRideForm(validValues({ wikilocUrl: 'https://evil.com/ruta' }))).toBe(
-      'Introduce una URL HTTPS válida de Wikiloc.',
+    expect(validateRideForm(validValues({ wikilocUrl: 'no-es-una-url' }))).toBe(
+      'Introduce una URL HTTPS válida (Wikiloc, Strava, Meetup…).',
     )
     expect(
       validateRideForm(validValues({ wikilocUrl: 'https://www.wikiloc.com/rutas/123' })),
+    ).toBeNull()
+    expect(
+      validateRideForm(validValues({ wikilocUrl: 'https://www.strava.com/routes/123' })),
     ).toBeNull()
   })
 
@@ -162,20 +165,20 @@ describe('validateRideForm', () => {
   })
 })
 
-describe('validateWikilocUrl', () => {
-  it('accepts empty values and https wikiloc urls', () => {
-    expect(validateWikilocUrl('')).toBe(true)
-    expect(validateWikilocUrl('   ')).toBe(true)
-    expect(validateWikilocUrl('https://wikiloc.com/rutas/1')).toBe(true)
-    expect(validateWikilocUrl('https://sub.wikiloc.com/ruta')).toBe(true)
+describe('validateRouteUrl', () => {
+  it('accepts empty values and https links to any platform', () => {
+    expect(validateRouteUrl('')).toBe(true)
+    expect(validateRouteUrl('   ')).toBe(true)
+    expect(validateRouteUrl('https://wikiloc.com/rutas/1')).toBe(true)
+    expect(validateRouteUrl('https://www.strava.com/routes/123')).toBe(true)
+    expect(validateRouteUrl('https://www.meetup.com/es-ES/barcelona-cycling/')).toBe(true)
   })
 
-  it('rejects other hosts, protocols and urls without a path', () => {
-    expect(validateWikilocUrl('not a url')).toBe(false)
-    expect(validateWikilocUrl('http://wikiloc.com/ruta')).toBe(false)
-    expect(validateWikilocUrl('https://wikiloc.com.evil.com/ruta')).toBe(false)
-    expect(validateWikilocUrl('https://wikiloc.com')).toBe(false)
-    expect(validateWikilocUrl('https://user:pass@wikiloc.com/ruta')).toBe(false)
+  it('rejects non-https values, invalid urls and urls with credentials', () => {
+    expect(validateRouteUrl('not a url')).toBe(false)
+    expect(validateRouteUrl('http://wikiloc.com/ruta')).toBe(false)
+    expect(validateRouteUrl('javascript:alert(1)')).toBe(false)
+    expect(validateRouteUrl('https://user:pass@wikiloc.com/ruta')).toBe(false)
   })
 })
 

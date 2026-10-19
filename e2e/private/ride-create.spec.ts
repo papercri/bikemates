@@ -172,10 +172,12 @@ test.describe('create ride', () => {
     const local = new Date(future.getTime() - future.getTimezoneOffset() * 60_000)
     await page.locator('#startsAt').fill(local.toISOString().slice(0, 16))
 
-    await page.getByLabel('Enlace de Wikiloc (opcional)').fill('no-es-una-url')
+    await page.getByLabel('Enlace del recorrido (opcional)').fill('no-es-una-url')
     await page.getByRole('button', { name: 'Publicar ruta' }).click()
 
-    await expect(page.getByRole('alert')).toHaveText('Introduce una URL HTTPS válida de Wikiloc.')
+    await expect(page.getByRole('alert')).toHaveText(
+      'Introduce una URL HTTPS válida (Wikiloc, Strava, Meetup…).',
+    )
   })
 
   test('counts the description characters', async ({ page, supabase }) => {

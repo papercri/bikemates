@@ -337,10 +337,10 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
                 target="_blank"
                 rel="noopener noreferrer"
                 class="inline-flex items-center gap-2 text-sm font-medium text-route-ink underline-offset-4 hover:text-route-dark hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
-                :aria-label="`Ver recorrido de ${ride.title} en Wikiloc`"
+                :aria-label="`Ver recorrido de ${ride.title}`"
               >
                 <FontAwesomeIcon :icon="faMap" aria-hidden="true" />
-                Ver recorrido en Wikiloc
+                Ver recorrido
                 <span class="sr-only">(se abre en una pestaña nueva)</span>
               </a>
             </p>

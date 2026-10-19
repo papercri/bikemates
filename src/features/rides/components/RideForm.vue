@@ -247,18 +247,21 @@ function handleSubmit(): void {
         </div>
 
         <div>
-          <FormLabel id="wikilocUrl">Enlace de Wikiloc (opcional)</FormLabel>
+          <FormLabel id="wikilocUrl">Enlace del recorrido (opcional)</FormLabel>
           <Input
             id="wikilocUrl"
             v-model="form.wikilocUrl"
             name="wikilocUrl"
-            placeholder="https://www.wikiloc.com/..."
+            placeholder="https://www.wikiloc.com/… o https://www.strava.com/…"
             :aria-invalid="Boolean(fieldErrors.wikilocUrl)"
-            aria-describedby="wikilocUrl-error"
+            aria-describedby="wikilocUrl-error wikilocUrl-help"
           />
           <FormError v-if="fieldErrors.wikilocUrl" id="wikilocUrl-error">
             {{ fieldErrors.wikilocUrl }}
           </FormError>
+          <FormHelp id="wikilocUrl-help">
+            Enlace a Wikiloc, Strava, Meetup u otra plataforma con el recorrido.
+          </FormHelp>
         </div>
       </div>
     </fieldset>
@@ -360,7 +363,7 @@ function handleSubmit(): void {
     </fieldset>
 
     <div class="space-y-3 border-t border-line pt-5">
-      <Alert v-if="summaryError" boxed role="alert">
+      <Alert v-if="summaryError" boxed>
         {{ summaryError }}
       </Alert>
 
