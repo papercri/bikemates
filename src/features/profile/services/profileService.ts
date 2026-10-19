@@ -177,3 +177,24 @@ export async function saveAvatar(file: File): Promise<Profile> {
 
   return mapProfile(data)
 }
+
+/**
+ * Elimina la foto de perfil dejando `avatar_url` en null. El avatar vuelve a
+ * ser el de iniciales hasta que se suba una imagen nueva.
+ */
+export async function removeAvatar(): Promise<Profile> {
+  const userId = await requireUserId()
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .update({ avatar_url: null, updated_at: new Date().toISOString() })
+    .eq('id', userId)
+    .select(PROFILE_COLUMNS)
+    .single()
+
+  if (error || !data) {
+    throw new Error('No se ha podido eliminar la foto. Inténtalo de nuevo.')
+  }
+
+  return mapProfile(data)
+}

@@ -4,7 +4,7 @@ import { faCamera } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import Alert from '@/components/ui/Alert.vue'
 import Button from '@/components/ui/Button.vue'
-import { saveAvatar } from '@/features/profile/services/profileService'
+import { removeAvatar, saveAvatar } from '@/features/profile/services/profileService'
 import type { Profile } from '@/features/profile/types'
 import { validateAvatarImage } from '@/features/profile/validators/profileValidator'
 
@@ -23,6 +23,7 @@ const previewUrl = ref<string | null>(null)
 const imageError = ref('')
 const saveError = ref('')
 const isSaving = ref(false)
+const isRemoving = ref(false)
 const justSaved = ref(false)
 
 const initials = computed(() => {
@@ -97,6 +98,23 @@ async function handleSave(): Promise<void> {
   }
 }
 
+async function handleRemove(): Promise<void> {
+  if (isRemoving.value || isSaving.value) return
+
+  isRemoving.value = true
+  saveError.value = ''
+
+  try {
+    const updated = await removeAvatar()
+    discardSelection()
+    emit('updated', updated)
+  } catch (error: unknown) {
+    saveError.value = error instanceof Error ? error.message : 'No se ha podido eliminar la foto.'
+  } finally {
+    isRemoving.value = false
+  }
+}
+
 onBeforeUnmount(revokePreview)
 </script>
 
@@ -127,7 +145,7 @@ onBeforeUnmount(revokePreview)
           class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-btn border border-line-strong bg-white px-4 py-2 text-sm font-semibold text-ink transition-colors hover:border-graphite hover:bg-snow focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ink"
         >
           <FontAwesomeIcon :icon="faCamera" aria-hidden="true" class="size-4" />
-          Elegir foto
+          Elegir imagen
         </label>
 
         <input
@@ -140,6 +158,18 @@ onBeforeUnmount(revokePreview)
         />
 
         <p class="text-xs text-graphite">JPEG, PNG, WebP o AVIF. Máximo 5 MB.</p>
+
+        <Button
+          v-if="props.avatarUrl && !selectedFile"
+          type="button"
+          variant="destructive"
+          size="sm"
+          :loading="isRemoving"
+          :disabled="isRemoving || isSaving"
+          @click="handleRemove"
+        >
+          {{ isRemoving ? 'Eliminando…' : 'Eliminar imagen' }}
+        </Button>
       </div>
     </div>
 
