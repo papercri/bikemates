@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import type { RideFormValues } from '../types'
-import { validateRideForm, validateWikilocUrl } from './rideFormValidator'
+import {
+  emptyRideFormErrors,
+  firstRideFormError,
+  validateRideForm,
+  validateRideFormFields,
+  validateWikilocUrl,
+} from './rideFormValidator'
 
 function futureDate(daysFromNow = 7): string {
   const date = new Date(Date.now() + daysFromNow * 24 * 60 * 60 * 1000)
@@ -170,5 +176,34 @@ describe('validateWikilocUrl', () => {
     expect(validateWikilocUrl('https://wikiloc.com.evil.com/ruta')).toBe(false)
     expect(validateWikilocUrl('https://wikiloc.com')).toBe(false)
     expect(validateWikilocUrl('https://user:pass@wikiloc.com/ruta')).toBe(false)
+  })
+})
+
+describe('validateRideFormFields', () => {
+  it('returns every field as valid for a coherent ride', () => {
+    const errors = validateRideFormFields(validValues())
+
+    expect(firstRideFormError(errors)).toBeNull()
+  })
+
+  it('reports the error of each invalid field independently', () => {
+    const errors = validateRideFormFields(validValues({ title: 'abc', distanceKm: '0' }))
+
+    expect(errors.title).toBe('El título debe tener entre 5 y 100 caracteres.')
+    expect(errors.distanceKm).toBe('La distancia debe estar entre 0 y 1000 km.')
+    expect(errors.description).toBeNull()
+  })
+
+  it('returns the first error in display order', () => {
+    const errors = validateRideFormFields(validValues({ distanceKm: '0', title: 'abc' }))
+
+    expect(firstRideFormError(errors)).toBe('El título debe tener entre 5 y 100 caracteres.')
+  })
+
+  it('starts from an all-null error object', () => {
+    const errors = emptyRideFormErrors()
+
+    expect(Object.values(errors).every((error) => error === null)).toBe(true)
+    expect(firstRideFormError(errors)).toBeNull()
   })
 })

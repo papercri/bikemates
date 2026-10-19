@@ -6,12 +6,18 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import type { RideFormSubmission, RideFormValues } from '@/features/rides/types'
 import type { GeocodingResult } from '@/features/rides/services/geocodingService'
 
-import { validateRideForm } from '@/features/rides/validators/rideFormValidator'
+import {
+  emptyRideFormErrors,
+  firstRideFormError,
+  validateRideFormFields,
+  type RideFormErrors,
+} from '@/features/rides/validators/rideFormValidator'
 import { useRideImagePicker } from '@/features/rides/composables/useRideImagePicker'
 
 import MeetingPointPicker from '@/features/rides/components/MeetingPointPicker.vue'
 import Alert from '@/components/ui/Alert.vue'
 import Button from '@/components/ui/Button.vue'
+import FormError from '@/components/ui/FormError.vue'
 import FormHelp from '@/components/ui/FormHelp.vue'
 import FormLabel from '@/components/ui/FormLabel.vue'
 import FormSelect from '@/components/ui/FormSelect.vue'
@@ -48,7 +54,10 @@ const form = reactive<RideFormValues>({
   ...props.initialValues,
 })
 
-const validationError = ref<string | null>(null)
+const fieldErrors = ref<RideFormErrors>(emptyRideFormErrors())
+
+/** Primer error del formulario, en orden de visualización: resumen junto al botón. */
+const summaryError = computed(() => firstRideFormError(fieldErrors.value))
 
 const {
   selectedImage,
@@ -72,7 +81,7 @@ watch(
 watch(
   form,
   () => {
-    validationError.value = null
+    fieldErrors.value = emptyRideFormErrors()
   },
   { deep: true },
 )
@@ -86,16 +95,12 @@ function handlePlaceSelect(place: GeocodingResult | null): void {
 function handleSubmit(): void {
   if (props.isSubmitting) return
 
-  validationError.value = null
+  const errors = validateRideFormFields(form, selectedImage.value)
 
-  if (imageError.value) {
-    validationError.value = imageError.value
-    return
-  }
+  // El error de la imagen en vivo (tamaño/tipo) tiene prioridad sobre el del validador.
+  fieldErrors.value = imageError.value ? { ...errors, image: imageError.value } : errors
 
-  validationError.value = validateRideForm(form, selectedImage.value)
-
-  if (validationError.value) return
+  if (summaryError.value !== null) return
 
   emit('submit', {
     values: { ...form },
@@ -107,10 +112,6 @@ function handleSubmit(): void {
 
 <template>
   <form novalidate class="space-y-6" @submit.prevent="handleSubmit">
-    <Alert v-if="validationError" boxed>
-      {{ validationError }}
-    </Alert>
-
     <Alert v-if="errorMessage" boxed>
       {{ errorMessage }}
     </Alert>
@@ -128,9 +129,13 @@ function handleSubmit(): void {
             placeholder="Ej. Vuelta por Collserola"
             required
             maxlength="100"
-            aria-describedby="title-help"
+            :aria-invalid="Boolean(fieldErrors.title)"
+            :aria-describedby="fieldErrors.title ? 'title-error' : 'title-help'"
           />
-          <FormHelp id="title-help">Entre 5 y 100 caracteres.</FormHelp>
+          <FormError v-if="fieldErrors.title" id="title-error">
+            {{ fieldErrors.title }}
+          </FormError>
+          <FormHelp v-else id="title-help">Entre 5 y 100 caracteres.</FormHelp>
         </div>
 
         <div>
@@ -141,7 +146,12 @@ function handleSubmit(): void {
             name="startsAt"
             type="datetime-local"
             required
+            :aria-invalid="Boolean(fieldErrors.startsAt)"
+            aria-describedby="startsAt-error"
           />
+          <FormError v-if="fieldErrors.startsAt" id="startsAt-error">
+            {{ fieldErrors.startsAt }}
+          </FormError>
         </div>
 
         <div class="sm:col-span-2">
@@ -155,7 +165,12 @@ function handleSubmit(): void {
             :maxlength="3000"
             required
             placeholder="Describe el recorrido, el terreno y qué deben llevar los participantes..."
+            :aria-invalid="Boolean(fieldErrors.description)"
+            :aria-describedby="fieldErrors.description ? 'description-error' : undefined"
           />
+          <FormError v-if="fieldErrors.description" id="description-error">
+            {{ fieldErrors.description }}
+          </FormError>
           <p class="mt-1 text-right text-xs text-graphite tabular-nums">
             {{ form.description.length }}/3000
           </p>
@@ -170,7 +185,10 @@ function handleSubmit(): void {
         <div>
           <MeetingPointPicker :initial-value="form.meetingPoint" @select="handlePlaceSelect" />
 
-          <FormHelp v-if="form.meetingPoint">
+          <FormError v-if="fieldErrors.meetingPoint" id="meetingPoint-error">
+            {{ fieldErrors.meetingPoint }}
+          </FormError>
+          <FormHelp v-else-if="form.meetingPoint">
             Punto seleccionado: {{ form.meetingPoint }}
           </FormHelp>
         </div>
@@ -185,7 +203,12 @@ function handleSubmit(): void {
               inputmode="decimal"
               placeholder="30"
               required
+              :aria-invalid="Boolean(fieldErrors.distanceKm)"
+              aria-describedby="distanceKm-error"
             />
+            <FormError v-if="fieldErrors.distanceKm" id="distanceKm-error">
+              {{ fieldErrors.distanceKm }}
+            </FormError>
           </div>
 
           <div>
@@ -197,7 +220,12 @@ function handleSubmit(): void {
               inputmode="numeric"
               placeholder="300"
               required
+              :aria-invalid="Boolean(fieldErrors.elevationM)"
+              aria-describedby="elevationM-error"
             />
+            <FormError v-if="fieldErrors.elevationM" id="elevationM-error">
+              {{ fieldErrors.elevationM }}
+            </FormError>
           </div>
 
           <div>
@@ -209,7 +237,12 @@ function handleSubmit(): void {
               inputmode="numeric"
               placeholder="120"
               required
+              :aria-invalid="Boolean(fieldErrors.durationMinutes)"
+              aria-describedby="durationMinutes-error"
             />
+            <FormError v-if="fieldErrors.durationMinutes" id="durationMinutes-error">
+              {{ fieldErrors.durationMinutes }}
+            </FormError>
           </div>
         </div>
 
@@ -220,7 +253,12 @@ function handleSubmit(): void {
             v-model="form.wikilocUrl"
             name="wikilocUrl"
             placeholder="https://www.wikiloc.com/..."
+            :aria-invalid="Boolean(fieldErrors.wikilocUrl)"
+            aria-describedby="wikilocUrl-error"
           />
+          <FormError v-if="fieldErrors.wikilocUrl" id="wikilocUrl-error">
+            {{ fieldErrors.wikilocUrl }}
+          </FormError>
         </div>
       </div>
     </fieldset>
@@ -255,7 +293,12 @@ function handleSubmit(): void {
             name="maxParticipants"
             inputmode="numeric"
             placeholder="Sin límite"
+            :aria-invalid="Boolean(fieldErrors.maxParticipants)"
+            aria-describedby="maxParticipants-error"
           />
+          <FormError v-if="fieldErrors.maxParticipants" id="maxParticipants-error">
+            {{ fieldErrors.maxParticipants }}
+          </FormError>
         </div>
 
         <div>
@@ -316,24 +359,30 @@ function handleSubmit(): void {
       </div>
     </fieldset>
 
-    <div class="flex justify-end border-t border-line pt-5">
-      <Button
-        type="submit"
-        :loading="isSubmitting"
-        :disabled="isSubmitting"
-        block
-        class="sm:w-auto"
-      >
-        {{
-          isSubmitting
-            ? isEditMode
-              ? 'Guardando…'
-              : 'Publicando…'
-            : isEditMode
-              ? 'Guardar cambios'
-              : 'Publicar ruta'
-        }}
-      </Button>
+    <div class="space-y-3 border-t border-line pt-5">
+      <Alert v-if="summaryError" boxed role="alert">
+        {{ summaryError }}
+      </Alert>
+
+      <div class="flex justify-end">
+        <Button
+          type="submit"
+          :loading="isSubmitting"
+          :disabled="isSubmitting"
+          block
+          class="sm:w-auto"
+        >
+          {{
+            isSubmitting
+              ? isEditMode
+                ? 'Guardando…'
+                : 'Publicando…'
+              : isEditMode
+                ? 'Guardar cambios'
+                : 'Publicar ruta'
+          }}
+        </Button>
+      </div>
     </div>
   </form>
 </template>

@@ -144,21 +144,80 @@ function validateImage(image: File | null): string | null {
   return image ? validateRideImage(image) : null
 }
 
+/** Campos del formulario de ruta que pueden tener un error propio. */
+export type RideFormField =
+  | 'title'
+  | 'description'
+  | 'meetingPoint'
+  | 'startsAt'
+  | 'distanceKm'
+  | 'elevationM'
+  | 'durationMinutes'
+  | 'maxParticipants'
+  | 'wikilocUrl'
+  | 'image'
+
+/** Error de cada campo, o `null` cuando el campo es válido. */
+export type RideFormErrors = Record<RideFormField, string | null>
+
+/** Orden de los campos tal y como se muestran en el formulario. */
+const FIELD_ORDER: readonly RideFormField[] = [
+  'title',
+  'description',
+  'meetingPoint',
+  'startsAt',
+  'distanceKm',
+  'elevationM',
+  'durationMinutes',
+  'maxParticipants',
+  'wikilocUrl',
+  'image',
+]
+
+/** Objeto de errores sin fallos, útil como estado inicial. */
+export function emptyRideFormErrors(): RideFormErrors {
+  const errors = {} as Record<RideFormField, string | null>
+  for (const field of FIELD_ORDER) {
+    errors[field] = null
+  }
+  return errors
+}
+
+/**
+ * Valida cada campo del formulario de ruta por separado para poder mostrar el
+ * error junto a su control y, a la vez, un resumen junto al botón de envío.
+ */
+export function validateRideFormFields(
+  values: RideFormValues,
+  image: File | null = null,
+): RideFormErrors {
+  return {
+    title: validateTitle(values.title),
+    description: validateDescription(values.description),
+    meetingPoint: validateMeetingPoint(values),
+    startsAt: validateStartsAt(values.startsAt),
+    distanceKm: validateDistanceKm(values.distanceKm),
+    elevationM: validateElevationM(values.elevationM),
+    durationMinutes: validateDurationMinutes(values.durationMinutes),
+    maxParticipants: validateMaxParticipants(values.maxParticipants),
+    wikilocUrl: validateWikiloc(values.wikilocUrl),
+    image: validateImage(image),
+  }
+}
+
+/** Devuelve el primer error en el orden de visualización, o `null` si no hay ninguno. */
+export function firstRideFormError(errors: RideFormErrors): string | null {
+  for (const field of FIELD_ORDER) {
+    const error = errors[field]
+    if (error !== null) return error
+  }
+  return null
+}
+
 /**
  * Valida los valores del formulario de ruta en el mismo orden en que se
  * muestran los campos y devuelve el primer error encontrado, o `null` si es válido.
  */
 export function validateRideForm(values: RideFormValues, image: File | null = null): string | null {
-  return (
-    validateTitle(values.title) ??
-    validateDescription(values.description) ??
-    validateMeetingPoint(values) ??
-    validateStartsAt(values.startsAt) ??
-    validateDistanceKm(values.distanceKm) ??
-    validateElevationM(values.elevationM) ??
-    validateDurationMinutes(values.durationMinutes) ??
-    validateMaxParticipants(values.maxParticipants) ??
-    validateWikiloc(values.wikilocUrl) ??
-    validateImage(image)
-  )
+  return firstRideFormError(validateRideFormFields(values, image))
 }

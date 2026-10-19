@@ -114,6 +114,31 @@ describe('RideForm', () => {
     expect(wrapper.get('[role="alert"]').text()).toBe('La distancia debe estar entre 0 y 1000 km.')
   })
 
+  it('shows each field error next to its control and a summary by the button', async () => {
+    const wrapper = mountForm({
+      initialValues: validValues({ title: 'abc', distanceKm: '0' }),
+    })
+
+    await wrapper.get('form').trigger('submit')
+
+    expect(wrapper.emitted('submit')).toBeUndefined()
+
+    // Error junto a cada campo, asociado al control.
+    expect(wrapper.get('#title-error').text()).toBe(
+      'El título debe tener entre 5 y 100 caracteres.',
+    )
+    expect(wrapper.get('#distanceKm-error').text()).toBe(
+      'La distancia debe estar entre 0 y 1000 km.',
+    )
+    expect(wrapper.get('#title').attributes('aria-invalid')).toBe('true')
+    expect(wrapper.get('#distanceKm').attributes('aria-invalid')).toBe('true')
+
+    // El resumen junto al botón muestra el primer error en orden de visualización.
+    expect(wrapper.get('[role="alert"]').text()).toBe(
+      'El título debe tener entre 5 y 100 caracteres.',
+    )
+  })
+
   it('clears the validation error as soon as the form is edited', async () => {
     const wrapper = mountForm({ initialValues: validValues({ distanceKm: '0' }) })
 
