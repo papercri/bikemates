@@ -107,7 +107,5 @@ function handleSelectPlace(place: GeocodingResult): void {
         {{ selectedPlace.longitude.toFixed(5) }}
       </p>
     </div>
-
-    <p class="text-xs text-graphite">Datos geográficos © OpenStreetMap contributors.</p>
   </section>
 </template>

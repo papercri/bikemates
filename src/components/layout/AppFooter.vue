@@ -18,6 +18,7 @@ const linkClasses =
         aria-label="Enlaces del pie"
         class="flex flex-wrap items-center justify-center gap-x-8 gap-y-2"
       >
+        <RouterLink to="/" :class="linkClasses">Inicio</RouterLink>
         <RouterLink to="/rides" :class="linkClasses">Explorar rutas</RouterLink>
         <RouterLink v-if="!user" to="/login" :class="linkClasses">Iniciar sesión</RouterLink>
         <RouterLink to="/community-rules" :class="linkClasses">Normas de la comunidad</RouterLink>
