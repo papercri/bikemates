@@ -1,4 +1,4 @@
-/** Generación de archivos iCalendar (RFC 5545) para añadir una salida al calendario. */
+/** Generación de eventos de calendario (iCalendar y web) para una salida. */
 
 const ICS_EOL = '\r\n'
 
@@ -26,11 +26,8 @@ function formatUtc(date: Date): string {
   return `${date.toISOString().slice(0, 19).replace(/[-:]/g, '')}Z`
 }
 
-/**
- * Construye el contenido .ics de una salida.
- * Lanza un error si la fecha de salida no es válida: el llamante decide qué mostrar.
- */
-export function buildRideIcs(entry: RideCalendarEntry): string {
+/** Inicio y fin de la salida; lanza si la fecha no es válida. */
+function resolveWindow(entry: RideCalendarEntry): { start: Date; end: Date } {
   const start = new Date(entry.startsAt)
 
   if (Number.isNaN(start.getTime())) {
@@ -38,6 +35,15 @@ export function buildRideIcs(entry: RideCalendarEntry): string {
   }
 
   const end = new Date(start.getTime() + Math.max(entry.durationMinutes, 0) * 60_000)
+  return { start, end }
+}
+
+/**
+ * Construye el contenido .ics de una salida.
+ * Lanza un error si la fecha de salida no es válida: el llamante decide qué mostrar.
+ */
+export function buildRideIcs(entry: RideCalendarEntry): string {
+  const { start, end } = resolveWindow(entry)
 
   const lines = [
     'BEGIN:VCALENDAR',
@@ -59,4 +65,42 @@ export function buildRideIcs(entry: RideCalendarEntry): string {
   ]
 
   return `${lines.join(ICS_EOL)}${ICS_EOL}`
+}
+
+/**
+ * Formulario de Google Calendar para precargar el evento.
+ * Lanza un error si la fecha de salida no es válida.
+ */
+export function buildGoogleCalendarUrl(entry: RideCalendarEntry): string {
+  const { start, end } = resolveWindow(entry)
+
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: entry.title,
+    dates: `${formatUtc(start)}/${formatUtc(end)}`,
+    details: entry.description,
+    location: entry.meetingPoint,
+  })
+
+  return `https://calendar.google.com/calendar/render?${params.toString()}`
+}
+
+/**
+ * Formulario de Outlook en la web para precargar el evento.
+ * Lanza un error si la fecha de salida no es válida.
+ */
+export function buildOutlookCalendarUrl(entry: RideCalendarEntry): string {
+  const { start, end } = resolveWindow(entry)
+
+  const params = new URLSearchParams({
+    path: '/calendar/action/compose',
+    rru: 'addevent',
+    subject: entry.title,
+    startdt: start.toISOString(),
+    enddt: end.toISOString(),
+    body: entry.description,
+    location: entry.meetingPoint,
+  })
+
+  return `https://outlook.live.com/calendar/0/deeplink/compose?${params.toString()}`
 }

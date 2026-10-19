@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { faCalendarPlus, faClock, faMap, faShareNodes } from '@fortawesome/free-solid-svg-icons'
+import { faClock, faMap } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { useHead } from '@unhead/vue'
 import { computed, onBeforeUnmount, ref } from 'vue'
@@ -19,8 +19,10 @@ import RideAudienceBadge from '@/features/rides/components/RideAudienceBadge.vue
 import { useRideDetail } from '@/features/rides/composables/useRideDetail'
 import { RIDE_LEVEL_BADGE_COLORS } from '@/features/rides/constants/rideLevels'
 import { RIDE_BIKE_TYPE_LABELS } from '@/features/rides/constants/rideOptions'
-import { buildRideIcs } from '@/features/rides/utils/rideCalendar'
+import type { RideCalendarEntry } from '@/features/rides/utils/rideCalendar'
 import { formatRideDate } from '@/utils/dates'
+import RideCalendarMenu from '@/features/rides/components/RideCalendarMenu.vue'
+import RideShareMenu from '@/features/rides/components/RideShareMenu.vue'
 import RideParticipants from '@/features/rides/components/RideParticipants.vue'
 import { useRideParticipantCount } from '@/features/rides/composables/useRideParticipantCount'
 import { useRideParticipants } from '@/features/rides/composables/useRideParticipants'
@@ -139,71 +141,29 @@ onBeforeUnmount(() => {
   if (actionStatusTimer !== null) clearTimeout(actionStatusTimer)
 })
 
-/**
- * Web Share API con respaldo de copia al portapapeles: compartir no puede
- * depender de que el navegador exponga `navigator.share`.
- */
-async function handleShare(): Promise<void> {
-  if (!ride.value) return
+// URL absoluta de la página de detalle, base de compartir y calendario web.
+const rideUrl = computed(() => {
+  const id = rideId.value
+  if (id === null) return null
+  const origin = window.location.origin
+  return `${origin}/rides/${id}`
+})
 
-  const shareData = {
-    title: ride.value.title,
-    text: ride.value.title,
-    url: window.location.href,
+const calendarEntry = computed<RideCalendarEntry | null>(() => {
+  const current = ride.value
+  const url = rideUrl.value
+  if (current === null || url === null) return null
+
+  return {
+    id: current.id,
+    title: current.title,
+    description: current.description,
+    startsAt: current.startsAt,
+    durationMinutes: current.durationMinutes,
+    meetingPoint: current.meetingPoint,
+    url,
   }
-
-  if (typeof navigator.share === 'function') {
-    try {
-      await navigator.share(shareData)
-      return
-    } catch (error) {
-      // Cancelar el diálogo nativo no es un error para la usuaria.
-      if (error instanceof DOMException && error.name === 'AbortError') return
-    }
-  }
-
-  try {
-    await navigator.clipboard.writeText(shareData.url)
-    setActionStatus('Enlace copiado al portapapeles')
-  } catch {
-    setActionStatus('No se ha podido copiar el enlace')
-  }
-}
-
-function downloadCalendarFile(rideId: string, contents: string): void {
-  const blob = new Blob([contents], { type: 'text/calendar;charset=utf-8' })
-  const objectUrl = URL.createObjectURL(blob)
-  const anchor = document.createElement('a')
-
-  anchor.href = objectUrl
-  anchor.download = `bikemates-${rideId}.ics`
-  document.body.appendChild(anchor)
-  anchor.click()
-  anchor.remove()
-
-  setTimeout(() => URL.revokeObjectURL(objectUrl), 0)
-}
-
-function handleAddToCalendar(): void {
-  if (!ride.value) return
-
-  try {
-    const ics = buildRideIcs({
-      id: ride.value.id,
-      title: ride.value.title,
-      description: ride.value.description,
-      startsAt: ride.value.startsAt,
-      durationMinutes: ride.value.durationMinutes,
-      meetingPoint: ride.value.meetingPoint,
-      url: window.location.href,
-    })
-
-    downloadCalendarFile(ride.value.id, ics)
-    setActionStatus('Archivo de calendario descargado')
-  } catch {
-    setActionStatus('No se ha podido crear el archivo de calendario')
-  }
-}
+})
 </script>
 
 <template>
@@ -249,21 +209,22 @@ function handleAddToCalendar(): void {
               </time>
             </Typography>
 
-            <button
-              type="button"
-              class="inline-flex size-8 shrink-0 items-center justify-center rounded-btn border border-line-strong bg-white text-graphite transition-colors hover:border-graphite hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
-              aria-label="Añadir al calendario"
-              title="Añadir al calendario"
-              @click="handleAddToCalendar"
-            >
-              <FontAwesomeIcon :icon="faCalendarPlus" aria-hidden="true" class="text-sm" />
-            </button>
+            <RideCalendarMenu
+              v-if="calendarEntry"
+              :entry="calendarEntry"
+              class="shrink-0"
+              @downloaded="setActionStatus('Archivo de calendario descargado')"
+              @error="setActionStatus('No se ha podido crear el archivo de calendario')"
+            />
           </div>
 
-          <Button variant="outline" size="sm" @click="handleShare">
-            <FontAwesomeIcon :icon="faShareNodes" aria-hidden="true" />
-            Compartir
-          </Button>
+          <RideShareMenu
+            v-if="rideUrl"
+            :title="ride.title"
+            :url="rideUrl"
+            @copied="setActionStatus('Enlace copiado al portapapeles')"
+            @copy-error="setActionStatus('No se ha podido copiar el enlace')"
+          />
         </div>
 
         <p
