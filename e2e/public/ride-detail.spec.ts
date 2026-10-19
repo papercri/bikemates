@@ -181,7 +181,7 @@ test.describe('ride detail', () => {
     expect(supabase.state.participants).toHaveLength(1)
   })
 
-  test('shows the organizer notice to the ride owner', async ({ page, supabase }) => {
+  test('shows no join CTA to the ride organizer', async ({ page, supabase }) => {
     supabase.state.rides = [makeRide({ id: 'ride-1', organizer_id: ORGANIZER.id })]
     supabase.state.participants = [makeParticipant('ride-1', ORGANIZER)]
     supabase.state.users.push(ORGANIZER)
@@ -189,11 +189,9 @@ test.describe('ride detail', () => {
 
     await page.goto('/rides/ride-1')
 
-    await expect(
-      page.getByText(
-        'Eres el organizador de esta ruta. Tu inscripción es automática y no puedes darte de baja.',
-      ),
-    ).toBeVisible()
+    // El organizador no ve CTA de inscripción ni el aviso previo.
+    await expect(page.getByText('Eres el organizador')).toHaveCount(0)
+    await expect(page.getByRole('button', { name: 'Participar en esta ruta' })).toHaveCount(0)
     await expect(page.getByRole('link', { name: 'Editar ruta' })).toBeVisible()
   })
 

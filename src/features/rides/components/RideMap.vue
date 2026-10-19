@@ -70,7 +70,7 @@ onUnmounted(() => {
   <div
     ref="mapContainer"
     class="w-full overflow-hidden rounded-photo bg-snow"
-    :class="props.compact ? 'h-40 sm:h-44' : 'h-48 sm:h-60'"
+    :class="props.compact ? 'h-36 sm:h-40' : 'h-48 sm:h-60'"
     role="application"
     :aria-label="`Mapa del punto de encuentro: ${meetingPoint}`"
   />

@@ -82,15 +82,9 @@ function confirmLeave(): void {
           <Button to="/login" class="mt-3"> Iniciar sesión </Button>
         </template>
 
-        <template v-else-if="isOrganizer">
-          <Typography variant="body-sm" tone="muted">
-            Eres el organizador de esta ruta. Tu inscripción es automática y no puedes darte de
-            baja.
-          </Typography>
-        </template>
-
+        <!-- El organizador no ve CTA: su inscripción es automática. -->
         <Button
-          v-else-if="!isParticipant"
+          v-else-if="!isParticipant && !isOrganizer"
           :disabled="isSubmitting || isLoading || Boolean(errorMessage)"
           @click="emit('join')"
         >

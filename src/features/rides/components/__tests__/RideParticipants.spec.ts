@@ -54,13 +54,12 @@ describe('RideParticipants', () => {
     expect(wrapper.text()).not.toContain('Participar en esta ruta')
   })
 
-  it('explains to the organizer that their inscription is automatic', () => {
+  it('shows no join CTA to the organizer', () => {
     const wrapper = mountParticipants({ isOrganizer: true })
 
-    expect(wrapper.text()).toContain(
-      'Eres el organizador de esta ruta. Tu inscripción es automática y no puedes darte de baja.',
-    )
-    expect(wrapper.find('button').exists()).toBe(false)
+    expect(wrapper.text()).not.toContain('Participar en esta ruta')
+    expect(wrapper.text()).not.toContain('Eres el organizador')
+    expect(wrapper.find('button[type="button"]').exists()).toBe(false)
   })
 
   it('offers to join when the signed-in user is not a participant yet', async () => {

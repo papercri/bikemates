@@ -7,6 +7,7 @@ import { useRoute } from 'vue-router'
 import AppBackBar from '@/components/layout/AppBackBar.vue'
 import type { BreadcrumbItem } from '@/components/layout/AppBreadcrumb.vue'
 import AppPage from '@/components/layout/AppPage.vue'
+import IconArrow from '@/components/icons/IconArrow.vue'
 import Badge from '@/components/ui/Badge.vue'
 import BikeLoader from '@/components/ui/BikeLoader.vue'
 import Button from '@/components/ui/Button.vue'
@@ -305,7 +306,7 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
           <img
             :src="ride.imageUrl || '/default.webp'"
             :alt="`Imagen de la ruta ${ride.title}`"
-            class="aspect-video w-full rounded-photo object-cover"
+            class="aspect-[21/9] w-full rounded-photo object-cover"
             loading="eager"
             fetchpriority="high"
           />
@@ -369,9 +370,10 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
                   :href="googleMapsUrl"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="inline-flex items-center self-start rounded-full border border-route-ink px-3 py-1.5 text-sm font-medium text-route-ink transition-colors hover:bg-route/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+                  class="inline-flex items-center gap-1.5 self-start text-sm text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
                 >
                   Abrir en Google Maps
+                  <IconArrow direction="right" aria-hidden="true" />
                   <span class="sr-only">(se abre en una pestaña nueva)</span>
                 </a>
               </div>
