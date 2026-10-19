@@ -66,6 +66,29 @@ export async function updatePassword(newPassword: string): Promise<void> {
   }
 }
 
+/**
+ * Verifica la contraseña actual del usuario con sesión activa, antes de
+ * permitir un cambio de contraseña desde el perfil. Devuelve `false` cuando
+ * la contraseña no coincide.
+ */
+export async function verifyCurrentUserPassword(password: string): Promise<boolean> {
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser()
+
+  if (userError || !user?.email) {
+    throw new Error('No se ha podido verificar tu identidad.')
+  }
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email: user.email,
+    password,
+  })
+
+  return !error
+}
+
 /** Verifica un token de recuperación. Devuelve `false` si el enlace ya no es válido. */
 export async function verifyRecoveryToken(tokenHash: string): Promise<boolean> {
   const { error } = await supabase.auth.verifyOtp({

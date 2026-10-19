@@ -20,37 +20,62 @@ const router = createRouter({
       path: '/rides',
       name: 'rides',
       component: RidesView,
+      meta: {
+        breadcrumb: [{ label: 'Inicio', to: '/' }, { label: 'Explorar rutas' }],
+      },
     },
     {
       path: '/rides/:id',
       name: 'ride-detail',
       component: RideDetailView,
+      meta: {
+        breadcrumb: [
+          { label: 'Inicio', to: '/' },
+          { label: 'Rutas', to: '/rides' },
+          { label: 'Detalle de ruta' },
+        ],
+      },
     },
     {
       path: '/register',
       name: 'register',
       component: RegisterView,
+      meta: {
+        breadcrumb: [{ label: 'Inicio', to: '/' }, { label: 'Crear cuenta' }],
+      },
     },
     {
       path: '/login',
       name: 'login',
       component: () => import('@/views/public/LoginView.vue'),
+      meta: {
+        breadcrumb: [{ label: 'Inicio', to: '/' }, { label: 'Iniciar sesión' }],
+      },
     },
     {
       path: '/reset-password',
       name: 'reset-password',
       component: () => import('@/views/public/ResetPasswordView.vue'),
+      meta: {
+        breadcrumb: [{ label: 'Inicio', to: '/' }, { label: 'Restablecer contraseña' }],
+      },
     },
     {
       path: '/forgot-password',
       name: 'forgot-password',
       component: () => import('@/views/public/ForgotPasswordView.vue'),
+      meta: {
+        breadcrumb: [{ label: 'Inicio', to: '/' }, { label: 'Recuperar contraseña' }],
+      },
     },
     {
       path: '/profile',
       name: 'profile',
       component: ProfileView,
-      meta: { requiresAuth: true },
+      meta: {
+        requiresAuth: true,
+        breadcrumb: [{ label: 'Inicio', to: '/' }, { label: 'Mi perfil' }],
+      },
     },
     {
       path: '/auth/confirm',
@@ -61,6 +86,9 @@ const router = createRouter({
       path: '/privacy',
       name: 'privacy',
       component: () => import('@/views/public/PrivacyView.vue'),
+      meta: {
+        breadcrumb: [{ label: 'Inicio', to: '/' }, { label: 'Privacidad' }],
+      },
     },
     {
       path: '/:pathMatch(.*)*',
@@ -71,13 +99,27 @@ const router = createRouter({
       path: '/rides/create',
       name: 'ride-create',
       component: () => import('@/views/private/CreateRideView.vue'),
-      meta: { requiresAuth: true },
+      meta: {
+        requiresAuth: true,
+        breadcrumb: [
+          { label: 'Inicio', to: '/' },
+          { label: 'Rutas', to: '/rides' },
+          { label: 'Publicar ruta' },
+        ],
+      },
     },
     {
       path: '/rides/:id/edit',
       name: 'ride-edit',
       component: () => import('@/views/private/EditRideView.vue'),
-      meta: { requiresAuth: true },
+      meta: {
+        requiresAuth: true,
+        breadcrumb: [
+          { label: 'Inicio', to: '/' },
+          { label: 'Rutas', to: '/rides' },
+          { label: 'Editar ruta' },
+        ],
+      },
     },
   ],
 })

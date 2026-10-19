@@ -3,6 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useHead } from '@unhead/vue'
 import { useWindowSize } from '@vueuse/core'
 import AppPage from '@/components/layout/AppPage.vue'
+import BikeLoader from '@/components/ui/BikeLoader.vue'
 import RideCard from '@/features/rides/components/RideCard.vue'
 import RideFilters from '@/features/rides/components/RideFilters.vue'
 import RideTimeframeTabs from '@/features/rides/components/RideTimeframeTabs.vue'
@@ -118,21 +119,7 @@ onBeforeUnmount(() => {
     </section>
 
     <section class="mt-6" aria-label="Listado de rutas">
-      <div
-        v-if="isLoading"
-        class="mt-4 grid gap-4"
-        :style="gridStyle"
-        role="status"
-        aria-live="polite"
-      >
-        <span class="sr-only">Cargando rutas…</span>
-        <div
-          v-for="n in Math.max(columnCount, 2)"
-          :key="n"
-          class="h-56 rounded-photo bg-surface motion-safe:animate-pulse"
-          aria-hidden="true"
-        />
-      </div>
+      <BikeLoader v-if="isLoading" label="Cargando rutas…" />
 
       <EmptyState
         v-else-if="errorMessage"
@@ -161,12 +148,7 @@ onBeforeUnmount(() => {
         <!-- Centinela de scroll: carga el siguiente lote al entrar en pantalla. -->
         <div ref="sentinelEl" class="h-px" aria-hidden="true" />
 
-        <div
-          v-if="hasMore"
-          class="mt-4 flex justify-center py-4"
-          role="status"
-          aria-live="polite"
-        >
+        <div v-if="hasMore" class="mt-4 flex justify-center py-4" role="status" aria-live="polite">
           <span class="sr-only">Cargando más rutas…</span>
           <span
             class="size-6 rounded-full border-2 border-line border-t-ink motion-safe:animate-spin"

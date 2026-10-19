@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { useHead } from '@unhead/vue'
-import { useRouter } from 'vue-router'
 
+import AppBackBar from '@/components/layout/AppBackBar.vue'
 import AppPage from '@/components/layout/AppPage.vue'
 import Card from '@/components/ui/Card.vue'
-import IconArrow from '@/components/icons/IconArrow.vue'
 import Typography from '@/components/ui/Typography.vue'
 import RideForm from '@/features/rides/components/RideForm.vue'
 
@@ -22,8 +21,6 @@ useHead({
     { name: 'robots', content: 'noindex, nofollow' },
   ],
 })
-
-const router = useRouter()
 
 const initialValues = createEmptyRideFormValues({
   bikeType: 'gravel',
@@ -44,14 +41,7 @@ async function handleSubmit(payload: RideFormSubmission): Promise<void> {
   <AppPage spacing="compact">
     <div class="mx-auto max-w-3xl">
       <header class="mb-5">
-        <button
-          type="button"
-          class="inline-flex items-center gap-1.5 text-sm text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
-          @click="router.back()"
-        >
-          <IconArrow direction="left" />
-          Volver
-        </button>
+        <AppBackBar fallback="/rides" show-all-rides-link />
 
         <Typography as="h1" variant="heading-lg" class="mt-3"> Publica una ruta </Typography>
 

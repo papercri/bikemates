@@ -1,0 +1,78 @@
+import { mount } from '@vue/test-utils'
+import { describe, expect, it } from 'vitest'
+import { createRouter, createWebHistory } from 'vue-router'
+import AppBreadcrumb from '../AppBreadcrumb.vue'
+
+async function mountBreadcrumb(
+  location: string | { path: string; query?: Record<string, string> },
+  meta?: Record<string, unknown>,
+  props?: { items?: { label: string; to?: string }[] },
+) {
+  const router = createRouter({
+    history: createWebHistory(),
+    routes: [
+      { path: '/', name: 'home', component: { template: '<div />' } },
+      { path: '/rides', name: 'rides', component: { template: '<div />' }, meta },
+      { path: '/profile', name: 'profile', component: { template: '<div />' }, meta },
+    ],
+  })
+  await router.push(location)
+  await router.isReady()
+
+  return mount(AppBreadcrumb, { global: { plugins: [router] }, props })
+}
+
+describe('AppBreadcrumb', () => {
+  it('renders the trail defined in the route meta with the last item as current page', async () => {
+    const wrapper = await mountBreadcrumb('/rides', {
+      breadcrumb: [{ label: 'Inicio', to: '/' }, { label: 'Explorar rutas' }],
+    })
+
+    const links = wrapper.findAll('a')
+    expect(links).toHaveLength(1)
+    expect(links[0]!.text()).toBe('Inicio')
+    expect(links[0]!.attributes('href')).toBe('/')
+
+    const current = wrapper.get('[aria-current="page"]')
+    expect(current.text()).toBe('Explorar rutas')
+
+    expect(wrapper.get('nav').attributes('aria-label')).toBe('Migas de pan')
+  })
+
+  it('renders nothing when the route has no breadcrumb meta', async () => {
+    const wrapper = await mountBreadcrumb('/rides')
+
+    expect(wrapper.find('nav').exists()).toBe(false)
+  })
+
+  it('appends the active profile tab reflected in the URL', async () => {
+    const wrapper = await mountBreadcrumb(
+      { path: '/profile', query: { tab: 'my-rides' } },
+      {
+        breadcrumb: [{ label: 'Inicio', to: '/' }, { label: 'Mi perfil' }],
+      },
+    )
+
+    expect(wrapper.text()).toContain('Mi perfil')
+    expect(wrapper.get('[aria-current="page"]').text()).toBe('Mis rutas')
+  })
+
+  it('overrides the route meta trail with the items prop and truncates long labels', async () => {
+    const title = 'Vuelta por Collserola al atardecer con la grupeta'
+    const wrapper = await mountBreadcrumb(
+      '/rides',
+      { breadcrumb: [{ label: 'Inicio', to: '/' }, { label: 'Detalle de ruta' }] },
+      {
+        items: [{ label: 'Inicio', to: '/' }, { label: 'Rutas', to: '/rides' }, { label: title }],
+      },
+    )
+
+    // La última miga es un span (sin enlace): RouterLink añade su propio
+    // aria-current cuando la ruta coincide exactamente con el enlace.
+    const current = wrapper.get('span[aria-current="page"]')
+    expect(current.text()).toBe(title)
+    expect(current.attributes('title')).toBe(title)
+    expect(current.classes()).toContain('truncate')
+    expect(wrapper.findAll('a').map((link) => link.text())).toEqual(['Inicio', 'Rutas'])
+  })
+})

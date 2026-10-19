@@ -1,39 +1,51 @@
 <script setup lang="ts">
 import { useHead } from '@unhead/vue'
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, watch } from 'vue'
+import { useRoute, useRouter, type LocationQuery } from 'vue-router'
 import AppPage from '@/components/layout/AppPage.vue'
 import BrandLogo from '@/components/icons/BrandLogo.vue'
-import IconMeetup from '@/components/icons/IconMeetup.vue'
-import IconRoutes from '@/components/icons/IconRoutes.vue'
 import RidgeStrip from '@/components/icons/RidgeStrip.vue'
-import Alert from '@/components/ui/Alert.vue'
-import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
-import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
-import EmptyState from '@/components/ui/EmptyState.vue'
 import Typography from '@/components/ui/Typography.vue'
-import { useAuthStore } from '@/features/auth/stores/authStore'
+import ProfileDetailsTab from '@/features/profile/components/ProfileDetailsTab.vue'
+import ProfileMyRidesTab from '@/features/profile/components/ProfileMyRidesTab.vue'
 
 useHead({
   title: 'Mi perfil | BikeMates',
   meta: [{ name: 'robots', content: 'noindex, nofollow' }],
 })
 
-type ProfileTab = 'details' | 'saved-rides' | 'published-rides'
+type ProfileTab = 'details' | 'my-rides'
 
-const activeTab = ref<ProfileTab>('details')
-const isDeletingAccount = ref(false)
-const isDeleteDialogOpen = ref(false)
-const deleteAccountError = ref('')
+/** El query es entrada no confiable: cualquier valor desconocido vuelve a "Mis datos". */
+function tabFromQuery(value: unknown): ProfileTab {
+  return value === 'my-rides' ? 'my-rides' : 'details'
+}
 
-const authStore = useAuthStore()
+const route = useRoute()
 const router = useRouter()
 
+const activeTab = ref<ProfileTab>(tabFromQuery(route.query.tab))
+
+// La pestaña activa vive en la URL: al volver atrás desde una ruta se restaura "Mis rutas".
+watch(activeTab, (tab) => {
+  if (tab === tabFromQuery(route.query.tab)) return
+
+  const query: LocationQuery = { ...route.query }
+
+  if (tab === 'details') {
+    delete query.tab
+  } else {
+    query.tab = tab
+  }
+
+  void router.replace({ query })
+})
+
+// "Rutas guardadas" queda fuera de la navegación hasta que se implemente la función.
 const tabs: { id: ProfileTab; label: string }[] = [
   { id: 'details', label: 'Mis datos' },
-  { id: 'saved-rides', label: 'Rutas guardadas' },
-  { id: 'published-rides', label: 'Rutas publicadas' },
+  { id: 'my-rides', label: 'Mis rutas' },
 ]
 
 function handleTabKeydown(event: KeyboardEvent, index: number): void {
@@ -57,33 +69,6 @@ function handleTabKeydown(event: KeyboardEvent, index: number): void {
   if (!nextTab) return
   activeTab.value = nextTab.id
   document.getElementById(`tab-${nextTab.id}`)?.focus()
-}
-
-function requestAccountDeletion(): void {
-  if (isDeletingAccount.value) return
-  deleteAccountError.value = ''
-  isDeleteDialogOpen.value = true
-}
-
-function cancelAccountDeletion(): void {
-  if (isDeletingAccount.value) return
-  isDeleteDialogOpen.value = false
-}
-
-async function confirmAccountDeletion(): Promise<void> {
-  isDeletingAccount.value = true
-  deleteAccountError.value = ''
-
-  try {
-    await authStore.deleteAccount()
-    isDeleteDialogOpen.value = false
-    await router.replace({ name: 'home' })
-  } catch {
-    deleteAccountError.value = 'No se ha podido eliminar la cuenta. Inténtalo de nuevo más tarde.'
-    isDeleteDialogOpen.value = false
-  } finally {
-    isDeletingAccount.value = false
-  }
 }
 </script>
 
@@ -146,78 +131,12 @@ async function confirmAccountDeletion(): Promise<void> {
       class="py-6 focus-visible:outline-2 focus-visible:outline-ink"
     >
       <template v-if="tab.id === 'details'">
-        <Typography as="h2" variant="heading-sm">Mis datos</Typography>
-        <Typography class="mt-2 max-w-2xl leading-7" tone="muted">
-          La edición de tus datos personales estará disponible en una próxima versión.
-        </Typography>
-
-        <div class="mt-10 border-t border-line pt-5">
-          <Typography variant="body-sm" tone="muted" class="max-w-2xl leading-6">
-            Eliminar tu cuenta borra de forma permanente tu perfil y tus datos asociados. Esta
-            acción es irreversible.
-          </Typography>
-
-          <div class="mt-3 flex flex-wrap items-center gap-4">
-            <Button
-              variant="quiet-destructive"
-              size="sm"
-              :loading="isDeletingAccount"
-              :disabled="isDeletingAccount"
-              @click="requestAccountDeletion"
-            >
-              {{ isDeletingAccount ? 'Eliminando cuenta…' : 'Eliminar mi cuenta' }}
-            </Button>
-
-            <Alert v-if="deleteAccountError">
-              {{ deleteAccountError }}
-            </Alert>
-          </div>
-        </div>
-      </template>
-
-      <template v-else-if="tab.id === 'saved-rides'">
-        <span
-          class="mb-4 inline-flex rounded-full bg-level-easy/10 p-3 text-level-easy-ink"
-          aria-hidden="true"
-        >
-          <IconRoutes class="size-6" />
-        </span>
-
-        <EmptyState
-          title="Rutas guardadas"
-          description="Todavía no has guardado ninguna ruta. Las que marques desde Explorar rutas aparecerán aquí."
-        >
-          <Button to="/rides" variant="outline">Explorar rutas</Button>
-        </EmptyState>
+        <ProfileDetailsTab />
       </template>
 
       <template v-else>
-        <span
-          class="mb-4 inline-flex rounded-full bg-level-medium/10 p-3 text-level-medium"
-          aria-hidden="true"
-        >
-          <IconMeetup class="size-6" />
-        </span>
-
-        <EmptyState
-          title="Rutas publicadas"
-          description="Todavía no has publicado ninguna ruta. Crea la primera y aparecerá aquí."
-        >
-          <Button to="/rides/create">Publicar ruta</Button>
-        </EmptyState>
+        <ProfileMyRidesTab />
       </template>
     </section>
-
-    <ConfirmDialog
-      :open="isDeleteDialogOpen"
-      tone="danger"
-      title="¿Eliminar tu cuenta?"
-      description="Tu cuenta y tus datos asociados se eliminarán de forma permanente. Esta acción es irreversible."
-      confirm-label="Eliminar mi cuenta"
-      cancel-label="Cancelar"
-      :is-busy="isDeletingAccount"
-      @confirm="confirmAccountDeletion"
-      @cancel="cancelAccountDeletion"
-    />
   </AppPage>
 </template>
