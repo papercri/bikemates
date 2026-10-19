@@ -39,7 +39,7 @@ const activeFilterCount = computed(() => {
       type="button"
       class="sticky top-[4.5rem] z-30 flex size-10 items-center justify-center rounded-full shadow-card transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink sm:hidden"
       :class="
-        isExpanded ? 'bg-ink text-canvas' : 'bg-canvas/90 text-ink backdrop-blur-sm hover:bg-snow'
+        isExpanded ? 'bg-trail-ink text-canvas' : 'bg-canvas/90 text-ink backdrop-blur-sm hover:bg-snow'
       "
       :aria-expanded="isExpanded"
       aria-controls="ride-filters-panel"
@@ -51,7 +51,7 @@ const activeFilterCount = computed(() => {
       <span
         v-if="activeFilterCount > 0"
         class="absolute -top-0.5 -right-0.5 flex min-w-4 items-center justify-center rounded-full px-0.5 font-mono text-[0.6rem] font-semibold tabular-nums"
-        :class="isExpanded ? 'bg-canvas text-ink' : 'bg-ink text-canvas'"
+        :class="isExpanded ? 'bg-canvas text-ink' : 'bg-trail text-ink'"
         aria-hidden="true"
       >
         {{ activeFilterCount }}

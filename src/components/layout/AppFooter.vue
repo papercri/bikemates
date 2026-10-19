@@ -12,7 +12,7 @@ const linkClasses =
 </script>
 
 <template>
-  <footer class="border-t border-line bg-canvas">
+  <footer class="border-t border-line bg-snow">
     <div class="mx-auto flex max-w-7xl flex-col items-center gap-3 px-4 py-8 sm:px-6 lg:px-8">
       <nav
         aria-label="Enlaces del pie"

@@ -56,7 +56,7 @@ const dateParts = computed(() => getRideDateParts(props.ride.startsAt))
         class="relative flex items-start justify-between gap-3 bg-gradient-to-b from-ink/55 via-ink/20 to-transparent p-4 sm:p-5"
       >
         <span
-          class="rounded-full bg-canvas px-2.5 py-1 font-mono text-xs font-semibold tracking-[0.08em] text-ink uppercase tabular-nums"
+          class="rounded-full bg-trail px-2.5 py-1 font-mono text-xs font-semibold tracking-[0.08em] text-ink uppercase tabular-nums"
         >
           {{ dateParts.day }} {{ dateParts.month }}
         </span>

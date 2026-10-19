@@ -15,7 +15,7 @@ const mapContainer = ref<HTMLDivElement | null>(null)
 
 /**
  * Pin redondo: el marcador por defecto de Leaflet es una chincheta con sombra.
- * Un punto con aro en el color de marca mantiene el lenguaje de la interfaz.
+ * Un punto con aro naranja de ruta resalta el punto de encuentro sobre el mapa.
  */
 function roundedPinIcon(): L.DivIcon {
   return L.divIcon({
@@ -87,7 +87,7 @@ onUnmounted(() => {
   box-sizing: border-box;
   border: 3px solid var(--color-canvas);
   border-radius: 9999px;
-  background: var(--color-trail);
+  background: var(--color-route);
   box-shadow: 0 1px 3px rgb(0 1 6 / 0.35);
 }
 </style>

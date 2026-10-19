@@ -56,11 +56,11 @@ describe('Button', () => {
     expect(wrapper.classes()).not.toContain('px-5')
   })
 
-  it('renders the primary variant as a solid ink action', () => {
+  it('renders the primary variant as a solid brand-green action', () => {
     const wrapper = mount(Button, { props: { variant: 'primary' } })
 
-    expect(wrapper.classes()).toContain('bg-ink')
-    expect(wrapper.classes()).toContain('text-canvas')
+    expect(wrapper.classes()).toContain('bg-trail')
+    expect(wrapper.classes()).toContain('text-ink')
     expect(wrapper.classes()).toContain('rounded-btn')
   })
 

@@ -30,8 +30,9 @@ const classes = createVariant({
   base: 'inline-flex items-center justify-center gap-2 rounded-btn font-semibold transition-[color,background-color,border-color,transform] focus-visible:outline-2 focus-visible:outline-offset-2 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100 sm:whitespace-nowrap',
   variants: {
     variant: {
-      // CTA principal Cowboy: píldora de carbón sólido; el hover aclara hacia graphite.
-      primary: 'bg-ink text-canvas hover:bg-graphite focus-visible:outline-ink',
+      // CTA principal Alpine: píldora verde de marca con texto tinta (AA);
+      // el hover desciende a verde emerald más profundo.
+      primary: 'bg-trail text-ink hover:bg-trail-deep focus-visible:outline-ink',
       // Sobre fotos y fondos oscuros: píldora blanca con texto carbón (Cowboy).
       sun: 'bg-canvas text-ink hover:bg-canvas/90 focus-visible:outline-canvas',
       'sun-outline':

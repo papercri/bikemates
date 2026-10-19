@@ -33,16 +33,49 @@ const menuButton = ref<HTMLButtonElement | null>(null)
 
 const isOverlay = computed(() => route.meta.overlayHeader === true)
 
-// El panel móvil del menú siempre lleva fondo sólido (ink o canvas), así que
-// los enlaces se pintan con tinta en ambos modos.
-const menuLinkClasses =
-  'flex items-center gap-3 rounded-btn px-3 py-3 text-sm font-medium text-ink transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink'
+// El panel móvil del menú lleva fondo sólido: canvas en modo normal y
+// ink en overlay, así que el color de texto depende del modo.
+function menuLinkClasses(path?: string): string {
+  const base =
+    'flex items-center gap-3 rounded-btn px-3 py-3 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2'
+  const isActive = path !== undefined && isNavActive(path)
 
-const navLinkClasses = computed(() =>
+  if (isOverlay.value) {
+    return isActive
+      ? `${base} bg-white/15 text-white focus-visible:outline-canvas`
+      : `${base} text-white hover:bg-white/10 focus-visible:outline-canvas`
+  }
+
+  return isActive
+    ? `${base} bg-trail/10 text-trail-ink focus-visible:outline-ink`
+    : `${base} text-ink hover:bg-surface focus-visible:outline-ink`
+}
+
+const navIdleClasses = computed(() =>
   isOverlay.value
     ? 'inline-flex items-center gap-2 rounded-btn px-3 py-1.5 text-sm font-medium text-white/90 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-canvas'
     : 'inline-flex items-center gap-2 rounded-btn px-3 py-1.5 text-sm font-medium text-graphite transition-colors hover:bg-surface hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink',
 )
+
+/** Estado activo con tinte verde de marca: el enlace de la sección actual se resalta sin depender solo del color. */
+const navActiveClasses = computed(() =>
+  isOverlay.value
+    ? 'inline-flex items-center gap-2 rounded-btn px-3 py-1.5 bg-white/15 text-sm font-semibold text-white transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-canvas'
+    : 'inline-flex items-center gap-2 rounded-btn px-3 py-1.5 bg-trail/10 text-sm font-semibold text-trail-ink transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink',
+)
+
+/** La sección activa abarca sus subrutas, excepto la creación de rutas. */
+function isNavActive(path: string): boolean {
+  if (route.path === path) return true
+  if (path === '/rides') {
+    return route.path.startsWith('/rides/') && !route.path.startsWith('/rides/create')
+  }
+  return false
+}
+
+function navLinkClasses(path: string): string {
+  return isNavActive(path) ? navActiveClasses.value : navIdleClasses.value
+}
 
 const headerClasses = computed(() =>
   isOverlay.value
@@ -117,11 +150,11 @@ onBeforeUnmount(() => {
       </RouterLink>
 
       <nav aria-label="Navegación principal" class="hidden items-center gap-5 sm:flex">
-        <RouterLink to="/rides" :class="navLinkClasses">
+        <RouterLink to="/rides" :class="navLinkClasses('/rides')">
           <FontAwesomeIcon :icon="faBicycle" aria-hidden="true" />
           Explorar rutas
         </RouterLink>
-        <RouterLink v-if="user" to="/rides/create" :class="navLinkClasses">
+        <RouterLink v-if="user" to="/rides/create" :class="navLinkClasses('/rides/create')">
           <FontAwesomeIcon :icon="faCirclePlus" aria-hidden="true" />
           Publicar ruta
         </RouterLink>
@@ -195,13 +228,13 @@ onBeforeUnmount(() => {
         <nav aria-label="Navegación principal" class="mx-auto max-w-7xl px-4 py-3 sm:px-6">
           <ul class="flex flex-col">
             <li>
-              <RouterLink to="/rides" :class="menuLinkClasses">
+              <RouterLink to="/rides" :class="menuLinkClasses('/rides')">
                 <FontAwesomeIcon :icon="faBicycle" aria-hidden="true" />
                 Explorar rutas
               </RouterLink>
             </li>
             <li v-if="user">
-              <RouterLink to="/rides/create" :class="menuLinkClasses">
+              <RouterLink to="/rides/create" :class="menuLinkClasses('/rides/create')">
                 <FontAwesomeIcon :icon="faCirclePlus" aria-hidden="true" />
                 Publicar ruta
               </RouterLink>
@@ -217,7 +250,7 @@ onBeforeUnmount(() => {
             </span>
 
             <template v-else-if="user">
-              <RouterLink to="/profile" :class="menuLinkClasses">
+              <RouterLink to="/profile" :class="menuLinkClasses('/profile')">
                 <FontAwesomeIcon :icon="faUserGear" aria-hidden="true" />
                 Mi perfil
               </RouterLink>
@@ -239,12 +272,12 @@ onBeforeUnmount(() => {
             </template>
 
             <template v-else>
-              <RouterLink to="/login" :class="menuLinkClasses">
+              <RouterLink to="/login" :class="menuLinkClasses('/login')">
                 <FontAwesomeIcon :icon="faRightToBracket" aria-hidden="true" />
                 Iniciar sesión
               </RouterLink>
 
-              <Button to="/register" variant="sun" size="sm" block>
+              <Button to="/register" variant="primary" size="sm" block>
                 <FontAwesomeIcon :icon="faUserPlus" aria-hidden="true" />
                 Registrarse
               </Button>
