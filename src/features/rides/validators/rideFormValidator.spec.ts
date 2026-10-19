@@ -57,9 +57,9 @@ describe('validateRideForm', () => {
     )
   })
 
-  it('requires a description between 10 and 3000 characters', () => {
+  it('requires a description between 10 and 8000 characters', () => {
     expect(validateRideForm(validValues({ description: 'corta' }))).toBe(
-      'La descripción debe tener entre 10 y 3000 caracteres.',
+      'La descripción debe tener entre 10 y 8000 caracteres.',
     )
   })
 

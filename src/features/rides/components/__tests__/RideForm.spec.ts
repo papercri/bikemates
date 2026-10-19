@@ -68,6 +68,11 @@ function selectFile(wrapper: ReturnType<typeof mountForm>, file: File): void {
   })
 }
 
+/** El envío exige aceptar las normas de la comunidad. */
+async function acceptRules(wrapper: ReturnType<typeof mountForm>): Promise<void> {
+  await wrapper.get('input[type="checkbox"]').setValue(true)
+}
+
 describe('RideForm', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -94,6 +99,7 @@ describe('RideForm', () => {
   it('emits a valid submission with the current values and no image', async () => {
     const wrapper = mountForm()
 
+    await acceptRules(wrapper)
     await wrapper.get('form').trigger('submit')
 
     const emitted = wrapper.emitted('submit')
@@ -108,6 +114,7 @@ describe('RideForm', () => {
   it('blocks the submission and explains the first validation error', async () => {
     const wrapper = mountForm({ initialValues: validValues({ distanceKm: '0' }) })
 
+    await acceptRules(wrapper)
     await wrapper.get('form').trigger('submit')
 
     expect(wrapper.emitted('submit')).toBeUndefined()
@@ -119,6 +126,7 @@ describe('RideForm', () => {
       initialValues: validValues({ title: 'abc', distanceKm: '0' }),
     })
 
+    await acceptRules(wrapper)
     await wrapper.get('form').trigger('submit')
 
     expect(wrapper.emitted('submit')).toBeUndefined()
@@ -142,6 +150,7 @@ describe('RideForm', () => {
   it('clears the validation error as soon as the form is edited', async () => {
     const wrapper = mountForm({ initialValues: validValues({ distanceKm: '0' }) })
 
+    await acceptRules(wrapper)
     await wrapper.get('form').trigger('submit')
     expect(wrapper.find('[role="alert"]').exists()).toBe(true)
 
@@ -158,6 +167,7 @@ describe('RideForm', () => {
   it('ignores the submit while the parent is already submitting', async () => {
     const wrapper = mountForm({ isSubmitting: true })
 
+    await acceptRules(wrapper)
     await wrapper.get('form').trigger('submit')
 
     expect(wrapper.emitted('submit')).toBeUndefined()
@@ -192,6 +202,7 @@ describe('RideForm', () => {
 
     expect(wrapper.text()).toContain('Punto seleccionado: Monistrol de Montserrat')
 
+    await acceptRules(wrapper)
     await wrapper.get('form').trigger('submit')
 
     const payload = wrapper.emitted('submit')?.[0]?.[0]
@@ -208,6 +219,7 @@ describe('RideForm', () => {
     const wrapper = mountForm()
 
     await wrapper.getComponent(MeetingPointPicker).vm.$emit('select', null)
+    await acceptRules(wrapper)
     await wrapper.get('form').trigger('submit')
 
     expect(wrapper.emitted('submit')).toBeUndefined()
@@ -219,10 +231,10 @@ describe('RideForm', () => {
   it('counts the description characters as they grow', async () => {
     const wrapper = mountForm({ initialValues: validValues({ description: 'Corta' }) })
 
-    expect(wrapper.text()).toContain('5/3000')
+    expect(wrapper.text()).toContain('5/8000')
 
     await wrapper.get('#description').setValue('Recorrido por pista forestal.')
-    expect(wrapper.text()).toContain('29/3000')
+    expect(wrapper.text()).toContain('29/8000')
   })
 
   it('blocks the submission and surfaces the image error', async () => {
@@ -233,6 +245,7 @@ describe('RideForm', () => {
 
     expect(wrapper.text()).toContain('Selecciona una imagen JPEG, PNG, WebP o AVIF.')
 
+    await acceptRules(wrapper)
     await wrapper.get('form').trigger('submit')
 
     expect(wrapper.emitted('submit')).toBeUndefined()
@@ -259,6 +272,7 @@ describe('RideForm', () => {
 
     expect(wrapper.find('img').exists()).toBe(false)
 
+    await acceptRules(wrapper)
     await wrapper.get('form').trigger('submit')
 
     expect(wrapper.emitted('submit')?.[0]?.[0]).toMatchObject({ removeCurrentImage: true })
@@ -273,6 +287,7 @@ describe('RideForm', () => {
 
     selectFile(wrapper, file)
     await fileInput(wrapper).trigger('change')
+    await acceptRules(wrapper)
     await wrapper.get('form').trigger('submit')
 
     expect(wrapper.emitted('submit')?.[0]?.[0]).toMatchObject({ image: file })

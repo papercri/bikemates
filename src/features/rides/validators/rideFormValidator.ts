@@ -4,7 +4,7 @@ import { validateRideImage } from './rideImageValidator'
 const TITLE_MIN = 5
 const TITLE_MAX = 100
 const DESCRIPTION_MIN = 10
-const DESCRIPTION_MAX = 3000
+const DESCRIPTION_MAX = 8000
 const DISTANCE_MAX_KM = 1000
 const ELEVATION_MAX_M = 20000
 const DURATION_MAX_MINUTES = 24 * 60
@@ -23,7 +23,7 @@ function validateDescription(value: string): string | null {
   const length = value.trim().length
 
   return length < DESCRIPTION_MIN || length > DESCRIPTION_MAX
-    ? 'La descripción debe tener entre 10 y 3000 caracteres.'
+    ? `La descripción debe tener entre ${DESCRIPTION_MIN} y ${DESCRIPTION_MAX} caracteres.`
     : null
 }
 

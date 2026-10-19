@@ -53,7 +53,7 @@ test.describe('create ride', () => {
     await page.getByRole('button', { name: 'Publicar ruta' }).click()
 
     await expect(page.getByRole('alert')).toHaveText(
-      'La descripción debe tener entre 10 y 3000 caracteres.',
+      'La descripción debe tener entre 10 y 8000 caracteres.',
     )
   })
 
@@ -188,6 +188,6 @@ test.describe('create ride', () => {
 
     await page.getByLabel('Descripción').fill('Recorrido corto.')
 
-    await expect(page.getByText('16/3000')).toBeVisible()
+    await expect(page.getByText('16/8000')).toBeVisible()
   })
 })

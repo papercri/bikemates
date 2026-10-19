@@ -25,9 +25,6 @@ useHead({
 const initialValues = createEmptyRideFormValues({
   bikeType: 'gravel',
   level: 'Intermedio',
-  distanceKm: '30',
-  elevationM: '300',
-  durationMinutes: '120',
 })
 
 const { isSubmitting, errorMessage, createPublishedRide } = useRideCreator()

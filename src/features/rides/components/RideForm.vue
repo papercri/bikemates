@@ -17,6 +17,8 @@ import { useRideImagePicker } from '@/features/rides/composables/useRideImagePic
 import MeetingPointPicker from '@/features/rides/components/MeetingPointPicker.vue'
 import Alert from '@/components/ui/Alert.vue'
 import Button from '@/components/ui/Button.vue'
+import Checkbox from '@/components/ui/Checkbox.vue'
+import CommunityRulesDialog from '@/components/community/CommunityRulesDialog.vue'
 import FormError from '@/components/ui/FormError.vue'
 import FormHelp from '@/components/ui/FormHelp.vue'
 import FormLabel from '@/components/ui/FormLabel.vue'
@@ -45,6 +47,9 @@ const emit = defineEmits<{
 
 const isEditMode = computed(() => props.mode === 'edit')
 
+/** Límite de caracteres de la descripción, alineado con el validador del formulario. */
+const DESCRIPTION_MAX_LENGTH = 8000
+
 // Filete que encabeza cada bloque del formulario: etiqueta mono en versalitas
 // con regla hairline, en línea con la voz editorial del resto de la app.
 const legendClasses =
@@ -58,6 +63,15 @@ const fieldErrors = ref<RideFormErrors>(emptyRideFormErrors())
 
 /** Primer error del formulario, en orden de visualización: resumen junto al botón. */
 const summaryError = computed(() => firstRideFormError(fieldErrors.value))
+
+/** Requisito para publicar: aceptar explícitamente las normas de la comunidad. */
+const acceptedRules = ref(false)
+const rulesError = ref<string | null>(null)
+const showRulesDialog = ref(false)
+
+watch(acceptedRules, (accepted) => {
+  if (accepted) rulesError.value = null
+})
 
 const {
   selectedImage,
@@ -100,7 +114,11 @@ function handleSubmit(): void {
   // El error de la imagen en vivo (tamaño/tipo) tiene prioridad sobre el del validador.
   fieldErrors.value = imageError.value ? { ...errors, image: imageError.value } : errors
 
-  if (summaryError.value !== null) return
+  rulesError.value = acceptedRules.value
+    ? null
+    : 'Debes aceptar las normas de la comunidad para publicar la ruta.'
+
+  if (summaryError.value !== null || rulesError.value !== null) return
 
   emit('submit', {
     values: { ...form },
@@ -162,7 +180,7 @@ function handleSubmit(): void {
             name="description"
             :rows="6"
             :minlength="10"
-            :maxlength="3000"
+            :maxlength="DESCRIPTION_MAX_LENGTH"
             required
             placeholder="Describe el recorrido, el terreno y qué deben llevar los participantes..."
             :aria-invalid="Boolean(fieldErrors.description)"
@@ -172,7 +190,7 @@ function handleSubmit(): void {
             {{ fieldErrors.description }}
           </FormError>
           <p class="mt-1 text-right text-xs text-graphite tabular-nums">
-            {{ form.description.length }}/3000
+            {{ form.description.length }}/{{ DESCRIPTION_MAX_LENGTH }}
           </p>
         </div>
       </div>
@@ -367,11 +385,34 @@ function handleSubmit(): void {
         {{ summaryError }}
       </Alert>
 
+      <div class="rounded-card border border-line bg-surface p-4">
+        <Checkbox
+          v-model="acceptedRules"
+          :aria-describedby="rulesError ? 'accepted-rules-error' : undefined"
+          :aria-invalid="Boolean(rulesError)"
+          label="He leído y acepto las normas de la comunidad"
+        />
+
+        <div class="mt-2 pl-7">
+          <button
+            type="button"
+            class="text-sm font-semibold text-trail-ink underline underline-offset-2 transition-colors hover:text-green-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+            @click="showRulesDialog = true"
+          >
+            Ver normas de la comunidad
+          </button>
+        </div>
+
+        <p v-if="rulesError" id="accepted-rules-error" role="alert" class="mt-2 pl-7 text-sm text-red-700">
+          {{ rulesError }}
+        </p>
+      </div>
+
       <div class="flex justify-end">
         <Button
           type="submit"
           :loading="isSubmitting"
-          :disabled="isSubmitting"
+          :disabled="isSubmitting || !acceptedRules"
           block
           class="sm:w-auto"
         >
@@ -387,5 +428,7 @@ function handleSubmit(): void {
         </Button>
       </div>
     </div>
+
+    <CommunityRulesDialog :open="showRulesDialog" @close="showRulesDialog = false" />
   </form>
 </template>

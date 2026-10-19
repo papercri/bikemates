@@ -52,6 +52,6 @@ defineExpose({ el })
     :disabled="disabled"
     :aria-invalid="ariaInvalid"
     :aria-describedby="ariaDescribedby"
-    :class="[bare ? FIELD_BARE_CLASSES : FIELD_CLASSES, 'px-3 py-2']"
+    :class="[bare ? FIELD_BARE_CLASSES : FIELD_CLASSES, 'px-3 py-1.5']"
   />
 </template>
