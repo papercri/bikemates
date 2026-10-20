@@ -52,7 +52,8 @@ const { width: viewportWidth } = useWindowSize()
 const columnCount = computed(() => {
   if (viewportWidth.value < 640) return 1
   if (viewportWidth.value < 1024) return 2
-  return 3
+  if (viewportWidth.value < 1440) return 3
+  return 4
 })
 
 const gridStyle = computed(() => ({
@@ -143,7 +144,7 @@ onBeforeUnmount(() => {
           </template>
         </Typography>
 
-        <div v-if="paginatedRides.length > 0" class="mt-6 grid gap-6" :style="gridStyle">
+        <div v-if="paginatedRides.length > 0" class="mt-6 grid gap-7" :style="gridStyle">
           <RideCard v-for="ride in paginatedRides" :key="ride.id" :ride="ride" :past="isPastTab" />
         </div>
 
