@@ -63,7 +63,7 @@ const { isProcessing, isConfirmed, errorMessage } = useEmailLinkConfirmation(
         </Button>
 
         <Typography variant="caption" tone="muted" class="mt-6">
-          BikeMates · Comparte rutas. Comparte kilómetros.
+          BikeMates · Comparte rutas. Suma kilómetros.
         </Typography>
       </Card>
     </main>

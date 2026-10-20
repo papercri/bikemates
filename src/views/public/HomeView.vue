@@ -34,8 +34,9 @@ const heroSlides = [
   { src: '/photos/img4.avif', position: 'object-center' },
   { src: '/photos/img10.avif', position: 'object-center' },
   { src: '/photos/img14.jpg', position: 'object-center' },
-  { src: '/photos/img12.jpg', position: 'object-center' },
-  { src: '/photos/hero-bosque.webp', position: 'object-center' },
+  { src: '/photos/img18.jpeg', position: 'object-center' },
+  { src: '/photos/img3.jpg', position: 'object-center' },
+  { src: '/photos/img19.webp', position: 'object-center' },
 ] as const
 
 const authStore = useAuthStore()
@@ -87,7 +88,7 @@ const heroCtas = computed<LandingCta[]>(() => {
   if (user.value) {
     return [
       { label: 'Explorar rutas', to: '/rides', variant: 'sun' },
-      { label: 'Publicar ruta', to: '/rides/create', variant: 'sun-outline' },
+      { label: 'Publicar nueva ruta', to: '/rides/create', variant: 'sun-outline' },
     ]
   }
 
@@ -99,25 +100,25 @@ const heroCtas = computed<LandingCta[]>(() => {
 
 const bandCta = computed<LandingCta>(() =>
   isInitialized.value && user.value
-    ? { label: 'Publicar una salida', to: '/rides/create', variant: 'primary' }
-    : { label: 'Crear cuenta gratis', to: '/register', variant: 'primary' },
+    ? { label: 'Organiza una salida', to: '/rides/create', variant: 'primary' }
+    : { label: 'Crear una cuenta', to: '/register', variant: 'primary' },
 )
 
 const features = [
   {
     icon: IconRoutes,
     title: 'Descubre rutas',
-    description: 'Encuentra próximas salidas y explora nuevos recorridos por tu zona.',
+    description: 'Explora las próximas salidas y encuentra rutas que encajen con tu nivel y tu forma de pedalear.',
   },
   {
     icon: IconCyclists,
-    title: 'Conoce ciclistas',
-    description: 'Conecta con personas que comparten tu pasión por el ciclismo.',
+    title: 'Conecta con ciclistas',
+    description: 'Encuentra personas que comparten tu afición y tus ganas de salir en bici.',
   },
   {
     icon: IconMeetup,
-    title: 'Organiza quedadas',
-    description: 'Propón una salida, define el recorrido y pedalea en compañía.',
+    title: 'Organiza salidas',
+    description: 'Crea una quedada, comparte los detalles de la ruta e invita a otros ciclistas a unirse..',
   },
 ]
 
@@ -208,12 +209,11 @@ onBeforeUnmount(() => {
             class="max-w-3xl font-display text-[clamp(2.4rem,6vw,4.4rem)] leading-[0.95] font-medium tracking-[-0.025em] text-white"
           >
             <span class="block">Encuentra tu grupeta.</span>
-            <span class="block">Comparte la ruta.</span>
+            <span class="block">Descubre nuevas rutas.</span>
           </h1>
 
           <p class="mt-6 max-w-xl text-base leading-7 text-white/85 sm:text-lg">
-            Conecta con ciclistas cerca de ti, organiza salidas y descubre nuevas rutas para
-            disfrutar de la bici en compañía.
+            Conecta con ciclistas cerca de ti, organiza salidas en grupo y encuentra nuevas rutas para tu próxima aventura en bici.
           </p>
 
           <div class="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -243,12 +243,11 @@ onBeforeUnmount(() => {
             id="features-title"
             class="max-w-3xl font-display text-3xl leading-[1.05] font-medium tracking-[-0.025em] text-ink sm:text-5xl"
           >
-            Todo empieza con una ruta
+            Cada salida es una oportunidad para conectar
           </h2>
 
           <p class="mt-4 max-w-2xl leading-7 text-graphite">
-            Encuentra personas con tus mismos intereses y convierte cada salida en una oportunidad
-            para descubrir nuevos caminos.
+            Descubre nuevas rutas, conoce ciclistas cerca de ti y organiza salidas para disfrutar de la bici en compañía.
           </p>
         </motion.div>
 
@@ -295,12 +294,12 @@ onBeforeUnmount(() => {
             id="gallery-title"
             class="max-w-xl font-display text-3xl leading-[1.05] font-medium tracking-[-0.025em] text-ink sm:text-4xl"
           >
-            Así se vive una salida
+            Encuentra una excursión a tu ritmo
+
           </h2>
 
           <p class="mt-3 max-w-xl leading-7 text-graphite">
-            Desde paseos por la mañana hasta rutas de montaña con desnivel. Mira la dificultad y el
-            ritmo de cada salida antes de apuntarte.
+            Desde paseos tranquilos hasta rutas de montaña con desnivel. Consulta la distancia, la dificultad y el nivel de cada salida para elegir la que mejor se adapte a ti.
           </p>
         </motion.div>
 
@@ -402,10 +401,10 @@ onBeforeUnmount(() => {
             id="cta-title"
             class="font-display text-3xl leading-[1.05] font-medium tracking-[-0.025em] text-ink sm:text-4xl"
           >
-            Tu próxima salida empieza aquí
+            Encuentra tu próxima grupeta
           </h2>
           <p class="mt-4 max-w-xl leading-7 text-graphite">
-            Crea tu cuenta, elige una ruta cerca de ti y sal a pedalear con gente nueva.
+            Regístrate, descubre las próximas salidas y únete a otros ciclistas para compartir nuevos recorridos.
           </p>
         </motion.div>
 

@@ -102,19 +102,13 @@ async function confirmRideDeletion(): Promise<void> {
         <Typography as="h1" variant="heading-lg" class="mt-3"> Editar ruta </Typography>
 
         <Typography variant="body-sm" tone="muted" class="mt-1.5">
-          Modifica los datos de tu salida ciclista.
+          Actualiza los detalles de tu salida y mantén la información al día.
         </Typography>
       </header>
 
       <BikeLoader v-if="isLoading" label="Cargando ruta…" />
 
-      <Card v-else-if="errorMessage && !ride" variant="danger" class="p-6" role="alert">
-        <Typography variant="body-sm" class="text-red-700">{{ errorMessage }}</Typography>
-
-        <Button variant="outline" size="sm" class="mt-4" @click="router.push({ name: 'rides' })">
-          Volver a las rutas
-        </Button>
-      </Card>
+      
 
       <Card v-else-if="ride" class="p-5 sm:p-6">
         <RideForm
@@ -126,7 +120,13 @@ async function confirmRideDeletion(): Promise<void> {
           @submit="handleSubmit"
         />
       </Card>
+      <Card v-else-if="errorMessage && !ride" variant="danger" class="p-6" role="alert">
+        <Typography variant="body-sm" class="text-red-700">{{ errorMessage }}</Typography>
 
+        <Button variant="outline" size="sm" class="mt-4" @click="router.push({ name: 'rides' })">
+          Volver a las rutas
+        </Button>
+      </Card>
       <section v-if="ride && !isLoading" class="mt-8 border-t border-line pt-5">
         <Typography as="h2" variant="heading-sm">Eliminar ruta</Typography>
 

@@ -87,7 +87,7 @@ function handleTabKeydown(event: KeyboardEvent, index: number): void {
         <div>
           <Typography as="h1" variant="heading-lg" class="tracking-tight"> Mi perfil </Typography>
           <Typography class="mt-1" tone="muted">
-            Gestiona tus datos y tu actividad ciclista.
+            Consulta tus datos personales y gestiona tu actividad en BikeMates.
           </Typography>
         </div>
       </div>
