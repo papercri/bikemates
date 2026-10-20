@@ -41,16 +41,37 @@ const heroSlides = [
 const authStore = useAuthStore()
 const { user, isInitialized } = storeToRefs(authStore)
 
-useHead({
-  title: 'BikeMates | Encuentra ciclistas y rutas',
-  meta: [
-    {
-      name: 'description',
-      content:
-        'Encuentra ciclistas cerca de ti, descubre rutas y organiza salidas en grupo por España.',
-    },
-  ],
-})
+const HOME_TITLE = 'BikeMates | Encuentra ciclistas y rutas'
+const HOME_DESCRIPTION =
+  'Encuentra ciclistas cerca de ti, descubre rutas y organiza salidas en grupo por España.'
+
+useHead(
+  computed(() => {
+    // URL absoluta: las redes y los rastreadores no resuelven rutas relativas.
+    const url = `${window.location.origin}/`
+    const image = `${window.location.origin}/photos/grupeta-camino.webp`
+
+    return {
+      title: HOME_TITLE,
+      meta: [
+        { name: 'description', content: HOME_DESCRIPTION },
+        // Open Graph: previsualización en Facebook, WhatsApp, Telegram…
+        { property: 'og:type', content: 'website' },
+        { property: 'og:site_name', content: 'BikeMates' },
+        { property: 'og:title', content: HOME_TITLE },
+        { property: 'og:description', content: HOME_DESCRIPTION },
+        { property: 'og:url', content: url },
+        { property: 'og:image', content: image },
+        // Twitter/X
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:title', content: HOME_TITLE },
+        { name: 'twitter:description', content: HOME_DESCRIPTION },
+        { name: 'twitter:image', content: image },
+      ],
+      link: [{ rel: 'canonical', href: url }],
+    }
+  }),
+)
 
 interface LandingCta {
   label: string
@@ -102,11 +123,10 @@ const features = [
 
 const { rides: publishedRides, isLoading: isLoadingRides } = useRideList()
 
-// Tres próximas salidas reales, ordenadas por fecha.
+// Tres últimas salidas publicadas, de la más reciente a la más antigua.
 const latestRides = computed(() =>
   [...publishedRides.value]
-    .filter((ride) => new Date(ride.startsAt).getTime() >= Date.now())
-    .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime())
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 3),
 )
 
@@ -315,7 +335,7 @@ onBeforeUnmount(() => {
           </motion.div>
         </div>
 
-        <div class="mt-8">
+        <div class="mt-8 flex justify-end">
           <Button variant="primary" size="lg" to="/rides">
             Ver próximas salidas
             <IconArrow direction="right" />
@@ -325,7 +345,7 @@ onBeforeUnmount(() => {
     </section>
 
     <section
-      class="relative isolate -mx-4 overflow-hidden border-y border-line bg-snow sm:-mx-6 lg:-mx-8"
+      class="relative isolate -mx-4 overflow-hidden border-y border-line bg-trail/15 sm:-mx-6 lg:-mx-8"
       aria-labelledby="cta-title"
     >
       <!-- Traza de ruta en line-art: sendero discontinuo animado sobre filete hairline. -->
@@ -339,22 +359,24 @@ onBeforeUnmount(() => {
         <path
           d="M 20 235 Q 260 220 420 170 T 820 175 T 1180 60"
           fill="none"
-          stroke="var(--color-line-strong)"
+          stroke="var(--color-trail)"
+          stroke-opacity="0.35"
           stroke-width="2"
           stroke-linecap="round"
         />
         <path
           d="M 20 235 Q 260 220 420 170 T 820 175 T 1180 60"
           fill="none"
-          stroke="var(--color-graphite)"
+          stroke="var(--color-trail-ink)"
+          stroke-opacity="0.45"
           stroke-width="2"
           stroke-dasharray="6 9"
           stroke-linecap="round"
           vector-effect="non-scaling-stroke"
           class="motion-safe:animate-trail-dash"
         />
-        <circle cx="420" cy="170" r="4" fill="var(--color-line-strong)" />
-        <circle cx="820" cy="175" r="4" fill="var(--color-line-strong)" />
+        <circle cx="420" cy="170" r="4" fill="var(--color-trail)" fill-opacity="0.45" />
+        <circle cx="820" cy="175" r="4" fill="var(--color-trail)" fill-opacity="0.45" />
         <circle cx="1180" cy="60" r="7" fill="var(--color-ink)" />
         <circle
           cx="1180"
@@ -362,7 +384,7 @@ onBeforeUnmount(() => {
           r="14"
           fill="none"
           stroke="var(--color-ink)"
-          stroke-opacity="0.35"
+          stroke-opacity="0.3"
         />
       </svg>
 

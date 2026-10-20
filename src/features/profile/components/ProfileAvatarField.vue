@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref } from 'vue'
-import { faCamera } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import Alert from '@/components/ui/Alert.vue'
 import Button from '@/components/ui/Button.vue'
-import { saveAvatar } from '@/features/profile/services/profileService'
+import { removeAvatar, saveAvatar } from '@/features/profile/services/profileService'
 import type { Profile } from '@/features/profile/types'
 import { validateAvatarImage } from '@/features/profile/validators/profileValidator'
 
@@ -23,6 +21,7 @@ const previewUrl = ref<string | null>(null)
 const imageError = ref('')
 const saveError = ref('')
 const isSaving = ref(false)
+const isRemoving = ref(false)
 const justSaved = ref(false)
 
 const initials = computed(() => {
@@ -97,6 +96,27 @@ async function handleSave(): Promise<void> {
   }
 }
 
+async function handleRemove(): Promise<void> {
+  if (isRemoving.value || isSaving.value) return
+
+  isRemoving.value = true
+  saveError.value = ''
+
+  try {
+    const updated = await removeAvatar()
+    discardSelection()
+    emit('updated', updated)
+  } catch (error: unknown) {
+    saveError.value = error instanceof Error ? error.message : 'No se ha podido eliminar la foto.'
+  } finally {
+    isRemoving.value = false
+  }
+}
+
+function openFilePicker(): void {
+  avatarInput.value?.click()
+}
+
 onBeforeUnmount(revokePreview)
 </script>
 
@@ -122,13 +142,23 @@ onBeforeUnmount(revokePreview)
       </div>
 
       <div class="flex flex-col items-start gap-2">
-        <label
-          for="avatar-file"
-          class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-btn border border-ink bg-white px-4 py-2 font-semibold text-ink transition-colors hover:bg-snow focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ink"
-        >
-          <FontAwesomeIcon :icon="faCamera" aria-hidden="true" class="size-4" />
-          Elegir foto
-        </label>
+        <div class="flex flex-wrap gap-2">
+          <Button type="button" variant="outline" size="xs" @click="openFilePicker">
+            Buscar imagen
+          </Button>
+
+          <Button
+            v-if="props.avatarUrl && !selectedFile"
+            type="button"
+            variant="outline"
+            size="xs"
+            :loading="isRemoving"
+            :disabled="isRemoving || isSaving"
+            @click="handleRemove"
+          >
+            {{ isRemoving ? 'Eliminando…' : 'Eliminar imagen' }}
+          </Button>
+        </div>
 
         <input
           id="avatar-file"
@@ -136,6 +166,8 @@ onBeforeUnmount(revokePreview)
           type="file"
           accept="image/jpeg,image/png,image/webp,image/avif"
           class="sr-only"
+          tabindex="-1"
+          aria-hidden="true"
           @change="handleFileChange"
         />
 
@@ -144,14 +176,14 @@ onBeforeUnmount(revokePreview)
     </div>
 
     <div v-if="selectedFile" class="mt-3 flex flex-wrap items-center gap-3">
-      <Button type="button" size="sm" :loading="isSaving" :disabled="isSaving" @click="handleSave">
+      <Button type="button" size="xs" :loading="isSaving" :disabled="isSaving" @click="handleSave">
         {{ isSaving ? 'Guardando…' : 'Guardar foto' }}
       </Button>
 
       <Button
         type="button"
         variant="outline"
-        size="sm"
+        size="xs"
         :disabled="isSaving"
         @click="discardSelection"
       >

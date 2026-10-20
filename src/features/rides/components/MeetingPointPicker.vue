@@ -47,7 +47,7 @@ function handleSelectPlace(place: GeocodingResult): void {
   <section class="space-y-2">
     <FormLabel id="meeting-point-search"> Punto de encuentro </FormLabel>
 
-    <div class="flex items-start gap-2">
+    <div class="flex items-stretch gap-2">
       <div class="min-w-0 flex-1">
         <Input
           id="meeting-point-search"
@@ -56,6 +56,7 @@ function handleSelectPlace(place: GeocodingResult): void {
           name="meetingPointSearch"
           placeholder="Ej. Monistrol de Montserrat"
           autocomplete="off"
+          class="h-10"
           :aria-invalid="Boolean(errorMessage)"
           aria-describedby="meeting-point-help"
         />
@@ -65,6 +66,7 @@ function handleSelectPlace(place: GeocodingResult): void {
         type="button"
         variant="primary"
         size="md"
+        class="h-10 shrink-0"
         :disabled="isLoading || query.trim().length < 3"
         :loading="isLoading"
         @click="search"
@@ -107,7 +109,5 @@ function handleSelectPlace(place: GeocodingResult): void {
         {{ selectedPlace.longitude.toFixed(5) }}
       </p>
     </div>
-
-    <p class="text-xs text-graphite">Datos geográficos © OpenStreetMap contributors.</p>
   </section>
 </template>

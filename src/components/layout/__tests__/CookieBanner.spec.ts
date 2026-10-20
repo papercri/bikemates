@@ -26,7 +26,7 @@ describe('CookieBanner', () => {
     const dialog = wrapper.get('[role="dialog"]')
 
     expect(dialog.attributes('aria-label')).toBe('Aviso de cookies')
-    expect(dialog.text()).toContain('Esta web no usa cookies de rastreo.')
+    expect(dialog.text()).toContain('Esta web utiliza cookies.')
     expect(wrapper.get('button').text()).toBe('Entendido')
   })
 

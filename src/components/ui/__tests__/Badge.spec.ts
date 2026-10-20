@@ -22,7 +22,7 @@ describe('Badge', () => {
       slots: { default: 'Intermedio' },
     })
 
-    expect(wrapper.classes()).toContain('bg-ink/8')
+    expect(wrapper.classes()).toContain('bg-route/15')
     expect(wrapper.classes()).toContain('text-ink')
   })
 

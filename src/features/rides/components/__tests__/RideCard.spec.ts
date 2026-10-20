@@ -48,20 +48,26 @@ describe('RideCard', () => {
     expect(link.props('to')).toEqual({ name: 'ride-detail', params: { id: 'ride-42' } })
   })
 
-  it('shows the title, the key figures and the machine-readable date', () => {
+  it('shows the title and the machine-readable short date', () => {
     const wrapper = mountCard(rideOf())
 
     expect(wrapper.get('h2').text()).toBe('Vuelta por Collserola')
-    expect(wrapper.text()).toContain('30')
-    expect(wrapper.text()).toContain('+300')
     expect(wrapper.get('time').attributes('datetime')).toBe(rideOf().startsAt)
-    expect(wrapper.get('time').text()).toContain('10')
+    expect(wrapper.get('time').text()).toContain('10/06')
   })
 
-  it('renders the date rail with the day and the short month', () => {
+  it('leaves the key figures out of the card', () => {
     const wrapper = mountCard(rideOf())
 
-    expect(wrapper.text()).toContain('10 jun')
+    expect(wrapper.text()).not.toContain('+300')
+    expect(wrapper.text()).not.toContain('300 m')
+  })
+
+  it('renders the compact calendar pill with the short date', () => {
+    const wrapper = mountCard(rideOf())
+
+    expect(wrapper.get('time').text()).toContain('10/06')
+    expect(wrapper.text()).not.toContain('jun')
   })
 
   it('shows the level, bike type and audience badges', () => {
@@ -101,5 +107,16 @@ describe('RideCard', () => {
     expect(wrapper.get('img').attributes('alt')).toBe('')
     expect(wrapper.get('img').attributes('aria-hidden')).toBe('true')
     expect(wrapper.text()).toContain('Ver detalles')
+  })
+
+  it('shows the "Participaré" badge only for rides the user joined', () => {
+    const joined = mount(RideCard, {
+      props: { ride: rideOf(), participating: true },
+      global: { stubs: { RouterLink: RouterLinkStub } },
+    })
+    const notJoined = mountCard(rideOf())
+
+    expect(joined.text()).toContain('Participaré')
+    expect(notJoined.text()).not.toContain('Participaré')
   })
 })

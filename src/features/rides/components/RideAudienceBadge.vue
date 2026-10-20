@@ -13,9 +13,12 @@ const props = withDefaults(
     audience: RideAudience
     /** Variante heredada de Badge: `inverse` deja el chip legible sobre fotografía. */
     variant?: BadgeVariant
+    /** Solo icono (la etiqueta queda para lectores de pantalla): en la tarjeta ya sobra. */
+    iconOnly?: boolean
   }>(),
   {
     variant: 'muted',
+    iconOnly: false,
   },
 )
 
@@ -36,6 +39,9 @@ const isPrideAudience = computed(() => props.audience === 'lgbt')
     <!-- La comunidad LGBT+ se identifica con la bandera arcoíris. -->
     <span v-if="isPrideAudience" aria-hidden="true" class="text-[0.95em] leading-none"> 🏳️‍🌈 </span>
     <FontAwesomeIcon v-else :icon="icon" aria-hidden="true" />
-    {{ label }}
+
+    <!-- En modo solo icono la etiqueta queda oculta para lectores de pantalla. -->
+    <span v-if="iconOnly" class="sr-only">{{ label }}</span>
+    <template v-else>{{ label }}</template>
   </Badge>
 </template>

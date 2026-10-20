@@ -58,6 +58,26 @@ test.describe('home', () => {
     )
   })
 
+  test('renders Open Graph metadata for social sharing', async ({ page }) => {
+    await page.goto('/')
+
+    await expect(page.locator('meta[property="og:type"]')).toHaveAttribute('content', 'website')
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
+      'content',
+      'BikeMates | Encuentra ciclistas y rutas',
+    )
+    await expect(page.locator('meta[property="og:url"]')).toHaveAttribute('content', /\/$/)
+    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
+      'content',
+      /\/photos\/grupeta-camino\.webp$/,
+    )
+    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
+      'content',
+      'summary_large_image',
+    )
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /\/$/)
+  })
+
   test('renders the feature and CTA sections', async ({ page }) => {
     await page.goto('/')
 

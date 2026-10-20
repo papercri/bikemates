@@ -21,4 +21,12 @@ describe('cn', () => {
   it('keeps a single falsy-only result empty', () => {
     expect(cn(false, null, undefined)).toBe('')
   })
+
+  it('lets an explicit font weight override the one coming first', () => {
+    expect(cn('text-lg font-medium', 'mb-2 font-bold')).toBe('text-lg mb-2 font-bold')
+  })
+
+  it('keeps only the last occurrence of the same font weight', () => {
+    expect(cn('font-bold tracking-tight', 'font-bold')).toBe('tracking-tight font-bold')
+  })
 })

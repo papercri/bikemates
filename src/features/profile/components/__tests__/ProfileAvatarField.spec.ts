@@ -5,10 +5,12 @@ import type { Profile } from '../../types'
 
 const mocks = vi.hoisted(() => ({
   saveAvatar: vi.fn<(file: File) => Promise<Profile>>(),
+  removeAvatar: vi.fn<() => Promise<Profile>>(),
 }))
 
 vi.mock('@/features/profile/services/profileService', () => ({
   saveAvatar: mocks.saveAvatar,
+  removeAvatar: mocks.removeAvatar,
 }))
 
 function profileOf(overrides: Partial<Profile> = {}): Profile {
@@ -88,7 +90,8 @@ describe('ProfileAvatarField', () => {
     await selectFile(wrapper, avatarFile())
     expect(wrapper.text()).toContain('Guardar foto')
 
-    await wrapper.get('button').trigger('click')
+    const save = wrapper.findAll('button').find((b) => b.text() === 'Guardar foto')
+    await save!.trigger('click')
     await flushPromises()
 
     expect(mocks.saveAvatar).toHaveBeenCalledOnce()
@@ -104,7 +107,8 @@ describe('ProfileAvatarField', () => {
     })
 
     await selectFile(wrapper, avatarFile())
-    await wrapper.get('button').trigger('click')
+    const save = wrapper.findAll('button').find((b) => b.text() === 'Guardar foto')
+    await save!.trigger('click')
     await flushPromises()
 
     expect(wrapper.text()).toContain('No se ha podido subir la imagen.')
@@ -124,5 +128,47 @@ describe('ProfileAvatarField', () => {
 
     expect(wrapper.get('img').attributes('src')).toBe('https://cdn.example/a.png')
     expect(wrapper.text()).not.toContain('Guardar foto')
+  })
+
+  it('offers the delete button only when there is a saved avatar', () => {
+    const withAvatar = mount(ProfileAvatarField, {
+      props: { avatarUrl: 'https://cdn.example/a.png', displayName: 'Ana Pedal' },
+    })
+    const withoutAvatar = mount(ProfileAvatarField, {
+      props: { avatarUrl: null, displayName: 'Ana Pedal' },
+    })
+
+    expect(withAvatar.text()).toContain('Eliminar imagen')
+    expect(withoutAvatar.text()).not.toContain('Eliminar imagen')
+  })
+
+  it('removes the saved avatar and emits the updated profile', async () => {
+    const updated = profileOf({ avatarUrl: null })
+    mocks.removeAvatar.mockResolvedValue(updated)
+    const wrapper = mount(ProfileAvatarField, {
+      props: { avatarUrl: 'https://cdn.example/a.png', displayName: 'Ana Pedal' },
+    })
+
+    const remove = wrapper.findAll('button').find((b) => b.text() === 'Eliminar imagen')
+    await remove!.trigger('click')
+    await flushPromises()
+
+    expect(mocks.removeAvatar).toHaveBeenCalledOnce()
+    expect(wrapper.emitted('updated')?.[0]).toEqual([updated])
+  })
+
+  it('surfaces the service error when removing the avatar fails', async () => {
+    mocks.removeAvatar.mockRejectedValue(new Error('No se ha podido eliminar la foto.'))
+    const wrapper = mount(ProfileAvatarField, {
+      props: { avatarUrl: 'https://cdn.example/a.png', displayName: 'Ana Pedal' },
+    })
+
+    const remove = wrapper.findAll('button').find((b) => b.text() === 'Eliminar imagen')
+    await remove!.trigger('click')
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('No se ha podido eliminar la foto.')
+    expect(wrapper.emitted('updated')).toBeUndefined()
+    expect(wrapper.get('img').attributes('src')).toBe('https://cdn.example/a.png')
   })
 })

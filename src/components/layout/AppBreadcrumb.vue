@@ -40,7 +40,7 @@ const items = computed<BreadcrumbItem[]>(() => {
 </script>
 
 <template>
-  <nav v-if="items.length > 0" aria-label="Migas de pan" class="mb-4">
+  <nav v-if="items.length > 0" aria-label="Migas de pan" class="-mt-4 mb-6">
     <ol class="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-graphite">
       <li
         v-for="(item, index) in items"

@@ -159,8 +159,8 @@ async function confirmRideDeletion(): Promise<void> {
       </div>
 
       <div
-        v-if="visibleRides.length > 0"
-        class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        v-if="visibleRides.length > 0"  
+        class="mt-4 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
       >
         <div
           v-for="ride in visibleRides"

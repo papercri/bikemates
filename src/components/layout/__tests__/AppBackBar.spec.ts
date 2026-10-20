@@ -16,7 +16,7 @@ async function mountBar() {
 
   const wrapper = mount(AppBackBar, {
     global: { plugins: [router] },
-    props: { fallback: '/rides', showAllRidesLink: true },
+    props: { fallback: '/rides' },
   })
 
   return { wrapper, router }
@@ -27,13 +27,11 @@ beforeEach(() => {
 })
 
 describe('AppBackBar', () => {
-  it('renders the back control and the all-rides link', async () => {
+  it('renders the back control without extra links', async () => {
     const { wrapper } = await mountBar()
 
     expect(wrapper.get('button').text()).toContain('Volver')
-
-    const allRides = wrapper.get('a[href="/rides"]')
-    expect(allRides.text()).toContain('Ver todas las rutas')
+    expect(wrapper.findAll('a')).toHaveLength(0)
   })
 
   it('goes back through the browser history when there is a previous entry', async () => {

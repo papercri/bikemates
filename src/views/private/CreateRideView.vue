@@ -25,9 +25,6 @@ useHead({
 const initialValues = createEmptyRideFormValues({
   bikeType: 'gravel',
   level: 'Intermedio',
-  distanceKm: '30',
-  elevationM: '300',
-  durationMinutes: '120',
 })
 
 const { isSubmitting, errorMessage, createPublishedRide } = useRideCreator()
@@ -41,7 +38,7 @@ async function handleSubmit(payload: RideFormSubmission): Promise<void> {
   <AppPage spacing="compact">
     <div class="mx-auto max-w-3xl">
       <header class="mb-5">
-        <AppBackBar fallback="/rides" show-all-rides-link />
+        <AppBackBar fallback="/rides" />
 
         <Typography as="h1" variant="heading-lg" class="mt-3"> Publica una ruta </Typography>
 

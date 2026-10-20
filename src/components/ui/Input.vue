@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { FIELD_CLASSES } from '@/design-system'
+import { FIELD_CLASSES, FIELD_SUBTLE_CLASSES } from '@/design-system'
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     id: string
     name?: string
@@ -13,6 +13,8 @@ withDefaults(
     ariaInvalid?: boolean
     ariaDescribedby?: string
     trailing?: boolean
+    /** Filete muy claro, para agrupar visualmente con los desplegables. */
+    subtle?: boolean
   }>(),
   {
     name: undefined,
@@ -24,6 +26,7 @@ withDefaults(
     ariaInvalid: false,
     ariaDescribedby: undefined,
     trailing: false,
+    subtle: false,
   },
 )
 
@@ -42,6 +45,9 @@ const model = defineModel<string>({ required: true })
     :disabled="disabled"
     :aria-invalid="ariaInvalid"
     :aria-describedby="ariaDescribedby"
-    :class="[FIELD_CLASSES, trailing ? 'py-2 pl-3 pr-10' : 'px-3 py-2']"
+    :class="[
+      props.subtle ? FIELD_SUBTLE_CLASSES : FIELD_CLASSES,
+      trailing ? 'py-1.5 pl-3 pr-10' : 'px-3 py-1.5',
+    ]"
   />
 </template>

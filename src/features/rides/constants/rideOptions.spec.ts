@@ -9,10 +9,17 @@ import {
 } from './rideOptions'
 
 describe('rideOptions', () => {
-  it('labels every bike type and nothing else', () => {
+  it('offers only selectable bike types in forms', () => {
+    expect(RIDE_BIKE_TYPES).toEqual(['road', 'mtb', 'gravel', 'urban'])
+    // `other` no se ofrece al crear, pero sus etiquetas siguen vigentes
+    // para salidas antiguas ya publicadas.
+    expect(RIDE_BIKE_TYPES).not.toContain('other')
+  })
+
+  it('labels every bike type of the domain, including legacy ones', () => {
     const labelKeys = Object.keys(RIDE_BIKE_TYPE_LABELS) as BikeType[]
 
-    expect(labelKeys.sort()).toEqual([...RIDE_BIKE_TYPES].sort())
+    expect(labelKeys.sort()).toEqual(['gravel', 'mtb', 'other', 'road', 'urban'])
   })
 
   it('uses the Spanish names shown across forms and cards', () => {
@@ -33,10 +40,10 @@ describe('rideOptions', () => {
 
   it('uses the Spanish names shown across forms and badges', () => {
     expect(RIDE_AUDIENCE_LABELS).toEqual({
-      everyone: 'Todo el mundo',
+      everyone: 'Todos',
       women: 'Mujeres',
       men: 'Hombres',
-      lgbt: 'Comunidad LGBT+',
+      lgbt: 'LGBT',
     })
   })
 

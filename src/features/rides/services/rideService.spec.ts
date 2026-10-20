@@ -29,6 +29,7 @@ vi.mock('@/services/supabase', () => ({
 import {
   createRide,
   deleteRide,
+  getMyParticipatingRideIds,
   getMyRides,
   getPublishedRides,
   getRideById,
@@ -495,6 +496,34 @@ describe('rideService', () => {
 
       await expect(getRideParticipantCount('ride-1')).rejects.toThrow(
         'No se pudo cargar el número de participantes: offline',
+      )
+    })
+  })
+
+  describe('getMyParticipatingRideIds', () => {
+    it('returns the ride ids the signed-in user joined', async () => {
+      const chain = createQueryChain({ data: [{ ride_id: 'ride-9' }], error: null })
+      mocks.from.mockReturnValue(chain)
+
+      const ids = await getMyParticipatingRideIds()
+
+      expect(mocks.from).toHaveBeenCalledWith('ride_participants')
+      expect(chain.eq).toHaveBeenCalledWith('user_id', 'user-1')
+      expect(ids).toEqual(['ride-9'])
+    })
+
+    it('returns an empty list without a session', async () => {
+      anonymous()
+
+      await expect(getMyParticipatingRideIds()).resolves.toEqual([])
+      expect(mocks.from).not.toHaveBeenCalled()
+    })
+
+    it('wraps query errors with a user-facing message', async () => {
+      mocks.from.mockReturnValue(createQueryChain({ data: null, error: { message: 'offline' } }))
+
+      await expect(getMyParticipatingRideIds()).rejects.toThrow(
+        'No se pudieron cargar tus inscripciones: offline',
       )
     })
   })

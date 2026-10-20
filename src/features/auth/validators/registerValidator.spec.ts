@@ -7,6 +7,7 @@ const validForm: RegisterForm = {
   email: 'ciclista@example.com',
   password: 'bicicleta123',
   confirmPassword: 'bicicleta123',
+  acceptedRules: true,
 }
 
 describe('validateRegisterForm', () => {
@@ -16,7 +17,16 @@ describe('validateRegisterForm', () => {
       email: '',
       password: '',
       confirmPassword: '',
+      acceptedRules: '',
     })
+  })
+
+  it('requires accepting the community rules and the privacy policy', () => {
+    const errors = validateRegisterForm({ ...validForm, acceptedRules: false })
+
+    expect(errors.acceptedRules).toBe(
+      'Debes aceptar las normas de la comunidad y la política de privacidad.',
+    )
   })
 
   it('requires a name with at least 2 characters', () => {
@@ -169,6 +179,7 @@ describe('validateRegisterForm edge cases', () => {
       email: 'no-es-un-correo',
       password: 'corta',
       confirmPassword: 'distinta',
+      acceptedRules: true,
     })
 
     expect(errors).toEqual({
@@ -176,6 +187,7 @@ describe('validateRegisterForm edge cases', () => {
       email: 'Introduce un correo electrónico válido.',
       password: 'La contraseña debe tener al menos 8 caracteres.',
       confirmPassword: 'Las contraseñas no coinciden.',
+      acceptedRules: '',
     })
   })
 

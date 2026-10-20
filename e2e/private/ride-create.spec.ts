@@ -25,9 +25,9 @@ test.describe('create ride', () => {
     // Valores por defecto del formulario.
     await expect(page.locator('#bikeType')).toHaveValue('gravel')
     await expect(page.locator('#level')).toHaveValue('Intermedio')
-    await expect(page.locator('#distanceKm')).toHaveValue('30')
-    await expect(page.locator('#elevationM')).toHaveValue('300')
-    await expect(page.locator('#durationMinutes')).toHaveValue('120')
+    await expect(page.locator('#distanceKm')).toHaveValue('')
+    await expect(page.locator('#elevationM')).toHaveValue('')
+    await expect(page.locator('#durationMinutes')).toHaveValue('')
 
     await expect(page.getByRole('button', { name: 'Publicar ruta' })).toBeVisible()
   })
@@ -37,6 +37,7 @@ test.describe('create ride', () => {
     await supabase.signInAs(ORGANIZER)
 
     await page.goto('/rides/create')
+    await page.getByRole('checkbox').check()
     await page.getByRole('button', { name: 'Publicar ruta' }).click()
 
     await expect(page.getByRole('alert')).toHaveText(
@@ -50,10 +51,11 @@ test.describe('create ride', () => {
 
     await page.goto('/rides/create')
     await page.getByLabel('Nombre de la ruta').fill('Ruta de prueba')
+    await page.getByRole('checkbox').check()
     await page.getByRole('button', { name: 'Publicar ruta' }).click()
 
     await expect(page.getByRole('alert')).toHaveText(
-      'La descripción debe tener entre 10 y 3000 caracteres.',
+      'La descripción debe tener entre 10 y 8000 caracteres.',
     )
   })
 
@@ -102,11 +104,16 @@ test.describe('create ride', () => {
     await page.getByRole('button', { name: 'Buscar' }).click()
     await page.getByRole('button', { name: /Monistrol de Montserrat/ }).click()
 
+    await page.locator('#distanceKm').fill('45')
+    await page.locator('#elevationM').fill('700')
+    await page.locator('#durationMinutes').fill('180')
+
     // Fecha futura en formato datetime-local.
     const future = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
     const local = new Date(future.getTime() - future.getTimezoneOffset() * 60_000)
     await page.locator('#startsAt').fill(local.toISOString().slice(0, 16))
 
+    await page.getByRole('checkbox').check()
     await page.getByRole('button', { name: 'Publicar ruta' }).click()
 
     // Redirige al detalle de la ruta recién creada.
@@ -144,10 +151,15 @@ test.describe('create ride', () => {
     await page.getByRole('button', { name: 'Buscar' }).click()
     await page.getByRole('button', { name: /Monistrol de Montserrat/ }).click()
 
+    await page.locator('#distanceKm').fill('45')
+    await page.locator('#elevationM').fill('700')
+    await page.locator('#durationMinutes').fill('180')
+
     const future = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
     const local = new Date(future.getTime() - future.getTimezoneOffset() * 60_000)
     await page.locator('#startsAt').fill(local.toISOString().slice(0, 16))
 
+    await page.getByRole('checkbox').check()
     await page.getByRole('button', { name: 'Publicar ruta' }).click()
 
     await expect(page.getByRole('button', { name: 'Publicando…' })).toBeDisabled()
@@ -168,14 +180,21 @@ test.describe('create ride', () => {
     await page.getByRole('button', { name: 'Buscar' }).click()
     await page.getByRole('button', { name: /Monistrol de Montserrat/ }).click()
 
+    await page.locator('#distanceKm').fill('45')
+    await page.locator('#elevationM').fill('700')
+    await page.locator('#durationMinutes').fill('180')
+
     const future = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
     const local = new Date(future.getTime() - future.getTimezoneOffset() * 60_000)
     await page.locator('#startsAt').fill(local.toISOString().slice(0, 16))
 
-    await page.getByLabel('Enlace de Wikiloc (opcional)').fill('no-es-una-url')
+    await page.getByLabel('Enlace del recorrido (opcional)').fill('no-es-una-url')
+    await page.getByRole('checkbox').check()
     await page.getByRole('button', { name: 'Publicar ruta' }).click()
 
-    await expect(page.getByRole('alert')).toHaveText('Introduce una URL HTTPS válida de Wikiloc.')
+    await expect(page.getByRole('alert')).toHaveText(
+      'Introduce una URL HTTPS válida (Wikiloc, Strava, Meetup…).',
+    )
   })
 
   test('counts the description characters', async ({ page, supabase }) => {
@@ -186,6 +205,6 @@ test.describe('create ride', () => {
 
     await page.getByLabel('Descripción').fill('Recorrido corto.')
 
-    await expect(page.getByText('16/3000')).toBeVisible()
+    await expect(page.getByText('16/8000')).toBeVisible()
   })
 })

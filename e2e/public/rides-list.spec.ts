@@ -17,6 +17,15 @@ async function openFilters(page: Page, isMobile: boolean): Promise<void> {
   await expect(panel).toBeVisible()
 }
 
+/**
+ * Los filtros son desplegables: se abre el combo por su nombre accesible y se
+ * elige la opción en el menú.
+ */
+async function chooseFilter(page: Page, field: string, option: string): Promise<void> {
+  await page.getByRole('button', { name: new RegExp(`^${field}`) }).click()
+  await page.getByRole('menuitemradio', { name: option, exact: true }).click()
+}
+
 test.describe('rides list', () => {
   test('shows the heading and empty state when there are no rides', async ({ page }) => {
     await page.goto('/rides')
@@ -48,12 +57,15 @@ test.describe('rides list', () => {
     await expect(collserola).toBeVisible()
     await expect(montseny).toBeVisible()
 
-    // La distancia y el desnivel van en spans separados dentro de la tarjeta.
-    await expect(collserola).toContainText('32')
-    await expect(collserola).toContainText('+650')
+    // La tarjeta no muestra distancia ni desnivel: lleva fecha corta, título, nivel, bici y público.
+    await expect(collserola).toContainText(/\d{2}\/\d{2}/)
     await expect(collserola).toContainText('Intermedio')
-    await expect(montseny).toContainText('48')
+    await expect(collserola).toContainText('Gravel')
+    await expect(collserola).toContainText('Todos')
+    await expect(collserola).not.toContainText('32')
+    await expect(collserola).not.toContainText('650')
     await expect(montseny).toContainText('Avanzado')
+    await expect(montseny).toContainText('MTB')
   })
 
   test('counts the results', async ({ page, supabase }) => {
@@ -72,7 +84,7 @@ test.describe('rides list', () => {
 
     await page.goto('/rides')
     await openFilters(page, isMobile)
-    await page.selectOption('#ride-level-filter', 'Avanzado')
+    await chooseFilter(page, 'Nivel', 'Avanzado')
 
     await expect(page.getByRole('link', { name: /Ruta dura/ })).toBeVisible()
     await expect(page.getByRole('link', { name: /Ruta fácil/ })).toHaveCount(0)
@@ -87,7 +99,7 @@ test.describe('rides list', () => {
 
     await page.goto('/rides')
     await openFilters(page, isMobile)
-    await page.selectOption('#ride-audience-filter', 'women')
+    await chooseFilter(page, 'Público', 'Mujeres')
 
     // El filtro por público no afecta a estas rutas (ambas son "everyone").
     await expect(page.getByRole('link', { name: /Ruta gravel/ })).toHaveCount(0)
@@ -114,7 +126,7 @@ test.describe('rides list', () => {
 
     await page.goto('/rides')
     await openFilters(page, isMobile)
-    await page.selectOption('#ride-sort-filter', 'distance')
+    await chooseFilter(page, 'Ordenar por', 'Distancia')
 
     // El orden no por fecha se aplica de forma descendente en la ventana activa.
     const titles = await page.locator('article h2').allTextContents()
@@ -137,5 +149,21 @@ test.describe('rides list', () => {
     await page.getByRole('button', { name: 'Reintentar' }).click()
 
     await expect(page.getByRole('link', { name: /Vuelta por Collserola/ })).toBeVisible()
+  })
+
+  test('renders Open Graph metadata for social sharing', async ({ page }) => {
+    await page.goto('/rides')
+
+    await expect(page.locator('meta[property="og:type"]')).toHaveAttribute('content', 'website')
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
+      'content',
+      'Explorar rutas | BikeMates',
+    )
+    await expect(page.locator('meta[property="og:url"]')).toHaveAttribute('content', /\/rides$/)
+    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
+      'content',
+      'summary_large_image',
+    )
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /\/rides$/)
   })
 })

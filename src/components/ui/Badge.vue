@@ -27,8 +27,8 @@ const classes = createVariant({
   },
   compoundVariants: [
     { variant: 'soft', color: 'trail', class: 'bg-trail/15 text-trail-ink' },
-    // Escalera de intensidad creciente sin depender solo del color: naranja pálido, gris y losa negra.
-    { variant: 'soft', color: 'route', class: 'bg-ink/8 text-ink' },
+    // Escalera de intensidad creciente sin depender solo del color: tinte naranja de ruta, gris y losa negra.
+    { variant: 'soft', color: 'route', class: 'bg-route/15 text-ink' },
     { variant: 'soft', color: 'ink', class: 'bg-ink text-canvas' },
     // Niveles de salida: tinte suave con texto tinta para mantener contraste AA.
     { variant: 'soft', color: 'green', class: 'bg-level-easy/15 text-ink' },

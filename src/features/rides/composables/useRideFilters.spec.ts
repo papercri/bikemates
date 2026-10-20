@@ -96,6 +96,19 @@ describe('useRideFilters', () => {
     expect(ids(filters.upcomingRides.value)).toEqual(['match'])
   })
 
+  it('filters by bike type and treats the sentinel as no filter', () => {
+    const { filters } = setup([
+      rideOf({ id: 'gravel-ride', bikeType: 'gravel', startsAt: daysFromNow(2) }),
+      rideOf({ id: 'mtb-ride', bikeType: 'mtb', startsAt: daysFromNow(5) }),
+    ])
+
+    filters.selectedBike.value = 'mtb'
+    expect(ids(filters.upcomingRides.value)).toEqual(['mtb-ride'])
+
+    filters.selectedBike.value = RIDE_FILTER_ALL
+    expect(ids(filters.upcomingRides.value)).toEqual(['gravel-ride', 'mtb-ride'])
+  })
+
   it('treats the sentinel value as no filter', () => {
     const { filters } = setup([rideOf({ id: 'a', level: 'Avanzado', audience: 'lgbt' })])
 
@@ -146,5 +159,21 @@ describe('useRideFilters', () => {
     await nextTick()
 
     expect(ids(filters.upcomingRides.value)).toEqual(['b', 'c'])
+  })
+
+  it('filters down to the rides the user participates in when enabled', async () => {
+    const store = ref<Ride[]>([rideOf({ id: 'a' }), rideOf({ id: 'b' }), rideOf({ id: 'c' })])
+    const participating = ref<string[]>(['b'])
+    const filters = useRideFilters(store, participating)
+
+    filters.onlyParticipating.value = true
+    await nextTick()
+
+    expect(ids(filters.visibleRides.value)).toEqual(['b'])
+
+    filters.onlyParticipating.value = false
+    await nextTick()
+
+    expect(ids(filters.visibleRides.value).sort()).toEqual(['a', 'b', 'c'])
   })
 })

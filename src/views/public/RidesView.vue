@@ -10,48 +10,83 @@ import RideTimeframeTabs from '@/features/rides/components/RideTimeframeTabs.vue
 import Button from '@/components/ui/Button.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import Typography from '@/components/ui/Typography.vue'
+import { useAuthStore } from '@/features/auth/stores/authStore'
 import { useRideFilters } from '@/features/rides/composables/useRideFilters'
 import { useRideList } from '@/features/rides/composables/useRideList'
 import type { Ride } from '@/features/rides/types'
 
-useHead({
-  title: 'Explorar rutas | BikeMates',
-  meta: [
-    {
-      name: 'description',
-      content:
-        'Explora rutas en España por nivel y por público: iniciación, intermedio y avanzado, con distancia y desnivel de cada salida.',
-    },
-  ],
-})
+const RIDES_TITLE = 'Explorar rutas | BikeMates'
+const RIDES_DESCRIPTION =
+  'Explora rutas en España por nivel y por público: iniciación, intermedio y avanzado, con distancia y desnivel de cada salida.'
+
+useHead(
+  computed(() => {
+    // URL absoluta: las redes y los rastreadores no resuelven rutas relativas.
+    const url = `${window.location.origin}/rides`
+    const image = `${window.location.origin}/photos/grupeta-camino.webp`
+
+    return {
+      title: RIDES_TITLE,
+      meta: [
+        { name: 'description', content: RIDES_DESCRIPTION },
+        // Open Graph: previsualización en Facebook, WhatsApp, Telegram…
+        { property: 'og:type', content: 'website' },
+        { property: 'og:site_name', content: 'BikeMates' },
+        { property: 'og:title', content: RIDES_TITLE },
+        { property: 'og:description', content: RIDES_DESCRIPTION },
+        { property: 'og:url', content: url },
+        { property: 'og:image', content: image },
+        // Twitter/X
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:title', content: RIDES_TITLE },
+        { name: 'twitter:description', content: RIDES_DESCRIPTION },
+        { name: 'twitter:image', content: image },
+      ],
+      link: [{ rel: 'canonical', href: url }],
+    }
+  }),
+)
 
 /** Tarjetas visibles por lote al hacer scroll. */
 const PAGE_SIZE = 8
 
-const { rides, isLoading, errorMessage, loadRides } = useRideList()
+const { rides, isLoading, errorMessage, participatingRideIds, loadRides } = useRideList()
 
 const {
   query,
   selectedLevel,
+  selectedBike,
   selectedAudience,
   sortBy,
   timeframe,
+  onlyParticipating,
   upcomingRides,
   pastRides,
   visibleRides,
-} = useRideFilters(rides)
+} = useRideFilters(rides, participatingRideIds)
+
+const authStore = useAuthStore()
+const isAuthenticated = computed(() => authStore.user !== null)
+
+/** Conjunto de ids en los que participa el usuario, para la insignia de la tarjeta. */
+const participatingIds = computed(() => new Set(participatingRideIds.value))
+
+function isParticipating(rideId: string): boolean {
+  return participatingIds.value.has(rideId)
+}
 
 const isPastTab = computed(() => timeframe.value === 'past')
 
 // Columnas adaptativas: 1 en móvil; en pantallas mayores, tantas como tarjetas haya (máx. 4).
 const { width: viewportWidth } = useWindowSize()
 
+// El grid mantiene columnas estables por breakpoint, también con una sola
+// salida: una tarjeta única no debe estirarse a todo el ancho disponible.
 const columnCount = computed(() => {
-  const count = visibleRides.value.length
-  if (count === 0) return 1
   if (viewportWidth.value < 640) return 1
-  if (viewportWidth.value < 1024) return Math.min(count, 2)
-  return Math.min(count, 4)
+  if (viewportWidth.value < 1024) return 2
+  if (viewportWidth.value < 1440) return 3
+  return 4
 })
 
 const gridStyle = computed(() => ({
@@ -113,12 +148,16 @@ onBeforeUnmount(() => {
       <RideFilters
         v-model:query="query"
         v-model:level="selectedLevel"
+        v-model:bike="selectedBike"
         v-model:audience="selectedAudience"
         v-model:sort="sortBy"
+        v-model:participating="onlyParticipating"
+        :show-participation="isAuthenticated"
       />
     </section>
 
-    <section class="mt-6" aria-label="Listado de rutas">
+    <!-- pb extra: aire entre el listado (con su centinela de scroll) y el pie. -->
+    <section class="mt-6 pb-12" aria-label="Listado de rutas">
       <BikeLoader v-if="isLoading" label="Cargando rutas…" />
 
       <EmptyState
@@ -141,8 +180,14 @@ onBeforeUnmount(() => {
           </template>
         </Typography>
 
-        <div v-if="paginatedRides.length > 0" class="mt-4 grid gap-4" :style="gridStyle">
-          <RideCard v-for="ride in paginatedRides" :key="ride.id" :ride="ride" :past="isPastTab" />
+        <div v-if="paginatedRides.length > 0" class="mt-6 grid gap-7" :style="gridStyle">
+          <RideCard
+            v-for="ride in paginatedRides"
+            :key="ride.id"
+            :ride="ride"
+            :past="isPastTab"
+            :participating="isParticipating(ride.id)"
+          />
         </div>
 
         <!-- Centinela de scroll: carga el siguiente lote al entrar en pantalla. -->

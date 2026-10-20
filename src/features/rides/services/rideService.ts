@@ -302,6 +302,33 @@ export async function getRideParticipants(
   })
 }
 
+/**
+ * Identificadores de las rutas en las que el usuario autenticado participa.
+ * Devuelve una lista vacía cuando no hay sesión: el listado público funciona
+ * igualmente y solo omite las insignias y el filtro de participación.
+ */
+export async function getMyParticipatingRideIds(): Promise<string[]> {
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser()
+
+  if (userError || !user) {
+    return []
+  }
+
+  const { data, error } = await supabase
+    .from('ride_participants')
+    .select('ride_id')
+    .eq('user_id', user.id)
+
+  if (error) {
+    throw new Error(`No se pudieron cargar tus inscripciones: ${error.message}`)
+  }
+
+  return data.map((row) => row.ride_id)
+}
+
 export async function getRideParticipantCount(rideId: string): Promise<number> {
   const { data, error } = await supabase.rpc('get_ride_participant_count', { p_ride_id: rideId })
 

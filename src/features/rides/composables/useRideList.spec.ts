@@ -6,10 +6,12 @@ import { useRideList } from './useRideList'
 
 const mocks = vi.hoisted(() => ({
   getPublishedRides: vi.fn<() => Promise<Ride[]>>(),
+  getMyParticipatingRideIds: vi.fn<() => Promise<string[]>>(),
 }))
 
 vi.mock('../services/rideService', () => ({
   getPublishedRides: mocks.getPublishedRides,
+  getMyParticipatingRideIds: mocks.getMyParticipatingRideIds,
 }))
 
 function mountList() {
@@ -26,6 +28,7 @@ function mountList() {
 describe('useRideList', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mocks.getMyParticipatingRideIds.mockResolvedValue([])
   })
 
   it('starts loading and stores the published rides on mount', async () => {
@@ -40,6 +43,16 @@ describe('useRideList', () => {
     expect(wrapper.vm.rides).toEqual(rides)
     expect(wrapper.vm.isLoading).toBe(false)
     expect(wrapper.vm.errorMessage).toBeNull()
+  })
+
+  it('stores the ids of the rides the user participates in', async () => {
+    mocks.getPublishedRides.mockResolvedValue([])
+    mocks.getMyParticipatingRideIds.mockResolvedValue(['ride-9'])
+
+    const wrapper = mountList()
+    await flushPromises()
+
+    expect(wrapper.vm.participatingRideIds).toEqual(['ride-9'])
   })
 
   it('explains a failed load with the service message', async () => {

@@ -22,15 +22,10 @@ test.describe('ride detail', () => {
     await expect(page.getByRole('heading', { level: 2, name: 'Descripción' })).toBeVisible()
     await expect(page.getByRole('heading', { level: 2, name: 'Punto de encuentro' })).toBeVisible()
 
-    // El visitante anónimo ve el contador y el aviso de iniciar sesión.
+    // Sin sesión solo se ve el número: el listado de nombres es privado.
+    await expect(page.getByRole('heading', { level: 2, name: 'Participantes' })).toBeVisible()
     await expect(page.getByText('1 inscrito')).toBeVisible()
-    await expect(
-      page.getByText('Inicia sesión para ver quién participa en esta ruta.'),
-    ).toBeVisible()
-    // El CTA de acceso del bloque de participantes es un enlace (Button con `to`).
-    await expect(
-      page.locator('#main-content').getByRole('link', { name: 'Iniciar sesión' }),
-    ).toBeVisible()
+    await expect(page.locator('#main-content ul li')).toHaveCount(0)
   })
 
   test('shows the error state for an unknown ride', async ({ page }) => {
@@ -44,6 +39,80 @@ test.describe('ride detail', () => {
     await expect(page.getByRole('link', { name: 'Ver todas las rutas' }).first()).toBeVisible()
   })
 
+  test('copies the ride link from the share menu', async ({ page, context, supabase }) => {
+    await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+    supabase.state.rides = [makeRide({ id: 'ride-1' })]
+
+    await page.goto('/rides/ride-1')
+    await page.getByRole('button', { name: 'Compartir ruta' }).click()
+    await page.getByRole('menuitem', { name: 'Copiar enlace' }).click()
+
+    await expect(page.getByRole('status')).toHaveText('Enlace copiado al portapapeles')
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toContain('/rides/ride-1')
+  })
+
+  test('offers the social networks and Gmail in the share menu', async ({ page, supabase }) => {
+    supabase.state.rides = [makeRide({ id: 'ride-1' })]
+
+    await page.goto('/rides/ride-1')
+    await page.getByRole('button', { name: 'Compartir ruta' }).click()
+
+    const menu = page.getByRole('menu', { name: 'Compartir ruta' })
+    await expect(menu.getByRole('menuitem', { name: 'WhatsApp' })).toBeVisible()
+    await expect(menu.getByRole('menuitem', { name: 'Gmail' })).toBeVisible()
+    await expect(menu.getByRole('menuitem', { name: 'Correo electrónico' })).toBeVisible()
+
+    const whatsappHref = await menu.getByRole('menuitem', { name: 'WhatsApp' }).getAttribute('href')
+    expect(whatsappHref).toContain(encodeURIComponent('/rides/ride-1'))
+  })
+
+  test('downloads an ics calendar file for the ride', async ({ page, supabase }) => {
+    supabase.state.rides = [makeRide({ id: 'ride-1' })]
+
+    await page.goto('/rides/ride-1')
+
+    const downloadPromise = page.waitForEvent('download')
+    await page.getByRole('button', { name: 'Añadir al calendario' }).click()
+    await page.getByRole('menuitem', { name: 'Descargar .ics' }).click()
+    const download = await downloadPromise
+
+    expect(download.suggestedFilename()).toBe('bikemates-ride-1.ics')
+    await expect(page.getByRole('status')).toHaveText('Archivo de calendario descargado')
+  })
+
+  test('offers Google Calendar and Outlook in the calendar menu', async ({ page, supabase }) => {
+    supabase.state.rides = [makeRide({ id: 'ride-1' })]
+
+    await page.goto('/rides/ride-1')
+    await page.getByRole('button', { name: 'Añadir al calendario' }).click()
+
+    const menu = page.getByRole('menu', { name: 'Añadir al calendario' })
+    await expect(menu.getByRole('menuitem', { name: 'Google Calendar' })).toBeVisible()
+    await expect(menu.getByRole('menuitem', { name: 'Outlook' })).toBeVisible()
+
+    const googleHref = await menu
+      .getByRole('menuitem', { name: 'Google Calendar' })
+      .getAttribute('href')
+    expect(googleHref).toContain('calendar.google.com')
+  })
+
+  test('renders Open Graph metadata for social sharing', async ({ page, supabase }) => {
+    supabase.state.rides = [makeRide({ id: 'ride-1' })]
+
+    await page.goto('/rides/ride-1')
+
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
+      'content',
+      'Vuelta por Collserola',
+    )
+    await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
+      'content',
+      /\/rides\/ride-1$/,
+    )
+    await expect(page.locator('meta[property="og:description"]')).toHaveAttribute('content', /.+/)
+    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', /summary/)
+  })
+
   test('lets an authenticated non-participant join the ride', async ({ page, supabase }) => {
     supabase.state.rides = [makeRide({ id: 'ride-1', max_participants: 10 })]
     supabase.state.participants = [makeParticipant('ride-1', ORGANIZER)]
@@ -53,9 +122,16 @@ test.describe('ride detail', () => {
     await page.goto('/rides/ride-1')
 
     await expect(page.getByRole('heading', { level: 2, name: 'Participantes' })).toBeVisible()
-    await expect(page.getByRole('button', { name: 'Participar en esta ruta' })).toBeVisible()
 
-    await page.getByRole('button', { name: 'Participar en esta ruta' }).click()
+    // El CTA está deshabilitado hasta aceptar las normas de la comunidad.
+    const joinButton = page.getByRole('button', { name: 'Participar en esta ruta' })
+    await expect(joinButton).toBeVisible()
+    await expect(joinButton).toBeDisabled()
+
+    await page.getByRole('checkbox').check()
+    await expect(joinButton).toBeEnabled()
+
+    await joinButton.click()
 
     await expect(page.getByRole('button', { name: 'Dejar de participar' })).toBeVisible()
     await expect(page.getByText('2 ciclistas')).toBeVisible()
@@ -107,7 +183,7 @@ test.describe('ride detail', () => {
     expect(supabase.state.participants).toHaveLength(1)
   })
 
-  test('shows the organizer notice to the ride owner', async ({ page, supabase }) => {
+  test('shows no join CTA to the ride organizer', async ({ page, supabase }) => {
     supabase.state.rides = [makeRide({ id: 'ride-1', organizer_id: ORGANIZER.id })]
     supabase.state.participants = [makeParticipant('ride-1', ORGANIZER)]
     supabase.state.users.push(ORGANIZER)
@@ -115,11 +191,9 @@ test.describe('ride detail', () => {
 
     await page.goto('/rides/ride-1')
 
-    await expect(
-      page.getByText(
-        'Eres el organizador de esta ruta. Tu inscripción es automática y no puedes darte de baja.',
-      ),
-    ).toBeVisible()
+    // El organizador no ve CTA de inscripción ni el aviso previo.
+    await expect(page.getByText('Eres el organizador')).toHaveCount(0)
+    await expect(page.getByRole('button', { name: 'Participar en esta ruta' })).toHaveCount(0)
     await expect(page.getByRole('link', { name: 'Editar ruta' })).toBeVisible()
   })
 

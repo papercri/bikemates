@@ -9,6 +9,7 @@ import FormLabel from '@/components/ui/FormLabel.vue'
 import PasswordInput from '@/components/ui/PasswordInput.vue'
 import Alert from '@/components/ui/Alert.vue'
 import Button from '@/components/ui/Button.vue'
+import Checkbox from '@/components/ui/Checkbox.vue'
 import Input from '@/components/ui/Input.vue'
 import Typography from '@/components/ui/Typography.vue'
 import { registerUser } from '@/features/auth/services/authService'
@@ -28,6 +29,7 @@ const form = reactive<RegisterForm>({
   email: '',
   password: '',
   confirmPassword: '',
+  acceptedRules: false,
 })
 
 const errors = reactive<RegisterErrors>({
@@ -35,6 +37,7 @@ const errors = reactive<RegisterErrors>({
   email: '',
   password: '',
   confirmPassword: '',
+  acceptedRules: '',
 })
 
 function validateForm(): boolean {
@@ -172,6 +175,39 @@ async function handleSubmit(): Promise<void> {
 
           <FormError v-if="submitted && errors.confirmPassword" id="confirm-password-error">
             {{ errors.confirmPassword }}
+          </FormError>
+        </div>
+
+        <div>
+          <Checkbox
+            id="accepted-rules"
+            v-model="form.acceptedRules"
+            size="xs"
+            :aria-invalid="submitted && Boolean(errors.acceptedRules)"
+            :aria-describedby="
+              submitted && errors.acceptedRules ? 'accepted-rules-error' : undefined
+            "
+          >
+            He leído y acepto las
+            <RouterLink
+              to="/community-rules"
+              class="text-graphite underline underline-offset-2 transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+              @click.stop
+            >
+              normas de la comunidad
+            </RouterLink>
+            y la
+            <RouterLink
+              to="/privacy"
+              class="text-graphite underline underline-offset-2 transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+              @click.stop
+            >
+              política de privacidad
+            </RouterLink>
+          </Checkbox>
+
+          <FormError v-if="submitted && errors.acceptedRules" id="accepted-rules-error">
+            {{ errors.acceptedRules }}
           </FormError>
         </div>
 

@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import type { RideFormValues } from '../types'
-import { validateRideForm, validateWikilocUrl } from './rideFormValidator'
+import {
+  emptyRideFormErrors,
+  firstRideFormError,
+  validateRideForm,
+  validateRideFormFields,
+  validateRouteUrl,
+} from './rideFormValidator'
 
 function futureDate(daysFromNow = 7): string {
   const date = new Date(Date.now() + daysFromNow * 24 * 60 * 60 * 1000)
@@ -51,10 +57,36 @@ describe('validateRideForm', () => {
     )
   })
 
-  it('requires a description between 10 and 3000 characters', () => {
+  it('requires a description between 10 and 8000 characters', () => {
     expect(validateRideForm(validValues({ description: 'corta' }))).toBe(
-      'La descripción debe tener entre 10 y 3000 caracteres.',
+      'La descripción debe tener entre 10 y 8000 caracteres.',
     )
+  })
+
+  it('rejects offensive words in the title', () => {
+    expect(validateRideForm(validValues({ title: 'Ruta de mierda por la sierra' }))).toBe(
+      'El título contiene palabras no permitidas.',
+    )
+    expect(validateRideForm(validValues({ title: 'Vuelta puta por Collserola' }))).toBe(
+      'El título contiene palabras no permitidas.',
+    )
+  })
+
+  it('rejects offensive and sexual words in the description', () => {
+    expect(
+      validateRideForm(
+        validValues({ description: 'Recorrido con tramo erotico y subida fuerte.' }),
+      ),
+    ).toBe('La descripción contiene palabras no permitidas.')
+    expect(
+      validateRideForm(validValues({ description: 'Salida tranquila, sin hostias ni drama.' })),
+    ).toBeNull()
+  })
+
+  it('does not flag innocent words that merely share letters with the list', () => {
+    // "class", "glass" o "asist" no deben activar la criba.
+    expect(validateRideForm(validValues({ title: 'Clase de ciclismo en asfalto' }))).toBeNull()
+    expect(validateRideForm(validValues({ title: 'Ruta por la sierra de Guadarrama' }))).toBeNull()
   })
 
   it('requires a meeting point with coordinates inside the valid ranges', () => {
@@ -131,15 +163,18 @@ describe('validateRideForm', () => {
     expect(validateRideForm(validValues({ maxParticipants: '20' }))).toBeNull()
   })
 
-  it('requires an HTTPS wikiloc link when it is filled in', () => {
+  it('requires an HTTPS route link when it is filled in', () => {
     expect(validateRideForm(validValues({ wikilocUrl: 'http://wikiloc.com/ruta' }))).toBe(
-      'Introduce una URL HTTPS válida de Wikiloc.',
+      'Introduce una URL HTTPS válida (Wikiloc, Strava, Meetup…).',
     )
-    expect(validateRideForm(validValues({ wikilocUrl: 'https://evil.com/ruta' }))).toBe(
-      'Introduce una URL HTTPS válida de Wikiloc.',
+    expect(validateRideForm(validValues({ wikilocUrl: 'no-es-una-url' }))).toBe(
+      'Introduce una URL HTTPS válida (Wikiloc, Strava, Meetup…).',
     )
     expect(
       validateRideForm(validValues({ wikilocUrl: 'https://www.wikiloc.com/rutas/123' })),
+    ).toBeNull()
+    expect(
+      validateRideForm(validValues({ wikilocUrl: 'https://www.strava.com/routes/123' })),
     ).toBeNull()
   })
 
@@ -156,19 +191,48 @@ describe('validateRideForm', () => {
   })
 })
 
-describe('validateWikilocUrl', () => {
-  it('accepts empty values and https wikiloc urls', () => {
-    expect(validateWikilocUrl('')).toBe(true)
-    expect(validateWikilocUrl('   ')).toBe(true)
-    expect(validateWikilocUrl('https://wikiloc.com/rutas/1')).toBe(true)
-    expect(validateWikilocUrl('https://sub.wikiloc.com/ruta')).toBe(true)
+describe('validateRouteUrl', () => {
+  it('accepts empty values and https links to any platform', () => {
+    expect(validateRouteUrl('')).toBe(true)
+    expect(validateRouteUrl('   ')).toBe(true)
+    expect(validateRouteUrl('https://wikiloc.com/rutas/1')).toBe(true)
+    expect(validateRouteUrl('https://www.strava.com/routes/123')).toBe(true)
+    expect(validateRouteUrl('https://www.meetup.com/es-ES/barcelona-cycling/')).toBe(true)
   })
 
-  it('rejects other hosts, protocols and urls without a path', () => {
-    expect(validateWikilocUrl('not a url')).toBe(false)
-    expect(validateWikilocUrl('http://wikiloc.com/ruta')).toBe(false)
-    expect(validateWikilocUrl('https://wikiloc.com.evil.com/ruta')).toBe(false)
-    expect(validateWikilocUrl('https://wikiloc.com')).toBe(false)
-    expect(validateWikilocUrl('https://user:pass@wikiloc.com/ruta')).toBe(false)
+  it('rejects non-https values, invalid urls and urls with credentials', () => {
+    expect(validateRouteUrl('not a url')).toBe(false)
+    expect(validateRouteUrl('http://wikiloc.com/ruta')).toBe(false)
+    expect(validateRouteUrl('javascript:alert(1)')).toBe(false)
+    expect(validateRouteUrl('https://user:pass@wikiloc.com/ruta')).toBe(false)
+  })
+})
+
+describe('validateRideFormFields', () => {
+  it('returns every field as valid for a coherent ride', () => {
+    const errors = validateRideFormFields(validValues())
+
+    expect(firstRideFormError(errors)).toBeNull()
+  })
+
+  it('reports the error of each invalid field independently', () => {
+    const errors = validateRideFormFields(validValues({ title: 'abc', distanceKm: '0' }))
+
+    expect(errors.title).toBe('El título debe tener entre 5 y 100 caracteres.')
+    expect(errors.distanceKm).toBe('La distancia debe estar entre 0 y 1000 km.')
+    expect(errors.description).toBeNull()
+  })
+
+  it('returns the first error in display order', () => {
+    const errors = validateRideFormFields(validValues({ distanceKm: '0', title: 'abc' }))
+
+    expect(firstRideFormError(errors)).toBe('El título debe tener entre 5 y 100 caracteres.')
+  })
+
+  it('starts from an all-null error object', () => {
+    const errors = emptyRideFormErrors()
+
+    expect(Object.values(errors).every((error) => error === null)).toBe(true)
+    expect(firstRideFormError(errors)).toBeNull()
   })
 })

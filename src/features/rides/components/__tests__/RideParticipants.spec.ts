@@ -1,6 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import { RouterLinkStub } from '@vue/test-utils'
+import { nextTick } from 'vue'
 import type { RideParticipant } from '../../types'
 import RideParticipants from '../RideParticipants.vue'
 
@@ -20,10 +21,8 @@ function mountParticipants(props?: Record<string, unknown>, attachToBody = false
       participants: [],
       isLoading: false,
       errorMessage: null,
-      isAuthenticated: true,
       currentUserId: 'user-1',
       isSubmitting: false,
-      isOrganizer: false,
       ...props,
     },
     global: { stubs: { RouterLink: RouterLinkStub } },
@@ -46,28 +45,62 @@ describe('RideParticipants', () => {
     expect(many.get('[aria-live="polite"]').text()).toContain('2 ciclistas')
   })
 
-  it('asks anonymous visitors to sign in instead of joining', () => {
-    const wrapper = mountParticipants({ isAuthenticated: false })
+  it('renders the participant list before the join CTA', () => {
+    const wrapper = mountParticipants({ participants, currentUserId: 'user-3' })
 
-    expect(wrapper.text()).toContain('Inicia sesión para ver la lista y participar en esta ruta.')
-    expect(wrapper.getComponent(RouterLinkStub).props('to')).toBe('/login')
+    const html = wrapper.html()
+    expect(html.indexOf('Marc')).toBeLessThan(html.indexOf('Participar en esta ruta'))
+  })
+
+  it('opens the community rules from the inline link without toggling the checkbox', async () => {
+    const wrapper = mountParticipants({ currentUserId: 'user-3' }, true)
+
+    const rulesLink = wrapper
+      .findAll('button')
+      .find((button) => button.text().includes('normas de la comunidad'))
+    expect(rulesLink).toBeDefined()
+    // El marcado parte el texto en varios nodos: se normalizan los espacios.
+    expect(wrapper.get('label').text().replace(/\s+/g, ' ').trim()).toBe(
+      'He leído y acepto las normas de la comunidad y la política de privacidad',
+    )
+
+    await rulesLink!.trigger('click')
+    await nextTick()
+
+    const checkbox = wrapper.get('input[type="checkbox"]').element
+    expect(checkbox instanceof HTMLInputElement && checkbox.checked).toBe(false)
+    expect(dialog()?.textContent).toContain('Normas de la comunidad')
+
+    // El diálogo se teletransporta a body: se desmonta para no dejarlo en el documento.
+    wrapper.unmount()
+  })
+
+  it('shows no join CTA to a visitor who already participates', () => {
+    const wrapper = mountParticipants({ participants, currentUserId: 'user-1' })
+
     expect(wrapper.text()).not.toContain('Participar en esta ruta')
   })
 
-  it('explains to the organizer that their inscription is automatic', () => {
-    const wrapper = mountParticipants({ isOrganizer: true })
+  it('offers the join CTA to the organizer when they have not joined yet', () => {
+    const wrapper = mountParticipants({ participants: [], currentUserId: 'user-1' })
 
-    expect(wrapper.text()).toContain(
-      'Eres el organizador de esta ruta. Tu inscripción es automática y no puedes darte de baja.',
-    )
-    expect(wrapper.find('button').exists()).toBe(false)
+    expect(wrapper.text()).toContain('Participar en esta ruta')
   })
 
-  it('offers to join when the signed-in user is not a participant yet', async () => {
+  it('keeps the join CTA disabled until the community rules are accepted', async () => {
     const wrapper = mountParticipants({ currentUserId: 'user-3' })
 
-    await wrapper.get('button').trigger('click')
+    const joinButton = () =>
+      wrapper
+        .findAll('button')
+        .find((button) => /Participar en esta ruta|Inscribiendo/.test(button.text()))
 
+    expect(joinButton()?.attributes('disabled')).toBeDefined()
+
+    await wrapper.get('input[type="checkbox"]').setValue(true)
+    expect(joinButton()?.attributes('disabled')).toBeUndefined()
+
+    await joinButton()!.trigger('click')
     expect(wrapper.emitted('join')).toHaveLength(1)
   })
 
@@ -76,9 +109,14 @@ describe('RideParticipants', () => {
     const loading = mountParticipants({ currentUserId: 'user-3', isLoading: true })
     const failing = mountParticipants({ currentUserId: 'user-3', errorMessage: 'Error' })
 
-    expect(submitting.get('button').attributes('disabled')).toBeDefined()
-    expect(loading.get('button').attributes('disabled')).toBeDefined()
-    expect(failing.get('button').attributes('disabled')).toBeDefined()
+    const joinButtonOf = (wrapper: ReturnType<typeof mountParticipants>) =>
+      wrapper
+        .findAll('button')
+        .find((button) => /Participar en esta ruta|Inscribiendo/.test(button.text()))
+
+    expect(joinButtonOf(submitting)?.attributes('disabled')).toBeDefined()
+    expect(joinButtonOf(loading)?.attributes('disabled')).toBeDefined()
+    expect(joinButtonOf(failing)?.attributes('disabled')).toBeDefined()
   })
 
   it('shows the loading, error and empty states in order', () => {

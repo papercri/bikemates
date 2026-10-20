@@ -30,7 +30,7 @@ vi.mock('@/services/supabase', () => ({
   },
 }))
 
-import { getMyProfile, saveAvatar, updateMyProfile } from './profileService'
+import { getMyProfile, removeAvatar, saveAvatar, updateMyProfile } from './profileService'
 
 interface QueryChain {
   select: () => QueryChainBase
@@ -237,5 +237,25 @@ describe('saveAvatar', () => {
     await expect(saveAvatar(avatarFile())).rejects.toThrow(
       'No se ha podido guardar el avatar. Inténtalo de nuevo.',
     )
+  })
+})
+
+describe('removeAvatar', () => {
+  it('sets the avatar url back to null', async () => {
+    const chain = createQueryChain({ data: profileRow({ avatar_url: null }), error: null })
+    mocks.from.mockReturnValue(chain)
+
+    const profile = await removeAvatar()
+
+    expect(chain.update).toHaveBeenCalledWith(
+      expect.objectContaining({ avatar_url: null }),
+    )
+    expect(profile.avatarUrl).toBeNull()
+  })
+
+  it('throws when the profile row cannot be updated', async () => {
+    mocks.from.mockReturnValue(createQueryChain({ data: null, error: { message: 'denied' } }))
+
+    await expect(removeAvatar()).rejects.toThrow('No se ha podido eliminar la foto.')
   })
 })

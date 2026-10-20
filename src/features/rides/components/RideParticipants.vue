@@ -5,18 +5,18 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import Alert from '@/components/ui/Alert.vue'
 import Badge from '@/components/ui/Badge.vue'
 import Button from '@/components/ui/Button.vue'
+import Checkbox from '@/components/ui/Checkbox.vue'
 import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
 import Typography from '@/components/ui/Typography.vue'
+import CommunityRulesDialog from '@/components/community/CommunityRulesDialog.vue'
 import type { RideParticipant } from '../types'
 
 interface Props {
   participants: RideParticipant[]
   isLoading: boolean
   errorMessage: string | null
-  isAuthenticated: boolean
   currentUserId: string | null
   isSubmitting: boolean
-  isOrganizer: boolean
 }
 
 const props = defineProps<Props>()
@@ -35,6 +35,10 @@ const isParticipant = computed(
 )
 
 const isLeaveDialogOpen = ref(false)
+
+/** Requisito para inscribirse: aceptar explícitamente las normas de la comunidad. */
+const acceptedRules = ref(false)
+const showRulesDialog = ref(false)
 
 function getInitials(name: string): string {
   return name
@@ -64,7 +68,9 @@ function confirmLeave(): void {
 <template>
   <section aria-labelledby="participants-title">
     <div class="mb-3 flex flex-wrap items-center justify-between gap-4">
-      <Typography id="participants-title" as="h2" variant="heading-sm"> Participantes </Typography>
+      <Typography id="participants-title" as="h2" variant="heading-sm" class="font-bold">
+        Participantes
+      </Typography>
 
       <Typography variant="body-sm" tone="muted" aria-live="polite">
         {{ participantCount }}
@@ -73,31 +79,7 @@ function confirmLeave(): void {
     </div>
 
     <div>
-      <div class="mb-4">
-        <template v-if="!isAuthenticated">
-          <Typography variant="body-sm" tone="muted">
-            Inicia sesión para ver la lista y participar en esta ruta.
-          </Typography>
-
-          <Button to="/login" class="mt-3"> Iniciar sesión </Button>
-        </template>
-
-        <template v-else-if="isOrganizer">
-          <Typography variant="body-sm" tone="muted">
-            Eres el organizador de esta ruta. Tu inscripción es automática y no puedes darte de
-            baja.
-          </Typography>
-        </template>
-
-        <Button
-          v-else-if="!isParticipant"
-          :disabled="isSubmitting || isLoading || Boolean(errorMessage)"
-          @click="emit('join')"
-        >
-          {{ isSubmitting ? 'Inscribiendo…' : 'Participar en esta ruta' }}
-        </Button>
-      </div>
-
+      <!-- La lista primero: el CTA de participación va debajo. -->
       <Typography v-if="isLoading" variant="body-sm" tone="muted" role="status">
         Cargando participantes…
       </Typography>
@@ -150,6 +132,36 @@ function confirmLeave(): void {
           </button>
         </li>
       </ul>
+
+      <!-- CTA de participación bajo la lista: solo para quien aún no participa. -->
+      <div v-if="!isParticipant" class="mt-4">
+        <Checkbox v-model="acceptedRules" size="xs"
+          >He leído y acepto las
+          <button
+            type="button"
+            class="text-graphite underline underline-offset-2 transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+            @click.stop.prevent="showRulesDialog = true"
+          >
+            normas de la comunidad
+          </button>
+          y la
+          <RouterLink
+            to="/privacy"
+            class="text-graphite underline underline-offset-2 transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+            @click.stop
+          >
+            política de privacidad
+          </RouterLink></Checkbox
+        >
+
+        <Button
+          class="mt-3"
+          :disabled="isSubmitting || isLoading || Boolean(errorMessage) || !acceptedRules"
+          @click="emit('join')"
+        >
+          {{ isSubmitting ? 'Inscribiendo…' : 'Participar en esta ruta' }}
+        </Button>
+      </div>
     </div>
 
     <ConfirmDialog
@@ -163,5 +175,7 @@ function confirmLeave(): void {
       @confirm="confirmLeave"
       @cancel="cancelLeave"
     />
+
+    <CommunityRulesDialog :open="showRulesDialog" @close="showRulesDialog = false" />
   </section>
 </template>

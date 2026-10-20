@@ -36,7 +36,7 @@ it('renders the dynamic copyright year and the privacy link', () => {
 
   const year = String(new Date().getFullYear())
 
-  expect(wrapper.text()).toContain(`© ${year} BikeMates · Comparte rutas. Comparte kilómetros.`)
+  expect(wrapper.text()).toContain(`© ${year} BikeMates. Todos los derechos reservados.`)
   expect(wrapper.text()).toContain('Política de privacidad')
 })
 
