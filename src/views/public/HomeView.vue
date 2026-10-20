@@ -34,8 +34,9 @@ const heroSlides = [
   { src: '/photos/img4.avif', position: 'object-center' },
   { src: '/photos/img10.avif', position: 'object-center' },
   { src: '/photos/img14.jpg', position: 'object-center' },
-  { src: '/photos/img12.jpg', position: 'object-center' },
-  { src: '/photos/hero-bosque.webp', position: 'object-center' },
+  { src: '/photos/img18.jpeg', position: 'object-center' },
+  { src: '/photos/img3.jpg', position: 'object-center' },
+  { src: '/photos/img19.webp', position: 'object-center' },
 ] as const
 
 const authStore = useAuthStore()

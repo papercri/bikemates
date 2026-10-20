@@ -97,7 +97,7 @@ export async function createRide(input: CreateRideInput): Promise<Ride> {
       elevation_m: input.elevationM,
       duration_minutes: input.durationMinutes,
       image_path: input.imagePath,
-      wikiloc_url: input.wikilocUrl,
+      wikiloc_url: input.wikilocUrl?.trim() || null,
       audience: input.audience,
       max_participants: input.maxParticipants,
       status: input.status,
@@ -243,7 +243,7 @@ export async function updateRide(id: string, input: UpdateRideInput): Promise<Ri
       elevation_m: input.elevationM,
       duration_minutes: input.durationMinutes,
       image_path: input.imagePath,
-      wikiloc_url: input.wikilocUrl,
+      wikiloc_url: input.wikilocUrl?.trim() || null,
       audience: input.audience,
       max_participants: input.maxParticipants,
     })
