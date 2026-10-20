@@ -127,9 +127,16 @@ test.describe('ride detail', () => {
     await page.goto('/rides/ride-1')
 
     await expect(page.getByRole('heading', { level: 2, name: 'Participantes' })).toBeVisible()
-    await expect(page.getByRole('button', { name: 'Participar en esta ruta' })).toBeVisible()
 
-    await page.getByRole('button', { name: 'Participar en esta ruta' }).click()
+    // El CTA está deshabilitado hasta aceptar las normas de la comunidad.
+    const joinButton = page.getByRole('button', { name: 'Participar en esta ruta' })
+    await expect(joinButton).toBeVisible()
+    await expect(joinButton).toBeDisabled()
+
+    await page.getByRole('checkbox').check()
+    await expect(joinButton).toBeEnabled()
+
+    await joinButton.click()
 
     await expect(page.getByRole('button', { name: 'Dejar de participar' })).toBeVisible()
     await expect(page.getByText('2 ciclistas')).toBeVisible()

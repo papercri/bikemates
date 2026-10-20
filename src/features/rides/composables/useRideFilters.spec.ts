@@ -160,4 +160,20 @@ describe('useRideFilters', () => {
 
     expect(ids(filters.upcomingRides.value)).toEqual(['b', 'c'])
   })
+
+  it('filters down to the rides the user participates in when enabled', async () => {
+    const store = ref<Ride[]>([rideOf({ id: 'a' }), rideOf({ id: 'b' }), rideOf({ id: 'c' })])
+    const participating = ref<string[]>(['b'])
+    const filters = useRideFilters(store, participating)
+
+    filters.onlyParticipating.value = true
+    await nextTick()
+
+    expect(ids(filters.visibleRides.value)).toEqual(['b'])
+
+    filters.onlyParticipating.value = false
+    await nextTick()
+
+    expect(ids(filters.visibleRides.value).sort()).toEqual(['a', 'b', 'c'])
+  })
 })

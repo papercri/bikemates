@@ -10,7 +10,10 @@ BikeMates is a **mobile-first** SPA built with Vue 3 and strict TypeScript, back
 
 - Route listing with one card per ride: location, distance, total elevation gain, and level.
 - Compact filters with screen-reader-only labels: title search (case- and accent-insensitive),
-  level, audience, and sort (`Date`, `Distance`, `Elevation`).
+  level, audience, sort (`Date of departure`, `Creation date`, `Distance`, `Elevation`), and,
+  for signed-in cyclists, a `Participaré` filter that narrows the list to the rides they have
+  joined.
+- Cards show a green `Participaré` badge on the rides the current user participates in.
 - Two tabs on the listing: `Upcoming` and `Past`, each with its count; past rides are
   sorted from most to least recent and dimmed on the card.
 - Two-column route detail layout (2/3 + 1/3): cover image with the
@@ -23,6 +26,12 @@ BikeMates is a **mobile-first** SPA built with Vue 3 and strict TypeScript, back
   Twitter metadata (`og:title`, `og:image`, `og:url`…) so links show a social
   preview.
 - Empty state and back link when the route does not exist.
+- **Joining a ride** requires explicitly accepting the community rules: the `Participar en esta
+  ruta` CTA stays disabled until the checkbox is ticked, and `Ver normas de la comunidad` opens
+  the same rules dialog used when publishing.
+- **Content screening**: the title and description are rejected when they contain offensive or
+  sexual words (`BLOCKED_WORDS` in `src/features/rides/validators/rideFormValidator.ts`), matched
+  on normalized, accent-free whole words to avoid false positives.
 - Route data is sample data (`src/features/rides/data/mockRides.ts`) until connected to the database.
 
 ### User account
@@ -64,6 +73,41 @@ BikeMates is a **mobile-first** SPA built with Vue 3 and strict TypeScript, back
 | Backend     | Supabase: Auth, PostgreSQL with RLS, Edge Functions                                      |
 | Tests       | Vitest + Vue Test Utils, Playwright                                                      |
 | Quality     | ESLint, oxlint, Prettier                                                                 |
+
+## Plugins and libraries
+
+Runtime packages:
+
+| Package | Purpose |
+| ------- | ------- |
+| `vue`, `vue-router`, `pinia` | App framework, routing, and shared client state |
+| `@supabase/supabase-js` | Supabase client (Auth, PostgREST, Storage, RPC, Edge Functions) |
+| `@unhead/vue` | Per-route `<head>` management (titles, meta, Open Graph, canonical) |
+| `motion-v` | Scroll parallax (`useScroll`/`useTransform`), `whileInView` reveals, hero zoom |
+| `@vueuse/core` | Composable utilities |
+| `leaflet` | Meeting-point map in the ride detail (`RideMap.vue`) |
+| `@fortawesome/vue-fontawesome` + `free-solid`/`free-brands` | Navigation and action icons |
+| `@fontsource-variable/{inter,archivo,jetbrains-mono}` | Self-hosted variable fonts (no external font requests) |
+| `tailwindcss` + `@tailwindcss/vite` | Utility-first styling and design tokens |
+
+Tooling / dev plugins:
+
+| Package | Purpose |
+| ------- | ------- |
+| `vite`, `@vitejs/plugin-vue`, `vite-plugin-vue-devtools` | Build and dev server |
+| `vue-tsc`, `typescript` | Strict type checking (`noUncheckedIndexedAccess`) |
+| `vitest`, `@vue/test-utils`, `jsdom` | Unit tests |
+| `@playwright/test` | End-to-end tests (Chromium + mobile) |
+| `eslint` (with `eslint-plugin-vue`, `@vue/eslint-config-typescript`, `eslint-plugin-playwright`, `eslint-config-prettier`), `oxlint`, `prettier` | Linting and formatting |
+
+## APIs used
+
+- **Supabase Auth** — registration, sign-in/out, session resolution, email confirmation, and password recovery/reset (`authService.ts`).
+- **Supabase PostgREST (PostgreSQL + RLS)** — rides, profiles, and participation, always through the RLS boundary.
+- **Supabase RPC (database functions)** — `join_ride`, `leave_ride`, and `get_ride_participant_count` (`rideService.ts`).
+- **Supabase Storage** — public buckets for avatars (`avatars`) and ride covers (`ride-images`).
+- **Supabase Edge Functions** — `delete-account`, invoked server-side from `authService.ts`.
+- **External share/calendar links** — Google Calendar, Outlook, and generated `.ics` (`rideCalendar.ts`); WhatsApp, Telegram, X, Facebook, Gmail, and mailto (`rideShare.ts`). No third-party trackers or analytics are loaded.
 
 ## Requirements
 
@@ -197,6 +241,6 @@ Separation of concerns: views orchestrate, components present, services access d
 
 ## Quality and tests
 
-- **Unit**: `npm run test:unit` — 573 tests in 83 files (design system, validators, services and route composables, auth service, session store, UI primitives, listing filters, SVG icons, profile tabs, private views, and navigation components).
-- **E2E**: `npm run test:e2e` — Playwright on Chromium and mobile (authentication, profile, ride creation, listing, detail, and navigation).
+- **Unit**: `npm run test:unit` — 594 tests in 84 files (design system, validators, services and route composables, auth service, session store, UI primitives, listing filters, SVG icons, profile tabs, private views, and navigation components).
+- **E2E**: `npm run test:e2e` — Playwright on Chromium and mobile (148 passing; authentication, profile, ride creation, listing, detail, and navigation).
 - Gates before considering a task complete: `npm run test:unit -- --run`, `npm run type-check`, `npx eslint .`, `npx oxlint .`, Prettier, and, when relevant, `npm run build`.

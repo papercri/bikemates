@@ -63,6 +63,32 @@ describe('validateRideForm', () => {
     )
   })
 
+  it('rejects offensive words in the title', () => {
+    expect(validateRideForm(validValues({ title: 'Ruta de mierda por la sierra' }))).toBe(
+      'El título contiene palabras no permitidas.',
+    )
+    expect(validateRideForm(validValues({ title: 'Vuelta puta por Collserola' }))).toBe(
+      'El título contiene palabras no permitidas.',
+    )
+  })
+
+  it('rejects offensive and sexual words in the description', () => {
+    expect(
+      validateRideForm(
+        validValues({ description: 'Recorrido con tramo erotico y subida fuerte.' }),
+      ),
+    ).toBe('La descripción contiene palabras no permitidas.')
+    expect(
+      validateRideForm(validValues({ description: 'Salida tranquila, sin hostias ni drama.' })),
+    ).toBeNull()
+  })
+
+  it('does not flag innocent words that merely share letters with the list', () => {
+    // "class", "glass" o "asist" no deben activar la criba.
+    expect(validateRideForm(validValues({ title: 'Clase de ciclismo en asfalto' }))).toBeNull()
+    expect(validateRideForm(validValues({ title: 'Ruta por la sierra de Guadarrama' }))).toBeNull()
+  })
+
   it('requires a meeting point with coordinates inside the valid ranges', () => {
     expect(validateRideForm(validValues({ meetingPoint: '   ' }))).toBe(
       'Busca y selecciona un punto de encuentro válido.',

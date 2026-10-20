@@ -90,7 +90,8 @@ describe('ProfileAvatarField', () => {
     await selectFile(wrapper, avatarFile())
     expect(wrapper.text()).toContain('Guardar foto')
 
-    await wrapper.get('button').trigger('click')
+    const save = wrapper.findAll('button').find((b) => b.text() === 'Guardar foto')
+    await save!.trigger('click')
     await flushPromises()
 
     expect(mocks.saveAvatar).toHaveBeenCalledOnce()
@@ -106,7 +107,8 @@ describe('ProfileAvatarField', () => {
     })
 
     await selectFile(wrapper, avatarFile())
-    await wrapper.get('button').trigger('click')
+    const save = wrapper.findAll('button').find((b) => b.text() === 'Guardar foto')
+    await save!.trigger('click')
     await flushPromises()
 
     expect(wrapper.text()).toContain('No se ha podido subir la imagen.')

@@ -102,4 +102,15 @@ describe('RideCard', () => {
     expect(wrapper.get('img').attributes('aria-hidden')).toBe('true')
     expect(wrapper.text()).toContain('Ver detalles')
   })
+
+  it('shows the "Participaré" badge only for rides the user joined', () => {
+    const joined = mount(RideCard, {
+      props: { ride: rideOf(), participating: true },
+      global: { stubs: { RouterLink: RouterLinkStub } },
+    })
+    const notJoined = mountCard(rideOf())
+
+    expect(joined.text()).toContain('Participaré')
+    expect(notJoined.text()).not.toContain('Participaré')
+  })
 })

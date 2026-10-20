@@ -15,16 +15,20 @@ import { isRidePast } from '@/utils/dates'
 
 /**
  * Estado de los filtros del listado: búsqueda, nivel, tipo de bici, público,
- * orden y ventana temporal (próximas o pasadas), con los listados ya filtrados
- * y ordenados.
+ * orden, ventana temporal (próximas o pasadas) y participación, con los listados
+ * ya filtrados y ordenados.
  */
-export function useRideFilters(rides: Ref<Ride[]>) {
+export function useRideFilters(rides: Ref<Ride[]>, participatingRideIds: Ref<string[]> = ref([])) {
   const query = ref('')
   const selectedLevel = ref<RideLevelFilter>(RIDE_FILTER_ALL)
   const selectedBike = ref<RideBikeFilter>(RIDE_FILTER_ALL)
   const selectedAudience = ref<RideAudienceFilter>(RIDE_FILTER_ALL)
   const sortBy = ref<RideSortOption>('date')
   const timeframe = ref<RideTimeframe>('upcoming')
+  /** Muestra únicamente las rutas en las que el usuario participa. */
+  const onlyParticipating = ref(false)
+
+  const participatingIds = computed(() => new Set(participatingRideIds.value))
 
   const matchingRides = computed(() => {
     const needle = normalizeSearchText(query.value)
@@ -37,8 +41,10 @@ export function useRideFilters(rides: Ref<Ride[]>) {
         selectedBike.value === RIDE_FILTER_ALL || ride.bikeType === selectedBike.value
       const matchesAudience =
         selectedAudience.value === RIDE_FILTER_ALL || ride.audience === selectedAudience.value
+      const matchesParticipation =
+        !onlyParticipating.value || participatingIds.value.has(ride.id)
 
-      return matchesQuery && matchesLevel && matchesBike && matchesAudience
+      return matchesQuery && matchesLevel && matchesBike && matchesAudience && matchesParticipation
     })
   })
 
@@ -68,6 +74,7 @@ export function useRideFilters(rides: Ref<Ride[]>) {
     selectedAudience,
     sortBy,
     timeframe,
+    onlyParticipating,
     upcomingRides,
     pastRides,
     visibleRides,

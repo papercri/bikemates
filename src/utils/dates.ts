@@ -40,6 +40,22 @@ export function getRideDateParts(dateString: string): RideDateParts {
   }
 }
 
+const RIDE_SHORT_DATE_FORMAT = new Intl.DateTimeFormat('es-ES', {
+  day: '2-digit',
+  month: '2-digit',
+})
+
+/** Fecha corta de la salida en formato `dd/MM`, p. ej. `26/10`. */
+export function formatRideShortDate(dateString: string): string {
+  const date = new Date(dateString)
+
+  if (Number.isNaN(date.getTime())) {
+    return ''
+  }
+
+  return RIDE_SHORT_DATE_FORMAT.format(date)
+}
+
 /**
  * `true` cuando la fecha de salida ya ha pasado respecto a `now` (por defecto, el momento
  * actual). Las fechas inválidas se consideran futuras para no atenuar la tarjeta.

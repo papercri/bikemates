@@ -11,7 +11,73 @@ const DURATION_MAX_MINUTES = 24 * 60
 const PARTICIPANTS_MIN = 2
 const PARTICIPANTS_MAX = 500
 
+/**
+ * Palabras ofensivas o sexuales no admitidas en el título o la descripción.
+ * Se comparan sobre el texto normalizado (minúsculas, sin acentos y separado en
+ * palabras) usando el prefijo de cada palabra, de modo que también se capturan
+ * variantes como "putas" o "fucking" sin incurrir en falsos positivos
+ * ("class" no empieza por ninguna palabra de la lista).
+ */
+const BLOCKED_WORDS: readonly string[] = [
+  'puta',
+  'puto',
+  'cabron',
+  'mierda',
+  'joder',
+  'jodido',
+  'gilipollas',
+  'idiota',
+  'imbecil',
+  'estupido',
+  'subnormal',
+  'mongolo',
+  'malparido',
+  'malnacido',
+  'follar',
+  'carajo',
+  'culo',
+  'fuck',
+  'shit',
+  'bitch',
+  'asshole',
+  'dick',
+  'pussy',
+  'cunt',
+  'whore',
+  'bastard',
+  'slut',
+  'nigger',
+  'faggot',
+  'porno',
+  'pornografia',
+  'erotic',
+  'desnudo',
+  'desnuda',
+  'orgasmo',
+  'sexo',
+]
+
+/** Divide el texto en palabras normalizadas para la criba de contenido. */
+function tokenize(value: string): string[] {
+  return value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .split(' ')
+    .filter(Boolean)
+}
+
+function containsBlockedContent(value: string): boolean {
+  const words = tokenize(value)
+  return words.some((word) => BLOCKED_WORDS.some((blocked) => word.startsWith(blocked)))
+}
+
 function validateTitle(value: string): string | null {
+  if (containsBlockedContent(value)) {
+    return 'El título contiene palabras no permitidas.'
+  }
+
   const length = value.trim().length
 
   return length < TITLE_MIN || length > TITLE_MAX
@@ -20,6 +86,10 @@ function validateTitle(value: string): string | null {
 }
 
 function validateDescription(value: string): string | null {
+  if (containsBlockedContent(value)) {
+    return 'La descripción contiene palabras no permitidas.'
+  }
+
   const length = value.trim().length
 
   return length < DESCRIPTION_MIN || length > DESCRIPTION_MAX

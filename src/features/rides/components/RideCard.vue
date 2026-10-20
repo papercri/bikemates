@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { faBicycle } from '@fortawesome/free-solid-svg-icons'
+import { faBicycle, faCalendar, faUser } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import Badge from '@/components/ui/Badge.vue'
 import IconArrow from '@/components/icons/IconArrow.vue'
@@ -8,7 +8,7 @@ import RideAudienceBadge from '@/features/rides/components/RideAudienceBadge.vue
 import { RIDE_LEVEL_BADGE_COLORS } from '@/features/rides/constants/rideLevels'
 import { RIDE_BIKE_TYPE_LABELS } from '@/features/rides/constants/rideOptions'
 import type { Ride } from '@/features/rides/types'
-import { formatRideDate, getRideDateParts } from '@/utils/dates'
+import { formatRideShortDate } from '@/utils/dates'
 
 const props = defineProps<{
   ride: Ride
@@ -16,6 +16,8 @@ const props = defineProps<{
   past?: boolean
   /** Sin borde ni redondeado: la tarjeta se integra en un contenedor propio. */
   bare?: boolean
+  /** El usuario actual participa en esta salida: muestra la insignia "Participaré". */
+  participating?: boolean
 }>()
 
 /** Fotografías propias del proyecto para las salidas sin imagen en la base de datos. */
@@ -32,7 +34,8 @@ function pickFallbackCover(rideId: string): string {
 
 const cover = computed(() => props.ride.imageUrl ?? pickFallbackCover(props.ride.id))
 
-const dateParts = computed(() => getRideDateParts(props.ride.startsAt))
+/** Fecha corta `dd/MM` para el raíl superior de la tarjeta. */
+const shortDate = computed(() => formatRideShortDate(props.ride.startsAt))
 </script>
 
 <template>
@@ -53,43 +56,32 @@ const dateParts = computed(() => getRideDateParts(props.ride.startsAt))
         class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 motion-safe:group-hover:scale-[1.03]"
       />
 
-      <!-- Raíl de fecha + cifras: degradado ligero solo detrás del rail. -->
+      <!-- Raíl de fecha + insignia de participación: degradado oscuro solo detrás del raíl. -->
       <div
-        class="relative flex items-start justify-between gap-3 bg-gradient-to-b from-ink/55 via-ink/20 to-transparent p-4 sm:p-5"
+        class="relative flex items-start justify-between gap-3 bg-gradient-to-b from-ink/70 via-ink/30 to-transparent p-4 sm:p-5"
       >
         <span
-          class="rounded-full bg-trail px-2.5 py-1 font-mono text-xs font-semibold tracking-[0.08em] text-ink uppercase tabular-nums"
+          class="inline-flex items-center gap-1 rounded-full bg-route px-2 py-0.5 font-mono text-[0.7rem] font-semibold tabular-nums text-ink"
         >
-          {{ dateParts.day }} {{ dateParts.month }}
+          <FontAwesomeIcon :icon="faCalendar" aria-hidden="true" class="size-3" />
+          {{ shortDate }}
         </span>
 
-        <div class="flex items-baseline gap-4 text-canvas">
-          <span class="flex items-baseline gap-1">
-            <span class="font-display text-xl font-semibold tabular-nums">
-              {{ ride.distanceKm }}
-            </span>
-            <span class="text-xs font-semibold text-canvas/80">km</span>
-          </span>
-          <span class="flex items-baseline gap-1">
-            <span class="font-display text-xl font-semibold tabular-nums">
-              +{{ ride.elevationM }}
-            </span>
-            <span class="text-xs font-semibold text-canvas/80">m</span>
-          </span>
-        </div>
+        <span v-if="participating" class="inline-flex items-center rounded-full bg-ink/55 px-2 py-1">
+          <FontAwesomeIcon :icon="faUser" aria-hidden="true" class="size-3.5 text-trail" />
+          <span class="sr-only">Participaré</span>
+        </span>
       </div>
 
       <!-- Entrada: capa oscura a sangre, pegada a los bordes de la foto -->
-      <div class="relative bg-ink/55 px-4 pt-3 pb-4 sm:px-5 sm:pt-3.5 sm:pb-5">
+      <div class="relative bg-ink/70 px-4 pt-3 pb-4 sm:px-5 sm:pt-3.5 sm:pb-5">
+        <!-- Reserva exactamente dos líneas: todas las tarjetas alinean el bloque de
+             título por igual aunque el texto ocupe una sola línea. -->
         <h2
-          class="line-clamp-2 font-display text-lg leading-[1.15] font-medium tracking-[-0.01em] text-canvas sm:text-xl"
+          class="line-clamp-2 min-h-[2lh] font-display text-lg leading-[1.15] font-medium tracking-[-0.01em] text-canvas sm:text-xl"
         >
           {{ ride.title }}
         </h2>
-
-        <p class="mt-1 text-sm text-canvas/85">
-          <time :datetime="ride.startsAt">{{ formatRideDate(ride.startsAt) }}</time>
-        </p>
 
         <div class="mt-3 flex flex-wrap items-center gap-1.5">
           <Badge variant="inverse" :color="RIDE_LEVEL_BADGE_COLORS[ride.level]" dot>

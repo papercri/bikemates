@@ -33,7 +33,7 @@ export const RIDE_AUDIENCE_LABELS: Record<RideAudience, string> = {
   everyone: 'Todos',
   women: 'Mujeres',
   men: 'Hombres',
-  lgbt: 'Comunidad LGBT+',
+  lgbt: 'LGBT',
 }
 
 export const RIDE_STATUSES: readonly RideStatus[] = ['draft', 'published', 'cancelled', 'completed']

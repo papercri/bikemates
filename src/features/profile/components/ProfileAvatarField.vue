@@ -113,6 +113,10 @@ async function handleRemove(): Promise<void> {
   }
 }
 
+function openFilePicker(): void {
+  avatarInput.value?.click()
+}
+
 onBeforeUnmount(revokePreview)
 </script>
 
@@ -138,12 +142,23 @@ onBeforeUnmount(revokePreview)
       </div>
 
       <div class="flex flex-col items-start gap-2">
-        <label
-          for="avatar-file"
-          class="cursor-pointer text-sm font-medium text-trail-ink underline decoration-trail/60 underline-offset-4 transition-colors hover:text-trail-dark hover:decoration-trail-dark focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ink"
-        >
-          Elegir imagen
-        </label>
+        <div class="flex flex-wrap gap-2">
+          <Button type="button" variant="outline" size="xs" @click="openFilePicker">
+            Elegir imagen
+          </Button>
+
+          <Button
+            v-if="props.avatarUrl && !selectedFile"
+            type="button"
+            variant="outline"
+            size="xs"
+            :loading="isRemoving"
+            :disabled="isRemoving || isSaving"
+            @click="handleRemove"
+          >
+            {{ isRemoving ? 'Eliminando…' : 'Eliminar imagen' }}
+          </Button>
+        </div>
 
         <input
           id="avatar-file"
@@ -151,22 +166,12 @@ onBeforeUnmount(revokePreview)
           type="file"
           accept="image/jpeg,image/png,image/webp,image/avif"
           class="sr-only"
+          tabindex="-1"
+          aria-hidden="true"
           @change="handleFileChange"
         />
 
         <p class="text-xs text-graphite">JPEG, PNG, WebP o AVIF. Máximo 5 MB.</p>
-
-        <Button
-          v-if="props.avatarUrl && !selectedFile"
-          type="button"
-          variant="quiet-destructive"
-          size="xs"
-          :loading="isRemoving"
-          :disabled="isRemoving || isSaving"
-          @click="handleRemove"
-        >
-          {{ isRemoving ? 'Eliminando…' : 'Eliminar imagen' }}
-        </Button>
       </div>
     </div>
 

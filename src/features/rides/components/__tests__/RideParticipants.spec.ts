@@ -62,11 +62,20 @@ describe('RideParticipants', () => {
     expect(wrapper.find('button[type="button"]').exists()).toBe(false)
   })
 
-  it('offers to join when the signed-in user is not a participant yet', async () => {
+  it('keeps the join CTA disabled until the community rules are accepted', async () => {
     const wrapper = mountParticipants({ currentUserId: 'user-3' })
 
-    await wrapper.get('button').trigger('click')
+    const joinButton = () =>
+      wrapper
+        .findAll('button')
+        .find((button) => /Participar en esta ruta|Inscribiendo/.test(button.text()))
 
+    expect(joinButton()?.attributes('disabled')).toBeDefined()
+
+    await wrapper.get('input[type="checkbox"]').setValue(true)
+    expect(joinButton()?.attributes('disabled')).toBeUndefined()
+
+    await joinButton()!.trigger('click')
     expect(wrapper.emitted('join')).toHaveLength(1)
   })
 
@@ -75,9 +84,14 @@ describe('RideParticipants', () => {
     const loading = mountParticipants({ currentUserId: 'user-3', isLoading: true })
     const failing = mountParticipants({ currentUserId: 'user-3', errorMessage: 'Error' })
 
-    expect(submitting.get('button').attributes('disabled')).toBeDefined()
-    expect(loading.get('button').attributes('disabled')).toBeDefined()
-    expect(failing.get('button').attributes('disabled')).toBeDefined()
+    const joinButtonOf = (wrapper: ReturnType<typeof mountParticipants>) =>
+      wrapper
+        .findAll('button')
+        .find((button) => /Participar en esta ruta|Inscribiendo/.test(button.text()))
+
+    expect(joinButtonOf(submitting)?.attributes('disabled')).toBeDefined()
+    expect(joinButtonOf(loading)?.attributes('disabled')).toBeDefined()
+    expect(joinButtonOf(failing)?.attributes('disabled')).toBeDefined()
   })
 
   it('shows the loading, error and empty states in order', () => {

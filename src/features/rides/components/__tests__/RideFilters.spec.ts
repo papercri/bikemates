@@ -40,12 +40,21 @@ describe('RideFilters', () => {
       'Ordenar por',
     ])
 
-    // Solo el control de orden muestra su etiqueta de forma visible.
-    expect(labels[0]?.classes()).toContain('sr-only')
-    for (const label of labels.slice(1, 4)) {
+    // Todas las etiquetas, incluida la de orden, viven dentro de su control (sr-only).
+    for (const label of labels) {
       expect(label.classes()).toContain('sr-only')
     }
-    expect(labels[4]?.classes()).not.toContain('sr-only')
+  })
+
+  it('offers the participation filter only when the visitor has a session', async () => {
+    const anonymous = mountFilters()
+    expect(anonymous.text()).not.toContain('Participaré')
+
+    const signedIn = mountFilters({ showParticipation: true, participating: false })
+    expect(signedIn.text()).toContain('Participaré')
+
+    await signedIn.get('input[type="checkbox"]').setValue(true)
+    expect(signedIn.emitted('update:participating')?.[0]).toEqual([true])
   })
 
   it('emits the query while the user types', async () => {

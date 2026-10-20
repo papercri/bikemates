@@ -10,6 +10,7 @@ import RideTimeframeTabs from '@/features/rides/components/RideTimeframeTabs.vue
 import Button from '@/components/ui/Button.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import Typography from '@/components/ui/Typography.vue'
+import { useAuthStore } from '@/features/auth/stores/authStore'
 import { useRideFilters } from '@/features/rides/composables/useRideFilters'
 import { useRideList } from '@/features/rides/composables/useRideList'
 import type { Ride } from '@/features/rides/types'
@@ -28,7 +29,7 @@ useHead({
 /** Tarjetas visibles por lote al hacer scroll. */
 const PAGE_SIZE = 8
 
-const { rides, isLoading, errorMessage, loadRides } = useRideList()
+const { rides, isLoading, errorMessage, participatingRideIds, loadRides } = useRideList()
 
 const {
   query,
@@ -37,10 +38,21 @@ const {
   selectedAudience,
   sortBy,
   timeframe,
+  onlyParticipating,
   upcomingRides,
   pastRides,
   visibleRides,
-} = useRideFilters(rides)
+} = useRideFilters(rides, participatingRideIds)
+
+const authStore = useAuthStore()
+const isAuthenticated = computed(() => authStore.user !== null)
+
+/** Conjunto de ids en los que participa el usuario, para la insignia de la tarjeta. */
+const participatingIds = computed(() => new Set(participatingRideIds.value))
+
+function isParticipating(rideId: string): boolean {
+  return participatingIds.value.has(rideId)
+}
 
 const isPastTab = computed(() => timeframe.value === 'past')
 
@@ -118,6 +130,8 @@ onBeforeUnmount(() => {
         v-model:bike="selectedBike"
         v-model:audience="selectedAudience"
         v-model:sort="sortBy"
+        v-model:participating="onlyParticipating"
+        :show-participation="isAuthenticated"
       />
     </section>
 
@@ -145,7 +159,13 @@ onBeforeUnmount(() => {
         </Typography>
 
         <div v-if="paginatedRides.length > 0" class="mt-6 grid gap-7" :style="gridStyle">
-          <RideCard v-for="ride in paginatedRides" :key="ride.id" :ride="ride" :past="isPastTab" />
+          <RideCard
+            v-for="ride in paginatedRides"
+            :key="ride.id"
+            :ride="ride"
+            :past="isPastTab"
+            :participating="isParticipating(ride.id)"
+          />
         </div>
 
         <!-- Centinela de scroll: carga el siguiente lote al entrar en pantalla. -->
