@@ -9,7 +9,8 @@ interface Props {
   label: string
   /**
    * Nombre accesible del disparador, para cuando su contenido es solo
-   * decorativo (p. ej. un icono). Se omite si el slot ya tiene texto.
+   * decorativo (p. ej. un icono). No genera `title`: si hace falta un globo
+   * se pinta en el slot, para no duplicar ayudas.
    */
   triggerLabel?: string
   /** Variante del disparador cuando se renderiza con `Button`. */
@@ -155,7 +156,6 @@ function setTriggerRef(element: unknown): void {
       :variant="props.triggerVariant"
       :size="props.triggerSize ?? 'md'"
       :aria-label="props.triggerLabel"
-      :title="props.triggerLabel"
       :aria-expanded="isOpen"
       aria-haspopup="menu"
       @click="toggle"
@@ -169,7 +169,6 @@ function setTriggerRef(element: unknown): void {
       type="button"
       :class="props.triggerClass"
       :aria-label="props.triggerLabel"
-      :title="props.triggerLabel"
       :aria-expanded="isOpen"
       aria-haspopup="menu"
       @click="toggle"

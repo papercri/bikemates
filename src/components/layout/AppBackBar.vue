@@ -41,9 +41,9 @@ function handleBack(): void {
       Volver
     </button>
 
-    <Button v-if="showAllRidesLink" to="/rides" variant="outline" size="sm">
+   <!--  <Button v-if="showAllRidesLink" to="/rides" variant="outline" size="sm">
       <FontAwesomeIcon :icon="faBicycle" aria-hidden="true" class="size-3.5" />
       Ver todas las rutas
-    </Button>
+    </Button> -->
   </div>
 </template>

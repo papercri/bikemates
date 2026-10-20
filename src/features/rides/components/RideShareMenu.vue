@@ -54,10 +54,17 @@ async function copyLink(): Promise<void> {
   <DropdownMenu
     label="Compartir ruta"
     trigger-label="Compartir ruta"
-    trigger-class="inline-flex size-8 items-center justify-center rounded-btn border border-line-strong bg-white text-graphite transition-colors hover:border-graphite hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal-blue"
+    trigger-class="group relative inline-flex size-8 items-center justify-center rounded-btn border border-line-strong bg-white text-graphite transition-colors hover:border-graphite hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal-blue"
   >
     <template #trigger>
       <FontAwesomeIcon :icon="faShareNodes" aria-hidden="true" class="text-sm" />
+      <span
+        role="tooltip"
+        aria-hidden="true"
+        class="pointer-events-none absolute top-full left-1/2 z-10 mt-2 -translate-x-1/2 rounded-btn bg-ink px-2 py-1 text-xs font-medium whitespace-nowrap text-canvas opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
+      >
+        Compartir
+      </span>
     </template>
 
     <template #default>
