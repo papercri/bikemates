@@ -1,9 +1,17 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { faMagnifyingGlass, faSliders, faUser } from '@fortawesome/free-solid-svg-icons'
+import {
+  faArrowDownWideShort,
+  faBicycle,
+  faGaugeHigh,
+  faMagnifyingGlass,
+  faSliders,
+  faUser,
+  faUsers,
+} from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import FormSelectField from '@/components/ui/FormSelectField.vue'
 import Input from '@/components/ui/Input.vue'
+import SelectMenu from '@/components/ui/SelectMenu.vue'
 import {
   RIDE_AUDIENCE_FILTER_OPTIONS,
   RIDE_BIKE_FILTER_OPTIONS,
@@ -50,7 +58,9 @@ const activeFilterCount = computed(() => {
       type="button"
       class="sticky top-[4.5rem] z-30 flex size-10 items-center justify-center rounded-full shadow-card transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink sm:hidden"
       :class="
-        isExpanded ? 'bg-trail-ink text-canvas' : 'bg-canvas/90 text-ink backdrop-blur-sm hover:bg-snow'
+        isExpanded
+          ? 'bg-trail-ink text-canvas'
+          : 'bg-canvas/90 text-ink backdrop-blur-sm hover:bg-snow'
       "
       :aria-expanded="isExpanded"
       aria-controls="ride-filters-panel"
@@ -76,7 +86,7 @@ const activeFilterCount = computed(() => {
          desktop se estiran para ocupar todo el ancho disponible. -->
     <div
       id="ride-filters-panel"
-      class="mt-2 grid-cols-2 gap-2 [&_input]:text-sm [&_select]:text-sm sm:mt-0 sm:flex sm:items-center sm:gap-2"
+      class="mt-2 grid-cols-2 gap-2 [&_input]:text-sm sm:mt-0 sm:flex sm:items-center sm:gap-2"
       :class="isExpanded ? 'grid' : 'hidden'"
     >
       <div class="relative col-span-2 sm:w-56 lg:flex-1 lg:min-w-0">
@@ -97,39 +107,35 @@ const activeFilterCount = computed(() => {
         />
       </div>
 
-      <FormSelectField
-        id="ride-level-filter"
+      <SelectMenu
         v-model="level"
-        class="sm:w-44 lg:flex-1 lg:min-w-0"
+        class="min-w-0 sm:w-44 lg:flex-1 lg:min-w-0"
         label="Nivel"
-        label-hidden
+        :icon="faGaugeHigh"
         :options="RIDE_LEVEL_FILTER_OPTIONS"
       />
 
-      <FormSelectField
-        id="ride-bike-filter"
+      <SelectMenu
         v-model="bike"
-        class="sm:w-44 lg:flex-1 lg:min-w-0"
+        class="min-w-0 sm:w-44 lg:flex-1 lg:min-w-0"
         label="Tipo de bici"
-        label-hidden
+        :icon="faBicycle"
         :options="RIDE_BIKE_FILTER_OPTIONS"
       />
 
-      <FormSelectField
-        id="ride-audience-filter"
+      <SelectMenu
         v-model="audience"
-        class="sm:w-44 lg:flex-1 lg:min-w-0"
+        class="min-w-0 sm:w-44 lg:flex-1 lg:min-w-0"
         label="Público"
-        label-hidden
+        :icon="faUsers"
         :options="RIDE_AUDIENCE_FILTER_OPTIONS"
       />
 
-      <FormSelectField
-        id="ride-sort-filter"
+      <SelectMenu
         v-model="sort"
-        class="sm:w-44 lg:flex-1 lg:min-w-0"
+        class="min-w-0 sm:w-44 lg:flex-1 lg:min-w-0"
         label="Ordenar por"
-        label-hidden
+        :icon="faArrowDownWideShort"
         :options="RIDE_SORT_OPTIONS"
       />
 

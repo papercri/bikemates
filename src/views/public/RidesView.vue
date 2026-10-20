@@ -156,7 +156,8 @@ onBeforeUnmount(() => {
       />
     </section>
 
-    <section class="mt-6" aria-label="Listado de rutas">
+    <!-- pb extra: aire entre el listado (con su centinela de scroll) y el pie. -->
+    <section class="mt-6 pb-12" aria-label="Listado de rutas">
       <BikeLoader v-if="isLoading" label="Cargando rutas…" />
 
       <EmptyState

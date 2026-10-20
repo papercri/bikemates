@@ -226,7 +226,7 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
 
 <template>
   <AppPage :breadcrumb="rideBreadcrumb">
-    <AppBackBar fallback="/rides" show-all-rides-link />
+    <AppBackBar fallback="/rides" />
 
     <BikeLoader v-if="isLoading" class="mt-8" label="Cargando los detalles de la ruta…" />
 
@@ -320,7 +320,7 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
       </dl>
 
       <!-- 2/3: portada horizontal con la descripción debajo · 1/3: mapa reducido y participantes -->
-      <div class="mt-8 grid gap-6 lg:grid-cols-3 lg:items-start">
+      <div class="mt-8 grid gap-8 lg:grid-cols-3 lg:gap-10 lg:items-start">
         <div class="lg:col-span-2">
           <img
             :src="ride.imageUrl || '/default.webp'"

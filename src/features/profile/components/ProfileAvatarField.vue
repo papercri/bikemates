@@ -144,7 +144,7 @@ onBeforeUnmount(revokePreview)
       <div class="flex flex-col items-start gap-2">
         <div class="flex flex-wrap gap-2">
           <Button type="button" variant="outline" size="xs" @click="openFilePicker">
-            Elegir imagen
+            Buscar imagen
           </Button>
 
           <Button
@@ -176,14 +176,14 @@ onBeforeUnmount(revokePreview)
     </div>
 
     <div v-if="selectedFile" class="mt-3 flex flex-wrap items-center gap-3">
-      <Button type="button" size="sm" :loading="isSaving" :disabled="isSaving" @click="handleSave">
+      <Button type="button" size="xs" :loading="isSaving" :disabled="isSaving" @click="handleSave">
         {{ isSaving ? 'Guardando…' : 'Guardar foto' }}
       </Button>
 
       <Button
         type="button"
         variant="outline"
-        size="sm"
+        size="xs"
         :disabled="isSaving"
         @click="discardSelection"
       >

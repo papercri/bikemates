@@ -17,6 +17,15 @@ async function openFilters(page: Page, isMobile: boolean): Promise<void> {
   await expect(panel).toBeVisible()
 }
 
+/**
+ * Los filtros son desplegables: se abre el combo por su nombre accesible y se
+ * elige la opción en el menú.
+ */
+async function chooseFilter(page: Page, field: string, option: string): Promise<void> {
+  await page.getByRole('button', { name: new RegExp(`^${field}`) }).click()
+  await page.getByRole('menuitemradio', { name: option, exact: true }).click()
+}
+
 test.describe('rides list', () => {
   test('shows the heading and empty state when there are no rides', async ({ page }) => {
     await page.goto('/rides')
@@ -75,7 +84,7 @@ test.describe('rides list', () => {
 
     await page.goto('/rides')
     await openFilters(page, isMobile)
-    await page.selectOption('#ride-level-filter', 'Avanzado')
+    await chooseFilter(page, 'Nivel', 'Avanzado')
 
     await expect(page.getByRole('link', { name: /Ruta dura/ })).toBeVisible()
     await expect(page.getByRole('link', { name: /Ruta fácil/ })).toHaveCount(0)
@@ -90,7 +99,7 @@ test.describe('rides list', () => {
 
     await page.goto('/rides')
     await openFilters(page, isMobile)
-    await page.selectOption('#ride-audience-filter', 'women')
+    await chooseFilter(page, 'Público', 'Mujeres')
 
     // El filtro por público no afecta a estas rutas (ambas son "everyone").
     await expect(page.getByRole('link', { name: /Ruta gravel/ })).toHaveCount(0)
@@ -117,7 +126,7 @@ test.describe('rides list', () => {
 
     await page.goto('/rides')
     await openFilters(page, isMobile)
-    await page.selectOption('#ride-sort-filter', 'distance')
+    await chooseFilter(page, 'Ordenar por', 'Distancia')
 
     // El orden no por fecha se aplica de forma descendente en la ventana activa.
     const titles = await page.locator('article h2').allTextContents()

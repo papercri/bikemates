@@ -18,6 +18,8 @@ interface Props {
   triggerSize?: ButtonSize
   /** Clases propias del disparador; solo se usa si no hay variante de `Button`. */
   triggerClass?: string
+  /** Anclaje horizontal del menú: al inicio o al final del disparador. */
+  menuAlign?: 'start' | 'end'
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -25,6 +27,7 @@ const props = withDefaults(defineProps<Props>(), {
   triggerVariant: undefined,
   triggerSize: undefined,
   triggerClass: undefined,
+  menuAlign: 'end',
 })
 
 const isOpen = ref(false)
@@ -39,7 +42,7 @@ onClickOutside(rootRef, () => {
 async function open(): Promise<void> {
   isOpen.value = true
   await nextTick()
-  const first = menuRef.value?.querySelector<HTMLElement>('[role="menuitem"]')
+  const first = menuRef.value?.querySelector<HTMLElement>('[role^="menuitem"]')
   first?.focus()
 }
 
@@ -62,7 +65,7 @@ function toggle(): void {
 function menuItems(): HTMLElement[] {
   const root = menuRef.value
   if (root === null) return []
-  return Array.from(root.querySelectorAll<HTMLElement>('[role="menuitem"]'))
+  return Array.from(root.querySelectorAll<HTMLElement>('[role^="menuitem"]'))
 }
 
 function focusItem(index: number): void {
@@ -121,7 +124,7 @@ function onMenuKeydown(event: KeyboardEvent): void {
 /** Un clic sobre un elemento cierra el menú; el foco vuelve al disparador. */
 function onMenuClick(event: MouseEvent): void {
   const target = event.target
-  if (target instanceof Element && target.closest('[role="menuitem"]') !== null) {
+  if (target instanceof Element && target.closest('[role^="menuitem"]') !== null) {
     close()
   }
 }
@@ -180,7 +183,10 @@ function setTriggerRef(element: unknown): void {
       ref="menuRef"
       role="menu"
       :aria-label="props.label"
-      class="absolute right-0 z-[500] mt-1 min-w-56 overflow-hidden rounded-field border border-line bg-white py-1 shadow-lift"
+      :class="[
+        props.menuAlign === 'start' ? 'left-0' : 'right-0',
+        'absolute z-[500] mt-1 min-w-56 overflow-hidden rounded-field border border-line bg-white py-1 shadow-lift',
+      ]"
       @keydown="onMenuKeydown"
       @click="onMenuClick"
     >
