@@ -46,7 +46,7 @@ const { ride, isLoading, errorMessage } = useRideDetail(rideId)
 
 const isAuthenticated = computed(() => authStore.user !== null)
 
-const { participantCount, isLoadingCount, countError } = useRideParticipantCount(rideId)
+const { participantCount } = useRideParticipantCount(rideId)
 
 const {
   participants,
@@ -295,7 +295,7 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
         </p>
       </header>
 
-      <dl class="mt-3 grid grid-cols-3 border-y border-line">
+      <dl class="mt-5 grid grid-cols-3 border-y border-line">
         <div
           v-for="item in statItems"
           :key="item.label"
@@ -320,7 +320,7 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
       </dl>
 
       <!-- 2/3: portada horizontal con la descripción debajo · 1/3: mapa reducido y participantes -->
-      <div class="mt-4 grid gap-5 lg:grid-cols-3 lg:items-start">
+      <div class="mt-8 grid gap-6 lg:grid-cols-3 lg:items-start">
         <div class="lg:col-span-2">
           <img
             :src="ride.imageUrl || '/default.webp'"
@@ -330,7 +330,7 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
             fetchpriority="high"
           />
 
-          <section class="mt-4" aria-labelledby="description-title">
+          <section class="mt-6" aria-labelledby="description-title">
             <Typography id="description-title" as="h2" variant="heading-sm" class="mb-2">
               Descripción
             </Typography>
@@ -366,7 +366,7 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
           </section>
         </div>
 
-        <div class="flex flex-col gap-5">
+        <div class="flex flex-col gap-6">
           <section aria-labelledby="meeting-point-title">
             <Typography id="meeting-point-title" as="h2" variant="heading-sm" class="mb-2">
               Punto de encuentro
@@ -405,15 +405,15 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
             :participants="participants"
             :is-loading="isLoadingParticipants"
             :error-message="participantsError"
-            :is-authenticated="isAuthenticated"
             :current-user-id="authStore.user?.id ?? null"
             :is-submitting="isSubmitting"
             @join="join"
             @leave="leave"
           />
 
+          <!-- Sin sesión solo se muestra el número: el listado de nombres es privado. -->
           <section v-else aria-labelledby="participants-title">
-            <div class="mb-2 flex items-center justify-between gap-4">
+            <div class="flex flex-wrap items-center justify-between gap-4">
               <Typography id="participants-title" as="h2" variant="heading-sm">
                 Participantes
               </Typography>
@@ -429,30 +429,12 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
                 {{ participantCount === 1 ? 'inscrito' : 'inscritos' }}
               </Typography>
             </div>
-
-            <Card class="p-4">
-              <Typography v-if="isLoadingCount" variant="body-sm" tone="muted" role="status">
-                Cargando el número de participantes...
-              </Typography>
-
-              <Typography v-else-if="countError" variant="body-sm" tone="muted" role="status">
-                No se ha podido cargar el número de participantes.
-              </Typography>
-
-              <div v-else>
-                <Typography variant="body-sm" tone="muted">
-                  Inicia sesión para ver quién participa en esta ruta.
-                </Typography>
-
-                <Button to="/login" size="sm" class="mt-3"> Iniciar sesión </Button>
-              </div>
-            </Card>
           </section>
         </div>
       </div>
 
       <div
-        class="mt-6 flex flex-col items-center gap-3 border-t border-line pt-5 sm:flex-row sm:justify-center"
+        class="mt-8 flex flex-col items-center gap-3 border-t border-line pt-6 sm:flex-row sm:justify-center"
       >
         <Button v-if="isOrganizer" :to="{ name: 'ride-edit', params: { id: ride.id } }">
           Editar ruta

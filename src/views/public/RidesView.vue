@@ -15,16 +15,37 @@ import { useRideFilters } from '@/features/rides/composables/useRideFilters'
 import { useRideList } from '@/features/rides/composables/useRideList'
 import type { Ride } from '@/features/rides/types'
 
-useHead({
-  title: 'Explorar rutas | BikeMates',
-  meta: [
-    {
-      name: 'description',
-      content:
-        'Explora rutas en España por nivel y por público: iniciación, intermedio y avanzado, con distancia y desnivel de cada salida.',
-    },
-  ],
-})
+const RIDES_TITLE = 'Explorar rutas | BikeMates'
+const RIDES_DESCRIPTION =
+  'Explora rutas en España por nivel y por público: iniciación, intermedio y avanzado, con distancia y desnivel de cada salida.'
+
+useHead(
+  computed(() => {
+    // URL absoluta: las redes y los rastreadores no resuelven rutas relativas.
+    const url = `${window.location.origin}/rides`
+    const image = `${window.location.origin}/photos/grupeta-camino.webp`
+
+    return {
+      title: RIDES_TITLE,
+      meta: [
+        { name: 'description', content: RIDES_DESCRIPTION },
+        // Open Graph: previsualización en Facebook, WhatsApp, Telegram…
+        { property: 'og:type', content: 'website' },
+        { property: 'og:site_name', content: 'BikeMates' },
+        { property: 'og:title', content: RIDES_TITLE },
+        { property: 'og:description', content: RIDES_DESCRIPTION },
+        { property: 'og:url', content: url },
+        { property: 'og:image', content: image },
+        // Twitter/X
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:title', content: RIDES_TITLE },
+        { name: 'twitter:description', content: RIDES_DESCRIPTION },
+        { name: 'twitter:image', content: image },
+      ],
+      link: [{ rel: 'canonical', href: url }],
+    }
+  }),
+)
 
 /** Tarjetas visibles por lote al hacer scroll. */
 const PAGE_SIZE = 8

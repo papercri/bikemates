@@ -22,15 +22,10 @@ test.describe('ride detail', () => {
     await expect(page.getByRole('heading', { level: 2, name: 'Descripción' })).toBeVisible()
     await expect(page.getByRole('heading', { level: 2, name: 'Punto de encuentro' })).toBeVisible()
 
-    // El visitante anónimo ve el contador y el aviso de iniciar sesión.
+    // Sin sesión solo se ve el número: el listado de nombres es privado.
+    await expect(page.getByRole('heading', { level: 2, name: 'Participantes' })).toBeVisible()
     await expect(page.getByText('1 inscrito')).toBeVisible()
-    await expect(
-      page.getByText('Inicia sesión para ver quién participa en esta ruta.'),
-    ).toBeVisible()
-    // El CTA de acceso del bloque de participantes es un enlace (Button con `to`).
-    await expect(
-      page.locator('#main-content').getByRole('link', { name: 'Iniciar sesión' }),
-    ).toBeVisible()
+    await expect(page.locator('#main-content ul li')).toHaveCount(0)
   })
 
   test('shows the error state for an unknown ride', async ({ page }) => {

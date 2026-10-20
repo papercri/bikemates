@@ -141,4 +141,20 @@ test.describe('rides list', () => {
 
     await expect(page.getByRole('link', { name: /Vuelta por Collserola/ })).toBeVisible()
   })
+
+  test('renders Open Graph metadata for social sharing', async ({ page }) => {
+    await page.goto('/rides')
+
+    await expect(page.locator('meta[property="og:type"]')).toHaveAttribute('content', 'website')
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
+      'content',
+      'Explorar rutas | BikeMates',
+    )
+    await expect(page.locator('meta[property="og:url"]')).toHaveAttribute('content', /\/rides$/)
+    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
+      'content',
+      'summary_large_image',
+    )
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /\/rides$/)
+  })
 })

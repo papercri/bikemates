@@ -26,8 +26,8 @@ function accept(): void {
       class="mx-auto flex max-w-7xl flex-col items-start gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8"
     >
       <p class="text-xs leading-5 text-graphite">
-        Esta web no usa cookies de rastreo. Solo guardamos tu preferencia de este aviso en tu
-        navegador.
+        Esta web utiliza cookies. Al pulsar «Entendido» guardamos tu preferencia sobre este aviso en
+        tu navegador.
       </p>
 
       <button

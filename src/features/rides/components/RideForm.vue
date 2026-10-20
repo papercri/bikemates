@@ -390,20 +390,21 @@ function handleSubmit(): void {
           v-model="acceptedRules"
           :aria-describedby="rulesError ? 'accepted-rules-error' : undefined"
           :aria-invalid="Boolean(rulesError)"
-          label="He leído y acepto las normas de la comunidad"
-        />
-
-        <div class="mt-1.5 pl-7">
+          >He leído y acepto las
           <button
             type="button"
-            class="text-xs text-graphite underline underline-offset-2 transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
-            @click="showRulesDialog = true"
+            class="text-graphite underline underline-offset-2 transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+            @click.stop.prevent="showRulesDialog = true"
           >
-            Ver normas de la comunidad
-          </button>
-        </div>
-
-        <p v-if="rulesError" id="accepted-rules-error" role="alert" class="mt-2 pl-7 text-sm text-red-700">
+            normas de la comunidad
+          </button></Checkbox
+        >
+        <p
+          v-if="rulesError"
+          id="accepted-rules-error"
+          role="alert"
+          class="mt-2 pl-7 text-sm text-red-700"
+        >
           {{ rulesError }}
         </p>
       </div>

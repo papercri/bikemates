@@ -41,16 +41,37 @@ const heroSlides = [
 const authStore = useAuthStore()
 const { user, isInitialized } = storeToRefs(authStore)
 
-useHead({
-  title: 'BikeMates | Encuentra ciclistas y rutas',
-  meta: [
-    {
-      name: 'description',
-      content:
-        'Encuentra ciclistas cerca de ti, descubre rutas y organiza salidas en grupo por España.',
-    },
-  ],
-})
+const HOME_TITLE = 'BikeMates | Encuentra ciclistas y rutas'
+const HOME_DESCRIPTION =
+  'Encuentra ciclistas cerca de ti, descubre rutas y organiza salidas en grupo por España.'
+
+useHead(
+  computed(() => {
+    // URL absoluta: las redes y los rastreadores no resuelven rutas relativas.
+    const url = `${window.location.origin}/`
+    const image = `${window.location.origin}/photos/grupeta-camino.webp`
+
+    return {
+      title: HOME_TITLE,
+      meta: [
+        { name: 'description', content: HOME_DESCRIPTION },
+        // Open Graph: previsualización en Facebook, WhatsApp, Telegram…
+        { property: 'og:type', content: 'website' },
+        { property: 'og:site_name', content: 'BikeMates' },
+        { property: 'og:title', content: HOME_TITLE },
+        { property: 'og:description', content: HOME_DESCRIPTION },
+        { property: 'og:url', content: url },
+        { property: 'og:image', content: image },
+        // Twitter/X
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:title', content: HOME_TITLE },
+        { name: 'twitter:description', content: HOME_DESCRIPTION },
+        { name: 'twitter:image', content: image },
+      ],
+      link: [{ rel: 'canonical', href: url }],
+    }
+  }),
+)
 
 interface LandingCta {
   label: string

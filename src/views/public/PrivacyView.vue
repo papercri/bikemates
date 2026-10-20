@@ -23,7 +23,8 @@ interface PolicySection {
 /**
  * Política redactada en tercera persona para un tono formal. Se describen
  * únicamente los hechos reales del proyecto: registro por correo vía Supabase
- * Auth, sin uso comercial y sin cookies de rastreo.
+ * Auth, sin uso comercial y con cookies propias para el funcionamiento del
+ * servicio y las preferencias de navegación.
  */
 const sections: readonly PolicySection[] = [
   {
@@ -73,7 +74,7 @@ const sections: readonly PolicySection[] = [
     id: 'cookies',
     heading: 'Cookies y tecnologías similares',
     paragraphs: [
-      'Este sitio no utiliza cookies de rastreo ni de publicidad. Solo se emplean los medios técnicos imprescindibles para mantener la sesión iniciada y recordar tus preferencias de navegación.',
+      'Este sitio utiliza cookies para el funcionamiento del servicio, mantener la sesión iniciada y recordar tus preferencias de navegación. Tu preferencia sobre el aviso de cookies se guarda en tu navegador.',
     ],
   },
 ]

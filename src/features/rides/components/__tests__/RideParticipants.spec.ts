@@ -21,7 +21,6 @@ function mountParticipants(props?: Record<string, unknown>, attachToBody = false
       participants: [],
       isLoading: false,
       errorMessage: null,
-      isAuthenticated: true,
       currentUserId: 'user-1',
       isSubmitting: false,
       ...props,
@@ -46,21 +45,31 @@ describe('RideParticipants', () => {
     expect(many.get('[aria-live="polite"]').text()).toContain('2 ciclistas')
   })
 
-  it('shows the join CTA to anonymous visitors and opens the access dialog', async () => {
-    const wrapper = mountParticipants({ isAuthenticated: false }, true)
+  it('renders the participant list before the join CTA', () => {
+    const wrapper = mountParticipants({ participants, currentUserId: 'user-3' })
 
-    expect(wrapper.text()).toContain('Participar en esta ruta')
+    const html = wrapper.html()
+    expect(html.indexOf('Marc')).toBeLessThan(html.indexOf('Participar en esta ruta'))
+  })
 
-    const cta = wrapper
+  it('opens the community rules from the inline link without toggling the checkbox', async () => {
+    const wrapper = mountParticipants({ currentUserId: 'user-3' }, true)
+
+    const rulesLink = wrapper
       .findAll('button')
-      .find((button) => button.text().includes('Participar en esta ruta'))
-    await cta!.trigger('click')
+      .find((button) => button.text().includes('normas de la comunidad'))
+    expect(rulesLink).toBeDefined()
+    // El marcado parte el texto en varios nodos: se normalizan los espacios.
+    expect(wrapper.get('label').text().replace(/\s+/g, ' ').trim()).toBe(
+      'He leído y acepto las normas de la comunidad',
+    )
+
+    await rulesLink!.trigger('click')
     await nextTick()
 
-    const modal = document.querySelector('[role="dialog"]')
-    expect(modal?.textContent).toContain('Inicia sesión para participar')
-    expect(modal?.querySelector('[data-dialog-login]')).not.toBeNull()
-    expect(modal?.querySelector('[data-dialog-register]')).not.toBeNull()
+    const checkbox = wrapper.get('input[type="checkbox"]').element
+    expect(checkbox instanceof HTMLInputElement && checkbox.checked).toBe(false)
+    expect(dialog()?.textContent).toContain('Normas de la comunidad')
 
     // El diálogo se teletransporta a body: se desmonta para no dejarlo en el documento.
     wrapper.unmount()
