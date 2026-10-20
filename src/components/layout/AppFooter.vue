@@ -31,7 +31,7 @@ const serviceLinkClasses =
           </RouterLink>
 
           <p class="mt-3 max-w-xs text-sm leading-6 text-white/50">
-            Comparte rutas. Comparte kilómetros.
+            Comparte rutas. Suma kilómetros.
           </p>
         </div>
 
@@ -45,7 +45,7 @@ const serviceLinkClasses =
             <RouterLink to="/" :class="linkClasses">Inicio</RouterLink>
             <RouterLink to="/rides" :class="linkClasses">Explorar rutas</RouterLink>
             <RouterLink v-if="user" to="/rides/create" :class="linkClasses">
-              Publicar ruta
+              Publicar nueva ruta
             </RouterLink>
             <RouterLink v-if="!user" to="/login" :class="linkClasses">Iniciar sesión</RouterLink>
             <RouterLink v-else to="/profile" :class="linkClasses">Mi perfil</RouterLink>

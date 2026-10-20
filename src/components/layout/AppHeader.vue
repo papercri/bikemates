@@ -156,7 +156,7 @@ onBeforeUnmount(() => {
         </RouterLink>
         <RouterLink v-if="user" to="/rides/create" :class="navLinkClasses('/rides/create')">
           <FontAwesomeIcon :icon="faCirclePlus" aria-hidden="true" />
-          Publicar ruta
+          Publicar nueva ruta
         </RouterLink>
       </nav>
 
@@ -236,7 +236,7 @@ onBeforeUnmount(() => {
             <li v-if="user">
               <RouterLink to="/rides/create" :class="menuLinkClasses('/rides/create')">
                 <FontAwesomeIcon :icon="faCirclePlus" aria-hidden="true" />
-                Publicar ruta
+                Publicar nueva ruta
               </RouterLink>
             </li>
           </ul>

@@ -102,7 +102,7 @@ async function confirmRideDeletion(): Promise<void> {
         <Typography as="h1" variant="heading-lg" class="mt-3"> Editar ruta </Typography>
 
         <Typography variant="body-sm" tone="muted" class="mt-1.5">
-          Modifica los datos de tu salida ciclista.
+          Actualiza los detalles de tu salida y mantén la información al día.
         </Typography>
       </header>
 

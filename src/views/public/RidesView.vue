@@ -133,7 +133,7 @@ onBeforeUnmount(() => {
       <Typography as="h1" variant="heading-xl">Explorar rutas</Typography>
 
       <Typography class="mt-3 max-w-2xl" tone="muted">
-        Encuentra una ruta adaptada a tu nivel y disfruta pedaleando en compañía.
+      Descubre salidas que se adapten a tu nivel y encuentra ciclistas con quienes compartir el camino.
       </Typography>
     </div>
 
