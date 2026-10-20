@@ -249,6 +249,6 @@ Separation of concerns: views orchestrate, components present, services access d
 
 ## Quality and tests
 
-- **Unit**: `npm run test:unit` — 604 tests in 84 files (design system, validators, services and route composables, auth service, session store, UI primitives, listing filters, SVG icons, profile tabs, private views, and navigation components).
-- **E2E**: `npm run test:e2e` — Playwright on Chromium and mobile (148 passing; authentication, profile, ride creation, listing, detail, and navigation).
+- **Unit**: `npm run test:unit` — 609 tests in 85 files (design system, validators, services and route composables, auth service, session store, UI primitives, listing filters and combo boxes, SVG icons, profile tabs, private views, and navigation components).
+- **E2E**: `npm run test:e2e` — Playwright on Chromium and mobile (152 passing, 2 skipped; authentication, profile, ride creation, listing, detail, and navigation).
 - Gates before considering a task complete: `npm run test:unit -- --run`, `npm run type-check`, `npx eslint .`, `npx oxlint .`, Prettier, and, when relevant, `npm run build`.

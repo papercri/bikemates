@@ -68,7 +68,9 @@ function confirmLeave(): void {
 <template>
   <section aria-labelledby="participants-title">
     <div class="mb-3 flex flex-wrap items-center justify-between gap-4">
-      <Typography id="participants-title" as="h2" variant="heading-sm"> Participantes </Typography>
+      <Typography id="participants-title" as="h2" variant="heading-sm" class="font-bold">
+        Participantes
+      </Typography>
 
       <Typography variant="body-sm" tone="muted" aria-live="polite">
         {{ participantCount }}

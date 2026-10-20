@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { faArrowUpRightFromSquare, faBicycle, faClock } from '@fortawesome/free-solid-svg-icons'
+import {
+  faArrowUpRightFromSquare,
+  faBicycle,
+  faClock,
+  faPen,
+} from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { useHead } from '@unhead/vue'
 import { computed, onBeforeUnmount, ref } from 'vue'
@@ -242,33 +247,41 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
 
     <template v-else-if="ride">
       <header class="mt-4">
-        <div class="flex flex-wrap items-center gap-2">
-          <Badge variant="muted" :color="RIDE_LEVEL_BADGE_COLORS[ride.level]" dot>
-            {{ ride.level }}
-          </Badge>
+        <!-- Fila 1: etiquetas a la izquierda y, a su altura, la fecha. -->
+        <div class="flex flex-wrap items-start justify-between gap-x-6 gap-y-2">
+          <div class="flex flex-wrap items-center gap-2">
+            <Badge variant="muted" :color="RIDE_LEVEL_BADGE_COLORS[ride.level]" dot>
+              {{ ride.level }}
+            </Badge>
 
-          <Badge variant="muted" color="trail">
-            <FontAwesomeIcon :icon="faBicycle" aria-hidden="true" class="size-3 text-trail-ink" />
-            {{ RIDE_BIKE_TYPE_LABELS[ride.bikeType] }}
-          </Badge>
+            <Badge variant="muted" color="trail">
+              <FontAwesomeIcon :icon="faBicycle" aria-hidden="true" class="size-3 text-trail-ink" />
+              {{ RIDE_BIKE_TYPE_LABELS[ride.bikeType] }}
+            </Badge>
 
-          <RideAudienceBadge :audience="ride.audience" />
+            <RideAudienceBadge :audience="ride.audience" />
+          </div>
+
+          <Typography
+            as="p"
+            variant="body-sm"
+            tone="muted"
+            class="flex w-full items-center gap-2 sm:w-auto sm:shrink-0"
+          >
+            <FontAwesomeIcon :icon="faClock" aria-hidden="true" class="text-sm text-route-ink" />
+            <time :datetime="ride.startsAt" class="font-medium text-ink">
+              {{ formatRideDate(ride.startsAt) }}
+            </time>
+          </Typography>
         </div>
 
-        <Typography as="h1" variant="heading-lg" class="mt-2 tracking-tight">
-          {{ ride.title }}
-        </Typography>
+        <!-- Fila 2: título a la izquierda y, en su columna derecha, las acciones. -->
+        <div class="mt-4 flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
+          <Typography as="h1" variant="heading-lg" class="tracking-tight sm:min-w-0 sm:flex-1">
+            {{ ride.title }}
+          </Typography>
 
-        <!-- Desktop: la fecha a la derecha y, debajo, calendario y compartir. -->
-        <div class="mt-1.5 flex flex-wrap items-start gap-x-4 gap-y-3">
-          <div class="flex w-full flex-col gap-2 sm:order-2 sm:ml-auto sm:w-auto sm:items-end">
-            <Typography as="p" variant="body-sm" tone="muted" class="flex items-center gap-2">
-              <FontAwesomeIcon :icon="faClock" aria-hidden="true" class="text-sm text-route-ink" />
-              <time :datetime="ride.startsAt" class="font-medium text-ink">
-                {{ formatRideDate(ride.startsAt) }}
-              </time>
-            </Typography>
-
+          <div class="flex w-full flex-col items-start gap-2 sm:w-auto sm:shrink-0 sm:items-end">
             <div class="flex items-center gap-2">
               <RideCalendarMenu
                 v-if="calendarEntry"
@@ -287,15 +300,11 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
                 @copy-error="setActionStatus('No se ha podido copiar el enlace')"
               />
             </div>
-          </div>
 
-          <p
-            v-if="actionStatus"
-            role="status"
-            class="text-xs font-medium text-trail-ink sm:order-1 sm:mt-1"
-          >
-            {{ actionStatus }}
-          </p>
+            <p v-if="actionStatus" role="status" class="text-xs font-medium text-trail-ink">
+              {{ actionStatus }}
+            </p>
+          </div>
         </div>
       </header>
 
@@ -335,7 +344,7 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
           />
 
           <section class="mt-6" aria-labelledby="description-title">
-            <Typography id="description-title" as="h2" variant="heading-sm" class="mb-2">
+            <Typography id="description-title" as="h2" variant="heading-sm" class="mb-2 font-bold">
               Descripción
             </Typography>
 
@@ -372,7 +381,12 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
 
         <div class="flex flex-col gap-6">
           <section aria-labelledby="meeting-point-title">
-            <Typography id="meeting-point-title" as="h2" variant="heading-sm" class="mb-2">
+            <Typography
+              id="meeting-point-title"
+              as="h2"
+              variant="heading-sm"
+              class="mb-2 font-bold"
+            >
               Punto de encuentro
             </Typography>
 
@@ -418,7 +432,7 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
           <!-- Sin sesión solo se muestra el número: el listado de nombres es privado. -->
           <section v-else aria-labelledby="participants-title">
             <div class="flex flex-wrap items-center justify-between gap-4">
-              <Typography id="participants-title" as="h2" variant="heading-sm">
+              <Typography id="participants-title" as="h2" variant="heading-sm" class="font-bold">
                 Participantes
               </Typography>
 
@@ -441,10 +455,14 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
         class="mt-8 flex flex-col items-center gap-3 border-t border-line pt-6 sm:flex-row sm:justify-center"
       >
         <Button v-if="isOrganizer" :to="{ name: 'ride-edit', params: { id: ride.id } }">
+          <FontAwesomeIcon :icon="faPen" aria-hidden="true" class="size-3.5" />
           Editar ruta
         </Button>
 
-        <Button to="/rides" variant="outline"> Explorar más rutas </Button>
+        <Button to="/rides" variant="outline">
+          <FontAwesomeIcon :icon="faBicycle" aria-hidden="true" class="size-3.5" />
+          Explorar más rutas
+        </Button>
       </div>
     </template>
 

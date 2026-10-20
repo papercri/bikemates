@@ -97,7 +97,7 @@ async function confirmRideDeletion(): Promise<void> {
   <AppPage spacing="compact" :breadcrumb="rideBreadcrumb">
     <div class="mx-auto max-w-3xl">
       <header class="mb-5">
-        <AppBackBar fallback="/rides" show-all-rides-link />
+        <AppBackBar fallback="/rides" />
 
         <Typography as="h1" variant="heading-lg" class="mt-3"> Editar ruta </Typography>
 
