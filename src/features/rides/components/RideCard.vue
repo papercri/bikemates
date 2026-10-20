@@ -60,21 +60,28 @@ const shortDate = computed(() => formatRideShortDate(props.ride.startsAt))
       <div
         class="relative flex items-start justify-between gap-3 bg-gradient-to-b from-ink/70 via-ink/30 to-transparent p-4 sm:p-5"
       >
-        <span
-          class="inline-flex items-center gap-1 rounded-full bg-route px-2 py-0.5 font-mono text-[0.7rem] font-semibold tabular-nums text-ink"
+        <!-- Raíl de fecha: fecha compacta `dd/MM` con fecha legible para lectores de pantalla. -->
+        <time
+          :datetime="ride.startsAt"
+          class="inline-flex items-center gap-1 rounded-full bg-ink px-2 py-0.5 font-mono text-[0.7rem] font-semibold tabular-nums text-canvas"
         >
           <FontAwesomeIcon :icon="faCalendar" aria-hidden="true" class="size-3" />
           {{ shortDate }}
-        </span>
+        </time>
 
-        <span v-if="participating" class="inline-flex items-center rounded-full bg-ink/55 px-2 py-1">
-          <FontAwesomeIcon :icon="faUser" aria-hidden="true" class="size-3.5 text-trail" />
-          <span class="sr-only">Participaré</span>
-        </span>
+        <FontAwesomeIcon
+          v-if="participating"
+          :icon="faUser"
+          aria-hidden="true"
+          class="size-4 text-trail"
+        />
+        <span v-if="participating" class="sr-only">Participaré</span>
       </div>
 
       <!-- Entrada: capa oscura a sangre, pegada a los bordes de la foto -->
-      <div class="relative bg-ink/70 px-4 pt-3 pb-4 sm:px-5 sm:pt-3.5 sm:pb-5">
+      <div
+        class="relative bg-ink/70 pt-3 pb-4 [padding-inline:calc(var(--spacing)*3)] sm:pt-3.5 sm:pb-5"
+      >
         <!-- Reserva exactamente dos líneas: todas las tarjetas alinean el bloque de
              título por igual aunque el texto ocupe una sola línea. -->
         <h2
@@ -91,7 +98,7 @@ const shortDate = computed(() => formatRideShortDate(props.ride.startsAt))
             <FontAwesomeIcon :icon="faBicycle" aria-hidden="true" class="size-3" />
             {{ RIDE_BIKE_TYPE_LABELS[ride.bikeType] }}
           </Badge>
-          <RideAudienceBadge :audience="ride.audience" variant="inverse" />
+          <RideAudienceBadge :audience="ride.audience" variant="inverse" icon-only />
 
           <IconArrow
             class="ml-auto text-canvas/75 transition-transform duration-200 group-hover:translate-x-1"

@@ -40,10 +40,10 @@ export function getRideDateParts(dateString: string): RideDateParts {
   }
 }
 
-const RIDE_SHORT_DATE_FORMAT = new Intl.DateTimeFormat('es-ES', {
-  day: '2-digit',
-  month: '2-digit',
-})
+/** Rellena un componente de fecha a dos dígitos (`05`, `10`): `es-ES` no lo hace con solo día y mes. */
+function pad2(value: number): string {
+  return String(value).padStart(2, '0')
+}
 
 /** Fecha corta de la salida en formato `dd/MM`, p. ej. `26/10`. */
 export function formatRideShortDate(dateString: string): string {
@@ -53,7 +53,7 @@ export function formatRideShortDate(dateString: string): string {
     return ''
   }
 
-  return RIDE_SHORT_DATE_FORMAT.format(date)
+  return `${pad2(date.getDate())}/${pad2(date.getMonth() + 1)}`
 }
 
 /**

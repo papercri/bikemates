@@ -48,12 +48,15 @@ test.describe('rides list', () => {
     await expect(collserola).toBeVisible()
     await expect(montseny).toBeVisible()
 
-    // La distancia y el desnivel van en spans separados dentro de la tarjeta.
-    await expect(collserola).toContainText('32')
-    await expect(collserola).toContainText('+650')
+    // La tarjeta no muestra distancia ni desnivel: lleva fecha corta, título, nivel, bici y público.
+    await expect(collserola).toContainText(/\d{2}\/\d{2}/)
     await expect(collserola).toContainText('Intermedio')
-    await expect(montseny).toContainText('48')
+    await expect(collserola).toContainText('Gravel')
+    await expect(collserola).toContainText('Todos')
+    await expect(collserola).not.toContainText('32')
+    await expect(collserola).not.toContainText('650')
     await expect(montseny).toContainText('Avanzado')
+    await expect(montseny).toContainText('MTB')
   })
 
   test('counts the results', async ({ page, supabase }) => {

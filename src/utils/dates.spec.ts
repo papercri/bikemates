@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { formatRideDate, getRideDateParts, isRidePast, toLocalDateTime } from './dates'
+import {
+  formatRideDate,
+  formatRideShortDate,
+  getRideDateParts,
+  isRidePast,
+  toLocalDateTime,
+} from './dates'
 
 describe('formatRideDate', () => {
   it('formats a departure in long Spanish format', () => {
@@ -10,6 +16,24 @@ describe('formatRideDate', () => {
     expect(formatted).toContain('10')
     expect(formatted).toContain('junio')
     expect(formatted).toContain('09:30')
+  })
+})
+
+describe('formatRideShortDate', () => {
+  it('formats a departure as a two-digit day and month', () => {
+    const departure = new Date(2026, 5, 10, 9, 30)
+
+    expect(formatRideShortDate(departure.toISOString())).toBe('10/06')
+  })
+
+  it('pads single-digit days and months', () => {
+    const departure = new Date(2026, 0, 5, 9, 30)
+
+    expect(formatRideShortDate(departure.toISOString())).toBe('05/01')
+  })
+
+  it('returns an empty string for unparseable dates', () => {
+    expect(formatRideShortDate('no-es-una-fecha')).toBe('')
   })
 })
 

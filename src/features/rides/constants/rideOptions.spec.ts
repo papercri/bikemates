@@ -43,7 +43,7 @@ describe('rideOptions', () => {
       everyone: 'Todos',
       women: 'Mujeres',
       men: 'Hombres',
-      lgbt: 'Comunidad LGBT+',
+      lgbt: 'LGBT',
     })
   })
 

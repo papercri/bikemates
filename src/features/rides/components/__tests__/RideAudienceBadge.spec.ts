@@ -20,8 +20,18 @@ describe('RideAudienceBadge', () => {
   it('shows the pride flag for the lgbt audience', () => {
     const wrapper = mount(RideAudienceBadge, { props: { audience: 'lgbt' } })
 
-    expect(wrapper.text()).toContain('Comunidad LGBT+')
+    expect(wrapper.text()).toContain('LGBT')
     expect(wrapper.text()).toContain('🏳️‍🌈')
     expect(wrapper.find('svg').exists()).toBe(false)
+  })
+
+  it('keeps the label for screen readers when only the icon is shown', () => {
+    const wrapper = mount(RideAudienceBadge, {
+      props: { audience: 'women', iconOnly: true },
+    })
+
+    const srLabel = wrapper.get('.sr-only')
+    expect(srLabel.text()).toBe('Mujeres')
+    expect(wrapper.text()).toContain('Mujeres')
   })
 })
