@@ -259,8 +259,9 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
           {{ ride.title }}
         </Typography>
 
-        <div class="mt-1.5 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-          <div class="flex items-center gap-2.5">
+        <!-- Desktop: la fecha a la derecha y, debajo, calendario y compartir. -->
+        <div class="mt-1.5 flex flex-wrap items-start gap-x-4 gap-y-3">
+          <div class="flex w-full flex-col gap-2 sm:order-2 sm:ml-auto sm:w-auto sm:items-end">
             <Typography as="p" variant="body-sm" tone="muted" class="flex items-center gap-2">
               <FontAwesomeIcon :icon="faClock" aria-hidden="true" class="text-sm text-route-ink" />
               <time :datetime="ride.startsAt" class="font-medium text-ink">
@@ -268,31 +269,34 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
               </time>
             </Typography>
 
-            <RideCalendarMenu
-              v-if="calendarEntry"
-              :entry="calendarEntry"
-              class="shrink-0"
-              @downloaded="setActionStatus('Archivo de calendario descargado')"
-              @error="setActionStatus('No se ha podido crear el archivo de calendario')"
-            />
+            <div class="flex items-center gap-2">
+              <RideCalendarMenu
+                v-if="calendarEntry"
+                :entry="calendarEntry"
+                class="shrink-0"
+                @downloaded="setActionStatus('Archivo de calendario descargado')"
+                @error="setActionStatus('No se ha podido crear el archivo de calendario')"
+              />
+
+              <RideShareMenu
+                v-if="rideUrl"
+                class="shrink-0"
+                :title="ride.title"
+                :url="rideUrl"
+                @copied="setActionStatus('Enlace copiado al portapapeles')"
+                @copy-error="setActionStatus('No se ha podido copiar el enlace')"
+              />
+            </div>
           </div>
 
-          <RideShareMenu
-            v-if="rideUrl"
-            :title="ride.title"
-            :url="rideUrl"
-            @copied="setActionStatus('Enlace copiado al portapapeles')"
-            @copy-error="setActionStatus('No se ha podido copiar el enlace')"
-          />
+          <p
+            v-if="actionStatus"
+            role="status"
+            class="text-xs font-medium text-trail-ink sm:order-1 sm:mt-1"
+          >
+            {{ actionStatus }}
+          </p>
         </div>
-
-        <p
-          v-if="actionStatus"
-          role="status"
-          class="mt-1 text-xs font-medium text-trail-ink sm:text-right"
-        >
-          {{ actionStatus }}
-        </p>
       </header>
 
       <dl class="mt-5 grid grid-cols-3 border-y border-line">

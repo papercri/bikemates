@@ -44,7 +44,7 @@ test.describe('ride detail', () => {
     supabase.state.rides = [makeRide({ id: 'ride-1' })]
 
     await page.goto('/rides/ride-1')
-    await page.getByRole('button', { name: 'Compartir' }).click()
+    await page.getByRole('button', { name: 'Compartir ruta' }).click()
     await page.getByRole('menuitem', { name: 'Copiar enlace' }).click()
 
     await expect(page.getByRole('status')).toHaveText('Enlace copiado al portapapeles')
@@ -55,7 +55,7 @@ test.describe('ride detail', () => {
     supabase.state.rides = [makeRide({ id: 'ride-1' })]
 
     await page.goto('/rides/ride-1')
-    await page.getByRole('button', { name: 'Compartir' }).click()
+    await page.getByRole('button', { name: 'Compartir ruta' }).click()
 
     const menu = page.getByRole('menu', { name: 'Compartir ruta' })
     await expect(menu.getByRole('menuitem', { name: 'WhatsApp' })).toBeVisible()

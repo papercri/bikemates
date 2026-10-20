@@ -55,7 +55,7 @@ const serviceLinkClasses =
         <!-- Servicio -->
         <nav aria-label="Enlaces de servicio" class="flex flex-col gap-3">
           <h2 class="font-mono text-xs font-semibold uppercase tracking-[0.18em] text-white/40">
-            Servicio
+            Ayuda
           </h2>
 
           <div class="flex flex-col gap-2.5">

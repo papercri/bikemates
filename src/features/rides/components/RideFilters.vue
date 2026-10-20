@@ -52,7 +52,7 @@ const activeFilterCount = computed(() => {
 </script>
 
 <template>
-  <div>
+  <div class="flex flex-wrap items-center gap-2">
     <!-- Botón de filtros en móvil: circular, a la izquierda y sticky bajo la header. -->
     <button
       type="button"
@@ -86,7 +86,7 @@ const activeFilterCount = computed(() => {
          desktop se estiran para ocupar todo el ancho disponible. -->
     <div
       id="ride-filters-panel"
-      class="mt-2 grid-cols-2 gap-2 [&_input]:text-sm sm:mt-0 sm:flex sm:items-center sm:gap-2"
+      class="w-full grid-cols-2 gap-2 [&_input]:text-sm sm:order-1 sm:flex sm:w-auto sm:min-w-0 sm:flex-1 sm:items-center sm:gap-2"
       :class="isExpanded ? 'grid' : 'hidden'"
     >
       <div class="relative col-span-2 sm:w-56 lg:flex-1 lg:min-w-0">
@@ -103,6 +103,7 @@ const activeFilterCount = computed(() => {
           v-model="query"
           type="search"
           name="ride-title-search"
+          subtle
           class="pl-9"
         />
       </div>
@@ -138,31 +139,31 @@ const activeFilterCount = computed(() => {
         :icon="faArrowDownWideShort"
         :options="RIDE_SORT_OPTIONS"
       />
-
-      <!-- Interrupción "Voy": solo icono, gris en reposo y verde al activarse. -->
-      <div v-if="showParticipation" class="col-span-2 flex items-center sm:col-span-1">
-        <button
-          type="button"
-          class="group relative inline-flex size-9 items-center justify-center rounded-full border transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
-          :class="
-            participating
-              ? 'border-trail bg-trail/15 text-trail-ink'
-              : 'border-line-strong bg-white text-graphite hover:border-graphite hover:bg-snow'
-          "
-          :aria-pressed="participating"
-          aria-label="Voy"
-          @click="participating = !participating"
-        >
-          <FontAwesomeIcon :icon="faUser" aria-hidden="true" class="size-4" />
-
-          <span
-            role="tooltip"
-            class="pointer-events-none absolute -top-8 left-1/2 z-10 -translate-x-1/2 rounded-btn bg-ink px-2 py-1 text-xs font-medium whitespace-nowrap text-canvas opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
-          >
-            Voy
-          </span>
-        </button>
-      </div>
     </div>
+
+    <!-- Interrupción "Voy": solo icono, gris en reposo y verde al activarse.
+         En móvil comparte fila con el botón de filtros; en sm+ cierra la fila. -->
+    <button
+      v-if="showParticipation"
+      type="button"
+      class="group relative inline-flex size-9 shrink-0 items-center justify-center rounded-full border transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink sm:order-3"
+      :class="
+        participating
+          ? 'border-trail bg-trail/15 text-trail-ink'
+          : 'border-line-strong bg-white text-graphite hover:border-graphite hover:bg-snow'
+      "
+      :aria-pressed="participating"
+      aria-label="Voy"
+      @click="participating = !participating"
+    >
+      <FontAwesomeIcon :icon="faUser" aria-hidden="true" class="size-4" />
+
+      <span
+        role="tooltip"
+        class="pointer-events-none absolute -top-8 left-1/2 z-10 -translate-x-1/2 rounded-btn bg-ink px-2 py-1 text-xs font-medium whitespace-nowrap text-canvas opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
+      >
+        Voy
+      </span>
+    </button>
   </div>
 </template>
