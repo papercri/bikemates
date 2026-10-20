@@ -37,11 +37,15 @@ describe('RideFilters', () => {
       'Nivel',
       'Tipo de bici',
       'Público',
-      'Ordenar',
+      'Ordenar por',
     ])
-    for (const label of labels) {
+
+    // Solo el control de orden muestra su etiqueta de forma visible.
+    expect(labels[0]?.classes()).toContain('sr-only')
+    for (const label of labels.slice(1, 4)) {
       expect(label.classes()).toContain('sr-only')
     }
+    expect(labels[4]?.classes()).not.toContain('sr-only')
   })
 
   it('emits the query while the user types', async () => {
@@ -79,7 +83,7 @@ describe('RideFilters', () => {
     expect(wrapper.get('input').element.value).toBe('collserola')
 
     const selectedLabels = wrapper.findAll('option:checked').map((option) => option.text())
-    expect(selectedLabels).toEqual(['Intermedio', 'Gravel', 'Mujeres', 'Por desnivel'])
+    expect(selectedLabels).toEqual(['Intermedio', 'Gravel', 'Mujeres', 'Desnivel'])
   })
 
   it('folds the controls behind the mobile toggle and expands them on demand', async () => {

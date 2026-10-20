@@ -65,13 +65,14 @@ const activeFilterCount = computed(() => {
       </span>
     </button>
 
-    <!-- Sin labels visibles: el significado vive en el placeholder de cada control. -->
+    <!-- En móvil los controles se pliegan en rejilla; en sm+ se alinean en fila y en
+         desktop se estiran para ocupar todo el ancho disponible. -->
     <div
       id="ride-filters-panel"
-      class="mt-2 grid-cols-2 gap-2 [&_input]:text-sm [&_select]:text-sm sm:mt-0 sm:flex sm:items-center sm:gap-2"
+      class="mt-2 grid-cols-2 gap-2 [&_input]:text-sm [&_select]:text-sm sm:mt-0 sm:flex sm:items-end sm:gap-2"
       :class="isExpanded ? 'grid' : 'hidden'"
     >
-      <div class="relative col-span-2 sm:w-56">
+      <div class="relative col-span-2 sm:w-56 lg:flex-1 lg:min-w-0">
         <label for="ride-title-search" class="sr-only"> Buscar por título </label>
 
         <FontAwesomeIcon
@@ -92,7 +93,7 @@ const activeFilterCount = computed(() => {
       <FormSelectField
         id="ride-level-filter"
         v-model="level"
-        class="sm:w-44"
+        class="sm:w-44 lg:flex-1 lg:min-w-0"
         label="Nivel"
         label-hidden
         :options="RIDE_LEVEL_FILTER_OPTIONS"
@@ -101,7 +102,7 @@ const activeFilterCount = computed(() => {
       <FormSelectField
         id="ride-bike-filter"
         v-model="bike"
-        class="sm:w-44"
+        class="sm:w-44 lg:flex-1 lg:min-w-0"
         label="Tipo de bici"
         label-hidden
         :options="RIDE_BIKE_FILTER_OPTIONS"
@@ -110,7 +111,7 @@ const activeFilterCount = computed(() => {
       <FormSelectField
         id="ride-audience-filter"
         v-model="audience"
-        class="sm:w-44"
+        class="sm:w-44 lg:flex-1 lg:min-w-0"
         label="Público"
         label-hidden
         :options="RIDE_AUDIENCE_FILTER_OPTIONS"
@@ -119,9 +120,8 @@ const activeFilterCount = computed(() => {
       <FormSelectField
         id="ride-sort-filter"
         v-model="sort"
-        class="col-span-2 sm:w-40"
-        label="Ordenar"
-        label-hidden
+        class="col-span-2 sm:w-44 lg:flex-1 lg:min-w-0"
+        label="Ordenar por"
         :options="RIDE_SORT_OPTIONS"
       />
     </div>

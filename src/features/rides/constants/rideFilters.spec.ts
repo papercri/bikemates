@@ -58,11 +58,12 @@ describe('rideFilters', () => {
     expect(RIDE_AUDIENCE_FILTER_OPTIONS.map((option) => option.value)).not.toContain('everyone')
   })
 
-  it('offers exactly the three sort criteria in display order', () => {
+  it('offers the sort criteria in display order', () => {
     expect(RIDE_SORT_OPTIONS).toEqual([
-      { value: 'date', label: 'Por fecha' },
-      { value: 'distance', label: 'Por distancia' },
-      { value: 'elevation', label: 'Por desnivel' },
+      { value: 'date', label: 'Fecha de salida' },
+      { value: 'created', label: 'Fecha de creación' },
+      { value: 'distance', label: 'Distancia' },
+      { value: 'elevation', label: 'Desnivel' },
     ])
   })
 })
