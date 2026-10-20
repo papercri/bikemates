@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { MotionConfig } from 'motion-v'
 import CookieBanner from '@/components/layout/CookieBanner.vue'
-import { inject } from '@vercel/analytics';
+import { Analytics } from '@vercel/analytics/vue'
 </script>
 
 <template>
@@ -9,5 +9,5 @@ import { inject } from '@vercel/analytics';
     <RouterView />
     <CookieBanner />
   </MotionConfig>
-  
+   <Analytics />
 </template>
