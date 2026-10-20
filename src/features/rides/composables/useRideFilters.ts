@@ -23,10 +23,15 @@ export function useRideFilters(rides: Ref<Ride[]>, participatingRideIds: Ref<str
   const selectedLevel = ref<RideLevelFilter>(RIDE_FILTER_ALL)
   const selectedBike = ref<RideBikeFilter>(RIDE_FILTER_ALL)
   const selectedAudience = ref<RideAudienceFilter>(RIDE_FILTER_ALL)
-  const sortBy = ref<RideSortOption>('date')
+  const sortBy = ref<RideSortOption>('default')
   const timeframe = ref<RideTimeframe>('upcoming')
   /** Muestra únicamente las rutas en las que el usuario participa. */
   const onlyParticipating = ref(false)
+
+  /** `default` ordena por la fecha de salida, igual que `date`. */
+  const effectiveSortBy = computed<RideSortOption>(() =>
+    sortBy.value === 'default' ? 'date' : sortBy.value,
+  )
 
   const participatingIds = computed(() => new Set(participatingRideIds.value))
 
@@ -51,16 +56,16 @@ export function useRideFilters(rides: Ref<Ride[]>, participatingRideIds: Ref<str
   const upcomingRides = computed(() => {
     const upcoming = matchingRides.value.filter((ride) => !isRidePast(ride.startsAt))
 
-    return sortBy.value === 'date'
+    return effectiveSortBy.value === 'date'
       ? sortRidesByDate(upcoming)
-      : sortRides(upcoming, sortBy.value, 'desc')
+      : sortRides(upcoming, effectiveSortBy.value, 'desc')
   })
 
   const pastRides = computed(() => {
     const past = matchingRides.value.filter((ride) => isRidePast(ride.startsAt))
 
     // En el histórico lo más reciente se muestra primero, sea cual sea el criterio.
-    return sortRides(past, sortBy.value, 'desc')
+    return sortRides(past, effectiveSortBy.value, 'desc')
   })
 
   const visibleRides = computed(() =>

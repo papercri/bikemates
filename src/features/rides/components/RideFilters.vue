@@ -37,7 +37,7 @@ const activeFilterCount = computed(() => {
   if (level.value !== RIDE_FILTER_ALL) count += 1
   if (bike.value !== RIDE_FILTER_ALL) count += 1
   if (audience.value !== RIDE_FILTER_ALL) count += 1
-  if (sort.value !== 'date') count += 1
+  if (sort.value !== 'default') count += 1
   if (props.showParticipation && participating.value) count += 1
   return count
 })
@@ -127,7 +127,7 @@ const activeFilterCount = computed(() => {
       <FormSelectField
         id="ride-sort-filter"
         v-model="sort"
-        class="col-span-2 sm:w-44 lg:flex-1 lg:min-w-0"
+        class="sm:w-44 lg:flex-1 lg:min-w-0"
         label="Ordenar por"
         label-hidden
         :options="RIDE_SORT_OPTIONS"

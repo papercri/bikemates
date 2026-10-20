@@ -2,7 +2,8 @@ import type { Ride } from '../types'
 
 /** Ordenación de salidas para los listados públicos. */
 
-export type RideSortKey = 'date' | 'distance' | 'elevation' | 'created'
+/** Criterio de ordenación. `default` es el orden por defecto: la fecha de salida. */
+export type RideSortKey = 'default' | 'date' | 'distance' | 'elevation' | 'created'
 export type SortOrder = 'asc' | 'desc'
 
 function isInvalidDate(iso: string): boolean {
@@ -32,7 +33,8 @@ export function sortRidesByDate<T extends { startsAt: string }>(rides: readonly 
  * final, tanto en orden ascendente como descendente.
  */
 export function sortRides(rides: readonly Ride[], key: RideSortKey, order: SortOrder): Ride[] {
-  if (key === 'date') {
+  // `default` es el orden por defecto: fecha de salida.
+  if (key === 'date' || key === 'default') {
     const byDate = sortRidesByDate(rides)
 
     if (order === 'asc') return byDate

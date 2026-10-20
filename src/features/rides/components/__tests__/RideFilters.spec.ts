@@ -9,7 +9,7 @@ function mountFilters(props?: Record<string, unknown>) {
       level: 'Todos',
       bike: 'Todos',
       audience: 'Todos',
-      sort: 'date',
+      sort: 'default',
       ...props,
     },
   })
@@ -48,13 +48,17 @@ describe('RideFilters', () => {
 
   it('offers the participation filter only when the visitor has a session', async () => {
     const anonymous = mountFilters()
-    expect(anonymous.text()).not.toContain('Participaré')
+    expect(anonymous.find('button[aria-label="Voy"]').exists()).toBe(false)
 
     const signedIn = mountFilters({ showParticipation: true, participating: false })
-    expect(signedIn.text()).toContain('Participaré')
+    const toggle = signedIn.get('button[aria-label="Voy"]')
+    expect(toggle.attributes('aria-pressed')).toBe('false')
 
-    await signedIn.get('input[type="checkbox"]').setValue(true)
+    await toggle.trigger('click')
     expect(signedIn.emitted('update:participating')?.[0]).toEqual([true])
+
+    await signedIn.setProps({ participating: true })
+    expect(signedIn.get('button[aria-label="Voy"]').attributes('aria-pressed')).toBe('true')
   })
 
   it('emits the query while the user types', async () => {

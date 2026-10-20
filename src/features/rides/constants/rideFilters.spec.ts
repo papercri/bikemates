@@ -23,6 +23,10 @@ describe('rideFilters', () => {
       value: RIDE_FILTER_ALL,
       label: 'Todos los públicos',
     })
+    expect(RIDE_SORT_OPTIONS[0]).toEqual({
+      value: 'default',
+      label: 'Ordenar por',
+    })
   })
 
   it('offers one level option per domain level, labelled with the level itself', () => {
@@ -60,6 +64,7 @@ describe('rideFilters', () => {
 
   it('offers the sort criteria in display order', () => {
     expect(RIDE_SORT_OPTIONS).toEqual([
+      { value: 'default', label: 'Ordenar por' },
       { value: 'date', label: 'Fecha de salida' },
       { value: 'created', label: 'Fecha de creación' },
       { value: 'distance', label: 'Distancia' },
