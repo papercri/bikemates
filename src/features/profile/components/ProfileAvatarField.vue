@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref } from 'vue'
-import { faCamera } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import Alert from '@/components/ui/Alert.vue'
 import Button from '@/components/ui/Button.vue'
 import { removeAvatar, saveAvatar } from '@/features/profile/services/profileService'
@@ -142,9 +140,8 @@ onBeforeUnmount(revokePreview)
       <div class="flex flex-col items-start gap-2">
         <label
           for="avatar-file"
-          class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-btn border border-line-strong bg-white px-4 py-2 text-sm font-semibold text-ink transition-colors hover:border-graphite hover:bg-snow focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ink"
+          class="cursor-pointer text-sm font-medium text-trail-ink underline decoration-trail/60 underline-offset-4 transition-colors hover:text-trail-dark hover:decoration-trail-dark focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ink"
         >
-          <FontAwesomeIcon :icon="faCamera" aria-hidden="true" class="size-4" />
           Elegir imagen
         </label>
 
@@ -162,8 +159,8 @@ onBeforeUnmount(revokePreview)
         <Button
           v-if="props.avatarUrl && !selectedFile"
           type="button"
-          variant="destructive"
-          size="sm"
+          variant="quiet-destructive"
+          size="xs"
           :loading="isRemoving"
           :disabled="isRemoving || isSaving"
           @click="handleRemove"
