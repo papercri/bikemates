@@ -2,11 +2,16 @@ import type { Ride } from '../types'
 
 /** Ordenación de salidas para los listados públicos. */
 
-export type RideSortKey = 'date' | 'distance' | 'elevation'
+export type RideSortKey = 'date' | 'distance' | 'elevation' | 'created'
 export type SortOrder = 'asc' | 'desc'
 
 function isInvalidDate(iso: string): boolean {
   return Number.isNaN(new Date(iso).getTime())
+}
+
+function toTimestamp(iso: string): number {
+  const time = new Date(iso).getTime()
+  return Number.isNaN(time) ? Number.NEGATIVE_INFINITY : time
 }
 
 /**
@@ -23,8 +28,8 @@ export function sortRidesByDate<T extends { startsAt: string }>(rides: readonly 
 }
 
 /**
- * Ordena por el criterio indicado. Las fechas inválidas quedan siempre al final,
- * tanto en orden ascendente como descendente.
+ * Ordena por el criterio indicado. Las fechas de salida inválidas quedan siempre al
+ * final, tanto en orden ascendente como descendente.
  */
 export function sortRides(rides: readonly Ride[], key: RideSortKey, order: SortOrder): Ride[] {
   if (key === 'date') {
@@ -39,7 +44,12 @@ export function sortRides(rides: readonly Ride[], key: RideSortKey, order: SortO
   }
 
   const sign = order === 'asc' ? 1 : -1
-  const metricOf = (ride: Ride): number => (key === 'distance' ? ride.distanceKm : ride.elevationM)
+
+  const metricOf = (ride: Ride): number => {
+    if (key === 'distance') return ride.distanceKm
+    if (key === 'elevation') return ride.elevationM
+    return toTimestamp(ride.createdAt)
+  }
 
   return [...rides].sort((a, b) => (metricOf(a) - metricOf(b)) * sign)
 }

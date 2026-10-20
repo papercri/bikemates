@@ -15,7 +15,7 @@ export type RideAudienceFilter = typeof RIDE_FILTER_ALL | RideAudience
 export type RideBikeFilter = typeof RIDE_FILTER_ALL | BikeType
 
 /** Criterio de ordenación del listado. */
-export type RideSortOption = 'date' | 'distance' | 'elevation'
+export type RideSortOption = 'date' | 'distance' | 'elevation' | 'created'
 
 /** Ventana temporal mostrada: salidas próximas o ya celebradas. */
 export type RideTimeframe = 'upcoming' | 'past'
@@ -50,7 +50,8 @@ export const RIDE_AUDIENCE_FILTER_OPTIONS: readonly RideFilterOption<RideAudienc
 ]
 
 export const RIDE_SORT_OPTIONS: readonly RideFilterOption<RideSortOption>[] = [
-  { value: 'date', label: 'Por fecha' },
-  { value: 'distance', label: 'Por distancia' },
-  { value: 'elevation', label: 'Por desnivel' },
+  { value: 'date', label: 'Fecha de salida' },
+  { value: 'created', label: 'Fecha de creación' },
+  { value: 'distance', label: 'Distancia' },
+  { value: 'elevation', label: 'Desnivel' },
 ]

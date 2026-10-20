@@ -20,6 +20,8 @@
 
   --color-ink: #1a1d20;
   --color-graphite: #5c6560;
+  /* Gris carbón: fondos oscuros sobrios (pie de página) con texto claro encima. */
+  --color-charcoal: #2b312e;
 
   /* Verde de marca: acento de acciones primarias y estados activos. */
   --color-trail: #22c55e;

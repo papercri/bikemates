@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { faBicycle, faClock, faMap } from '@fortawesome/free-solid-svg-icons'
+import { faArrowUpRightFromSquare, faBicycle, faClock } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { useHead } from '@unhead/vue'
 import { computed, onBeforeUnmount, ref } from 'vue'
@@ -331,16 +331,16 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
               {{ showFullDescription ? 'Leer menos' : 'Leer más' }}
             </button>
 
-            <p v-if="ride.wikilocUrl" class="mt-3">
+            <p v-if="ride.wikilocUrl" class="mt-3 flex justify-end">
               <a
                 :href="ride.wikilocUrl"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="inline-flex items-center gap-2 text-sm font-medium text-route-ink underline-offset-4 hover:text-route-dark hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
-                :aria-label="`Ver recorrido de ${ride.title}`"
+                :aria-label="`Ver ruta de ${ride.title}`"
               >
-                <FontAwesomeIcon :icon="faMap" aria-hidden="true" />
-                Ver recorrido
+                Ver ruta
+                <FontAwesomeIcon :icon="faArrowUpRightFromSquare" aria-hidden="true" />
                 <span class="sr-only">(se abre en una pestaña nueva)</span>
               </a>
             </p>
