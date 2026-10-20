@@ -408,7 +408,6 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
             :is-authenticated="isAuthenticated"
             :current-user-id="authStore.user?.id ?? null"
             :is-submitting="isSubmitting"
-            :is-organizer="isOrganizer"
             @join="join"
             @leave="leave"
           />

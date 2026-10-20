@@ -9,6 +9,7 @@ import Checkbox from '@/components/ui/Checkbox.vue'
 import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
 import Typography from '@/components/ui/Typography.vue'
 import CommunityRulesDialog from '@/components/community/CommunityRulesDialog.vue'
+import RideJoinAuthDialog from '@/features/rides/components/RideJoinAuthDialog.vue'
 import type { RideParticipant } from '../types'
 
 interface Props {
@@ -18,7 +19,6 @@ interface Props {
   isAuthenticated: boolean
   currentUserId: string | null
   isSubmitting: boolean
-  isOrganizer: boolean
 }
 
 const props = defineProps<Props>()
@@ -41,6 +41,9 @@ const isLeaveDialogOpen = ref(false)
 /** Requisito para inscribirse: aceptar explícitamente las normas de la comunidad. */
 const acceptedRules = ref(false)
 const showRulesDialog = ref(false)
+
+/** Sin sesión el CTA de participación abre el modal de acceso. */
+const showAuthDialog = ref(false)
 
 function getInitials(name: string): string {
   return name
@@ -80,26 +83,29 @@ function confirmLeave(): void {
 
     <div>
       <div class="mb-4">
-        <template v-if="!isAuthenticated">
+        <!-- Sin sesión: el CTA siempre está visible y abre el modal de acceso. -->
+        <div v-if="!isAuthenticated">
           <Typography variant="body-sm" tone="muted">
-            Inicia sesión para ver la lista y participar en esta ruta.
+            Inicia sesión para ver la lista de participantes.
           </Typography>
 
-          <Button to="/login" class="mt-3"> Iniciar sesión </Button>
-        </template>
+          <Button class="mt-3" type="button" @click="showAuthDialog = true">
+            Participar en esta ruta
+          </Button>
+        </div>
 
-        <!-- El organizador no ve CTA: su inscripción es automática. -->
-        <div v-else-if="!isParticipant && !isOrganizer">
-          <div class="rounded-card border border-line bg-surface p-4">
+        <!-- Cualquier visitante autenticado que aún no participa (incluido el organizador). -->
+        <div v-else-if="!isParticipant">
+          <div>
             <Checkbox
               v-model="acceptedRules"
               label="He leído y acepto las normas de la comunidad"
             />
 
-            <div class="mt-2 pl-7">
+            <div class="mt-1.5 pl-7">
               <button
                 type="button"
-                class="text-sm font-semibold text-trail-ink underline underline-offset-2 transition-colors hover:text-green-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+                class="text-xs text-graphite underline underline-offset-2 transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
                 @click="showRulesDialog = true"
               >
                 Ver normas de la comunidad
@@ -184,5 +190,7 @@ function confirmLeave(): void {
     />
 
     <CommunityRulesDialog :open="showRulesDialog" @close="showRulesDialog = false" />
+
+    <RideJoinAuthDialog :open="showAuthDialog" @close="showAuthDialog = false" />
   </section>
 </template>

@@ -1,6 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import { RouterLinkStub } from '@vue/test-utils'
+import { nextTick } from 'vue'
 import type { RideParticipant } from '../../types'
 import RideParticipants from '../RideParticipants.vue'
 
@@ -23,7 +24,6 @@ function mountParticipants(props?: Record<string, unknown>, attachToBody = false
       isAuthenticated: true,
       currentUserId: 'user-1',
       isSubmitting: false,
-      isOrganizer: false,
       ...props,
     },
     global: { stubs: { RouterLink: RouterLinkStub } },
@@ -46,20 +46,36 @@ describe('RideParticipants', () => {
     expect(many.get('[aria-live="polite"]').text()).toContain('2 ciclistas')
   })
 
-  it('asks anonymous visitors to sign in instead of joining', () => {
-    const wrapper = mountParticipants({ isAuthenticated: false })
+  it('shows the join CTA to anonymous visitors and opens the access dialog', async () => {
+    const wrapper = mountParticipants({ isAuthenticated: false }, true)
 
-    expect(wrapper.text()).toContain('Inicia sesión para ver la lista y participar en esta ruta.')
-    expect(wrapper.getComponent(RouterLinkStub).props('to')).toBe('/login')
+    expect(wrapper.text()).toContain('Participar en esta ruta')
+
+    const cta = wrapper
+      .findAll('button')
+      .find((button) => button.text().includes('Participar en esta ruta'))
+    await cta!.trigger('click')
+    await nextTick()
+
+    const modal = document.querySelector('[role="dialog"]')
+    expect(modal?.textContent).toContain('Inicia sesión para participar')
+    expect(modal?.querySelector('[data-dialog-login]')).not.toBeNull()
+    expect(modal?.querySelector('[data-dialog-register]')).not.toBeNull()
+
+    // El diálogo se teletransporta a body: se desmonta para no dejarlo en el documento.
+    wrapper.unmount()
+  })
+
+  it('shows no join CTA to a visitor who already participates', () => {
+    const wrapper = mountParticipants({ participants, currentUserId: 'user-1' })
+
     expect(wrapper.text()).not.toContain('Participar en esta ruta')
   })
 
-  it('shows no join CTA to the organizer', () => {
-    const wrapper = mountParticipants({ isOrganizer: true })
+  it('offers the join CTA to the organizer when they have not joined yet', () => {
+    const wrapper = mountParticipants({ participants: [], currentUserId: 'user-1' })
 
-    expect(wrapper.text()).not.toContain('Participar en esta ruta')
-    expect(wrapper.text()).not.toContain('Eres el organizador')
-    expect(wrapper.find('button[type="button"]').exists()).toBe(false)
+    expect(wrapper.text()).toContain('Participar en esta ruta')
   })
 
   it('keeps the join CTA disabled until the community rules are accepted', async () => {

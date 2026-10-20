@@ -385,7 +385,7 @@ function handleSubmit(): void {
         {{ summaryError }}
       </Alert>
 
-      <div class="rounded-card border border-line bg-surface p-4">
+      <div>
         <Checkbox
           v-model="acceptedRules"
           :aria-describedby="rulesError ? 'accepted-rules-error' : undefined"
@@ -393,10 +393,10 @@ function handleSubmit(): void {
           label="He leído y acepto las normas de la comunidad"
         />
 
-        <div class="mt-2 pl-7">
+        <div class="mt-1.5 pl-7">
           <button
             type="button"
-            class="text-sm font-semibold text-trail-ink underline underline-offset-2 transition-colors hover:text-green-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+            class="text-xs text-graphite underline underline-offset-2 transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
             @click="showRulesDialog = true"
           >
             Ver normas de la comunidad
