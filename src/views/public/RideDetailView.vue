@@ -13,6 +13,7 @@ import BikeLoader from '@/components/ui/BikeLoader.vue'
 import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
+import MarkdownText from '@/components/ui/MarkdownText.vue'
 import Typography from '@/components/ui/Typography.vue'
 import { useAuthStore } from '@/features/auth/stores/authStore'
 import RideMap from '@/features/rides/components/RideMap.vue'
@@ -83,11 +84,28 @@ const isDescriptionTruncated = computed(
   () => descriptionWords.value.length > DESCRIPTION_PREVIEW_WORDS,
 )
 
+/**
+ * Recorta la descripción a las primeras palabras conservando los saltos de línea
+ * originales: no se vuelve a unir el texto con espacios, que perdería el formato.
+ */
 const visibleDescription = computed(() => {
-  if (!isDescriptionTruncated.value || showFullDescription.value) {
-    return descriptionWords.value.join(' ')
+  const raw = ride.value?.description ?? ''
+
+  if (!isDescriptionTruncated.value || showFullDescription.value) return raw
+
+  const regex = /\S+/g
+  let count = 0
+  let cutAt = 0
+  let match = regex.exec(raw)
+
+  while (match !== null) {
+    count += 1
+    cutAt = match.index + match[0].length
+    if (count >= DESCRIPTION_PREVIEW_WORDS) break
+    match = regex.exec(raw)
   }
-  return `${descriptionWords.value.slice(0, DESCRIPTION_PREVIEW_WORDS).join(' ')}…`
+
+  return `${raw.slice(0, cutAt)}…`
 })
 
 interface RideStatItem {
@@ -317,9 +335,10 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
               Descripción
             </Typography>
 
-            <p class="text-justify text-[0.95rem] leading-7 hyphens-auto text-graphite">
-              {{ visibleDescription }}
-            </p>
+            <MarkdownText
+              :text="visibleDescription"
+              class="text-justify text-[0.95rem] leading-7 hyphens-auto text-graphite"
+            />
 
             <button
               v-if="isDescriptionTruncated"
