@@ -8,12 +8,15 @@ BikeMates is a **mobile-first** SPA built with Vue 3 and strict TypeScript, back
 
 ### Route discovery
 
-- Route listing with one card per ride: location, distance, total elevation gain, and level.
+- Route listing with one card per ride: short date (`dd/MM`), title, level, bike type, and
+  audience. Distance and elevation live on the detail page.
 - Compact filters with screen-reader-only labels: title search (case- and accent-insensitive),
-  level, audience, sort (`Date of departure`, `Creation date`, `Distance`, `Elevation`), and,
-  for signed-in cyclists, a `Participaré` filter that narrows the list to the rides they have
+  level, bike type, audience, sort (a leading `Ordenar por` default that follows the date of
+  departure, plus `Date of departure`, `Creation date`, `Distance`, `Elevation`), and, for
+  signed-in cyclists, an icon-only `Voy` toggle that narrows the list to the rides they have
   joined.
-- Cards show a green `Participaré` badge on the rides the current user participates in.
+- Cards mark the rides the current user participates in with a green cyclist icon; the
+  `Participaré` label stays available to screen readers.
 - Two tabs on the listing: `Upcoming` and `Past`, each with its count; past rides are
   sorted from most to least recent and dimmed on the card.
 - Two-column route detail layout (2/3 + 1/3): cover image with the
@@ -28,7 +31,8 @@ BikeMates is a **mobile-first** SPA built with Vue 3 and strict TypeScript, back
 - Empty state and back link when the route does not exist.
 - **Joining a ride** requires explicitly accepting the community rules: the `Participar en esta
   ruta` CTA stays disabled until the checkbox is ticked, and `Ver normas de la comunidad` opens
-  the same rules dialog used when publishing.
+  the same rules dialog used when publishing. Visitors without a session always see the CTA and
+  it opens a sign-in/sign-up dialog that returns them to the very same route.
 - **Content screening**: the title and description are rejected when they contain offensive or
   sexual words (`BLOCKED_WORDS` in `src/features/rides/validators/rideFormValidator.ts`), matched
   on normalized, accent-free whole words to avoid false positives.
@@ -241,6 +245,6 @@ Separation of concerns: views orchestrate, components present, services access d
 
 ## Quality and tests
 
-- **Unit**: `npm run test:unit` — 594 tests in 84 files (design system, validators, services and route composables, auth service, session store, UI primitives, listing filters, SVG icons, profile tabs, private views, and navigation components).
+- **Unit**: `npm run test:unit` — 600 tests in 84 files (design system, validators, services and route composables, auth service, session store, UI primitives, listing filters, SVG icons, profile tabs, private views, and navigation components).
 - **E2E**: `npm run test:e2e` — Playwright on Chromium and mobile (148 passing; authentication, profile, ride creation, listing, detail, and navigation).
 - Gates before considering a task complete: `npm run test:unit -- --run`, `npm run type-check`, `npx eslint .`, `npx oxlint .`, Prettier, and, when relevant, `npm run build`.
