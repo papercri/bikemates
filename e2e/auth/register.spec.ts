@@ -10,6 +10,7 @@ test.describe('register', () => {
     await expect(page.getByLabel('Contraseña', { exact: true })).toBeVisible()
     await expect(page.getByLabel('Confirmar contraseña')).toBeVisible()
     await expect(page.getByText('Utiliza al menos 8 caracteres.')).toBeVisible()
+    await expect(page.getByRole('checkbox')).toBeVisible()
     await expect(page.getByRole('button', { name: 'Crear cuenta' })).toBeVisible()
     await expect(page.getByRole('link', { name: 'Inicia sesión' })).toBeVisible()
   })
@@ -23,6 +24,9 @@ test.describe('register', () => {
     await expect(page.locator('#email-error')).toHaveText('El correo electrónico es obligatorio.')
     await expect(page.locator('#password-error')).toHaveText('La contraseña es obligatoria.')
     await expect(page.locator('#confirm-password-error')).toHaveText('Confirma tu contraseña.')
+    await expect(page.locator('#accepted-rules-error')).toHaveText(
+      'Debes aceptar las normas de la comunidad y la política de privacidad.',
+    )
   })
 
   test('rejects a short password with a clear message', async ({ page }) => {
@@ -70,6 +74,7 @@ test.describe('register', () => {
     await page.getByLabel('Correo electrónico').fill('ana.nueva@example.com')
     await page.getByLabel('Contraseña', { exact: true }).fill('pedaleando123')
     await page.getByLabel('Confirmar contraseña').fill('pedaleando123')
+    await page.getByRole('checkbox').check()
     await page.getByRole('button', { name: 'Crear cuenta' }).click()
 
     await expect(page.getByRole('status')).toHaveText(
@@ -92,6 +97,7 @@ test.describe('register', () => {
     await page.getByLabel('Correo electrónico').fill('ocupado@example.com')
     await page.getByLabel('Contraseña', { exact: true }).fill('pedaleando123')
     await page.getByLabel('Confirmar contraseña').fill('pedaleando123')
+    await page.getByRole('checkbox').check()
     await page.getByRole('button', { name: 'Crear cuenta' }).click()
 
     await expect(page.getByRole('alert')).toContainText(
@@ -107,6 +113,7 @@ test.describe('register', () => {
     await page.getByLabel('Correo electrónico').fill('lenta@example.com')
     await page.getByLabel('Contraseña', { exact: true }).fill('pedaleando123')
     await page.getByLabel('Confirmar contraseña').fill('pedaleando123')
+    await page.getByRole('checkbox').check()
     await page.getByRole('button', { name: 'Crear cuenta' }).click()
 
     await expect(page.getByRole('button', { name: 'Creando cuenta…' })).toBeDisabled()

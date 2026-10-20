@@ -135,7 +135,7 @@ function confirmLeave(): void {
 
       <!-- CTA de participación bajo la lista: solo para quien aún no participa. -->
       <div v-if="!isParticipant" class="mt-4">
-        <Checkbox v-model="acceptedRules"
+        <Checkbox v-model="acceptedRules" size="xs"
           >He leído y acepto las
           <button
             type="button"
@@ -143,7 +143,15 @@ function confirmLeave(): void {
             @click.stop.prevent="showRulesDialog = true"
           >
             normas de la comunidad
-          </button></Checkbox
+          </button>
+          y la
+          <RouterLink
+            to="/privacy"
+            class="text-graphite underline underline-offset-2 transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+            @click.stop
+          >
+            política de privacidad
+          </RouterLink></Checkbox
         >
 
         <Button

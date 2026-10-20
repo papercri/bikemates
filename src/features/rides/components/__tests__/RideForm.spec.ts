@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils'
+import { mount, RouterLinkStub } from '@vue/test-utils'
 import { defineComponent } from 'vue'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { RideFormValues } from '../../types'
@@ -48,7 +48,7 @@ function mountForm(props?: Record<string, unknown>) {
       ...props,
     },
     global: {
-      stubs: { MeetingPointPicker: MeetingPointPickerStub },
+      stubs: { MeetingPointPicker: MeetingPointPickerStub, RouterLink: RouterLinkStub },
     },
   })
 }

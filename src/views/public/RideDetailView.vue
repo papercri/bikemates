@@ -277,7 +277,11 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
 
         <!-- Fila 2: título a la izquierda y, en su columna derecha, las acciones. -->
         <div class="mt-4 flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
-          <Typography as="h1" variant="heading-lg" class="tracking-tight sm:min-w-0 sm:flex-1">
+          <Typography
+            as="h1"
+            variant="heading-lg"
+            class="font-bold tracking-tight sm:min-w-0 sm:flex-1"
+          >
             {{ ride.title }}
           </Typography>
 

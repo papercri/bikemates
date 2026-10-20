@@ -7,6 +7,8 @@ const props = withDefaults(
     modelValue: boolean
     id?: string
     label?: string
+    /** Tamaño del texto de la etiqueta: `xs` para avisos legales compactos. */
+    size?: 'sm' | 'xs'
     disabled?: boolean
     ariaDescribedby?: string
     ariaInvalid?: boolean
@@ -14,6 +16,7 @@ const props = withDefaults(
   {
     id: undefined,
     label: undefined,
+    size: 'sm',
     disabled: false,
     ariaDescribedby: undefined,
     ariaInvalid: false,
@@ -55,7 +58,10 @@ function handleChange(event: Event): void {
     />
 
     <div class="min-w-0">
-      <label :for="inputId" class="cursor-pointer text-sm text-ink">
+      <label
+        :for="inputId"
+        :class="cn('cursor-pointer text-ink', props.size === 'xs' ? 'text-xs' : 'text-sm')"
+      >
         <slot>{{ label }}</slot>
       </label>
 

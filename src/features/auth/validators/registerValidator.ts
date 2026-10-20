@@ -5,6 +5,7 @@ export interface RegisterForm {
   email: string
   password: string
   confirmPassword: string
+  acceptedRules: boolean
 }
 
 export interface RegisterErrors {
@@ -12,6 +13,7 @@ export interface RegisterErrors {
   email: string
   password: string
   confirmPassword: string
+  acceptedRules: string
 }
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -24,6 +26,7 @@ export function validateRegisterForm(form: RegisterForm): RegisterErrors {
     email: '',
     password: '',
     confirmPassword: '',
+    acceptedRules: '',
   }
 
   const name = form.name.trim()
@@ -55,6 +58,10 @@ export function validateRegisterForm(form: RegisterForm): RegisterErrors {
     errors.confirmPassword = 'Confirma tu contraseña.'
   } else if (form.confirmPassword !== form.password) {
     errors.confirmPassword = 'Las contraseñas no coinciden.'
+  }
+
+  if (!form.acceptedRules) {
+    errors.acceptedRules = 'Debes aceptar las normas de la comunidad y la política de privacidad.'
   }
 
   return errors

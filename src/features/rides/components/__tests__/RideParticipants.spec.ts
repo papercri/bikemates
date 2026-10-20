@@ -61,7 +61,7 @@ describe('RideParticipants', () => {
     expect(rulesLink).toBeDefined()
     // El marcado parte el texto en varios nodos: se normalizan los espacios.
     expect(wrapper.get('label').text().replace(/\s+/g, ' ').trim()).toBe(
-      'He leído y acepto las normas de la comunidad',
+      'He leído y acepto las normas de la comunidad y la política de privacidad',
     )
 
     await rulesLink!.trigger('click')

@@ -1,7 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="BikeMates">
   <rect width="64" height="64" rx="14" fill="#ffffff" />
-  <rect x="0.5" y="0.5" width="63" height="63" rx="13.5" fill="none" stroke="#e9ecef" />
-  <g transform="translate(4.5 14.5) scale(1.25)">
+  <rect
+    x="1.5"
+    y="1.5"
+    width="61"
+    height="61"
+    rx="13"
+    fill="none"
+    stroke="#22c55e"
+    stroke-width="3"
+  />
+  <g transform="translate(2.3 12.1) scale(1.35)">
     <path
       d="M2 22 L12 8 L18 15 L26 4 L42 22"
       fill="none"

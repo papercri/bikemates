@@ -390,6 +390,7 @@ function handleSubmit(): void {
           v-model="acceptedRules"
           :aria-describedby="rulesError ? 'accepted-rules-error' : undefined"
           :aria-invalid="Boolean(rulesError)"
+          size="xs"
           >He leído y acepto las
           <button
             type="button"
@@ -397,7 +398,15 @@ function handleSubmit(): void {
             @click.stop.prevent="showRulesDialog = true"
           >
             normas de la comunidad
-          </button></Checkbox
+          </button>
+          y la
+          <RouterLink
+            to="/privacy"
+            class="text-graphite underline underline-offset-2 transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+            @click.stop
+          >
+            política de privacidad
+          </RouterLink></Checkbox
         >
         <p
           v-if="rulesError"
