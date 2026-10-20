@@ -127,12 +127,16 @@ npm run dev
 
 Copy the environment variables into `.env.local` (use `.env.example` as a template):
 
-| Variable                 | Description                                   |
-| ------------------------ | --------------------------------------------- |
-| `VITE_SUPABASE_URL`      | Supabase project URL                          |
-| `VITE_SUPABASE_ANON_KEY` | Project public (anon/publishable) key         |
+| Variable                       | Description                                              |
+| ------------------------------ | -------------------------------------------------------- |
+| `VITE_SUPABASE_URL`            | Supabase project URL                                     |
+| `VITE_SUPABASE_PUBLISHABLE_KEY`| Project public key (`sb_publishable_…`), preferred        |
+| `VITE_SUPABASE_ANON_KEY`       | Project public (anon) key, accepted as a fallback         |
 
-The app fails explicitly at startup if these variables are missing. Never use the `service_role` key in the browser: it is reserved for the server and Edge Functions.
+The app fails explicitly at startup if these variables are missing, and it also refuses to
+boot when the environment holds a secret key (`sb_secret_…` or a `service_role` JWT). Never
+use the `service_role` key in the browser: it is reserved for the server and Edge Functions,
+and it would bypass Row Level Security for every visitor.
 
 ## Scripts
 
@@ -245,6 +249,6 @@ Separation of concerns: views orchestrate, components present, services access d
 
 ## Quality and tests
 
-- **Unit**: `npm run test:unit` — 600 tests in 84 files (design system, validators, services and route composables, auth service, session store, UI primitives, listing filters, SVG icons, profile tabs, private views, and navigation components).
+- **Unit**: `npm run test:unit` — 604 tests in 84 files (design system, validators, services and route composables, auth service, session store, UI primitives, listing filters, SVG icons, profile tabs, private views, and navigation components).
 - **E2E**: `npm run test:e2e` — Playwright on Chromium and mobile (148 passing; authentication, profile, ride creation, listing, detail, and navigation).
 - Gates before considering a task complete: `npm run test:unit -- --run`, `npm run type-check`, `npx eslint .`, `npx oxlint .`, Prettier, and, when relevant, `npm run build`.
