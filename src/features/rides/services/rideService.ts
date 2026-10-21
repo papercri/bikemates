@@ -119,6 +119,18 @@ export async function createRide(input: CreateRideInput): Promise<Ride> {
     throw new Error(`No se pudo crear la ruta: ${error.message}`)
   }
 
+  // El organizador participa siempre: se añade automáticamente y no puede
+  // abandonar la salida desde la interfaz.
+  const { error: participantError } = await supabase
+    .from('ride_participants')
+    .insert({ ride_id: data.id, user_id: user.id })
+
+  if (participantError) {
+    throw new Error(
+      `La ruta se ha publicado, pero no se ha podido añadirte como participante: ${participantError.message}`,
+    )
+  }
+
   return mapRide(data)
 }
 

@@ -181,6 +181,8 @@ describe('rideService', () => {
         status: 'published',
       })
       expect(chain.single).toHaveBeenCalled()
+      expect(mocks.from).toHaveBeenCalledWith('ride_participants')
+      expect(chain.insert).toHaveBeenCalledWith({ ride_id: 'ride-1', user_id: 'user-1' })
       expect(ride).toMatchObject({
         id: 'ride-1',
         organizerId: 'user-1',
@@ -188,6 +190,16 @@ describe('rideService', () => {
         level: 'Intermedio',
         imageUrl: null,
       })
+    })
+
+    it('reports a failure when the organizer cannot be added as participant', async () => {
+      const rideChain = createQueryChain({ data: rideRow(), error: null })
+      const participantChain = createQueryChain({ data: null, error: { message: 'denied' } })
+      mocks.from.mockReturnValueOnce(rideChain).mockReturnValueOnce(participantChain)
+
+      await expect(createRide(createInput())).rejects.toThrow(
+        'La ruta se ha publicado, pero no se ha podido añadirte como participante: denied',
+      )
     })
 
     it('builds the public image url when the ride has an image path', async () => {

@@ -123,7 +123,7 @@ function confirmLeave(): void {
           </div>
 
           <button
-            v-if="participant.id === currentUserId"
+            v-if="participant.id === currentUserId && !participant.isOrganizer"
             type="button"
             class="shrink-0 rounded-btn p-1.5 text-graphite transition-colors hover:text-red-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 disabled:cursor-not-allowed disabled:opacity-50"
             :disabled="isSubmitting"

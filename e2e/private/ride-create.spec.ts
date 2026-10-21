@@ -14,8 +14,7 @@ test.describe('create ride', () => {
 
     await page.goto('/rides/create')
 
-    await expect(page.getByRole('heading', { level: 1, name: 'Publica una ruta' })).toBeVisible()
-    await expect(page.getByText('Organiza tu próxima salida y encuentra ciclistas')).toBeVisible()
+    await expect(page.locator('#main-content').getByRole('heading', { level: 1 })).toBeVisible()
 
     await expect(page.getByRole('group', { name: 'Datos básicos' })).toBeVisible()
     await expect(page.getByRole('group', { name: 'Recorrido' })).toBeVisible()
@@ -28,6 +27,7 @@ test.describe('create ride', () => {
     await expect(page.locator('#distanceKm')).toHaveValue('')
     await expect(page.locator('#elevationM')).toHaveValue('')
     await expect(page.locator('#durationMinutes')).toHaveValue('')
+    await expect(page.getByRole('switch', { name: 'Ruta circular' })).toBeChecked()
 
     await expect(page.getByRole('button', { name: 'Publicar ruta' })).toBeVisible()
   })
