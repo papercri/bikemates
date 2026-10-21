@@ -4,7 +4,7 @@ import { faBicycle, faCalendar, faUser } from '@fortawesome/free-solid-svg-icons
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import Badge from '@/components/ui/Badge.vue'
 import IconArrow from '@/components/icons/IconArrow.vue'
-import IconStar from '@/components/icons/IconStar.vue'
+import IconHeart from '@/components/icons/IconHeart.vue'
 import RideAudienceBadge from '@/features/rides/components/RideAudienceBadge.vue'
 import { RIDE_LEVEL_BADGE_COLORS } from '@/features/rides/constants/rideLevels'
 import { RIDE_BIKE_TYPE_LABELS } from '@/features/rides/constants/rideOptions'
@@ -87,24 +87,14 @@ const shortDate = computed(() => formatRideShortDate(props.ride.startsAt))
       <div
         class="relative flex items-start justify-between gap-3 bg-gradient-to-b from-ink/70 via-ink/30 to-transparent p-4 sm:p-5"
       >
-        <div class="flex items-center gap-2">
-          <!-- Raíl de fecha: fecha compacta `dd/MM` con fecha legible para lectores de pantalla. -->
-          <time
-            :datetime="ride.startsAt"
-            class="inline-flex items-center gap-1 rounded-full bg-ink px-2 py-0.5 font-mono text-[0.7rem] font-semibold tabular-nums text-canvas"
-          >
-            <FontAwesomeIcon :icon="faCalendar" aria-hidden="true" class="size-3" />
-            {{ shortDate }}
-          </time>
-
-          <template v-if="participating">
-            <FontAwesomeIcon :icon="faUser" aria-hidden="true" class="size-4 text-trail" />
-            <span class="sr-only">Participaré</span>
-          </template>
-        </div>
-
-        <!-- El hueco reserva el ancho del botón de favoritos para no desplazar la fecha. -->
-        <span v-if="showSaveToggle" class="w-8" aria-hidden="true" />
+        <!-- Raíl de fecha: fecha compacta `dd/MM` con fecha legible para lectores de pantalla. -->
+        <time
+          :datetime="ride.startsAt"
+          class="inline-flex items-center gap-1 rounded-full bg-ink px-2 py-0.5 font-mono text-[0.7rem] font-semibold tabular-nums text-canvas"
+        >
+          <FontAwesomeIcon :icon="faCalendar" aria-hidden="true" class="size-3" />
+          {{ shortDate }}
+        </time>
       </div>
 
       <!-- Entrada: capa oscura a sangre, pegada a los bordes de la foto -->
@@ -150,22 +140,36 @@ const shortDate = computed(() => formatRideShortDate(props.ride.startsAt))
           class="pointer-events-none absolute bottom-20 left-1/2 z-10 -translate-x-1/2 rounded-full bg-ink/90 px-3 py-1 text-xs font-semibold whitespace-nowrap text-canvas"
           role="status"
         >
-          <IconStar filled class="me-1 inline-block size-3 text-sun" />
+          <IconHeart filled class="me-1 inline-block size-3 text-red-500" />
           Agregado a tus favoritos
         </p>
       </Transition>
     </RouterLink>
 
-    <!-- Botón de favoritos fuera del enlace: un <button> dentro de un <a> no es HTML válido. -->
-    <button
-      v-if="showSaveToggle"
-      type="button"
-      class="absolute top-3.5 right-3.5 z-10 flex size-8 items-center justify-center rounded-full bg-ink/70 text-canvas transition-colors hover:bg-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sun sm:top-4.5 sm:right-4.5"
-      :aria-pressed="saved ?? false"
-      :aria-label="saved ? 'Quitar de favoritos' : 'Agregar a favoritos'"
-      @click.stop.prevent="emit('toggle-save')"
+    <!-- Pila de acciones fuera del enlace: un <button> dentro de un <a> no es HTML válido.
+         Corazón de favoritos arriba; debajo, el círculo de participación. -->
+    <div
+      v-if="showSaveToggle || participating"
+      class="absolute top-3.5 right-3.5 z-10 flex flex-col items-end gap-1.5 sm:top-4.5 sm:right-4.5"
     >
-      <IconStar :filled="saved" class="size-4" :class="saved ? 'text-sun' : 'text-canvas'" />
-    </button>
+      <button
+        v-if="showSaveToggle"
+        type="button"
+        class="flex size-7 items-center justify-center rounded-full bg-ink/70 text-canvas transition-colors hover:bg-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500"
+        :aria-pressed="saved ?? false"
+        :aria-label="saved ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+        @click.stop.prevent="emit('toggle-save')"
+      >
+        <IconHeart :filled="saved" class="size-3.5" :class="saved ? 'text-red-500' : 'text-canvas'" />
+      </button>
+
+      <span
+        v-if="participating"
+        class="flex size-7 items-center justify-center rounded-full bg-ink/70 text-trail"
+      >
+        <FontAwesomeIcon :icon="faUser" aria-hidden="true" class="size-3" />
+        <span class="sr-only">Participaré</span>
+      </span>
+    </div>
   </article>
 </template>
