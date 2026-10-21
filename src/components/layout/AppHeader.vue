@@ -170,14 +170,54 @@ onBeforeUnmount(() => {
         </span>
 
         <template v-else-if="user">
-          <Button to="/profile" :variant="isOverlay ? 'sun' : 'outline'" size="xs">
-            <FontAwesomeIcon :icon="faUserGear" aria-hidden="true" />
-            Mi perfil
+          <!-- Acciones de sesión compactas: solo icono, nombre accesible propio y globo de ayuda. -->
+          <Button
+            to="/profile"
+            :variant="isOverlay ? 'sun-outline' : 'outline'"
+            size="xs"
+            class="group relative size-10"
+          >
+            <span class="sr-only">Mi perfil</span>
+            <FontAwesomeIcon
+              :icon="faUserGear"
+              aria-hidden="true"
+              class="size-5 transition-colors"
+              :class="
+                isOverlay
+                  ? 'text-white/90 group-hover:text-white'
+                  : 'text-graphite group-hover:text-ink'
+              "
+            />
+            <span
+              role="tooltip"
+              aria-hidden="true"
+              class="pointer-events-none absolute right-0 top-full z-20 mt-2 rounded-btn bg-ink px-2 py-1 text-xs font-medium whitespace-nowrap text-canvas opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
+            >
+              Mi perfil
+            </span>
           </Button>
 
-          <Button variant="primary" size="xs" :loading="isLoggingOut" @click="handleLogout">
-            <FontAwesomeIcon v-if="!isLoggingOut" :icon="faRightFromBracket" aria-hidden="true" />
-            {{ isLoggingOut ? 'Cerrando…' : 'Cerrar sesión' }}
+          <Button
+            :variant="isOverlay ? 'sun-outline' : 'outline'"
+            size="xs"
+            class="group relative size-10"
+            :loading="isLoggingOut"
+            @click="handleLogout"
+          >
+            <span class="sr-only">Cerrar sesión</span>
+            <FontAwesomeIcon
+              v-if="!isLoggingOut"
+              :icon="faRightFromBracket"
+              aria-hidden="true"
+              class="size-5 text-graphite transition-colors group-hover:text-ink"
+            />
+            <span
+              role="tooltip"
+              aria-hidden="true"
+              class="pointer-events-none absolute right-0 top-full z-20 mt-2 rounded-btn bg-ink px-2 py-1 text-xs font-medium whitespace-nowrap text-canvas opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
+            >
+              Cerrar sesión
+            </span>
           </Button>
         </template>
 

@@ -1,9 +1,21 @@
 import { mount, flushPromises } from '@vue/test-utils'
+import type { User } from '@supabase/supabase-js'
 import { describe, expect, it } from 'vitest'
 import { createPinia } from 'pinia'
 import { createRouter, createWebHistory } from 'vue-router'
 import AppHeader from '@/components/layout/AppHeader.vue'
 import { useAuthStore } from '@/features/auth/stores/authStore'
+
+const signedInUser: User = {
+  id: 'user-1',
+  aud: 'authenticated',
+  email: 'ana@ejemplo.com',
+  app_metadata: { provider: 'email' },
+  user_metadata: {},
+  identities: [],
+  created_at: '2026-01-01T00:00:00.000Z',
+  updated_at: '2026-01-01T00:00:00.000Z',
+}
 
 const routes = [
   { path: '/', component: { template: '<div>Inicio</div>' } },
@@ -99,5 +111,32 @@ describe('AppHeader', () => {
     const panel = wrapper.get('#primary-mobile-nav')
     expect(panel.text()).toContain('Iniciar sesión')
     expect(panel.text()).toContain('Registrarse')
+  })
+
+  it('shows the session actions as square icon-only controls with tooltips', async () => {
+    const { wrapper } = await mountHeader()
+    const authStore = useAuthStore()
+
+    authStore.isInitialized = true
+    authStore.user = signedInUser
+    await flushPromises()
+
+    const profile = wrapper
+      .findAll('a[href="/profile"]')
+      .find((link) => link.find('[role="tooltip"]').exists())
+    expect(profile).toBeDefined()
+    expect(profile!.text()).toContain('Mi perfil')
+    expect(profile!.classes()).toContain('size-10')
+
+    const logout = wrapper
+      .findAll('button')
+      .find((button) => button.find('[role="tooltip"]').exists())
+    expect(logout).toBeDefined()
+    expect(logout!.text()).toContain('Cerrar sesión')
+    expect(logout!.classes()).toContain('size-10')
+
+    // El nombre accesible vive en un texto para lectores, no en el globo oculto.
+    expect(profile!.get('.sr-only').text()).toBe('Mi perfil')
+    expect(logout!.get('.sr-only').text()).toBe('Cerrar sesión')
   })
 })
