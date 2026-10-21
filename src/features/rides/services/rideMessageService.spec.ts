@@ -28,20 +28,25 @@ interface Chain {
   ) => Promise<unknown>
 }
 
+type ChainBase = Omit<Chain, 'then'>
+
 function chain(result: Result): Chain {
-  const base: Chain = {
-    select: vi.fn<() => Chain>(() => base),
-    eq: vi.fn<() => Chain>(() => base),
+  const base: ChainBase = {
+    select: vi.fn<() => ChainBase>(() => base),
+    eq: vi.fn<() => ChainBase>(() => base),
     order: vi.fn<() => Promise<Result>>(() => Promise.resolve(result)),
-    insert: vi.fn<() => Chain>(() => base),
+    insert: vi.fn<() => ChainBase>(() => base),
     single: vi.fn<() => Promise<Result>>(() => Promise.resolve(result)),
+  }
+
+  // El builder de Supabase real es "thenable": el doble debe reproducir ese contrato.
+  return Object.assign(base, {
+    // oxlint-disable-next-line unicorn/no-thenable
     then: (
       onFulfilled?: (value: Result) => unknown,
       onRejected?: (reason: unknown) => unknown,
     ): Promise<unknown> => Promise.resolve(result).then(onFulfilled, onRejected),
-  }
-
-  return base
+  })
 }
 
 const row = {
