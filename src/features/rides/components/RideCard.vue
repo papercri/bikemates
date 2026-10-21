@@ -140,7 +140,7 @@ const shortDate = computed(() => formatRideShortDate(props.ride.startsAt))
           class="pointer-events-none absolute bottom-20 left-1/2 z-10 -translate-x-1/2 rounded-full bg-ink/90 px-3 py-1 text-xs font-semibold whitespace-nowrap text-canvas"
           role="status"
         >
-          <IconStar filled class="me-1 inline-block size-3 text-star" />
+          <IconStar filled class="me-1 inline-block size-3.5 text-star" />
           Agregado a tus favoritos
         </p>
       </Transition>
@@ -160,14 +160,14 @@ const shortDate = computed(() => formatRideShortDate(props.ride.startsAt))
         :aria-label="saved ? 'Quitar de favoritos' : 'Agregar a favoritos'"
         @click.stop.prevent="emit('toggle-save')"
       >
-        <IconStar :filled="saved" class="size-3" :class="saved ? 'text-star' : 'text-canvas'" />
+        <IconStar :filled="saved" class="size-3.5" :class="saved ? 'text-star' : 'text-canvas'" />
       </button>
 
       <span
         v-if="participating"
         class="grid size-6 place-items-center rounded-full bg-ink/40 text-trail-deep backdrop-blur-sm"
       >
-        <FontAwesomeIcon :icon="faUser" aria-hidden="true" class="size-1.5" />
+        <FontAwesomeIcon :icon="faUser" aria-hidden="true" class="block size-1.5" />
         <span class="sr-only">Participaré</span>
       </span>
     </div>
