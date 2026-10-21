@@ -156,11 +156,11 @@ onBeforeUnmount(() => {
 <template>
   <header :class="headerClasses">
     <div
-      class="mx-auto flex max-w-7xl items-center justify-between gap-x-3 px-4 py-2 sm:gap-x-4 sm:px-6 sm:py-3 lg:px-8"
+      class="mx-auto flex max-w-7xl items-center justify-between gap-x-3 px-4 py-1.5 sm:gap-x-4 sm:px-6 sm:py-3 lg:px-8"
     >
       <RouterLink
         to="/"
-        class="flex shrink-0 items-center gap-2 text-lg font-bold tracking-tight focus-visible:outline-2 focus-visible:outline-offset-2 sm:gap-2.5 sm:text-xl"
+        class="flex shrink-0 items-center gap-1.5 text-base font-bold tracking-tight focus-visible:outline-2 focus-visible:outline-offset-2 sm:gap-2.5 sm:text-xl"
         :class="
           isDarkChrome
             ? 'text-white focus-visible:outline-canvas'

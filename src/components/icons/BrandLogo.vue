@@ -13,7 +13,7 @@ withDefaults(
   <svg
     v-if="variant === 'full'"
     viewBox="0 0 44 28"
-    class="h-7 w-11 shrink-0"
+    class="h-6 w-9 shrink-0 sm:h-7 sm:w-11"
     aria-hidden="true"
     focusable="false"
   >
