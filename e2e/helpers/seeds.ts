@@ -47,6 +47,7 @@ export function makeRide(overrides: Partial<DbRide> = {}): DbRide {
     wikiloc_url: null,
     audience: 'everyone',
     max_participants: 30,
+    route_type: 'circular',
     status: 'published',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),

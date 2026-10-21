@@ -29,6 +29,7 @@ export interface DbRide {
   wikiloc_url: string | null
   audience: string
   max_participants: number | null
+  route_type: string | null
   status: string
   created_at: string
   updated_at: string

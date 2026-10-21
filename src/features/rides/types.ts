@@ -6,6 +6,8 @@ export type RideAudience = 'everyone' | 'women' | 'men' | 'lgbt'
 
 export type RideStatus = 'draft' | 'published' | 'cancelled' | 'completed'
 
+export type RideRouteType = 'circular' | 'round_trip'
+
 export interface Ride {
   id: string
   organizerId: string
@@ -24,6 +26,7 @@ export interface Ride {
   wikilocUrl: string | null
   audience: RideAudience
   maxParticipants: number | null
+  routeType: RideRouteType | null
   status: RideStatus
   createdAt: string
   updatedAt: string
@@ -46,6 +49,7 @@ export interface CreateRideInput {
   wikilocUrl: string | null
   audience: RideAudience
   maxParticipants: number | null
+  routeType: RideRouteType
   status: 'draft' | 'published'
 }
 export interface RideFormValues {
@@ -63,6 +67,7 @@ export interface RideFormValues {
   wikilocUrl: string
   audience: RideAudience
   maxParticipants: string
+  isCircular: boolean
 }
 
 export interface RideFormSubmission {

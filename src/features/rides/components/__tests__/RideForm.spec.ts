@@ -35,6 +35,7 @@ function validValues(overrides: Partial<RideFormValues> = {}): RideFormValues {
     wikilocUrl: '',
     audience: 'everyone',
     maxParticipants: '',
+    isCircular: true,
     ...overrides,
   }
 }
@@ -70,7 +71,7 @@ function selectFile(wrapper: ReturnType<typeof mountForm>, file: File): void {
 
 /** El envío exige aceptar las normas de la comunidad. */
 async function acceptRules(wrapper: ReturnType<typeof mountForm>): Promise<void> {
-  await wrapper.get('input[type="checkbox"]').setValue(true)
+  await wrapper.get('#acceptedRules').setValue(true)
 }
 
 describe('RideForm', () => {
@@ -108,6 +109,18 @@ describe('RideForm', () => {
       values: expect.objectContaining({ title: 'Vuelta por Collserola', distanceKm: '30' }),
       image: null,
       removeCurrentImage: false,
+    })
+  })
+
+  it('submits the route type from the circular switch', async () => {
+    const wrapper = mountForm()
+
+    await wrapper.get('#routeType').setValue(false)
+    await acceptRules(wrapper)
+    await wrapper.get('form').trigger('submit')
+
+    expect(wrapper.emitted('submit')?.[0]?.[0]).toMatchObject({
+      values: expect.objectContaining({ isCircular: false }),
     })
   })
 

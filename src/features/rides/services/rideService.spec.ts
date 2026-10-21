@@ -104,6 +104,7 @@ function rideRow(overrides: Partial<Record<string, unknown>> = {}): Record<strin
     wikiloc_url: null,
     audience: 'everyone',
     max_participants: null,
+    route_type: null,
     status: 'published',
     created_at: '2026-01-01T00:00:00.000Z',
     updated_at: '2026-01-02T00:00:00.000Z',
@@ -128,6 +129,7 @@ function createInput(overrides: Partial<CreateRideInput> = {}): CreateRideInput 
     wikilocUrl: null,
     audience: 'everyone',
     maxParticipants: null,
+    routeType: 'circular',
     status: 'published',
     ...overrides,
   }
@@ -175,6 +177,7 @@ describe('rideService', () => {
         wikiloc_url: null,
         audience: 'everyone',
         max_participants: null,
+        route_type: 'circular',
         status: 'published',
       })
       expect(chain.single).toHaveBeenCalled()
@@ -382,6 +385,7 @@ describe('rideService', () => {
       wikilocUrl: null,
       audience: 'everyone',
       maxParticipants: null,
+      routeType: 'circular',
     }
 
     it('updates the owned ride and maps the returned row', async () => {
@@ -406,6 +410,7 @@ describe('rideService', () => {
         wikiloc_url: null,
         audience: 'everyone',
         max_participants: null,
+        route_type: 'circular',
       })
       expect(chain.eq).toHaveBeenCalledWith('organizer_id', 'user-1')
       expect(ride.id).toBe('ride-1')

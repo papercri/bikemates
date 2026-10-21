@@ -38,6 +38,7 @@ function formValues(overrides: Partial<RideFormValues> = {}): RideFormValues {
     wikilocUrl: '',
     audience: 'everyone',
     maxParticipants: '',
+    isCircular: true,
     ...overrides,
   }
 }

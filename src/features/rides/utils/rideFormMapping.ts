@@ -18,6 +18,7 @@ export function createEmptyRideFormValues(overrides: Partial<RideFormValues> = {
     wikilocUrl: '',
     audience: 'everyone',
     maxParticipants: '',
+    isCircular: true,
     ...overrides,
   }
 }
@@ -39,6 +40,7 @@ export function mapRideToFormValues(ride: Ride): RideFormValues {
     wikilocUrl: ride.wikilocUrl ?? '',
     audience: ride.audience,
     maxParticipants: ride.maxParticipants === null ? '' : String(ride.maxParticipants),
+    isCircular: ride.routeType !== 'round_trip',
   }
 }
 
@@ -73,5 +75,6 @@ export function buildRideInput(
     wikilocUrl: values.wikilocUrl.trim() || null,
     audience: values.audience,
     maxParticipants: values.maxParticipants.trim() ? Number(values.maxParticipants) : null,
+    routeType: values.isCircular ? 'circular' : 'round_trip',
   }
 }

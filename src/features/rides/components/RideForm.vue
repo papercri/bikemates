@@ -26,6 +26,7 @@ import FormLabel from '@/components/ui/FormLabel.vue'
 import FormSelect from '@/components/ui/FormSelect.vue'
 import Input from '@/components/ui/Input.vue'
 import RichTextarea from '@/components/ui/RichTextarea.vue'
+import Switch from '@/components/ui/Switch.vue'
 import {
   RIDE_AUDIENCES,
   RIDE_AUDIENCE_LABELS,
@@ -129,7 +130,7 @@ function handleSubmit(): void {
     removeCurrentImage: removeCurrentImage.value,
   }
 
-  emit('duplicate' in {} ? 'submit' : 'submit', submission)
+  emit('submit', submission)
 }
 
 /** Publica una copia nueva de la ruta en edición, con la misma validación que guardar. */
@@ -354,6 +355,17 @@ function handleDuplicate(): void {
           </FormSelect>
         </div>
       </div>
+
+      <div class="mt-3.5">
+        <Switch id="routeType" v-model="form.isCircular">
+          Ruta circular
+          <template #description>
+            <FormHelp>
+              Actívala si vuelves al punto de salida; desactívala si la ruta es de ida y vuelta.
+            </FormHelp>
+          </template>
+        </Switch>
+      </div>
     </fieldset>
 
     <fieldset class="min-w-0 border-0 p-0">
@@ -410,6 +422,7 @@ function handleDuplicate(): void {
 
       <div>
         <Checkbox
+          id="acceptedRules"
           v-model="acceptedRules"
           :aria-describedby="rulesError ? 'accepted-rules-error' : undefined"
           :aria-invalid="Boolean(rulesError)"

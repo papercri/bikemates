@@ -4,6 +4,7 @@ import {
   isBikeType,
   isRideAudience,
   isRideLevel,
+  isRideRouteType,
   isRideStatus,
 } from '../validators/rideValueGuards'
 function getRideImageUrl(imagePath: string | null): string | null {
@@ -33,6 +34,7 @@ function mapRide(data: {
   wikiloc_url: string | null
   audience: string
   max_participants: number | null
+  route_type: string | null
   status: string
   created_at: string
   updated_at: string
@@ -43,6 +45,10 @@ function mapRide(data: {
     !isRideAudience(data.audience) ||
     !isRideStatus(data.status)
   ) {
+    throw new Error('La ruta contiene valores no válidos.')
+  }
+
+  if (data.route_type !== null && !isRideRouteType(data.route_type)) {
     throw new Error('La ruta contiene valores no válidos.')
   }
 
@@ -64,6 +70,7 @@ function mapRide(data: {
     wikilocUrl: data.wikiloc_url,
     audience: data.audience,
     maxParticipants: data.max_participants,
+    routeType: data.route_type,
     status: data.status,
     createdAt: data.created_at,
     updatedAt: data.updated_at,
@@ -100,6 +107,7 @@ export async function createRide(input: CreateRideInput): Promise<Ride> {
       wikiloc_url: input.wikilocUrl?.trim() || null,
       audience: input.audience,
       max_participants: input.maxParticipants,
+      route_type: input.routeType,
       status: input.status,
     })
     .select()
@@ -246,6 +254,7 @@ export async function updateRide(id: string, input: UpdateRideInput): Promise<Ri
       wikiloc_url: input.wikilocUrl?.trim() || null,
       audience: input.audience,
       max_participants: input.maxParticipants,
+      route_type: input.routeType,
     })
     .eq('id', id)
     .eq('organizer_id', user.id)

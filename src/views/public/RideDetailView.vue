@@ -25,7 +25,7 @@ import RideMap from '@/features/rides/components/RideMap.vue'
 import RideAudienceBadge from '@/features/rides/components/RideAudienceBadge.vue'
 import { useRideDetail } from '@/features/rides/composables/useRideDetail'
 import { RIDE_LEVEL_BADGE_COLORS } from '@/features/rides/constants/rideLevels'
-import { RIDE_BIKE_TYPE_LABELS } from '@/features/rides/constants/rideOptions'
+import { RIDE_BIKE_TYPE_LABELS, RIDE_ROUTE_TYPE_LABELS } from '@/features/rides/constants/rideOptions'
 import type { RideCalendarEntry } from '@/features/rides/utils/rideCalendar'
 import { formatRideDate } from '@/utils/dates'
 import RideCalendarMenu from '@/features/rides/components/RideCalendarMenu.vue'
@@ -260,6 +260,10 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
             </Badge>
 
             <RideAudienceBadge :audience="ride.audience" />
+
+            <Badge v-if="ride.routeType" variant="muted" color="ink">
+              {{ RIDE_ROUTE_TYPE_LABELS[ride.routeType] }}
+            </Badge>
           </div>
 
           <Typography
