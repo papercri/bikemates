@@ -1,37 +1,24 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="BikeMates">
-  <rect width="64" height="64" rx="14" fill="#ffffff" />
-  <rect
-    x="1.5"
-    y="1.5"
-    width="61"
-    height="61"
-    rx="13"
+  <!-- Fondo verde oscuro del sistema de diseño (trail-dark) con esquinas redondeadas. -->
+  <rect width="64" height="64" rx="14" fill="#166534" />
+
+  <!-- Bici blanca de trazo grueso: legible también en 16×16. -->
+  <g
+    transform="translate(8 14)"
     fill="none"
-    stroke="#22c55e"
-    stroke-width="3"
-  />
-  <g transform="translate(2.3 12.1) scale(1.35)">
-    <path
-      d="M2 22 L12 8 L18 15 L26 4 L42 22"
-      fill="none"
-      stroke="#1a1d20"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      opacity="0.2"
-    />
-    <g
-      fill="none"
-      stroke="#1a1d20"
-      stroke-width="1.8"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    >
-      <circle cx="10" cy="20" r="5.5" />
-      <circle cx="32" cy="20" r="5.5" />
-      <path d="M10 20 L17 20 L20 10 L27 10 L32 20" />
-      <path d="M17 20 L20 10" />
-    </g>
-    <circle cx="17" cy="20" r="1.6" fill="#22c55e" />
+    stroke="#ffffff"
+    stroke-width="3.2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <circle cx="10.5" cy="22" r="8" />
+    <circle cx="37.5" cy="22" r="8" />
+    <!-- Cuadro: tubo inferior, tubo vertical del sillín y tubo superior. -->
+    <path d="M10.5 22 L20 22 L26 10 L34 10 L37.5 22" />
+    <path d="M20 22 L24 10" />
+    <!-- Sillín. -->
+    <path d="M22 9 L28 9" />
+    <!-- Manillar. -->
+    <path d="M34 10 L36 6 L40 6" />
   </g>
 </svg>
