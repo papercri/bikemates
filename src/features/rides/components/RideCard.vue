@@ -4,7 +4,7 @@ import { faBicycle, faCalendar, faUser } from '@fortawesome/free-solid-svg-icons
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import Badge from '@/components/ui/Badge.vue'
 import IconArrow from '@/components/icons/IconArrow.vue'
-import IconHeart from '@/components/icons/IconHeart.vue'
+import IconStar from '@/components/icons/IconStar.vue'
 import RideAudienceBadge from '@/features/rides/components/RideAudienceBadge.vue'
 import { RIDE_LEVEL_BADGE_COLORS } from '@/features/rides/constants/rideLevels'
 import { RIDE_BIKE_TYPE_LABELS } from '@/features/rides/constants/rideOptions'
@@ -140,7 +140,7 @@ const shortDate = computed(() => formatRideShortDate(props.ride.startsAt))
           class="pointer-events-none absolute bottom-20 left-1/2 z-10 -translate-x-1/2 rounded-full bg-ink/90 px-3 py-1 text-xs font-semibold whitespace-nowrap text-canvas"
           role="status"
         >
-          <IconHeart filled class="me-1 inline-block size-3 text-red-500" />
+          <IconStar filled class="me-1 inline-block size-3 text-star" />
           Agregado a tus favoritos
         </p>
       </Transition>
@@ -155,19 +155,19 @@ const shortDate = computed(() => formatRideShortDate(props.ride.startsAt))
       <button
         v-if="showSaveToggle"
         type="button"
-        class="flex size-6 items-center justify-center rounded-full bg-ink/40 text-canvas backdrop-blur-sm transition-colors hover:bg-ink/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500"
+        class="flex size-6 items-center justify-center rounded-full bg-ink/40 text-canvas backdrop-blur-sm transition-colors hover:bg-ink/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-star"
         :aria-pressed="saved ?? false"
         :aria-label="saved ? 'Quitar de favoritos' : 'Agregar a favoritos'"
         @click.stop.prevent="emit('toggle-save')"
       >
-        <IconHeart :filled="saved" class="size-3" :class="saved ? 'text-red-500' : 'text-canvas'" />
+        <IconStar :filled="saved" class="size-3" :class="saved ? 'text-star' : 'text-canvas'" />
       </button>
 
       <span
         v-if="participating"
-        class="grid size-6 place-items-center rounded-full bg-ink/40 text-trail-dark backdrop-blur-sm"
+        class="grid size-6 place-items-center rounded-full bg-ink/40 text-trail-deep backdrop-blur-sm"
       >
-        <FontAwesomeIcon :icon="faUser" aria-hidden="true" class="size-2" />
+        <FontAwesomeIcon :icon="faUser" aria-hidden="true" class="size-1.5" />
         <span class="sr-only">Participaré</span>
       </span>
     </div>

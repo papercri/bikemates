@@ -29,6 +29,8 @@
   /* Tinta verde accesible (AA) para texto, iconos y CTA sólidos. */
   --color-trail-ink: #15803d;
   --color-trail-dark: #166534;
+  /* Amarillo cálido de estrella de favoritos (relleno activo). */
+  --color-star: #f59e0b;
   /* Naranja de ruta: realces de recorrido y elementos de organización. */
   --color-route: #f97316;
   --color-route-ink: #c2410c;
