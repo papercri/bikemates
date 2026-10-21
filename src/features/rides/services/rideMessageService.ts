@@ -48,7 +48,8 @@ export async function getRideMessages(rideId: string): Promise<RideMessage[]> {
     .order('created_at', { ascending: true })
 
   if (error) {
-    throw new Error(`No se pudieron cargar los comentarios: ${error.message}`)
+    console.error('Error al cargar comentarios:', error.message)
+    throw new Error('No se han podido cargar los comentarios.')
   }
 
   return (data as MessageRow[]).map(mapMessage)
@@ -86,7 +87,8 @@ export async function createRideMessage(rideId: string, content: string): Promis
     .single()
 
   if (error) {
-    throw new Error(`No se pudo publicar el comentario: ${error.message}`)
+    console.error('Error al publicar comentario:', error.message)
+    throw new Error('No se ha podido publicar el comentario.')
   }
 
   return mapMessage(data as MessageRow)
@@ -97,7 +99,8 @@ export async function deleteRideMessage(messageId: string): Promise<void> {
   const { error } = await supabase.from('ride_messages').delete().eq('id', messageId)
 
   if (error) {
-    throw new Error(`No se ha podido borrar el comentario: ${error.message}`)
+    console.error('Error al borrar comentario:', error.message)
+    throw new Error('No se ha podido eliminar el comentario.')
   }
 }
 
@@ -120,6 +123,7 @@ export async function updateRideMessage(messageId: string, content: string): Pro
     .eq('id', messageId)
 
   if (error) {
-    throw new Error(`No se ha podido editar el comentario: ${error.message}`)
+    console.error('Error al editar comentario:', error.message)
+    throw new Error('No se ha podido guardar la edición.')
   }
 }

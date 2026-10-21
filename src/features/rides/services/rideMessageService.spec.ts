@@ -84,7 +84,7 @@ describe('rideMessageService', () => {
     mocks.from.mockReturnValue(chain({ data: null, error: { message: 'denied' } }))
 
     await expect(getRideMessages('ride-1')).rejects.toThrow(
-      'No se pudieron cargar los comentarios: denied',
+      'No se han podido cargar los comentarios.',
     )
   })
 
