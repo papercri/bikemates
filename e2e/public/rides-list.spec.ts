@@ -1,6 +1,6 @@
 import { test, expect } from '../helpers/fixtures'
 import type { Page } from '@playwright/test'
-import { makeRide } from '../helpers/seeds'
+import { makeRide, MEMBER } from '../helpers/seeds'
 
 /**
  * En móvil el panel de filtros está colapsado tras un botón; en escritorio
@@ -165,5 +165,36 @@ test.describe('rides list', () => {
       'summary_large_image',
     )
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /\/rides$/)
+  })
+
+  test('lets a signed-in user save a ride with the star and shows it in the profile tab', async ({
+    page,
+    supabase,
+  }) => {
+    supabase.state.users.push(MEMBER)
+    supabase.state.rides = [makeRide({ id: 'ride-1', title: 'Vuelta por Collserola' })]
+    await supabase.signInAs(MEMBER)
+
+    await page.goto('/rides')
+
+    const star = page.getByRole('button', { name: 'Agregar a favoritos' })
+    await expect(star).toBeVisible()
+    await star.click()
+
+    // Confirmación efímera + estado on de la estrella.
+    await expect(page.getByText('Agregado a tus favoritos')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Quitar de favoritos' })).toBeVisible()
+    expect(supabase.state.savedRides).toHaveLength(1)
+
+    // Quitar de favoritos vuelve al estado off.
+    await page.getByRole('button', { name: 'Quitar de favoritos' }).click()
+    await expect(page.getByRole('button', { name: 'Agregar a favoritos' })).toBeVisible()
+    expect(supabase.state.savedRides).toHaveLength(0)
+  })
+
+  test('hides the save star for anonymous visitors', async ({ page }) => {
+    await page.goto('/rides')
+
+    await expect(page.getByRole('button', { name: 'Agregar a favoritos' })).toHaveCount(0)
   })
 })

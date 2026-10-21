@@ -11,8 +11,7 @@ test.describe('profile', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'Mi perfil' })).toBeVisible()
     await expect(page.getByRole('tab', { name: 'Mis datos' })).toBeVisible()
     await expect(page.getByRole('tab', { name: 'Mis rutas' })).toBeVisible()
-    // La pestaña de rutas guardadas queda oculta hasta su implementación.
-    await expect(page.getByRole('tab', { name: 'Rutas guardadas' })).toHaveCount(0)
+    await expect(page.getByRole('tab', { name: 'Rutas guardadas' })).toBeVisible()
   })
 
   test('shows the account data sections on the details tab', async ({ page, supabase }) => {
@@ -56,6 +55,24 @@ test.describe('profile', () => {
     await expect(page.locator('#panel-details')).toBeVisible()
     await expect(page.locator('#panel-my-rides')).toBeHidden()
     await expect(page).toHaveURL(/\/profile$/)
+  })
+
+  test('shows saved rides in the saved tab', async ({ page, supabase }) => {
+    supabase.state.users.push(ORGANIZER)
+    supabase.state.rides = [makeRide({ id: 'ride-1', title: 'Favorita de Ana' })]
+    supabase.state.savedRides = [
+      { ride_id: 'ride-1', user_id: ORGANIZER.id, created_at: '2026-06-01T10:00:00.000Z' },
+    ]
+    await supabase.signInAs(ORGANIZER)
+
+    await page.goto('/profile?tab=saved-rides')
+
+    const panel = page.getByRole('tabpanel', { name: 'Rutas guardadas' })
+    await expect(panel).toBeVisible()
+    await expect(panel.getByRole('link', { name: /Favorita de Ana/ })).toBeVisible()
+
+    await page.getByRole('tab', { name: 'Mis datos' }).click()
+    await expect(page.locator('#panel-saved-rides')).toBeHidden()
   })
 
   test('supports arrow-key navigation between tabs', async ({ page, supabase }) => {

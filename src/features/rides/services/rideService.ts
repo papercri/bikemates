@@ -17,7 +17,7 @@ function getRideImageUrl(imagePath: string | null): string | null {
 
   return data.publicUrl
 }
-function mapRide(data: {
+export function mapRide(data: {
   id: string
   organizer_id: string
   title: string

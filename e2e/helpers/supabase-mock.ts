@@ -55,6 +55,12 @@ export interface DbParticipant {
   }
 }
 
+export interface DbSavedRide {
+  ride_id: string
+  user_id: string
+  created_at: string
+}
+
 export interface DbMessage {
   id: string
   ride_id: string
@@ -79,6 +85,7 @@ export interface MockState {
   profiles: DbProfile[]
   participants: DbParticipant[]
   messages: DbMessage[]
+  savedRides: DbSavedRide[]
   places: PlaceResult[]
   /** Indica si el registro devuelve sesión activa o exige confirmación por email. */
   signUpCreatesSession: boolean
@@ -210,6 +217,7 @@ export async function mockSupabase(page: Page): Promise<SupabaseMock> {
     profiles: [],
     participants: [],
     messages: [],
+    savedRides: [],
     places: [],
     signUpCreatesSession: false,
     authError: null,
@@ -609,6 +617,52 @@ export async function mockSupabase(page: Page): Promise<SupabaseMock> {
           return fulfill(route, json(row))
         }
         return fulfill(route, json([row]))
+      }
+    }
+
+    if (path === `${REST_PATH}saved_rides`) {
+      if (method === 'GET') {
+        const userId = requestUrl.searchParams.get('user_id')?.replace('eq.', '') ?? ''
+        const rows = state.savedRides
+          .filter((sr) => sr.user_id === userId)
+          .sort((a, b) => b.created_at.localeCompare(a.created_at))
+          .map((sr) => ({
+            ...sr,
+            rides: state.rides.find((r) => r.id === sr.ride_id) ?? null,
+          }))
+        return fulfill(route, json(rows))
+      }
+
+      if (method === 'POST') {
+        const body = route.request().postDataJSON() as Partial<DbSavedRide>
+        const user = state.currentUser
+        if (!user) {
+          return fulfill(route, json({ message: 'Debes iniciar sesión.' }, 401))
+        }
+        const exists = state.savedRides.some(
+          (sr) => sr.ride_id === body.ride_id && sr.user_id === user.id,
+        )
+        if (exists) {
+          return fulfill(
+            route,
+            json({ code: '23505', message: 'duplicate key value violates unique constraint' }, 409),
+          )
+        }
+        state.savedRides.push({
+          ride_id: body.ride_id ?? '',
+          user_id: user.id,
+          created_at: new Date().toISOString(),
+        })
+        return fulfill(route, json([{}]))
+      }
+
+      if (method === 'DELETE') {
+        const rideId = requestUrl.searchParams.get('ride_id')?.replace('eq.', '') ?? ''
+        const userId = requestUrl.searchParams.get('user_id')?.replace('eq.', '') ?? ''
+        state.savedRides = state.savedRides.filter(
+          (sr) => !(sr.ride_id === rideId && sr.user_id === userId),
+        )
+        return fulfill(route, json([]))
       }
     }
 

@@ -13,6 +13,7 @@ import Typography from '@/components/ui/Typography.vue'
 import { useAuthStore } from '@/features/auth/stores/authStore'
 import { useRideFilters } from '@/features/rides/composables/useRideFilters'
 import { useRideList } from '@/features/rides/composables/useRideList'
+import { useSavedRides } from '@/features/rides/composables/useSavedRides'
 import type { Ride } from '@/features/rides/types'
 
 const RIDES_TITLE = 'Explorar rutas | BikeMates'
@@ -67,6 +68,8 @@ const {
 
 const authStore = useAuthStore()
 const isAuthenticated = computed(() => authStore.user !== null)
+
+const { isSaved, toggleSave } = useSavedRides()
 
 /** Conjunto de ids en los que participa el usuario, para la insignia de la tarjeta. */
 const participatingIds = computed(() => new Set(participatingRideIds.value))
@@ -187,6 +190,9 @@ onBeforeUnmount(() => {
             :ride="ride"
             :past="isPastTab"
             :participating="isParticipating(ride.id)"
+            :saved="isSaved(ride.id)"
+            :show-save-toggle="isAuthenticated"
+            @toggle-save="toggleSave(ride.id)"
           />
         </div>
 

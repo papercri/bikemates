@@ -9,17 +9,18 @@ import Card from '@/components/ui/Card.vue'
 import Typography from '@/components/ui/Typography.vue'
 import ProfileDetailsTab from '@/features/profile/components/ProfileDetailsTab.vue'
 import ProfileMyRidesTab from '@/features/profile/components/ProfileMyRidesTab.vue'
+import ProfileSavedRidesTab from '@/features/profile/components/ProfileSavedRidesTab.vue'
 
 useHead({
   title: 'Mi perfil | BikeMates',
   meta: [{ name: 'robots', content: 'noindex, nofollow' }],
 })
 
-type ProfileTab = 'details' | 'my-rides'
+type ProfileTab = 'details' | 'my-rides' | 'saved-rides'
 
 /** El query es entrada no confiable: cualquier valor desconocido vuelve a "Mis datos". */
 function tabFromQuery(value: unknown): ProfileTab {
-  return value === 'my-rides' ? 'my-rides' : 'details'
+  return value === 'my-rides' || value === 'saved-rides' ? value : 'details'
 }
 
 const route = useRoute()
@@ -42,10 +43,10 @@ watch(activeTab, (tab) => {
   void router.replace({ query })
 })
 
-// "Rutas guardadas" queda fuera de la navegación hasta que se implemente la función.
 const tabs: { id: ProfileTab; label: string }[] = [
   { id: 'details', label: 'Mis datos' },
   { id: 'my-rides', label: 'Mis rutas' },
+  { id: 'saved-rides', label: 'Rutas guardadas' },
 ]
 
 function handleTabKeydown(event: KeyboardEvent, index: number): void {
@@ -134,8 +135,12 @@ function handleTabKeydown(event: KeyboardEvent, index: number): void {
         <ProfileDetailsTab />
       </template>
 
-      <template v-else>
+      <template v-else-if="tab.id === 'my-rides'">
         <ProfileMyRidesTab />
+      </template>
+
+      <template v-else>
+        <ProfileSavedRidesTab />
       </template>
     </section>
   </AppPage>

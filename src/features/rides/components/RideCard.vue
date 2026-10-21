@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { faBicycle, faCalendar, faUser } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import Badge from '@/components/ui/Badge.vue'
 import IconArrow from '@/components/icons/IconArrow.vue'
+import IconStar from '@/components/icons/IconStar.vue'
 import RideAudienceBadge from '@/features/rides/components/RideAudienceBadge.vue'
 import { RIDE_LEVEL_BADGE_COLORS } from '@/features/rides/constants/rideLevels'
 import { RIDE_BIKE_TYPE_LABELS } from '@/features/rides/constants/rideOptions'
@@ -18,7 +19,33 @@ const props = defineProps<{
   bare?: boolean
   /** El usuario actual participa en esta salida: muestra la insignia "Participaré". */
   participating?: boolean
+  /** La ruta está en favoritos del usuario actual. */
+  saved?: boolean
+  /** Muestra el botón de favoritos (solo donde el gestor de guardados está disponible). */
+  showSaveToggle?: boolean
 }>()
+
+const emit = defineEmits<{
+  'toggle-save': []
+}>()
+
+/** Confirmación efímera tras guardar: desaparece sola y respeta movimiento reducido. */
+const showSavedToast = ref(false)
+let toastTimer: ReturnType<typeof setTimeout> | undefined
+
+watch(
+  () => props.saved,
+  (saved, previous) => {
+    if (saved === previous || !saved) return
+
+    showSavedToast.value = true
+    clearTimeout(toastTimer)
+    toastTimer = setTimeout(() => {
+      showSavedToast.value = false
+    }, 2000)
+  },
+)
+
 
 /** Fotografías propias del proyecto para las salidas sin imagen en la base de datos. */
 const FALLBACK_COVERS = [
@@ -40,7 +67,7 @@ const shortDate = computed(() => formatRideShortDate(props.ride.startsAt))
 
 <template>
   <article
-    class="h-full overflow-hidden sm:aspect-square"
+    class="relative h-full overflow-hidden sm:aspect-square"
     :class="[props.bare ? '' : 'rounded-photo border border-line', past ? 'opacity-75' : '']"
   >
     <RouterLink
@@ -60,22 +87,24 @@ const shortDate = computed(() => formatRideShortDate(props.ride.startsAt))
       <div
         class="relative flex items-start justify-between gap-3 bg-gradient-to-b from-ink/70 via-ink/30 to-transparent p-4 sm:p-5"
       >
-        <!-- Raíl de fecha: fecha compacta `dd/MM` con fecha legible para lectores de pantalla. -->
-        <time
-          :datetime="ride.startsAt"
-          class="inline-flex items-center gap-1 rounded-full bg-ink px-2 py-0.5 font-mono text-[0.7rem] font-semibold tabular-nums text-canvas"
-        >
-          <FontAwesomeIcon :icon="faCalendar" aria-hidden="true" class="size-3" />
-          {{ shortDate }}
-        </time>
+        <div class="flex items-center gap-2">
+          <!-- Raíl de fecha: fecha compacta `dd/MM` con fecha legible para lectores de pantalla. -->
+          <time
+            :datetime="ride.startsAt"
+            class="inline-flex items-center gap-1 rounded-full bg-ink px-2 py-0.5 font-mono text-[0.7rem] font-semibold tabular-nums text-canvas"
+          >
+            <FontAwesomeIcon :icon="faCalendar" aria-hidden="true" class="size-3" />
+            {{ shortDate }}
+          </time>
 
-        <FontAwesomeIcon
-          v-if="participating"
-          :icon="faUser"
-          aria-hidden="true"
-          class="size-4 text-trail"
-        />
-        <span v-if="participating" class="sr-only">Participaré</span>
+          <template v-if="participating">
+            <FontAwesomeIcon :icon="faUser" aria-hidden="true" class="size-4 text-trail" />
+            <span class="sr-only">Participaré</span>
+          </template>
+        </div>
+
+        <!-- El hueco reserva el ancho del botón de favoritos para no desplazar la fecha. -->
+        <span v-if="showSaveToggle" class="w-8" aria-hidden="true" />
       </div>
 
       <!-- Entrada: capa oscura a sangre, pegada a los bordes de la foto -->
@@ -108,6 +137,35 @@ const shortDate = computed(() => formatRideShortDate(props.ride.startsAt))
           <span class="sr-only">Ver detalles</span>
         </div>
       </div>
+
+      <!-- Confirmación efímera al activar favoritos. -->
+      <Transition
+        enter-active-class="motion-safe:transition-all motion-safe:duration-200"
+        enter-from-class="translate-y-1 opacity-0"
+        leave-active-class="motion-safe:transition-all motion-safe:duration-300"
+        leave-to-class="opacity-0"
+      >
+        <p
+          v-if="showSavedToast"
+          class="pointer-events-none absolute bottom-20 left-1/2 z-10 -translate-x-1/2 rounded-full bg-ink/90 px-3 py-1 text-xs font-semibold whitespace-nowrap text-canvas"
+          role="status"
+        >
+          <IconStar filled class="me-1 inline-block size-3 text-sun" />
+          Agregado a tus favoritos
+        </p>
+      </Transition>
     </RouterLink>
+
+    <!-- Botón de favoritos fuera del enlace: un <button> dentro de un <a> no es HTML válido. -->
+    <button
+      v-if="showSaveToggle"
+      type="button"
+      class="absolute top-3.5 right-3.5 z-10 flex size-8 items-center justify-center rounded-full bg-ink/70 text-canvas transition-colors hover:bg-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sun sm:top-4.5 sm:right-4.5"
+      :aria-pressed="saved ?? false"
+      :aria-label="saved ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+      @click.stop.prevent="emit('toggle-save')"
+    >
+      <IconStar :filled="saved" class="size-4" :class="saved ? 'text-sun' : 'text-canvas'" />
+    </button>
   </article>
 </template>
