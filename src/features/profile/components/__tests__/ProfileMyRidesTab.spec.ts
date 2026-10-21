@@ -122,7 +122,10 @@ describe('ProfileMyRidesTab', () => {
     expect(wrapper.text()).toContain('No se han podido cargar tus rutas')
 
     mocks.getMyRides.mockResolvedValueOnce([rideOf({ id: 'a' })])
-    await wrapper.get('button').trigger('click')
+    await wrapper
+      .findAll('button')
+      .find((button) => button.text().trim() === 'Reintentar')!
+      .trigger('click')
     await flushPromises()
 
     expect(mocks.getMyRides).toHaveBeenCalledTimes(2)
@@ -240,7 +243,10 @@ describe('ProfileMyRidesTab', () => {
     const wrapper = await mountComponent()
     await flushPromises()
 
-    await wrapper.get('button').trigger('click')
+    await wrapper
+      .findAll('button')
+      .find((button) => button.text().trim() === 'Eliminar')!
+      .trigger('click')
     await wrapper.vm.$nextTick()
 
     dialogButton('[data-dialog-cancel]').click()
@@ -258,7 +264,10 @@ describe('ProfileMyRidesTab', () => {
     const wrapper = await mountComponent()
     await flushPromises()
 
-    await wrapper.get('button').trigger('click')
+    await wrapper
+      .findAll('button')
+      .find((button) => button.text().trim() === 'Eliminar')!
+      .trigger('click')
     await wrapper.vm.$nextTick()
 
     dialogButton('[data-dialog-confirm]').click()

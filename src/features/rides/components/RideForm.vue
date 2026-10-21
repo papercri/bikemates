@@ -44,6 +44,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   submit: [payload: RideFormSubmission]
+  duplicate: [payload: RideFormSubmission]
 }>()
 
 const isEditMode = computed(() => props.mode === 'edit')
@@ -122,7 +123,27 @@ function handleSubmit(): void {
 
   if (summaryError.value !== null || rulesError.value !== null) return
 
-  emit('submit', {
+  const submission: RideFormSubmission = {
+    values: { ...form },
+    image: selectedImage.value,
+    removeCurrentImage: removeCurrentImage.value,
+  }
+
+  emit('duplicate' in {} ? 'submit' : 'submit', submission)
+}
+
+/** Publica una copia nueva de la ruta en edición, con la misma validación que guardar. */
+function handleDuplicate(): void {
+  if (props.isSubmitting) return
+
+  const errors = validateRideFormFields(form, selectedImage.value)
+  fieldErrors.value = imageError.value ? { ...errors, image: imageError.value } : errors
+  rulesError.value = acceptedRules.value
+    ? null
+    : 'Debes aceptar las normas de la comunidad para publicar la ruta.'
+  if (summaryError.value !== null || rulesError.value !== null) return
+
+  emit('duplicate', {
     values: { ...form },
     image: selectedImage.value,
     removeCurrentImage: removeCurrentImage.value,
@@ -420,7 +441,7 @@ function handleSubmit(): void {
         </p>
       </div>
 
-      <div class="flex justify-end">
+      <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
         <Button
           type="submit"
           :loading="isSubmitting"
@@ -437,6 +458,17 @@ function handleSubmit(): void {
                 ? 'Guardar cambios'
                 : 'Publicar ruta'
           }}
+        </Button>
+
+        <Button
+          v-if="isEditMode"
+          type="button"
+          variant="outline"
+          :disabled="isSubmitting"
+          class="sm:w-auto"
+          @click="handleDuplicate"
+        >
+          Publicar como nueva
         </Button>
       </div>
     </div>
