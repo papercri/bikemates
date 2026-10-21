@@ -252,12 +252,12 @@ onBeforeUnmount(() => {
         </template>
 
         <template v-else>
-          <Button to="/login" :variant="isDarkChrome ? 'sun-outline' : 'quiet'" size="xs">
+          <Button to="/login" :variant="isDarkChrome ? 'sun-quiet' : 'quiet'" size="xs">
             <FontAwesomeIcon :icon="faRightToBracket" aria-hidden="true" />
             Iniciar sesión
           </Button>
 
-          <Button :to="'/register'" :variant="isDarkChrome ? 'sun' : 'primary'" size="xs">
+          <Button to="/register" :variant="isDarkChrome ? 'sun-quiet' : 'quiet'" size="xs">
             <FontAwesomeIcon :icon="faUserPlus" aria-hidden="true" />
             Registrarse
           </Button>
@@ -349,7 +349,12 @@ onBeforeUnmount(() => {
                 Iniciar sesión
               </RouterLink>
 
-              <Button to="/register" variant="primary" size="sm" block>
+              <Button
+                to="/register"
+                :variant="isDarkChrome ? 'sun-quiet' : 'quiet'"
+                size="sm"
+                block
+              >
                 <FontAwesomeIcon :icon="faUserPlus" aria-hidden="true" />
                 Registrarse
               </Button>
