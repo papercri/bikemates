@@ -118,26 +118,6 @@ Tooling / dev plugins:
 - Node.js `^22.18.0 || >=24.12.0` and npm.
 - A Supabase project with Auth enabled and, for account deletion, the `delete-account` Edge Function.
 
-## Setup
-
-```bash
-npm install
-npm run dev
-```
-
-Copy the environment variables into `.env.local` (use `.env.example` as a template):
-
-| Variable                       | Description                                              |
-| ------------------------------ | -------------------------------------------------------- |
-| `VITE_SUPABASE_URL`            | Supabase project URL                                     |
-| `VITE_SUPABASE_PUBLISHABLE_KEY`| Project public key (`sb_publishable_…`), preferred        |
-| `VITE_SUPABASE_ANON_KEY`       | Project public (anon) key, accepted as a fallback         |
-
-The app fails explicitly at startup if these variables are missing, and it also refuses to
-boot when the environment holds a secret key (`sb_secret_…` or a `service_role` JWT). Never
-use the `service_role` key in the browser: it is reserved for the server and Edge Functions,
-and it would bypass Row Level Security for every visitor.
-
 ## Scripts
 
 ```bash
