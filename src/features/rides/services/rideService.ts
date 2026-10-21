@@ -48,7 +48,9 @@ function mapRide(data: {
     throw new Error('La ruta contiene valores no válidos.')
   }
 
-  if (data.route_type !== null && !isRideRouteType(data.route_type)) {
+  // `route_type` puede ser undefined en bases de datos donde la columna aún no
+  // se ha añadido; se trata igual que null hasta que se aplique la migración.
+  if (data.route_type != null && !isRideRouteType(data.route_type)) {
     throw new Error('La ruta contiene valores no válidos.')
   }
 
@@ -70,7 +72,7 @@ function mapRide(data: {
     wikilocUrl: data.wikiloc_url,
     audience: data.audience,
     maxParticipants: data.max_participants,
-    routeType: data.route_type,
+    routeType: data.route_type ?? null,
     status: data.status,
     createdAt: data.created_at,
     updatedAt: data.updated_at,
