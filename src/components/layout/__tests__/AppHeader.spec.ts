@@ -22,6 +22,8 @@ const routes = [
   { path: '/rides', component: { template: '<div>Rutas</div>' } },
   { path: '/login', component: { template: '<div>Entrar</div>' } },
   { path: '/register', component: { template: '<div>Alta</div>' } },
+  { path: '/community-rules', component: { template: '<div>Normas</div>' } },
+  { path: '/privacy', component: { template: '<div>Privacidad</div>' } },
 ]
 
 async function mountHeader() {
@@ -138,5 +140,27 @@ describe('AppHeader', () => {
     // El nombre accesible vive en un texto para lectores, no en el globo oculto.
     expect(profile!.get('.sr-only').text()).toBe('Mi perfil')
     expect(logout!.get('.sr-only').text()).toBe('Cerrar sesión')
+  })
+
+  it('offers legal links in the mobile menu and a borderless logout action', async () => {
+    const { wrapper } = await mountHeader()
+    const authStore = useAuthStore()
+
+    authStore.isInitialized = true
+    authStore.user = signedInUser
+    await flushPromises()
+
+    await menuButton(wrapper).trigger('click')
+    const panel = wrapper.get('#primary-mobile-nav')
+
+    expect(panel.get('a[href="/community-rules"]').text()).toBe('Normas de la comunidad')
+    expect(panel.get('a[href="/privacy"]').text()).toBe('Política de privacidad')
+
+    // El cierre de sesión comparte estilo con los enlaces del panel: sin filete.
+    const logout = panel.findAll('button').find((button) => button.text().includes('Cerrar sesión'))
+    expect(logout).toBeDefined()
+    expect(logout!.classes()).toContain('text-sm')
+    expect(logout!.classes()).not.toContain('border-line-strong')
+    expect(logout!.classes()).not.toContain('bg-white')
   })
 })

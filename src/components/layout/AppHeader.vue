@@ -300,11 +300,13 @@ onBeforeUnmount(() => {
                 Mi perfil
               </RouterLink>
 
-              <Button
-                variant="outline"
-                size="sm"
-                block
-                :loading="isLoggingOut"
+              <button
+                type="button"
+                :class="[
+                  menuLinkClasses(),
+                  'w-full disabled:cursor-not-allowed disabled:opacity-60',
+                ]"
+                :disabled="isLoggingOut"
                 @click="handleLogout"
               >
                 <FontAwesomeIcon
@@ -313,7 +315,7 @@ onBeforeUnmount(() => {
                   aria-hidden="true"
                 />
                 {{ isLoggingOut ? 'Cerrando sesión…' : 'Cerrar sesión' }}
-              </Button>
+              </button>
             </template>
 
             <template v-else>
@@ -328,6 +330,22 @@ onBeforeUnmount(() => {
               </Button>
             </template>
           </div>
+
+          <ul
+            class="mt-3 flex flex-col border-t pt-3"
+            :class="isOverlay ? 'border-white/10' : 'border-line'"
+          >
+            <li>
+              <RouterLink to="/community-rules" :class="menuLinkClasses('/community-rules')">
+                Normas de la comunidad
+              </RouterLink>
+            </li>
+            <li>
+              <RouterLink to="/privacy" :class="menuLinkClasses('/privacy')">
+                Política de privacidad
+              </RouterLink>
+            </li>
+          </ul>
         </nav>
       </div>
     </Transition>
