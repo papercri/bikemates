@@ -19,6 +19,7 @@ import Alert from '@/components/ui/Alert.vue'
 import Button from '@/components/ui/Button.vue'
 import Checkbox from '@/components/ui/Checkbox.vue'
 import CommunityRulesDialog from '@/components/community/CommunityRulesDialog.vue'
+import PrivacyDialog from '@/components/legal/PrivacyDialog.vue'
 import FormError from '@/components/ui/FormError.vue'
 import FormHelp from '@/components/ui/FormHelp.vue'
 import FormLabel from '@/components/ui/FormLabel.vue'
@@ -43,6 +44,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   submit: [payload: RideFormSubmission]
+  duplicate: [payload: RideFormSubmission]
 }>()
 
 const isEditMode = computed(() => props.mode === 'edit')
@@ -68,6 +70,7 @@ const summaryError = computed(() => firstRideFormError(fieldErrors.value))
 const acceptedRules = ref(false)
 const rulesError = ref<string | null>(null)
 const showRulesDialog = ref(false)
+const showPrivacyDialog = ref(false)
 
 watch(acceptedRules, (accepted) => {
   if (accepted) rulesError.value = null
@@ -120,7 +123,27 @@ function handleSubmit(): void {
 
   if (summaryError.value !== null || rulesError.value !== null) return
 
-  emit('submit', {
+  const submission: RideFormSubmission = {
+    values: { ...form },
+    image: selectedImage.value,
+    removeCurrentImage: removeCurrentImage.value,
+  }
+
+  emit('duplicate' in {} ? 'submit' : 'submit', submission)
+}
+
+/** Publica una copia nueva de la ruta en edición, con la misma validación que guardar. */
+function handleDuplicate(): void {
+  if (props.isSubmitting) return
+
+  const errors = validateRideFormFields(form, selectedImage.value)
+  fieldErrors.value = imageError.value ? { ...errors, image: imageError.value } : errors
+  rulesError.value = acceptedRules.value
+    ? null
+    : 'Debes aceptar las normas de la comunidad para publicar la ruta.'
+  if (summaryError.value !== null || rulesError.value !== null) return
+
+  emit('duplicate', {
     values: { ...form },
     image: selectedImage.value,
     removeCurrentImage: removeCurrentImage.value,
@@ -400,13 +423,13 @@ function handleSubmit(): void {
             normas de la comunidad
           </button>
           y la
-          <RouterLink
-            to="/privacy"
+          <button
+            type="button"
             class="text-graphite underline underline-offset-2 transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
-            @click.stop
+            @click.stop.prevent="showPrivacyDialog = true"
           >
             política de privacidad
-          </RouterLink></Checkbox
+          </button></Checkbox
         >
         <p
           v-if="rulesError"
@@ -418,7 +441,7 @@ function handleSubmit(): void {
         </p>
       </div>
 
-      <div class="flex justify-end">
+      <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
         <Button
           type="submit"
           :loading="isSubmitting"
@@ -436,9 +459,21 @@ function handleSubmit(): void {
                 : 'Publicar ruta'
           }}
         </Button>
+
+        <Button
+          v-if="isEditMode"
+          type="button"
+          variant="outline"
+          :disabled="isSubmitting"
+          class="sm:w-auto"
+          @click="handleDuplicate"
+        >
+          Publicar como nueva
+        </Button>
       </div>
     </div>
 
     <CommunityRulesDialog :open="showRulesDialog" @close="showRulesDialog = false" />
+    <PrivacyDialog :open="showPrivacyDialog" @close="showPrivacyDialog = false" />
   </form>
 </template>

@@ -1,5 +1,5 @@
 import { mount, RouterLinkStub } from '@vue/test-utils'
-import { defineComponent } from 'vue'
+import { defineComponent, nextTick } from 'vue'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { RideFormValues } from '../../types'
 import MeetingPointPicker from '../MeetingPointPicker.vue'
@@ -291,6 +291,39 @@ describe('RideForm', () => {
     await wrapper.get('form').trigger('submit')
 
     expect(wrapper.emitted('submit')?.[0]?.[0]).toMatchObject({ image: file })
+  })
+
+  it('opens the community rules and privacy dialogs from the consent links', async () => {
+    const wrapper = mount(RideForm, {
+      props: { initialValues: validValues(), isSubmitting: false, errorMessage: null },
+      global: {
+        stubs: { MeetingPointPicker: MeetingPointPickerStub, RouterLink: RouterLinkStub },
+      },
+      attachTo: document.body,
+    })
+
+    const consentButtons = wrapper.findAll('button')
+    const rules = consentButtons.find((button) => button.text().includes('normas de la comunidad'))
+    const privacy = consentButtons.find((button) =>
+      button.text().includes('política de privacidad'),
+    )
+
+    await rules!.trigger('click')
+    await nextTick()
+    expect(document.querySelector('[role="dialog"]')?.textContent).toContain(
+      'Normas de la comunidad',
+    )
+
+    document.querySelector<HTMLElement>('[data-dialog-close]')?.click()
+    await nextTick()
+
+    await privacy!.trigger('click')
+    await nextTick()
+    expect(document.querySelector('[role="dialog"]')?.textContent).toContain(
+      'Política de privacidad',
+    )
+
+    wrapper.unmount()
   })
 
   it('syncs the local copy when the parent replaces the initial values', async () => {

@@ -16,8 +16,9 @@ import Card from '@/components/ui/Card.vue'
 import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
 import Typography from '@/components/ui/Typography.vue'
 
-import { getRideImageUrl } from '@/features/rides/services/rideImageService'
-import { deleteRide } from '@/features/rides/services/rideService'
+import { getRideImageUrl, uploadRideImage } from '@/features/rides/services/rideImageService'
+import { createRide, deleteRide } from '@/features/rides/services/rideService'
+import { buildRideInput } from '@/features/rides/utils/rideFormMapping'
 import { useRideEditor } from '@/features/rides/composables/useRideEditor'
 import type { RideFormSubmission } from '@/features/rides/types'
 
@@ -46,6 +47,33 @@ const { ride, isLoading, isSubmitting, errorMessage, initialValues, saveRide } =
 
 async function handleSubmit(payload: RideFormSubmission): Promise<void> {
   await saveRide(payload)
+}
+
+const isDuplicating = ref(false)
+const duplicateError = ref('')
+
+/** Crea una ruta nueva con los datos del formulario y abre su detalle. */
+async function handleDuplicate(payload: RideFormSubmission): Promise<void> {
+  if (isDuplicating.value) return
+  isDuplicating.value = true
+  duplicateError.value = ''
+
+  try {
+    const imagePath = payload.image ? await uploadRideImage(payload.image) : null
+    const input = buildRideInput(payload.values, imagePath)
+
+    if (!input) {
+      duplicateError.value = 'Selecciona un punto de encuentro válido.'
+      return
+    }
+
+    const created = await createRide({ ...input, status: 'published' })
+    await router.push({ name: 'ride-detail', params: { id: created.id } })
+  } catch {
+    duplicateError.value = 'No se ha podido publicar la copia. Inténtalo de nuevo.'
+  } finally {
+    isDuplicating.value = false
+  }
 }
 
 const isDeleteDialogOpen = ref(false)
@@ -108,16 +136,15 @@ async function confirmRideDeletion(): Promise<void> {
 
       <BikeLoader v-if="isLoading" label="Cargando ruta…" />
 
-      
-
       <Card v-else-if="ride" class="p-5 sm:p-6">
         <RideForm
           :initial-values="initialValues"
           :initial-image-url="ride.imagePath ? getRideImageUrl(ride.imagePath) : null"
           mode="edit"
-          :is-submitting="isSubmitting"
-          :error-message="errorMessage"
+          :is-submitting="isSubmitting || isDuplicating"
+          :error-message="duplicateError || errorMessage"
           @submit="handleSubmit"
+          @duplicate="handleDuplicate"
         />
       </Card>
       <Card v-else-if="errorMessage && !ride" variant="danger" class="p-6" role="alert">

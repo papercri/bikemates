@@ -37,9 +37,15 @@ const classes = createVariant({
       sun: 'bg-canvas text-ink hover:bg-canvas/90 focus-visible:outline-canvas',
       'sun-outline':
         'border border-canvas/50 bg-transparent text-canvas hover:bg-canvas hover:text-ink focus-visible:outline-canvas',
+      // Sobre foto: como la navegación en overlay, sin relleno; solo leve realce al hover.
+      'sun-quiet':
+        'border border-transparent bg-transparent text-white/90 hover:bg-white/10 hover:text-white focus-visible:outline-canvas',
       // Acción secundaria: filete neutro fino, sin borde negro.
       outline:
         'border border-line-strong bg-white text-ink hover:border-graphite hover:bg-snow focus-visible:outline-ink',
+      // Acción discreta sin filete, para chrome compacto (p. ej. la cabecera).
+      quiet:
+        'border border-transparent bg-transparent text-graphite hover:bg-surface hover:text-ink focus-visible:outline-ink',
       destructive:
         'border border-red-300 bg-white text-red-700 hover:bg-red-700 hover:text-white focus-visible:outline-red-700',
       // Acción destructiva de bajo peso: el color solo aparece al interactuar.

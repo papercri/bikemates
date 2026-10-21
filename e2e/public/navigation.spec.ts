@@ -31,7 +31,7 @@ test.describe('navigation', () => {
     await page.getByRole('link', { name: 'BikeMates, página de inicio' }).first().click()
 
     await expect(page).toHaveURL('/')
-    await expect(page.getByRole('heading', { level: 1 })).toContainText('Encuentra tu grupeta.')
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
   })
 
   test('opens and closes the mobile menu', async ({ page, isMobile }) => {

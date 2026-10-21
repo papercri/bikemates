@@ -25,6 +25,7 @@ const isLoading = ref(false)
 const errorMessage = ref('')
 const sortBy = ref<RideSortOption>('date')
 const query = ref('')
+const timeframe = ref<'upcoming' | 'past'>('upcoming')
 
 const rideToDelete = ref<Ride | null>(null)
 const isDeleteDialogOpen = ref(false)
@@ -54,9 +55,12 @@ const visibleRides = computed(() => {
       ? rides.value
       : rides.value.filter((ride) => normalizeSearchText(ride.title).includes(needle))
 
-  return sortBy.value === 'date'
-    ? sortRidesByDate(matching)
-    : sortRides(matching, sortBy.value, 'desc')
+  const sorted =
+    sortBy.value === 'date' ? sortRidesByDate(matching) : sortRides(matching, sortBy.value, 'desc')
+
+  return sorted.filter((ride) =>
+    timeframe.value === 'past' ? isRidePast(ride.startsAt) : !isRidePast(ride.startsAt),
+  )
 })
 
 const deleteDialogTitle = computed(() =>
@@ -158,8 +162,39 @@ async function confirmRideDeletion(): Promise<void> {
         </div>
       </div>
 
+      <div class="mt-4 flex gap-1" role="tablist" aria-label="Estado de las rutas">
+        <button
+          type="button"
+          role="tab"
+          :aria-selected="timeframe === 'upcoming'"
+          class="rounded-btn px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+          :class="
+            timeframe === 'upcoming'
+              ? 'bg-trail/10 text-trail-ink'
+              : 'text-graphite hover:bg-surface hover:text-ink'
+          "
+          @click="timeframe = 'upcoming'"
+        >
+          Próximas
+        </button>
+        <button
+          type="button"
+          role="tab"
+          :aria-selected="timeframe === 'past'"
+          class="rounded-btn px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+          :class="
+            timeframe === 'past'
+              ? 'bg-trail/10 text-trail-ink'
+              : 'text-graphite hover:bg-surface hover:text-ink'
+          "
+          @click="timeframe = 'past'"
+        >
+          Pasadas
+        </button>
+      </div>
+
       <div
-        v-if="visibleRides.length > 0"  
+        v-if="visibleRides.length > 0"
         class="mt-4 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
       >
         <div
@@ -191,7 +226,13 @@ async function confirmRideDeletion(): Promise<void> {
         </div>
       </div>
 
-      <p v-else class="mt-4 text-sm text-graphite">Ninguna ruta coincide con la búsqueda.</p>
+      <p v-else class="mt-4 text-sm text-graphite">
+        {{
+          timeframe === 'past'
+            ? 'Todavía no tienes rutas pasadas.'
+            : 'Ninguna ruta coincide con la búsqueda.'
+        }}
+      </p>
     </div>
 
     <Alert v-if="deleteRideError" class="mt-4">

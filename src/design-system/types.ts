@@ -1,5 +1,13 @@
 export type ButtonVariant =
-  'primary' | 'sun' | 'sun-outline' | 'outline' | 'destructive' | 'quiet-destructive' | 'link'
+  | 'primary'
+  | 'sun'
+  | 'sun-outline'
+  | 'sun-quiet'
+  | 'outline'
+  | 'quiet'
+  | 'destructive'
+  | 'quiet-destructive'
+  | 'link'
 export type ButtonSize = 'xs' | 'sm' | 'md' | 'lg'
 
 /** `inverse` es la variante para texto sobre fotografía (fondo oscuro translúcido). */

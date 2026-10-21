@@ -8,8 +8,10 @@ describe('BrandLogo', () => {
 
     const svg = wrapper.get('svg')
 
-    expect(svg.classes()).toContain('h-7')
-    expect(svg.classes()).toContain('w-11')
+    expect(svg.classes()).toContain('h-6')
+    expect(svg.classes()).toContain('w-9')
+    expect(svg.classes()).toContain('sm:h-7')
+    expect(svg.classes()).toContain('sm:w-11')
     expect(svg.attributes('aria-hidden')).toBe('true')
     expect(svg.attributes('focusable')).toBe('false')
   })

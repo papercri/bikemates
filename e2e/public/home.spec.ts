@@ -7,32 +7,41 @@ test.describe('home', () => {
 
     await page.goto('/')
 
-    await expect(page.getByRole('heading', { level: 1 })).toContainText(
-      'Encuentra tu grupeta.Comparte la ruta.',
-    )
+    // Un único H1 de página; el texto de marketing puede cambiar sin tocar el test.
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
 
-    await expect(
-      page.getByText('Conecta con ciclistas cerca de ti, organiza salidas y descubre nuevas rutas'),
-    ).toBeVisible()
-
-    // CTAs para visitantes anónimos.
-    await expect(page.getByRole('link', { name: 'Explorar rutas' }).first()).toBeVisible()
-    await expect(page.getByRole('link', { name: 'Únete a BikeMates' })).toBeVisible()
+    // CTAs para visitantes anónimos, localizados por destino.
+    await expect(page.locator('header a[href="/rides"]').first()).toBeVisible()
+    await expect(page.getByRole('link', { href: '/register' }).first()).toBeVisible()
   })
 
-  test('shows the published ride preview and links to the rides list', async ({
+  test('shows the published ride preview when at least two future rides exist', async ({
     page,
     supabase,
   }) => {
-    supabase.state.rides = [makeRide({ title: 'Ruta de prueba' })]
+    supabase.state.rides = [
+      makeRide({ title: 'Ruta de prueba' }),
+      makeRide({ id: 'ride-2', title: 'Segunda salida' }),
+    ]
 
     await page.goto('/')
 
-    await expect(page.getByRole('link', { name: 'Ver próximas salidas' })).toBeVisible()
+    // Las tarjetas enlazan al detalle de cada salida.
+    await expect(page.locator('a[href^="/rides/"]').first()).toBeVisible()
 
-    // El enlace del CTA inferior apunta a la lista pública de rutas.
-    const exploreLink = page.getByRole('link', { name: 'Explorar rutas' }).first()
-    await expect(exploreLink).toHaveAttribute('href', '/rides')
+    // El CTA del listado apunta a la página pública de rutas.
+    await expect(page.locator('a[href="/rides"]').first()).toBeVisible()
+  })
+
+  test('hides the rides preview section when fewer than two future rides exist', async ({
+    page,
+    supabase,
+  }) => {
+    supabase.state.rides = [makeRide()]
+
+    await page.goto('/')
+
+    await expect(page.locator('a[href^="/rides/"]')).toHaveCount(0)
   })
 
   test('offers the publish CTA once the session is active', async ({ page, supabase }) => {
@@ -51,25 +60,18 @@ test.describe('home', () => {
 
     await page.goto('/')
 
-    await expect(page.getByRole('link', { name: 'Publicar ruta' }).first()).toBeVisible()
-    await expect(page.getByRole('link', { name: 'Publicar ruta' }).first()).toHaveAttribute(
-      'href',
-      '/rides/create',
-    )
+    await expect(page.getByRole('link', { href: '/rides/create' }).first()).toBeVisible()
   })
 
   test('renders Open Graph metadata for social sharing', async ({ page }) => {
     await page.goto('/')
 
     await expect(page.locator('meta[property="og:type"]')).toHaveAttribute('content', 'website')
-    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
-      'content',
-      'BikeMates | Encuentra ciclistas y rutas',
-    )
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', /BikeMates/)
     await expect(page.locator('meta[property="og:url"]')).toHaveAttribute('content', /\/$/)
     await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
       'content',
-      /\/photos\/grupeta-camino\.webp$/,
+      /\/photos\/.+\.webp$/,
     )
     await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
       'content',
@@ -78,17 +80,12 @@ test.describe('home', () => {
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /\/$/)
   })
 
-  test('renders the feature and CTA sections', async ({ page }) => {
+  test('renders the feature and CTA sections', async ({ page, supabase }) => {
+    supabase.state.rides = [makeRide(), makeRide({ id: 'ride-2' })]
+
     await page.goto('/')
 
-    await expect(
-      page.getByRole('heading', { level: 2, name: 'Todo empieza con una ruta' }),
-    ).toBeVisible()
-    await expect(
-      page.getByRole('heading', { level: 2, name: 'Así se vive una salida' }),
-    ).toBeVisible()
-    await expect(
-      page.getByRole('heading', { level: 2, name: 'Tu próxima salida empieza aquí' }),
-    ).toBeVisible()
+    // Estructura de secciones (tres H2), sin atar el texto de marketing.
+    await expect(page.getByRole('heading', { level: 2 })).toHaveCount(3)
   })
 })

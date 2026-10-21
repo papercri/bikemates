@@ -82,6 +82,31 @@ const activeFilterCount = computed(() => {
       </span>
     </button>
 
+    <!-- Interrupción "Voy": solo icono, gris en reposo y verde al activarse.
+         En móvil comparte fila con el botón de filtros; en sm+ cierra la fila. -->
+    <button
+      v-if="showParticipation"
+      type="button"
+      class="group relative inline-flex size-9 shrink-0 items-center justify-center rounded-full border transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink sm:order-3"
+      :class="
+        participating
+          ? 'border-trail bg-trail/15 text-trail-ink'
+          : 'border-line-strong bg-white text-graphite hover:border-graphite hover:bg-snow'
+      "
+      :aria-pressed="participating"
+      aria-label="Voy"
+      @click="participating = !participating"
+    >
+      <FontAwesomeIcon :icon="faUser" aria-hidden="true" class="size-4" />
+
+      <span
+        role="tooltip"
+        class="pointer-events-none absolute -top-8 left-1/2 z-10 -translate-x-1/2 rounded-btn bg-ink px-2 py-1 text-xs font-medium whitespace-nowrap text-canvas opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
+      >
+        Voy
+      </span>
+    </button>
+
     <!-- En móvil los controles se pliegan en rejilla; en sm+ se alinean en fila y en
          desktop se estiran para ocupar todo el ancho disponible. -->
     <div
@@ -140,30 +165,5 @@ const activeFilterCount = computed(() => {
         :options="RIDE_SORT_OPTIONS"
       />
     </div>
-
-    <!-- Interrupción "Voy": solo icono, gris en reposo y verde al activarse.
-         En móvil comparte fila con el botón de filtros; en sm+ cierra la fila. -->
-    <button
-      v-if="showParticipation"
-      type="button"
-      class="group relative inline-flex size-9 shrink-0 items-center justify-center rounded-full border transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink sm:order-3"
-      :class="
-        participating
-          ? 'border-trail bg-trail/15 text-trail-ink'
-          : 'border-line-strong bg-white text-graphite hover:border-graphite hover:bg-snow'
-      "
-      :aria-pressed="participating"
-      aria-label="Voy"
-      @click="participating = !participating"
-    >
-      <FontAwesomeIcon :icon="faUser" aria-hidden="true" class="size-4" />
-
-      <span
-        role="tooltip"
-        class="pointer-events-none absolute -top-8 left-1/2 z-10 -translate-x-1/2 rounded-btn bg-ink px-2 py-1 text-xs font-medium whitespace-nowrap text-canvas opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
-      >
-        Voy
-      </span>
-    </button>
   </div>
 </template>

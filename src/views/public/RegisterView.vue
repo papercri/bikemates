@@ -10,6 +10,8 @@ import PasswordInput from '@/components/ui/PasswordInput.vue'
 import Alert from '@/components/ui/Alert.vue'
 import Button from '@/components/ui/Button.vue'
 import Checkbox from '@/components/ui/Checkbox.vue'
+import CommunityRulesDialog from '@/components/community/CommunityRulesDialog.vue'
+import PrivacyDialog from '@/components/legal/PrivacyDialog.vue'
 import Input from '@/components/ui/Input.vue'
 import Typography from '@/components/ui/Typography.vue'
 import { registerUser } from '@/features/auth/services/authService'
@@ -49,6 +51,8 @@ function validateForm(): boolean {
 }
 
 const submitted = ref(false)
+const showRulesDialog = ref(false)
+const showPrivacyDialog = ref(false)
 const {
   isSubmitting,
   errorMessage: submitError,
@@ -189,21 +193,21 @@ async function handleSubmit(): Promise<void> {
             "
           >
             He leído y acepto las
-            <RouterLink
-              to="/community-rules"
+            <button
+              type="button"
               class="text-graphite underline underline-offset-2 transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
-              @click.stop
+              @click.stop.prevent="showRulesDialog = true"
             >
               normas de la comunidad
-            </RouterLink>
+            </button>
             y la
-            <RouterLink
-              to="/privacy"
+            <button
+              type="button"
               class="text-graphite underline underline-offset-2 transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
-              @click.stop
+              @click.stop.prevent="showPrivacyDialog = true"
             >
               política de privacidad
-            </RouterLink>
+            </button>
           </Checkbox>
 
           <FormError v-if="submitted && errors.acceptedRules" id="accepted-rules-error">
@@ -227,6 +231,9 @@ async function handleSubmit(): Promise<void> {
           {{ isSubmitting ? 'Creando cuenta…' : 'Crear cuenta' }}
         </Button>
       </form>
+
+      <CommunityRulesDialog :open="showRulesDialog" @close="showRulesDialog = false" />
+      <PrivacyDialog :open="showPrivacyDialog" @close="showPrivacyDialog = false" />
 
       <Typography as="p" variant="body-sm" tone="muted" class="mt-5 text-center">
         ¿Ya tienes cuenta?
