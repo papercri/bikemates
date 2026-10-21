@@ -75,6 +75,24 @@ describe('RideParticipants', () => {
     wrapper.unmount()
   })
 
+  it('opens the privacy policy from the inline link without toggling the checkbox', async () => {
+    const wrapper = mountParticipants({ currentUserId: 'user-3' }, true)
+
+    const privacyLink = wrapper
+      .findAll('button')
+      .find((button) => button.text().includes('política de privacidad'))
+    expect(privacyLink).toBeDefined()
+
+    await privacyLink!.trigger('click')
+    await nextTick()
+
+    const checkbox = wrapper.get('input[type="checkbox"]').element
+    expect(checkbox instanceof HTMLInputElement && checkbox.checked).toBe(false)
+    expect(dialog()?.textContent).toContain('Política de privacidad')
+
+    wrapper.unmount()
+  })
+
   it('shows no join CTA to a visitor who already participates', () => {
     const wrapper = mountParticipants({ participants, currentUserId: 'user-1' })
 

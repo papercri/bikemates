@@ -19,6 +19,7 @@ import Alert from '@/components/ui/Alert.vue'
 import Button from '@/components/ui/Button.vue'
 import Checkbox from '@/components/ui/Checkbox.vue'
 import CommunityRulesDialog from '@/components/community/CommunityRulesDialog.vue'
+import PrivacyDialog from '@/components/legal/PrivacyDialog.vue'
 import FormError from '@/components/ui/FormError.vue'
 import FormHelp from '@/components/ui/FormHelp.vue'
 import FormLabel from '@/components/ui/FormLabel.vue'
@@ -68,6 +69,7 @@ const summaryError = computed(() => firstRideFormError(fieldErrors.value))
 const acceptedRules = ref(false)
 const rulesError = ref<string | null>(null)
 const showRulesDialog = ref(false)
+const showPrivacyDialog = ref(false)
 
 watch(acceptedRules, (accepted) => {
   if (accepted) rulesError.value = null
@@ -400,13 +402,13 @@ function handleSubmit(): void {
             normas de la comunidad
           </button>
           y la
-          <RouterLink
-            to="/privacy"
+          <button
+            type="button"
             class="text-graphite underline underline-offset-2 transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
-            @click.stop
+            @click.stop.prevent="showPrivacyDialog = true"
           >
             política de privacidad
-          </RouterLink></Checkbox
+          </button></Checkbox
         >
         <p
           v-if="rulesError"
@@ -440,5 +442,6 @@ function handleSubmit(): void {
     </div>
 
     <CommunityRulesDialog :open="showRulesDialog" @close="showRulesDialog = false" />
+    <PrivacyDialog :open="showPrivacyDialog" @close="showPrivacyDialog = false" />
   </form>
 </template>

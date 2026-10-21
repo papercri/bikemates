@@ -9,6 +9,7 @@ import Checkbox from '@/components/ui/Checkbox.vue'
 import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
 import Typography from '@/components/ui/Typography.vue'
 import CommunityRulesDialog from '@/components/community/CommunityRulesDialog.vue'
+import PrivacyDialog from '@/components/legal/PrivacyDialog.vue'
 import type { RideParticipant } from '../types'
 
 interface Props {
@@ -39,6 +40,7 @@ const isLeaveDialogOpen = ref(false)
 /** Requisito para inscribirse: aceptar explícitamente las normas de la comunidad. */
 const acceptedRules = ref(false)
 const showRulesDialog = ref(false)
+const showPrivacyDialog = ref(false)
 
 function getInitials(name: string): string {
   return name
@@ -145,13 +147,13 @@ function confirmLeave(): void {
             normas de la comunidad
           </button>
           y la
-          <RouterLink
-            to="/privacy"
+          <button
+            type="button"
             class="text-graphite underline underline-offset-2 transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
-            @click.stop
+            @click.stop.prevent="showPrivacyDialog = true"
           >
             política de privacidad
-          </RouterLink></Checkbox
+          </button></Checkbox
         >
 
         <Button
@@ -177,5 +179,6 @@ function confirmLeave(): void {
     />
 
     <CommunityRulesDialog :open="showRulesDialog" @close="showRulesDialog = false" />
+    <PrivacyDialog :open="showPrivacyDialog" @close="showPrivacyDialog = false" />
   </section>
 </template>
