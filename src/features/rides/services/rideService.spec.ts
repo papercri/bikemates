@@ -192,14 +192,14 @@ describe('rideService', () => {
       })
     })
 
-    it('reports a failure when the organizer cannot be added as participant', async () => {
-      const rideChain = createQueryChain({ data: rideRow(), error: null })
-      mocks.from.mockReturnValueOnce(rideChain)
+    it('still returns the created ride when the organizer enrollment fails', async () => {
+      const chain = createQueryChain({ data: rideRow(), error: null })
+      mocks.from.mockReturnValue(chain)
       mocks.rpc.mockResolvedValueOnce({ data: null, error: { message: 'denied' } })
 
-      await expect(createRide(createInput())).rejects.toThrow(
-        'La ruta se ha publicado, pero no se ha podido añadirte como participante: denied',
-      )
+      const ride = await createRide(createInput())
+
+      expect(ride.id).toBe('ride-1')
     })
 
     it('builds the public image url when the ride has an image path', async () => {

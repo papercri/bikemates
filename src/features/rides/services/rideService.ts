@@ -121,13 +121,16 @@ export async function createRide(input: CreateRideInput): Promise<Ride> {
 
   // El organizador participa siempre: se inscribe con la misma RPC que el
   // resto de participantes, porque el INSERT directo está bloqueado por RLS.
+  // Si la inscripción falla, la ruta ya existe y se devuelve igualmente: la
+  // inscripción puede hacerse después desde la página de la ruta.
   const { error: participantError } = await supabase.rpc('join_ride', {
     p_ride_id: data.id,
   })
 
   if (participantError) {
-    throw new Error(
-      `La ruta se ha publicado, pero no se ha podido añadirte como participante: ${participantError.message}`,
+    console.error(
+      'La ruta se ha publicado, pero el organizador no se ha podido inscribir:',
+      participantError.message,
     )
   }
 
