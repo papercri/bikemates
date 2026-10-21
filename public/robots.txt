@@ -1,0 +1,13 @@
+# Robots de BikeMates: indexación de páginas públicas.
+User-agent: *
+Allow: /
+
+# Áreas autenticadas y utilidades: fuera del índice.
+Disallow: /profile
+Disallow: /rides/create
+Disallow: /rides/*/edit
+Disallow: /reset-password
+Disallow: /forgot-password
+Disallow: /auth/
+
+Sitemap: https://bikemates.vercel.app/sitemap.xml

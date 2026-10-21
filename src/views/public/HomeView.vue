@@ -21,6 +21,25 @@ useHead(
     const url = `${window.location.origin}/`
     const image = `${window.location.origin}/photos/grupeta-camino.webp`
 
+    // Schema.org: describe el sitio visible (WebSite + Organization), sin inventar datos.
+    const structuredData = {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'WebSite',
+          name: 'BikeMates',
+          url,
+          description: HOME_DESCRIPTION,
+        },
+        {
+          '@type': 'Organization',
+          name: 'BikeMates',
+          url,
+          logo: image,
+        },
+      ],
+    }
+
     return {
       title: HOME_TITLE,
       meta: [
@@ -39,6 +58,7 @@ useHead(
         { name: 'twitter:image', content: image },
       ],
       link: [{ rel: 'canonical', href: url }],
+      script: [{ type: 'application/ld+json', innerHTML: JSON.stringify(structuredData) }],
     }
   }),
 )
