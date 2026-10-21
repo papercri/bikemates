@@ -24,11 +24,11 @@ const HERO_ZOOM_TO = 1.08
 // Slideshow del hero: crossfade + zoom lento (Ken Burns) por foto.
 const heroSlides = [
   { src: '/photos/grupeta-camino.webp', position: 'object-center' },
-  { src: '/photos/img4.avif', position: 'object-center' },
-  { src: '/photos/img10.avif', position: 'object-center' },
-  { src: '/photos/img14.jpg', position: 'object-center' },
+  { src: '/photos/img4.webp', position: 'object-center' },
+  { src: '/photos/img10.webp', position: 'object-center' },
+  { src: '/photos/img14.webp', position: 'object-center' },
   { src: '/photos/hero-bosque.webp', position: 'object-center' },
-  { src: '/photos/img3.jpg', position: 'object-center' },
+  { src: '/photos/img3.webp', position: 'object-center' },
   { src: '/photos/img19.webp', position: 'object-center' },
 ] as const
 
