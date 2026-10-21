@@ -147,6 +147,7 @@ describe('rideService', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     authenticatedAs()
+    mocks.rpc.mockResolvedValue({ data: null, error: null })
     mocks.getPublicUrl.mockImplementation((path: string) => ({
       data: { publicUrl: `https://cdn.example/ride-images/${path}` },
     }))
@@ -181,8 +182,7 @@ describe('rideService', () => {
         status: 'published',
       })
       expect(chain.single).toHaveBeenCalled()
-      expect(mocks.from).toHaveBeenCalledWith('ride_participants')
-      expect(chain.insert).toHaveBeenCalledWith({ ride_id: 'ride-1', user_id: 'user-1' })
+      expect(mocks.rpc).toHaveBeenCalledWith('join_ride', { p_ride_id: 'ride-1' })
       expect(ride).toMatchObject({
         id: 'ride-1',
         organizerId: 'user-1',
@@ -194,8 +194,8 @@ describe('rideService', () => {
 
     it('reports a failure when the organizer cannot be added as participant', async () => {
       const rideChain = createQueryChain({ data: rideRow(), error: null })
-      const participantChain = createQueryChain({ data: null, error: { message: 'denied' } })
-      mocks.from.mockReturnValueOnce(rideChain).mockReturnValueOnce(participantChain)
+      mocks.from.mockReturnValueOnce(rideChain)
+      mocks.rpc.mockResolvedValueOnce({ data: null, error: { message: 'denied' } })
 
       await expect(createRide(createInput())).rejects.toThrow(
         'La ruta se ha publicado, pero no se ha podido añadirte como participante: denied',
