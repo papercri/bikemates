@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import {
   faArrowUpRightFromSquare,
+  faArrowsLeftRight,
   faBicycle,
   faClock,
   faPen,
+  faRotate,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { useHead } from '@unhead/vue'
@@ -26,6 +28,13 @@ import RideAudienceBadge from '@/features/rides/components/RideAudienceBadge.vue
 import { useRideDetail } from '@/features/rides/composables/useRideDetail'
 import { RIDE_LEVEL_BADGE_COLORS } from '@/features/rides/constants/rideLevels'
 import { RIDE_BIKE_TYPE_LABELS, RIDE_ROUTE_TYPE_LABELS } from '@/features/rides/constants/rideOptions'
+import type { IconDefinition } from '@fortawesome/fontawesome-svg-core'
+import type { RideRouteType } from '@/features/rides/types'
+
+const RIDE_ROUTE_TYPE_ICONS: Record<RideRouteType, IconDefinition> = {
+  circular: faRotate,
+  round_trip: faArrowsLeftRight,
+}
 import type { RideCalendarEntry } from '@/features/rides/utils/rideCalendar'
 import { formatRideDate } from '@/utils/dates'
 import RideCalendarMenu from '@/features/rides/components/RideCalendarMenu.vue'
@@ -262,6 +271,11 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
             <RideAudienceBadge :audience="ride.audience" />
 
             <Badge v-if="ride.routeType" variant="muted" color="ink">
+              <FontAwesomeIcon
+                :icon="RIDE_ROUTE_TYPE_ICONS[ride.routeType]"
+                aria-hidden="true"
+                class="size-3 text-graphite"
+              />
               {{ RIDE_ROUTE_TYPE_LABELS[ride.routeType] }}
             </Badge>
           </div>
