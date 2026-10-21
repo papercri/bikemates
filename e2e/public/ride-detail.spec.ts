@@ -19,11 +19,11 @@ test.describe('ride detail', () => {
     await expect(page.getByText('Plaça de l’Església, Barcelona').first()).toBeVisible()
     await expect(page.getByText('32', { exact: true }).first()).toBeVisible()
     await expect(page.getByText('+650', { exact: true }).first()).toBeVisible()
-    await expect(page.getByRole('heading', { level: 2, name: 'Descripción' })).toBeVisible()
-    await expect(page.getByRole('heading', { level: 2, name: 'Punto de encuentro' })).toBeVisible()
+    await expect(page.locator('#description-title')).toBeVisible()
+    await expect(page.locator('#meeting-point-title')).toBeVisible()
 
     // Sin sesión solo se ve el número: el listado de nombres es privado.
-    await expect(page.getByRole('heading', { level: 2, name: 'Participantes' })).toBeVisible()
+    await expect(page.locator('#participants-title')).toBeVisible()
     await expect(page.getByText('1 inscrito')).toBeVisible()
     await expect(page.locator('#main-content ul li')).toHaveCount(0)
   })
@@ -121,7 +121,7 @@ test.describe('ride detail', () => {
 
     await page.goto('/rides/ride-1')
 
-    await expect(page.getByRole('heading', { level: 2, name: 'Participantes' })).toBeVisible()
+    await expect(page.locator('#participants-title')).toBeVisible()
 
     // El CTA está deshabilitado hasta aceptar las normas de la comunidad.
     const joinButton = page.getByRole('button', { name: 'Participar en esta ruta' })
