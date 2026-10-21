@@ -165,9 +165,9 @@ const shortDate = computed(() => formatRideShortDate(props.ride.startsAt))
 
       <span
         v-if="participating"
-        class="flex size-6 items-center justify-center rounded-full bg-ink/40 text-trail backdrop-blur-sm"
+        class="grid size-6 place-items-center rounded-full bg-ink/40 text-trail-dark backdrop-blur-sm"
       >
-        <FontAwesomeIcon :icon="faUser" aria-hidden="true" class="size-2.5" />
+        <FontAwesomeIcon :icon="faUser" aria-hidden="true" class="size-2" />
         <span class="sr-only">Participaré</span>
       </span>
     </div>
