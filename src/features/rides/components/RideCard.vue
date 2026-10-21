@@ -150,24 +150,24 @@ const shortDate = computed(() => formatRideShortDate(props.ride.startsAt))
          Corazón de favoritos arriba; debajo, el círculo de participación. -->
     <div
       v-if="showSaveToggle || participating"
-      class="absolute top-3.5 right-3.5 z-10 flex flex-col items-end gap-1.5 sm:top-4.5 sm:right-4.5"
+      class="absolute top-4 right-4 z-10 flex flex-col items-end gap-1 sm:top-5 sm:right-5"
     >
       <button
         v-if="showSaveToggle"
         type="button"
-        class="flex size-7 items-center justify-center rounded-full bg-ink/70 text-canvas transition-colors hover:bg-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500"
+        class="flex size-6 items-center justify-center rounded-full bg-ink/40 text-canvas backdrop-blur-sm transition-colors hover:bg-ink/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500"
         :aria-pressed="saved ?? false"
         :aria-label="saved ? 'Quitar de favoritos' : 'Agregar a favoritos'"
         @click.stop.prevent="emit('toggle-save')"
       >
-        <IconHeart :filled="saved" class="size-3.5" :class="saved ? 'text-red-500' : 'text-canvas'" />
+        <IconHeart :filled="saved" class="size-3" :class="saved ? 'text-red-500' : 'text-canvas'" />
       </button>
 
       <span
         v-if="participating"
-        class="flex size-7 items-center justify-center rounded-full bg-ink/70 text-trail"
+        class="flex size-6 items-center justify-center rounded-full bg-ink/40 text-trail backdrop-blur-sm"
       >
-        <FontAwesomeIcon :icon="faUser" aria-hidden="true" class="size-3" />
+        <FontAwesomeIcon :icon="faUser" aria-hidden="true" class="size-2.5" />
         <span class="sr-only">Participaré</span>
       </span>
     </div>
