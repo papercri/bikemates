@@ -39,6 +39,7 @@ import type { RideCalendarEntry } from '@/features/rides/utils/rideCalendar'
 import { formatRideDate } from '@/utils/dates'
 import RideCalendarMenu from '@/features/rides/components/RideCalendarMenu.vue'
 import RideShareMenu from '@/features/rides/components/RideShareMenu.vue'
+import RideMessages from '@/features/rides/components/RideMessages.vue'
 import RideParticipants from '@/features/rides/components/RideParticipants.vue'
 import { useRideParticipantCount } from '@/features/rides/composables/useRideParticipantCount'
 import { useRideParticipants } from '@/features/rides/composables/useRideParticipants'
@@ -486,6 +487,8 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
               </div>
             </div>
           </section>
+
+          <RideMessages :ride-id="ride.id" class="mt-8" />
         </div>
       </div>
 

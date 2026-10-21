@@ -141,6 +141,48 @@ test.describe('ride detail', () => {
     expect(supabase.state.participants).toHaveLength(2)
   })
 
+  test('shows ride comments and lets a signed-in user post one', async ({ page, supabase }) => {
+    supabase.state.rides = [makeRide({ id: 'ride-1' })]
+    supabase.state.users.push(MEMBER, ORGANIZER)
+    supabase.state.profiles.push(
+      {
+        id: MEMBER.id,
+        display_name: MEMBER.displayName,
+        avatar_url: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: ORGANIZER.id,
+        display_name: ORGANIZER.displayName,
+        avatar_url: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+    )
+    supabase.state.messages = [
+      {
+        id: 'msg-1',
+        ride_id: 'ride-1',
+        author_id: ORGANIZER.id,
+        content: 'Nos vemos en el punto de encuentro.',
+        created_at: '2026-06-01T10:00:00.000Z',
+      },
+    ]
+    await supabase.signInAs(MEMBER)
+
+    await page.goto('/rides/ride-1')
+
+    await expect(page.getByRole('heading', { name: 'Comentarios' })).toBeVisible()
+    await expect(page.getByText('Nos vemos en el punto de encuentro.')).toBeVisible()
+
+    await page.getByLabel('Escribe un comentario').fill('Llevo cámara antipinchazos.')
+    await page.getByRole('button', { name: 'Comentar' }).click()
+
+    await expect(page.getByText('Llevo cámara antipinchazos.')).toBeVisible()
+    expect(supabase.state.messages).toHaveLength(2)
+  })
+
   test('lets a participant leave through the confirmation dialog', async ({ page, supabase }) => {
     supabase.state.rides = [makeRide({ id: 'ride-1' })]
     supabase.state.participants = [

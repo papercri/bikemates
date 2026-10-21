@@ -54,6 +54,14 @@ export interface DbParticipant {
   }
 }
 
+export interface DbMessage {
+  id: string
+  ride_id: string
+  author_id: string
+  content: string
+  created_at: string
+}
+
 export interface PlaceResult {
   place_id: number
   display_name: string
@@ -69,6 +77,7 @@ export interface MockState {
   rides: DbRide[]
   profiles: DbProfile[]
   participants: DbParticipant[]
+  messages: DbMessage[]
   places: PlaceResult[]
   /** Indica si el registro devuelve sesión activa o exige confirmación por email. */
   signUpCreatesSession: boolean
@@ -199,6 +208,7 @@ export async function mockSupabase(page: Page): Promise<SupabaseMock> {
     rides: [],
     profiles: [],
     participants: [],
+    messages: [],
     places: [],
     signUpCreatesSession: false,
     authError: null,
@@ -553,6 +563,46 @@ export async function mockSupabase(page: Page): Promise<SupabaseMock> {
       }
 
       return fulfill(route, json(rows))
+    }
+
+    if (path === `${REST_PATH}ride_messages`) {
+      const accept2 = accept
+      if (method === 'GET') {
+        const rideId = requestUrl.searchParams.get('ride_id')?.replace('eq.', '') ?? ''
+        const rows = state.messages
+          .filter((m) => m.ride_id === rideId)
+          .sort((a, b) => a.created_at.localeCompare(b.created_at))
+          .map((m) => ({
+            id: m.id,
+            ride_id: m.ride_id,
+            content: m.content,
+            created_at: m.created_at,
+            author: state.profiles.find((pr) => pr.id === m.author_id) ?? null,
+          }))
+        return fulfill(route, json(rows))
+      }
+
+      if (method === 'POST') {
+        const body = route.request().postDataJSON() as Partial<DbMessage>
+        const user = state.currentUser
+        if (!user) {
+          return fulfill(route, json({ message: 'Debes iniciar sesión.' }, 401))
+        }
+        const inserted: DbMessage = {
+          id: `msg-${state.messages.length + 1}`,
+          ride_id: body.ride_id ?? '',
+          author_id: user.id,
+          content: body.content ?? '',
+          created_at: new Date().toISOString(),
+        }
+        state.messages.push(inserted)
+        const author = state.profiles.find((pr) => pr.id === inserted.author_id) ?? null
+        const row = { ...inserted, author }
+        if (accept2.includes('vnd.pgrst.object')) {
+          return fulfill(route, json(row))
+        }
+        return fulfill(route, json([row]))
+      }
     }
 
     if (path.startsWith(`${REST_PATH}rpc/`)) {
