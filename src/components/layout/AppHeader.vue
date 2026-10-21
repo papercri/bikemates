@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -33,6 +33,26 @@ const menuButton = ref<HTMLButtonElement | null>(null)
 
 const isOverlay = computed(() => route.meta.overlayHeader === true)
 
+// El header de la home arranca transparente sobre el hero; al hacer scroll pasa
+// a chrome sólido para que el texto y los botones sigan siendo legibles.
+const isScrolled = ref(false)
+
+function updateScrollState(): void {
+  isScrolled.value = window.scrollY > 24
+}
+
+onMounted(() => {
+  updateScrollState()
+  window.addEventListener('scroll', updateScrollState, { passive: true })
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', updateScrollState)
+})
+
+/** Chrome sobre foto: solo la home sin desplazar. */
+const isDarkChrome = computed(() => isOverlay.value && !isScrolled.value)
+
 // El panel móvil del menú lleva fondo sólido: canvas en modo normal y
 // ink en overlay, así que el color de texto depende del modo.
 function menuLinkClasses(path?: string): string {
@@ -40,7 +60,7 @@ function menuLinkClasses(path?: string): string {
     'flex items-center gap-3 rounded-btn px-3 py-3 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2'
   const isActive = path !== undefined && isNavActive(path)
 
-  if (isOverlay.value) {
+  if (isDarkChrome.value) {
     return isActive
       ? `${base} bg-white/15 text-white focus-visible:outline-canvas`
       : `${base} text-white hover:bg-white/10 focus-visible:outline-canvas`
@@ -52,14 +72,14 @@ function menuLinkClasses(path?: string): string {
 }
 
 const navIdleClasses = computed(() =>
-  isOverlay.value
+  isDarkChrome.value
     ? 'inline-flex items-center gap-2 rounded-btn px-3 py-1.5 text-sm font-medium text-white/90 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-canvas'
     : 'inline-flex items-center gap-2 rounded-btn px-3 py-1.5 text-sm font-medium text-graphite transition-colors hover:bg-surface hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink',
 )
 
 /** Estado activo con tinte verde de marca: el enlace de la sección actual se resalta sin depender solo del color. */
 const navActiveClasses = computed(() =>
-  isOverlay.value
+  isDarkChrome.value
     ? 'inline-flex items-center gap-2 rounded-btn px-3 py-1.5 bg-white/15 text-sm font-semibold text-white transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-canvas'
     : 'inline-flex items-center gap-2 rounded-btn px-3 py-1.5 bg-trail/10 text-sm font-semibold text-trail-ink transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink',
 )
@@ -77,11 +97,14 @@ function navLinkClasses(path: string): string {
   return isNavActive(path) ? navActiveClasses.value : navIdleClasses.value
 }
 
-const headerClasses = computed(() =>
-  isOverlay.value
-    ? 'fixed inset-x-0 top-0 z-40 border-b border-white/10 bg-transparent text-white backdrop-blur-sm'
-    : 'sticky top-0 z-40 border-b border-line bg-canvas/95 text-ink backdrop-blur',
-)
+const headerClasses = computed(() => {
+  // La posición no cambia al hacer scroll: en la home sigue fija para no saltar.
+  const position = isOverlay.value ? 'fixed inset-x-0 top-0 z-40' : 'sticky top-0 z-40'
+
+  return isDarkChrome.value
+    ? `${position} border-b border-white/10 bg-transparent text-white backdrop-blur-sm transition-colors`
+    : `${position} border-b border-line bg-canvas/95 text-ink backdrop-blur transition-colors`
+})
 
 async function handleLogout(): Promise<void> {
   isLoggingOut.value = true
@@ -139,14 +162,16 @@ onBeforeUnmount(() => {
         to="/"
         class="flex shrink-0 items-center gap-2.5 text-xl font-bold tracking-tight focus-visible:outline-2 focus-visible:outline-offset-2"
         :class="
-          isOverlay
+          isDarkChrome
             ? 'text-white focus-visible:outline-canvas'
             : 'text-ink focus-visible:outline-ink'
         "
         aria-label="BikeMates, página de inicio"
       >
         <BrandLogo />
-        <span>Bike<span :class="isOverlay ? 'text-white/70' : 'text-trail-ink'">Mates</span></span>
+        <span
+          >Bike<span :class="isDarkChrome ? 'text-white/70' : 'text-trail-ink'">Mates</span></span
+        >
       </RouterLink>
 
       <nav aria-label="Navegación principal" class="hidden items-center gap-5 sm:flex">
@@ -164,7 +189,7 @@ onBeforeUnmount(() => {
         <span
           v-if="!isInitialized"
           class="text-xs"
-          :class="isOverlay ? 'text-white/80' : 'text-graphite'"
+          :class="isDarkChrome ? 'text-white/80' : 'text-graphite'"
         >
           Comprobando sesión…
         </span>
@@ -173,7 +198,7 @@ onBeforeUnmount(() => {
           <!-- Acciones de sesión compactas: solo icono, nombre accesible propio y globo de ayuda. -->
           <Button
             to="/profile"
-            :variant="isOverlay ? 'sun-quiet' : 'outline'"
+            :variant="isDarkChrome ? 'sun-quiet' : 'outline'"
             size="xs"
             class="group relative size-10"
           >
@@ -183,7 +208,7 @@ onBeforeUnmount(() => {
               aria-hidden="true"
               class="size-5 transition-colors"
               :class="
-                isOverlay
+                isDarkChrome
                   ? 'text-white/90 group-hover:text-white'
                   : 'text-graphite group-hover:text-ink'
               "
@@ -198,7 +223,7 @@ onBeforeUnmount(() => {
           </Button>
 
           <Button
-            :variant="isOverlay ? 'sun-quiet' : 'outline'"
+            :variant="isDarkChrome ? 'sun-quiet' : 'outline'"
             size="xs"
             class="group relative size-10"
             :loading="isLoggingOut"
@@ -211,7 +236,7 @@ onBeforeUnmount(() => {
               aria-hidden="true"
               class="size-5 transition-colors"
               :class="
-                isOverlay
+                isDarkChrome
                   ? 'text-white/90 group-hover:text-white'
                   : 'text-graphite group-hover:text-ink'
               "
@@ -227,12 +252,12 @@ onBeforeUnmount(() => {
         </template>
 
         <template v-else>
-          <Button to="/login" :variant="isOverlay ? 'sun-outline' : 'outline'" size="xs">
+          <Button to="/login" :variant="isDarkChrome ? 'sun-outline' : 'outline'" size="xs">
             <FontAwesomeIcon :icon="faRightToBracket" aria-hidden="true" />
             Iniciar sesión
           </Button>
 
-          <Button :to="'/register'" :variant="isOverlay ? 'sun' : 'primary'" size="xs">
+          <Button :to="'/register'" :variant="isDarkChrome ? 'sun' : 'primary'" size="xs">
             <FontAwesomeIcon :icon="faUserPlus" aria-hidden="true" />
             Registrarse
           </Button>
@@ -244,7 +269,7 @@ onBeforeUnmount(() => {
         type="button"
         class="-mr-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-btn border border-transparent text-lg transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 sm:hidden"
         :class="
-          isOverlay
+          isDarkChrome
             ? 'text-white hover:border-white/20 hover:bg-white/10 focus-visible:outline-canvas'
             : 'text-ink hover:border-line-strong hover:bg-surface focus-visible:outline-ink'
         "
@@ -268,7 +293,7 @@ onBeforeUnmount(() => {
         v-show="isMenuOpen"
         :id="menuId"
         class="border-t sm:hidden"
-        :class="isOverlay ? 'border-white/10 bg-ink' : 'border-line bg-canvas'"
+        :class="isDarkChrome ? 'border-white/10 bg-ink' : 'border-line bg-canvas'"
       >
         <nav aria-label="Navegación principal" class="mx-auto max-w-7xl px-4 py-3 sm:px-6">
           <ul class="flex flex-col">
@@ -288,7 +313,7 @@ onBeforeUnmount(() => {
 
           <div
             class="flex flex-col gap-2 border-t pt-3"
-            :class="isOverlay ? 'border-white/10' : 'border-line'"
+            :class="isDarkChrome ? 'border-white/10' : 'border-line'"
           >
             <span v-if="!isInitialized" class="px-3 py-2 text-sm text-graphite">
               Comprobando sesión…
@@ -333,7 +358,7 @@ onBeforeUnmount(() => {
 
           <ul
             class="mt-3 flex flex-col border-t pt-3"
-            :class="isOverlay ? 'border-white/10' : 'border-line'"
+            :class="isDarkChrome ? 'border-white/10' : 'border-line'"
           >
             <li>
               <RouterLink to="/community-rules" :class="menuLinkClasses('/community-rules')">

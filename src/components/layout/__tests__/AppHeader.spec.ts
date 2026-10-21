@@ -24,11 +24,16 @@ const routes = [
   { path: '/register', component: { template: '<div>Alta</div>' } },
   { path: '/community-rules', component: { template: '<div>Normas</div>' } },
   { path: '/privacy', component: { template: '<div>Privacidad</div>' } },
+  {
+    path: '/landing',
+    component: { template: '<div>Landing</div>' },
+    meta: { overlayHeader: true },
+  },
 ]
 
-async function mountHeader() {
+async function mountHeader(path = '/') {
   const router = createRouter({ history: createWebHistory(), routes })
-  await router.push('/')
+  await router.push(path)
   await router.isReady()
 
   const wrapper = mount(AppHeader, {
@@ -140,6 +145,22 @@ describe('AppHeader', () => {
     // El nombre accesible vive en un texto para lectores, no en el globo oculto.
     expect(profile!.get('.sr-only').text()).toBe('Mi perfil')
     expect(logout!.get('.sr-only').text()).toBe('Cerrar sesión')
+  })
+
+  it('switches the overlay header to a solid background once the page is scrolled', async () => {
+    const { wrapper } = await mountHeader('/landing')
+
+    expect(wrapper.get('header').classes()).toContain('bg-transparent')
+
+    Object.defineProperty(window, 'scrollY', { value: 120, configurable: true })
+    window.dispatchEvent(new Event('scroll'))
+    await flushPromises()
+
+    expect(wrapper.get('header').classes()).toContain('bg-canvas/95')
+    expect(wrapper.get('header').classes()).not.toContain('bg-transparent')
+
+    Object.defineProperty(window, 'scrollY', { value: 0, configurable: true })
+    window.dispatchEvent(new Event('scroll'))
   })
 
   it('offers legal links in the mobile menu and a borderless logout action', async () => {
