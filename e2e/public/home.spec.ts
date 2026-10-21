@@ -82,13 +82,13 @@ test.describe('home', () => {
     await page.goto('/')
 
     await expect(
-      page.getByRole('heading', { level: 2, name: 'Todo empieza con una ruta' }),
+      page.getByRole('heading', { level: 2, name: 'Cada salida es una oportunidad para conectar' }),
     ).toBeVisible()
     await expect(
-      page.getByRole('heading', { level: 2, name: 'Así se vive una salida' }),
+      page.getByRole('heading', { level: 2, name: 'Encuentra una excursión a tu ritmo' }),
     ).toBeVisible()
     await expect(
-      page.getByRole('heading', { level: 2, name: 'Tu próxima salida empieza aquí' }),
+      page.getByRole('heading', { level: 2, name: 'Encuentra tu próxima grupeta' }),
     ).toBeVisible()
   })
 })
