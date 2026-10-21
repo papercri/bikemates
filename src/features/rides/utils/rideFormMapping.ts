@@ -18,7 +18,7 @@ export function createEmptyRideFormValues(overrides: Partial<RideFormValues> = {
     wikilocUrl: '',
     audience: 'everyone',
     maxParticipants: '',
-    isCircular: true,
+    isCircular: false,
     ...overrides,
   }
 }

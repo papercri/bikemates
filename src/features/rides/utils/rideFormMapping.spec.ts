@@ -69,7 +69,7 @@ describe('createEmptyRideFormValues', () => {
       wikilocUrl: '',
       audience: 'everyone',
       maxParticipants: '',
-      isCircular: true,
+      isCircular: false,
     })
   })
 

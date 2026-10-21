@@ -33,7 +33,6 @@ describe('MeetingPointPicker', () => {
     const wrapper = mountPicker()
 
     expect(wrapper.get('label[for="meeting-point-search"]').text()).toBe('Punto de encuentro')
-    expect(wrapper.get('input').attributes('placeholder')).toBe('Ej. Monistrol de Montserrat')
     expect(wrapper.get('#meeting-point-help').text()).toContain('Busca un lugar')
     expect(wrapper.get('button').text()).toBe('Buscar')
   })

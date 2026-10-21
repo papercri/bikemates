@@ -168,7 +168,6 @@ function handleDuplicate(): void {
             id="title"
             v-model="form.title"
             name="title"
-            placeholder="Ej. Vuelta por Collserola"
             required
             maxlength="100"
             :aria-invalid="Boolean(fieldErrors.title)"
@@ -243,7 +242,6 @@ function handleDuplicate(): void {
               v-model="form.distanceKm"
               name="distanceKm"
               inputmode="decimal"
-              placeholder="30"
               required
               :aria-invalid="Boolean(fieldErrors.distanceKm)"
               aria-describedby="distanceKm-error"
@@ -260,7 +258,6 @@ function handleDuplicate(): void {
               v-model="form.elevationM"
               name="elevationM"
               inputmode="numeric"
-              placeholder="300"
               required
               :aria-invalid="Boolean(fieldErrors.elevationM)"
               aria-describedby="elevationM-error"
@@ -277,7 +274,6 @@ function handleDuplicate(): void {
               v-model="form.durationMinutes"
               name="durationMinutes"
               inputmode="numeric"
-              placeholder="120"
               required
               :aria-invalid="Boolean(fieldErrors.durationMinutes)"
               aria-describedby="durationMinutes-error"
