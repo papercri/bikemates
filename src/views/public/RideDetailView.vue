@@ -10,7 +10,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { useHead } from '@unhead/vue'
 import { computed, onBeforeUnmount, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import AppBackBar from '@/components/layout/AppBackBar.vue'
 import type { BreadcrumbItem } from '@/components/layout/AppBreadcrumb.vue'
 import AppPage from '@/components/layout/AppPage.vue'
@@ -40,11 +40,15 @@ import { formatRideDate } from '@/utils/dates'
 import RideCalendarMenu from '@/features/rides/components/RideCalendarMenu.vue'
 import RideShareMenu from '@/features/rides/components/RideShareMenu.vue'
 import RideMessages from '@/features/rides/components/RideMessages.vue'
+import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
+import { deleteRide } from '@/features/rides/services/rideService'
+import { getCurrentUserRole } from '@/features/profile/services/userRoleService'
 import RideParticipants from '@/features/rides/components/RideParticipants.vue'
 import { useRideParticipantCount } from '@/features/rides/composables/useRideParticipantCount'
 import { useRideParticipants } from '@/features/rides/composables/useRideParticipants'
 
 const route = useRoute()
+const router = useRouter()
 const authStore = useAuthStore()
 
 /** Máximo de palabras del extracto de descripción; el resto se despliega con "Leer más". */
@@ -75,6 +79,27 @@ const {
   computed(() => ride.value?.organizerId ?? null),
   isAuthenticated,
 )
+
+const isAdmin = ref(false)
+const showDeleteDialog = ref(false)
+
+void getCurrentUserRole().then((role) => {
+  isAdmin.value = role === 'admin'
+})
+
+async function confirmDeleteRide(): Promise<void> {
+  if (!ride.value) return
+  showDeleteDialog.value = false
+
+  try {
+    await deleteRide(ride.value.id)
+    await router.push({ name: 'rides' })
+  } catch (error: unknown) {
+    setActionStatus(
+      error instanceof Error ? error.message : 'No se ha podido eliminar la ruta.',
+    )
+  }
+}
 
 const isOrganizer = computed(
   () => ride.value !== null && authStore.user?.id === ride.value.organizerId,
@@ -487,10 +512,10 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
               </div>
             </div>
           </section>
-
-          <RideMessages :ride-id="ride.id" class="mt-8" />
         </div>
       </div>
+
+      <RideMessages :ride-id="ride.id" class="mt-10" />
 
       <div
         class="mt-8 flex flex-col items-center gap-3 border-t border-line pt-6 sm:flex-row sm:justify-center"
@@ -500,11 +525,31 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
           Editar ruta
         </Button>
 
+        <Button
+          v-if="isAdmin && !isOrganizer"
+          variant="quiet-destructive"
+          size="sm"
+          @click="showDeleteDialog = true"
+        >
+          Eliminar ruta
+        </Button>
+
         <Button to="/rides" variant="outline">
           <FontAwesomeIcon :icon="faBicycle" aria-hidden="true" class="size-3.5" />
           Explorar más rutas
         </Button>
       </div>
+
+      <ConfirmDialog
+        :open="showDeleteDialog"
+        tone="danger"
+        title="¿Eliminar ruta?"
+        description="Se eliminará la ruta y sus inscritos. Esta acción no se puede deshacer."
+        confirm-label="Eliminar"
+        cancel-label="Cancelar"
+        @confirm="confirmDeleteRide"
+        @cancel="showDeleteDialog = false"
+      />
     </template>
 
     <EmptyState

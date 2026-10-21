@@ -16,13 +16,25 @@ vi.mock('@/services/supabase', () => ({
 
 import { createRideMessage, getRideMessages } from './rideMessageService'
 
-function chain(result: Result) {
+interface Chain {
+  select: ReturnType<typeof vi.fn>
+  eq: ReturnType<typeof vi.fn>
+  order: ReturnType<typeof vi.fn>
+  insert: ReturnType<typeof vi.fn>
+  single: ReturnType<typeof vi.fn>
+  then: (
+    onFulfilled?: (value: Result) => unknown,
+    onRejected?: (reason: unknown) => unknown,
+  ) => Promise<unknown>
+}
+
+function chain(result: Result): Chain {
   const base = {
-    select: vi.fn(() => base),
-    eq: vi.fn(() => base),
-    order: vi.fn(() => Promise.resolve(result)),
-    insert: vi.fn(() => base),
-    single: vi.fn(() => Promise.resolve(result)),
+    select: vi.fn<() => Chain>(() => base),
+    eq: vi.fn<() => Chain>(() => base),
+    order: vi.fn<() => Promise<Result>>(() => Promise.resolve(result)),
+    insert: vi.fn<() => Chain>(() => base),
+    single: vi.fn<() => Promise<Result>>(() => Promise.resolve(result)),
     then: (
       onFulfilled?: (value: Result) => unknown,
       onRejected?: (reason: unknown) => unknown,

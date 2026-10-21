@@ -91,3 +91,12 @@ export async function createRideMessage(rideId: string, content: string): Promis
 
   return mapMessage(data as MessageRow)
 }
+
+/** Borra un comentario. La autorización (autor o admin) la aplica RLS. */
+export async function deleteRideMessage(messageId: string): Promise<void> {
+  const { error } = await supabase.from('ride_messages').delete().eq('id', messageId)
+
+  if (error) {
+    throw new Error(`No se ha podido borrar el comentario: ${error.message}`)
+  }
+}

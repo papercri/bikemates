@@ -7,7 +7,10 @@ import Button from '@/components/ui/Button.vue'
 import Textarea from '@/components/ui/Textarea.vue'
 import Typography from '@/components/ui/Typography.vue'
 import { useAuthStore } from '@/features/auth/stores/authStore'
-import { createRideMessage, getRideMessages } from '../services/rideMessageService'
+import { createRideMessage, deleteRideMessage, getRideMessages } from '../services/rideMessageService'
+import { getCurrentUserRole } from '@/features/profile/services/userRoleService'
+import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
+import { faTrash } from '@fortawesome/free-solid-svg-icons'
 import type { RideMessage } from '../types'
 
 const props = defineProps<{ rideId: string }>()
@@ -19,6 +22,29 @@ const isLoading = ref(false)
 const newContent = ref('')
 const isSubmitting = ref(false)
 const submitError = ref<string | null>(null)
+const isAdmin = ref(false)
+const pendingDeleteId = ref<string | null>(null)
+
+async function loadRole(): Promise<void> {
+  isAdmin.value = (await getCurrentUserRole()) === 'admin'
+}
+
+function requestDelete(id: string): void {
+  pendingDeleteId.value = id
+}
+
+async function confirmDelete(): Promise<void> {
+  const id = pendingDeleteId.value
+  pendingDeleteId.value = null
+  if (!id) return
+
+  try {
+    await deleteRideMessage(id)
+    messages.value = messages.value.filter((message) => message.id !== id)
+  } catch {
+    submitError.value = 'No se ha podido borrar el comentario.'
+  }
+}
 
 async function loadMessages(): Promise<void> {
   isLoading.value = true
@@ -55,6 +81,7 @@ watch(
   () => props.rideId,
   () => {
     void loadMessages()
+    void loadRole()
   },
   { immediate: true },
 )
@@ -134,5 +161,15 @@ function formatCreatedAt(value: string): string {
         </Typography>
       </div>
     </details>
+    <ConfirmDialog
+      :open="pendingDeleteId !== null"
+      tone="danger"
+      title="¿Eliminar comentario?"
+      description="Esta acción no se puede deshacer."
+      confirm-label="Eliminar"
+      cancel-label="Cancelar"
+      @confirm="confirmDelete"
+      @cancel="pendingDeleteId = null"
+    />
   </section>
 </template>

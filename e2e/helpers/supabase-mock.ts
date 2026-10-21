@@ -37,6 +37,7 @@ export interface DbRide {
 
 export interface DbProfile {
   id: string
+  role?: string | null
   display_name: string
   avatar_url: string | null
   created_at: string
@@ -580,6 +581,12 @@ export async function mockSupabase(page: Page): Promise<SupabaseMock> {
             author: state.profiles.find((pr) => pr.id === m.author_id) ?? null,
           }))
         return fulfill(route, json(rows))
+      }
+
+      if (method === 'DELETE') {
+        const id = requestUrl.searchParams.get('id')?.replace('eq.', '') ?? ''
+        state.messages = state.messages.filter((m) => m.id !== id)
+        return fulfill(route, json([]))
       }
 
       if (method === 'POST') {
