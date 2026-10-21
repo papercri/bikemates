@@ -37,6 +37,9 @@ const classes = createVariant({
       sun: 'bg-canvas text-ink hover:bg-canvas/90 focus-visible:outline-canvas',
       'sun-outline':
         'border border-canvas/50 bg-transparent text-canvas hover:bg-canvas hover:text-ink focus-visible:outline-canvas',
+      // Sobre foto: como la navegación en overlay, sin relleno; solo leve realce al hover.
+      'sun-quiet':
+        'border border-transparent bg-transparent text-white/90 hover:bg-white/10 hover:text-white focus-visible:outline-canvas',
       // Acción secundaria: filete neutro fino, sin borde negro.
       outline:
         'border border-line-strong bg-white text-ink hover:border-graphite hover:bg-snow focus-visible:outline-ink',

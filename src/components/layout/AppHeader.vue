@@ -173,7 +173,7 @@ onBeforeUnmount(() => {
           <!-- Acciones de sesión compactas: solo icono, nombre accesible propio y globo de ayuda. -->
           <Button
             to="/profile"
-            :variant="isOverlay ? 'sun-outline' : 'outline'"
+            :variant="isOverlay ? 'sun-quiet' : 'outline'"
             size="xs"
             class="group relative size-10"
           >
@@ -198,7 +198,7 @@ onBeforeUnmount(() => {
           </Button>
 
           <Button
-            :variant="isOverlay ? 'sun-outline' : 'outline'"
+            :variant="isOverlay ? 'sun-quiet' : 'outline'"
             size="xs"
             class="group relative size-10"
             :loading="isLoggingOut"
@@ -209,7 +209,12 @@ onBeforeUnmount(() => {
               v-if="!isLoggingOut"
               :icon="faRightFromBracket"
               aria-hidden="true"
-              class="size-5 text-graphite transition-colors group-hover:text-ink"
+              class="size-5 transition-colors"
+              :class="
+                isOverlay
+                  ? 'text-white/90 group-hover:text-white'
+                  : 'text-graphite group-hover:text-ink'
+              "
             />
             <span
               role="tooltip"
