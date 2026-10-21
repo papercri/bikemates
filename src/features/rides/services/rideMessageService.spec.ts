@@ -6,8 +6,8 @@ interface Result {
 }
 
 const mocks = vi.hoisted(() => ({
-  getUser: vi.fn(),
-  from: vi.fn(),
+  getUser: vi.fn<() => Promise<{ data: { user: { id: string } | null }; error: null }>>(),
+  from: vi.fn<(table: string) => ReturnType<typeof chain>>(),
 }))
 
 vi.mock('@/services/supabase', () => ({
