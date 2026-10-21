@@ -34,7 +34,10 @@ function handleChange(event: Event): void {
 </script>
 
 <template>
-  <div class="flex items-start gap-3">
+  <label
+    :for="inputId"
+    :class="cn('flex items-start gap-3', disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer')"
+  >
     <input
       :id="inputId"
       type="checkbox"
@@ -67,14 +70,14 @@ function handleChange(event: Event): void {
       />
     </span>
 
-    <div class="min-w-0">
-      <label :for="inputId" class="cursor-pointer text-sm text-ink">
+    <div class="min-w-0 text-sm text-ink">
+      <span>
         <slot>{{ label }}</slot>
-      </label>
+      </span>
 
       <div v-if="$slots.description" class="mt-1">
         <slot name="description" />
       </div>
     </div>
-  </div>
+  </label>
 </template>

@@ -124,6 +124,20 @@ describe('RideForm', () => {
     })
   })
 
+  it('toggles the circular switch when its visible track is clicked', async () => {
+    const wrapper = mountForm()
+
+    await wrapper.get('#routeType').setValue(true)
+    expect(wrapper.get<HTMLInputElement>('#routeType').element.checked).toBe(true)
+
+    // El clic en la fila (track visible) activa y desactiva el switch.
+    await wrapper.get('label[for="routeType"]').trigger('click')
+    expect(wrapper.get<HTMLInputElement>('#routeType').element.checked).toBe(false)
+
+    await wrapper.get('label[for="routeType"]').trigger('click')
+    expect(wrapper.get<HTMLInputElement>('#routeType').element.checked).toBe(true)
+  })
+
   it('blocks the submission and explains the first validation error', async () => {
     const wrapper = mountForm({ initialValues: validValues({ distanceKm: '0' }) })
 
