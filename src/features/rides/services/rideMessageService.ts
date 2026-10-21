@@ -100,3 +100,26 @@ export async function deleteRideMessage(messageId: string): Promise<void> {
     throw new Error(`No se ha podido borrar el comentario: ${error.message}`)
   }
 }
+
+/** Actualiza el texto de un comentario propio (o del admin). La autorización la aplica RLS. */
+export async function updateRideMessage(messageId: string, content: string): Promise<void> {
+  // Mismo filtro antispam que al crear: solo texto plano y longitud máxima.
+  const plain = content.replace(/<[^>]*>/g, '').trim()
+
+  if (!plain) {
+    throw new Error('El comentario no puede estar vacío.')
+  }
+
+  if (plain.length > RIDE_MESSAGE_MAX_LENGTH) {
+    throw new Error(`El comentario no puede superar los ${RIDE_MESSAGE_MAX_LENGTH} caracteres.`)
+  }
+
+  const { error } = await supabase
+    .from('ride_messages')
+    .update({ content: plain })
+    .eq('id', messageId)
+
+  if (error) {
+    throw new Error(`No se ha podido editar el comentario: ${error.message}`)
+  }
+}

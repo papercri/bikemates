@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { faChevronDown } from '@fortawesome/free-solid-svg-icons'
+import { faChevronDown, faPen, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { ref, watch } from 'vue'
 import Alert from '@/components/ui/Alert.vue'
@@ -7,10 +7,14 @@ import Button from '@/components/ui/Button.vue'
 import Textarea from '@/components/ui/Textarea.vue'
 import Typography from '@/components/ui/Typography.vue'
 import { useAuthStore } from '@/features/auth/stores/authStore'
-import { createRideMessage, deleteRideMessage, getRideMessages } from '../services/rideMessageService'
+import {
+  createRideMessage,
+  deleteRideMessage,
+  getRideMessages,
+  updateRideMessage,
+} from '../services/rideMessageService'
 import { getCurrentUserRole } from '@/features/profile/services/userRoleService'
 import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
-import { faTrash } from '@fortawesome/free-solid-svg-icons'
 import type { RideMessage } from '../types'
 
 const props = defineProps<{ rideId: string }>()
@@ -24,6 +28,47 @@ const isSubmitting = ref(false)
 const submitError = ref<string | null>(null)
 const isAdmin = ref(false)
 const pendingDeleteId = ref<string | null>(null)
+const editingId = ref<string | null>(null)
+const editingContent = ref('')
+
+const actionError = ref<string | null>(null)
+
+function canManage(message: RideMessage): boolean {
+  return isAdmin.value || message.author.id === authStore.user?.id
+}
+
+function canEdit(message: RideMessage): boolean {
+  return message.author.id === authStore.user?.id || isAdmin.value
+}
+
+function startEdit(message: RideMessage): void {
+  editingId.value = message.id
+  editingContent.value = message.content
+  actionError.value = null
+}
+
+function cancelEdit(): void {
+  editingId.value = null
+  editingContent.value = ''
+}
+
+async function saveEdit(message: RideMessage): Promise<void> {
+  if (isSubmitting.value) return
+
+  isSubmitting.value = true
+  actionError.value = null
+
+  try {
+    await updateRideMessage(message.id, editingContent.value)
+    message.content = editingContent.value.replace(/<[^>]*>/g, '').trim()
+    cancelEdit()
+  } catch (error: unknown) {
+    actionError.value =
+      error instanceof Error ? error.message : 'No se ha podido editar el comentario.'
+  } finally {
+    isSubmitting.value = false
+  }
+}
 
 async function loadRole(): Promise<void> {
   isAdmin.value = (await getCurrentUserRole()) === 'admin'
@@ -41,8 +86,9 @@ async function confirmDelete(): Promise<void> {
   try {
     await deleteRideMessage(id)
     messages.value = messages.value.filter((message) => message.id !== id)
-  } catch {
-    submitError.value = 'No se ha podido borrar el comentario.'
+  } catch (error: unknown) {
+    actionError.value =
+      error instanceof Error ? error.message : 'No se ha podido borrar el comentario.'
   }
 }
 
@@ -129,19 +175,52 @@ function formatCreatedAt(value: string): string {
             <time :datetime="message.createdAt">{{ formatCreatedAt(message.createdAt) }}</time>
           </Typography>
         </div>
-        <Typography variant="body-sm" class="mt-1 whitespace-pre-wrap">{{ message.content }}</Typography>
+        <template v-if="editingId === message.id">
+          <label :for="`edit-${message.id}`" class="sr-only">Editar comentario</label>
+          <Textarea
+            :id="`edit-${message.id}`"
+            v-model="editingContent"
+            :rows="2"
+            :maxlength="1000"
+            :disabled="isSubmitting"
+            class="mt-2"
+          />
+          <div class="mt-2 flex gap-2">
+            <Button size="sm" :disabled="isSubmitting || editingContent.trim() === ''" @click="saveEdit(message)">
+              Guardar
+            </Button>
+            <Button size="sm" variant="quiet" :disabled="isSubmitting" @click="cancelEdit">
+              Cancelar
+            </Button>
+          </div>
+        </template>
 
-        <button
-          v-if="isAdmin"
-          type="button"
-          class="mt-1 inline-flex items-center gap-1 text-xs font-bold text-graphite transition-colors hover:text-red-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
-          @click="requestDelete(message.id)"
-        >
-          <FontAwesomeIcon :icon="faTrash" aria-hidden="true" class="size-3" />
-          Eliminar
-        </button>
+        <Typography v-else variant="body-sm" class="mt-1 whitespace-pre-wrap">{{ message.content }}</Typography>
+
+        <div v-if="editingId !== message.id && canManage(message)" class="mt-1 flex gap-3">
+          <button
+            v-if="canEdit(message)"
+            type="button"
+            class="inline-flex items-center gap-1 text-xs font-bold text-graphite transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+            @click="startEdit(message)"
+          >
+            <FontAwesomeIcon :icon="faPen" aria-hidden="true" class="size-3" />
+            Editar
+          </button>
+
+          <button
+            type="button"
+            class="inline-flex items-center gap-1 text-xs font-bold text-graphite transition-colors hover:text-red-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+            @click="requestDelete(message.id)"
+          >
+            <FontAwesomeIcon :icon="faTrash" aria-hidden="true" class="size-3" />
+            Eliminar
+          </button>
+        </div>
       </li>
     </ul>
+
+    <Alert v-if="actionError" class="mt-3">{{ actionError }}</Alert>
 
     <form v-if="authStore.user" class="mt-4" novalidate @submit.prevent="handleSubmit">
       <label for="new-comment" class="sr-only">Escribe un comentario</label>
