@@ -35,12 +35,16 @@ function chain(result: Result): Chain {
     order: vi.fn<() => Promise<Result>>(() => Promise.resolve(result)),
     insert: vi.fn<() => Chain>(() => base),
     single: vi.fn<() => Promise<Result>>(() => Promise.resolve(result)),
+  }
+
+  // oxlint-disable-next-line unicorn/no-thenable
+  return Object.assign(base, {
+    // oxlint-disable-next-line unicorn/no-thenable
     then: (
       onFulfilled?: (value: Result) => unknown,
       onRejected?: (reason: unknown) => unknown,
-    ) => Promise.resolve(result).then(onFulfilled, onRejected),
-  }
-  return base
+    ): Promise<unknown> => Promise.resolve(result).then(onFulfilled, onRejected),
+  })
 }
 
 const row = {

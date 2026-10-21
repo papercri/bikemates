@@ -130,6 +130,16 @@ function formatCreatedAt(value: string): string {
           </Typography>
         </div>
         <Typography variant="body-sm" class="mt-1 whitespace-pre-wrap">{{ message.content }}</Typography>
+
+        <button
+          v-if="isAdmin"
+          type="button"
+          class="mt-1 inline-flex items-center gap-1 text-xs font-bold text-graphite transition-colors hover:text-red-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+          @click="requestDelete(message.id)"
+        >
+          <FontAwesomeIcon :icon="faTrash" aria-hidden="true" class="size-3" />
+          Eliminar
+        </button>
       </li>
     </ul>
 
