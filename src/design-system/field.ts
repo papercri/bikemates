@@ -7,11 +7,12 @@ const FIELD_CORE =
 
 /**
  * Receta compartida de los controles de formulario (Input, Textarea, FormSelect).
- * Filete claro del sistema (line → line-strong al hover), como el resto de superficies.
+ * Filete ligeramente más oscuro que la línea del sistema; al interactuar el campo
+ * se tiñe de verde claro (fondo y anillo de foco verdes, sin azul).
  * Un único string de utilidades Tailwind mantiene borde, radio, foco, caret y
  * estados inválidos/deshabilitados idénticos en todo el sistema.
  */
-export const FIELD_CLASSES = `w-full rounded-field border border-line hover:border-line-strong focus:border-signal-blue focus:ring-2 focus:ring-signal-blue/25 aria-invalid:focus:ring-red-200/50 ${FIELD_CORE}`
+export const FIELD_CLASSES = `w-full rounded-field border border-line-strong bg-white hover:bg-trail/10 focus:border-line-strong focus:bg-trail/10 focus:ring-2 focus:ring-trail/25 aria-invalid:border-red-600 aria-invalid:focus:ring-red-200/50 ${FIELD_CORE}`
 
 /**
  * Filete muy claro agrupado con los desplegables del listado. Sin anillo ni

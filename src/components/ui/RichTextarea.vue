@@ -90,7 +90,7 @@ async function runAction(action: FormatAction): Promise<void> {
 
 <template>
   <div
-    class="rounded-field border border-line bg-white transition-colors focus-within:border-signal-blue focus-within:ring-2 focus-within:ring-signal-blue/25"
+    class="rounded-field border border-line-strong bg-white transition-colors focus-within:border-line-strong focus-within:ring-2 focus-within:ring-trail/25"
   >
     <div
       class="flex items-center gap-1 border-b border-line px-2 py-1.5"
