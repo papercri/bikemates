@@ -84,6 +84,21 @@ describe('rideMessageService', () => {
     expect(message.author.displayName).toBe('Marc')
   })
 
+  it('strips html tags and enforces the max length', async () => {
+    const c = chain({ data: row, error: null })
+    mocks.from.mockReturnValue(c)
+
+    await createRideMessage('ride-1', '<b>Saludo</b>')
+
+    expect(c.insert).toHaveBeenCalledWith(
+      expect.objectContaining({ content: 'Saludo' }),
+    )
+
+    await expect(createRideMessage('ride-1', 'a'.repeat(1001))).rejects.toThrow(
+      'El comentario no puede superar los 1000 caracteres.',
+    )
+  })
+
   it('requires an authenticated user and a non-empty comment', async () => {
     mocks.getUser.mockResolvedValue({ data: { user: null }, error: null })
     await expect(createRideMessage('ride-1', 'hola')).rejects.toThrow(

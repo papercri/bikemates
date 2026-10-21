@@ -54,6 +54,9 @@ export async function getRideMessages(rideId: string): Promise<RideMessage[]> {
   return (data as MessageRow[]).map(mapMessage)
 }
 
+/** Límite de caracteres del filtro antispam, alineado con el maxlength del campo. */
+export const RIDE_MESSAGE_MAX_LENGTH = 1000
+
 /** Publica un comentario como usuario autenticado. */
 export async function createRideMessage(rideId: string, content: string): Promise<RideMessage> {
   const {
@@ -65,15 +68,20 @@ export async function createRideMessage(rideId: string, content: string): Promis
     throw new Error('Debes iniciar sesión para comentar.')
   }
 
-  const trimmed = content.trim()
+  // Filtro antispam: solo texto plano (sin etiquetas HTML) y longitud máxima.
+  const plain = content.replace(/<[^>]*>/g, '').trim()
 
-  if (!trimmed) {
+  if (!plain) {
     throw new Error('El comentario no puede estar vacío.')
+  }
+
+  if (plain.length > RIDE_MESSAGE_MAX_LENGTH) {
+    throw new Error(`El comentario no puede superar los ${RIDE_MESSAGE_MAX_LENGTH} caracteres.`)
   }
 
   const { data, error } = await supabase
     .from('ride_messages')
-    .insert({ ride_id: rideId, author_id: user.id, content: trimmed })
+    .insert({ ride_id: rideId, author_id: user.id, content: plain })
     .select(MESSAGE_SELECT)
     .single()
 

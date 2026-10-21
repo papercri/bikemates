@@ -173,7 +173,7 @@ test.describe('ride detail', () => {
 
     await page.goto('/rides/ride-1')
 
-    await expect(page.getByRole('heading', { name: 'Comentarios' })).toBeVisible()
+    await page.getByText('Comentarios', { exact: true }).click()
     await expect(page.getByText('Nos vemos en el punto de encuentro.')).toBeVisible()
 
     await page.getByLabel('Escribe un comentario').fill('Llevo cámara antipinchazos.')

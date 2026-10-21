@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { ref, watch } from 'vue'
 import Alert from '@/components/ui/Alert.vue'
 import Button from '@/components/ui/Button.vue'
@@ -14,20 +16,18 @@ const authStore = useAuthStore()
 
 const messages = ref<RideMessage[]>([])
 const isLoading = ref(false)
-const errorMessage = ref<string | null>(null)
 const newContent = ref('')
 const isSubmitting = ref(false)
 const submitError = ref<string | null>(null)
 
 async function loadMessages(): Promise<void> {
   isLoading.value = true
-  errorMessage.value = null
 
   try {
     messages.value = await getRideMessages(props.rideId)
-  } catch (error: unknown) {
-    errorMessage.value =
-      error instanceof Error ? error.message : 'No se han podido cargar los comentarios.'
+  } catch {
+    // Sin permisos o fallo de red: la sección queda vacía en lugar de mostrar un error.
+    messages.value = []
   } finally {
     isLoading.value = false
   }
@@ -67,22 +67,32 @@ function formatCreatedAt(value: string): string {
 </script>
 
 <template>
-  <section aria-labelledby="comments-title">
-    <Typography id="comments-title" as="h2" variant="heading-sm" class="font-bold">
-      Comentarios
-    </Typography>
+  <section aria-label="Comentarios">
+    <details class="group mt-2">
+      <summary
+        class="inline-flex cursor-pointer list-none items-center gap-2 rounded-btn px-2 py-1 text-sm font-bold text-ink transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+      >
+        <FontAwesomeIcon
+          :icon="faChevronDown"
+          aria-hidden="true"
+          class="size-3 text-graphite transition-transform group-open:rotate-180"
+        />
+        Comentarios
+        <span v-if="messages.length > 0" class="text-xs font-medium text-graphite">
+          ({{ messages.length }})
+        </span>
+      </summary>
 
-    <Typography v-if="isLoading" variant="body-sm" tone="muted" role="status" class="mt-3">
-      Cargando comentarios…
-    </Typography>
+      <div class="mt-2 border-l border-line pl-4">
+        <Typography v-if="isLoading" variant="body-sm" tone="muted" role="status">
+          Cargando comentarios…
+        </Typography>
 
-    <Alert v-else-if="errorMessage" class="mt-3">{{ errorMessage }}</Alert>
+        <Typography v-else-if="messages.length === 0 && authStore.user" variant="body-sm" tone="muted">
+          Todavía no hay comentarios en esta ruta.
+        </Typography>
 
-    <Typography v-else-if="messages.length === 0" variant="body-sm" tone="muted" class="mt-3">
-      Todavía no hay comentarios en esta ruta.
-    </Typography>
-
-    <ul v-else class="mt-3 divide-y divide-line border-t border-line">
+    <ul v-if="!isLoading && messages.length > 0" class="mt-3 divide-y divide-line border-t border-line">
       <li v-for="message in messages" :key="message.id" class="py-3">
         <div class="flex flex-wrap items-baseline gap-x-2">
           <Typography variant="body-sm" class="font-semibold">
@@ -119,8 +129,10 @@ function formatCreatedAt(value: string): string {
       </Button>
     </form>
 
-    <Typography v-else variant="body-sm" tone="muted" class="mt-3">
-      Inicia sesión para comentar en esta ruta.
-    </Typography>
+        <Typography v-else variant="body-sm" tone="muted" class="mt-3">
+          Inicia sesión para comentar en esta ruta.
+        </Typography>
+      </div>
+    </details>
   </section>
 </template>
