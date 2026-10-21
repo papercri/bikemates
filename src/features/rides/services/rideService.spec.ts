@@ -104,6 +104,7 @@ function rideRow(overrides: Partial<Record<string, unknown>> = {}): Record<strin
     wikiloc_url: null,
     audience: 'everyone',
     max_participants: null,
+    route_type: null,
     status: 'published',
     created_at: '2026-01-01T00:00:00.000Z',
     updated_at: '2026-01-02T00:00:00.000Z',
@@ -128,6 +129,7 @@ function createInput(overrides: Partial<CreateRideInput> = {}): CreateRideInput 
     wikilocUrl: null,
     audience: 'everyone',
     maxParticipants: null,
+    routeType: 'circular',
     status: 'published',
     ...overrides,
   }
@@ -145,6 +147,7 @@ describe('rideService', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     authenticatedAs()
+    mocks.rpc.mockResolvedValue({ data: null, error: null })
     mocks.getPublicUrl.mockImplementation((path: string) => ({
       data: { publicUrl: `https://cdn.example/ride-images/${path}` },
     }))
@@ -175,9 +178,11 @@ describe('rideService', () => {
         wikiloc_url: null,
         audience: 'everyone',
         max_participants: null,
+        route_type: 'circular',
         status: 'published',
       })
       expect(chain.single).toHaveBeenCalled()
+      expect(mocks.rpc).toHaveBeenCalledWith('join_ride', { p_ride_id: 'ride-1' })
       expect(ride).toMatchObject({
         id: 'ride-1',
         organizerId: 'user-1',
@@ -185,6 +190,16 @@ describe('rideService', () => {
         level: 'Intermedio',
         imageUrl: null,
       })
+    })
+
+    it('still returns the created ride when the organizer enrollment fails', async () => {
+      const chain = createQueryChain({ data: rideRow(), error: null })
+      mocks.from.mockReturnValue(chain)
+      mocks.rpc.mockResolvedValueOnce({ data: null, error: { message: 'denied' } })
+
+      const ride = await createRide(createInput())
+
+      expect(ride.id).toBe('ride-1')
     })
 
     it('builds the public image url when the ride has an image path', async () => {
@@ -382,6 +397,7 @@ describe('rideService', () => {
       wikilocUrl: null,
       audience: 'everyone',
       maxParticipants: null,
+      routeType: 'circular',
     }
 
     it('updates the owned ride and maps the returned row', async () => {
@@ -406,6 +422,7 @@ describe('rideService', () => {
         wikiloc_url: null,
         audience: 'everyone',
         max_participants: null,
+        route_type: 'circular',
       })
       expect(chain.eq).toHaveBeenCalledWith('organizer_id', 'user-1')
       expect(ride.id).toBe('ride-1')

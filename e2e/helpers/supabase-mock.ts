@@ -29,6 +29,7 @@ export interface DbRide {
   wikiloc_url: string | null
   audience: string
   max_participants: number | null
+  route_type: string | null
   status: string
   created_at: string
   updated_at: string
@@ -504,6 +505,43 @@ export async function mockSupabase(page: Page): Promise<SupabaseMock> {
     }
 
     if (path === `${REST_PATH}ride_participants`) {
+      if (method === 'POST') {
+        const body = route.request().postDataJSON() as { ride_id?: string; user_id?: string }
+        const rideId = body.ride_id ?? ''
+        const userId = body.user_id ?? ''
+        const user = state.users.find((u) => u.id === userId)
+        const profile =
+          state.profiles.find((p) => p.id === userId) ??
+          (user
+            ? {
+                id: user.id,
+                display_name: user.displayName,
+                avatar_url: null,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+              }
+            : null)
+
+        if (!profile) {
+          return fulfill(route, json({ message: 'Perfil no encontrado.' }, 404))
+        }
+
+        if (!participantsOf(rideId).some((p) => p.user_id === userId)) {
+          state.participants.push({
+            ride_id: rideId,
+            user_id: userId,
+            joined_at: new Date().toISOString(),
+            profile: {
+              id: profile.id,
+              display_name: profile.display_name,
+              avatar_url: profile.avatar_url,
+            },
+          })
+        }
+
+        return fulfill(route, json({ ride_id: rideId, user_id: userId }))
+      }
+
       const rideId = requestUrl.searchParams.get('ride_id')?.replace('eq.', '') ?? ''
       const rows = participantsOf(rideId).map((p) => ({
         user_id: p.user_id,

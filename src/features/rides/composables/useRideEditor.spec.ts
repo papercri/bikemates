@@ -45,6 +45,7 @@ function rideOf(overrides: Partial<Ride> = {}): Ride {
     wikilocUrl: null,
     audience: 'everyone',
     maxParticipants: null,
+    routeType: null,
     status: 'published',
     createdAt: '2026-01-01T00:00:00.000Z',
     updatedAt: '2026-01-01T00:00:00.000Z',
@@ -69,6 +70,7 @@ function formValues(overrides: Partial<RideFormValues> = {}): RideFormValues {
     wikilocUrl: '',
     audience: 'everyone',
     maxParticipants: '',
+    isCircular: true,
     ...overrides,
   }
 }

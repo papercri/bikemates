@@ -4,6 +4,7 @@ import {
   isBikeType,
   isRideAudience,
   isRideLevel,
+  isRideRouteType,
   isRideStatus,
 } from '../validators/rideValueGuards'
 function getRideImageUrl(imagePath: string | null): string | null {
@@ -33,6 +34,7 @@ function mapRide(data: {
   wikiloc_url: string | null
   audience: string
   max_participants: number | null
+  route_type: string | null
   status: string
   created_at: string
   updated_at: string
@@ -43,6 +45,12 @@ function mapRide(data: {
     !isRideAudience(data.audience) ||
     !isRideStatus(data.status)
   ) {
+    throw new Error('La ruta contiene valores no válidos.')
+  }
+
+  // `route_type` puede ser undefined en bases de datos donde la columna aún no
+  // se ha añadido; se trata igual que null hasta que se aplique la migración.
+  if (data.route_type != null && !isRideRouteType(data.route_type)) {
     throw new Error('La ruta contiene valores no válidos.')
   }
 
@@ -64,6 +72,7 @@ function mapRide(data: {
     wikilocUrl: data.wikiloc_url,
     audience: data.audience,
     maxParticipants: data.max_participants,
+    routeType: data.route_type ?? null,
     status: data.status,
     createdAt: data.created_at,
     updatedAt: data.updated_at,
@@ -100,6 +109,7 @@ export async function createRide(input: CreateRideInput): Promise<Ride> {
       wikiloc_url: input.wikilocUrl?.trim() || null,
       audience: input.audience,
       max_participants: input.maxParticipants,
+      route_type: input.routeType,
       status: input.status,
     })
     .select()
@@ -107,6 +117,21 @@ export async function createRide(input: CreateRideInput): Promise<Ride> {
 
   if (error) {
     throw new Error(`No se pudo crear la ruta: ${error.message}`)
+  }
+
+  // El organizador participa siempre: se inscribe con la misma RPC que el
+  // resto de participantes, porque el INSERT directo está bloqueado por RLS.
+  // Si la inscripción falla, la ruta ya existe y se devuelve igualmente: la
+  // inscripción puede hacerse después desde la página de la ruta.
+  const { error: participantError } = await supabase.rpc('join_ride', {
+    p_ride_id: data.id,
+  })
+
+  if (participantError) {
+    console.error(
+      'La ruta se ha publicado, pero el organizador no se ha podido inscribir:',
+      participantError.message,
+    )
   }
 
   return mapRide(data)
@@ -246,6 +271,7 @@ export async function updateRide(id: string, input: UpdateRideInput): Promise<Ri
       wikiloc_url: input.wikilocUrl?.trim() || null,
       audience: input.audience,
       max_participants: input.maxParticipants,
+      route_type: input.routeType,
     })
     .eq('id', id)
     .eq('organizer_id', user.id)

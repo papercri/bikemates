@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import {
   faArrowUpRightFromSquare,
+  faArrowsLeftRight,
   faBicycle,
   faClock,
   faPen,
+  faRotate,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { useHead } from '@unhead/vue'
@@ -25,7 +27,14 @@ import RideMap from '@/features/rides/components/RideMap.vue'
 import RideAudienceBadge from '@/features/rides/components/RideAudienceBadge.vue'
 import { useRideDetail } from '@/features/rides/composables/useRideDetail'
 import { RIDE_LEVEL_BADGE_COLORS } from '@/features/rides/constants/rideLevels'
-import { RIDE_BIKE_TYPE_LABELS } from '@/features/rides/constants/rideOptions'
+import { RIDE_BIKE_TYPE_LABELS, RIDE_ROUTE_TYPE_LABELS } from '@/features/rides/constants/rideOptions'
+import type { IconDefinition } from '@fortawesome/fontawesome-svg-core'
+import type { RideRouteType } from '@/features/rides/types'
+
+const RIDE_ROUTE_TYPE_ICONS: Record<RideRouteType, IconDefinition> = {
+  circular: faRotate,
+  round_trip: faArrowsLeftRight,
+}
 import type { RideCalendarEntry } from '@/features/rides/utils/rideCalendar'
 import { formatRideDate } from '@/utils/dates'
 import RideCalendarMenu from '@/features/rides/components/RideCalendarMenu.vue'
@@ -260,6 +269,15 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
             </Badge>
 
             <RideAudienceBadge :audience="ride.audience" />
+
+            <Badge v-if="ride.routeType" variant="muted" color="ink">
+              <FontAwesomeIcon
+                :icon="RIDE_ROUTE_TYPE_ICONS[ride.routeType]"
+                aria-hidden="true"
+                class="size-3 text-graphite"
+              />
+              {{ RIDE_ROUTE_TYPE_LABELS[ride.routeType] }}
+            </Badge>
           </div>
 
           <Typography
@@ -443,13 +461,29 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
               <Typography
                 v-if="participantCount !== null"
                 as="span"
-                variant="numeric-inline"
-                class="text-ink"
+                variant="body-sm"
+                tone="muted"
                 aria-live="polite"
               >
                 {{ participantCount }}
-                {{ participantCount === 1 ? 'inscrito' : 'inscritos' }}
+                {{ participantCount === 1 ? 'ciclista' : 'ciclistas' }}
               </Typography>
+            </div>
+
+            <div class="mt-3">
+              <Typography variant="body-sm" tone="muted">
+                Para participar en la ruta tienes que iniciar sesión.
+              </Typography>
+
+              <div class="mt-3 flex flex-wrap items-center gap-2">
+                <Button to="/login" variant="outline" size="xs" class="font-bold">
+                  Iniciar sesión
+                </Button>
+
+                <Button to="/register" variant="outline" size="xs" class="font-bold">
+                  Regístrate
+                </Button>
+              </div>
             </div>
           </section>
         </div>

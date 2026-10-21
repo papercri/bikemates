@@ -20,6 +20,7 @@ function rideOf(overrides: Partial<Ride> & { id: string }): Ride {
     wikilocUrl: null,
     audience: 'everyone',
     maxParticipants: null,
+    routeType: null,
     status: 'published',
     createdAt: '2026-01-01T00:00:00.000Z',
     updatedAt: '2026-01-01T00:00:00.000Z',

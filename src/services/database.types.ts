@@ -121,6 +121,7 @@ export type Database = {
           max_participants: number | null
           meeting_point: string
           organizer_id: string
+          route_type: string | null
           starts_at: string
           status: string
           title: string
@@ -143,6 +144,7 @@ export type Database = {
           max_participants?: number | null
           meeting_point: string
           organizer_id: string
+          route_type?: string | null
           starts_at: string
           status?: string
           title: string
@@ -165,6 +167,7 @@ export type Database = {
           max_participants?: number | null
           meeting_point?: string
           organizer_id?: string
+          route_type?: string | null
           starts_at?: string
           status?: string
           title?: string

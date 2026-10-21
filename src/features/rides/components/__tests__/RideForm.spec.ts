@@ -35,6 +35,7 @@ function validValues(overrides: Partial<RideFormValues> = {}): RideFormValues {
     wikilocUrl: '',
     audience: 'everyone',
     maxParticipants: '',
+    isCircular: true,
     ...overrides,
   }
 }
@@ -70,7 +71,7 @@ function selectFile(wrapper: ReturnType<typeof mountForm>, file: File): void {
 
 /** El envío exige aceptar las normas de la comunidad. */
 async function acceptRules(wrapper: ReturnType<typeof mountForm>): Promise<void> {
-  await wrapper.get('input[type="checkbox"]').setValue(true)
+  await wrapper.get('#acceptedRules').setValue(true)
 }
 
 describe('RideForm', () => {
@@ -109,6 +110,32 @@ describe('RideForm', () => {
       image: null,
       removeCurrentImage: false,
     })
+  })
+
+  it('submits the route type from the circular switch', async () => {
+    const wrapper = mountForm()
+
+    await wrapper.get('#routeType').setValue(false)
+    await acceptRules(wrapper)
+    await wrapper.get('form').trigger('submit')
+
+    expect(wrapper.emitted('submit')?.[0]?.[0]).toMatchObject({
+      values: expect.objectContaining({ isCircular: false }),
+    })
+  })
+
+  it('toggles the circular switch when its visible track is clicked', async () => {
+    const wrapper = mountForm()
+
+    await wrapper.get('#routeType').setValue(true)
+    expect(wrapper.get<HTMLInputElement>('#routeType').element.checked).toBe(true)
+
+    // El clic en la fila (track visible) activa y desactiva el switch.
+    await wrapper.get('label[for="routeType"]').trigger('click')
+    expect(wrapper.get<HTMLInputElement>('#routeType').element.checked).toBe(false)
+
+    await wrapper.get('label[for="routeType"]').trigger('click')
+    expect(wrapper.get<HTMLInputElement>('#routeType').element.checked).toBe(true)
   })
 
   it('blocks the submission and explains the first validation error', async () => {

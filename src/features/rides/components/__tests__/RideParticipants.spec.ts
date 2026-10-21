@@ -161,7 +161,7 @@ describe('RideParticipants', () => {
   })
 
   it('opens the leave dialog from the current user row and emits leave on confirm', async () => {
-    const wrapper = mountParticipants({ participants }, true)
+    const wrapper = mountParticipants({ participants, currentUserId: 'user-2' }, true)
 
     await wrapper.get('button[aria-label="Dejar de participar"]').trigger('click')
     await wrapper.vm.$nextTick()
@@ -178,7 +178,7 @@ describe('RideParticipants', () => {
   })
 
   it('closes the leave dialog without leaving on cancel', async () => {
-    const wrapper = mountParticipants({ participants }, true)
+    const wrapper = mountParticipants({ participants, currentUserId: 'user-2' }, true)
 
     await wrapper.get('button[aria-label="Dejar de participar"]').trigger('click')
     await wrapper.vm.$nextTick()
@@ -193,7 +193,10 @@ describe('RideParticipants', () => {
   })
 
   it('does not open the leave dialog while a submission is running', async () => {
-    const wrapper = mountParticipants({ participants, isSubmitting: true }, true)
+    const wrapper = mountParticipants(
+      { participants, currentUserId: 'user-2', isSubmitting: true },
+      true,
+    )
 
     const leaveButton = wrapper.get('button[aria-label="Dejar de participar"]')
     expect(leaveButton.attributes('disabled')).toBeDefined()
@@ -208,6 +211,12 @@ describe('RideParticipants', () => {
 
   it('does not offer leaving to users outside the participant list', () => {
     const wrapper = mountParticipants({ participants, currentUserId: 'user-3' })
+
+    expect(wrapper.find('button[aria-label="Dejar de participar"]').exists()).toBe(false)
+  })
+
+  it('never offers leaving to the organizer', () => {
+    const wrapper = mountParticipants({ participants, currentUserId: 'user-1' })
 
     expect(wrapper.find('button[aria-label="Dejar de participar"]').exists()).toBe(false)
   })

@@ -22,6 +22,7 @@ function rideOf(overrides: Partial<Ride> = {}): Ride {
     wikilocUrl: 'https://www.wikiloc.com/ruta/1',
     audience: 'women',
     maxParticipants: 12,
+    routeType: null,
     status: 'published',
     createdAt: '2026-01-01T00:00:00.000Z',
     updatedAt: '2026-01-01T00:00:00.000Z',
@@ -46,6 +47,7 @@ function validFormValues(overrides: Partial<RideFormValues> = {}): RideFormValue
     wikilocUrl: '  https://www.wikiloc.com/ruta/1  ',
     audience: 'everyone',
     maxParticipants: '12',
+    isCircular: true,
     ...overrides,
   }
 }
@@ -67,6 +69,7 @@ describe('createEmptyRideFormValues', () => {
       wikilocUrl: '',
       audience: 'everyone',
       maxParticipants: '',
+      isCircular: false,
     })
   })
 
@@ -97,7 +100,14 @@ describe('mapRideToFormValues', () => {
       wikilocUrl: 'https://www.wikiloc.com/ruta/1',
       audience: 'women',
       maxParticipants: '12',
+      isCircular: true,
     })
+  })
+
+  it('marks a non-circular ride as out-and-back', () => {
+    const values = mapRideToFormValues(rideOf({ routeType: 'round_trip' }))
+
+    expect(values.isCircular).toBe(false)
   })
 
   it('maps a missing wikiloc url and participant limit to empty strings', () => {
@@ -126,7 +136,14 @@ describe('buildRideInput', () => {
       wikilocUrl: 'https://www.wikiloc.com/ruta/1',
       audience: 'everyone',
       maxParticipants: 12,
+      routeType: 'circular',
     })
+  })
+
+  it('persists an unchecked circular switch as an out-and-back route', () => {
+    const input = buildRideInput(validFormValues({ isCircular: false }), null)
+
+    expect(input?.routeType).toBe('round_trip')
   })
 
   it('returns null when the meeting point has no coordinates', () => {

@@ -1,4 +1,4 @@
-import type { BikeType, RideAudience, RideStatus } from '../types'
+import type { BikeType, RideAudience, RideRouteType, RideStatus } from '../types'
 
 /**
  * Dominio completo de tipos de bicicleta, incluido `other`, que sigue siendo
@@ -37,3 +37,10 @@ export const RIDE_AUDIENCE_LABELS: Record<RideAudience, string> = {
 }
 
 export const RIDE_STATUSES: readonly RideStatus[] = ['draft', 'published', 'cancelled', 'completed']
+
+export const RIDE_ROUTE_TYPES: readonly RideRouteType[] = ['circular', 'round_trip']
+
+export const RIDE_ROUTE_TYPE_LABELS: Record<RideRouteType, string> = {
+  circular: 'Circular',
+  round_trip: 'Ida y vuelta',
+}

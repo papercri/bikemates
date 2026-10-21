@@ -1,7 +1,8 @@
-import type { BikeType, RideAudience, RideLevel, RideStatus } from '../types'
+import type { BikeType, RideAudience, RideLevel, RideRouteType, RideStatus } from '../types'
 import {
   RIDE_AUDIENCES,
   RIDE_BIKE_TYPE_VALUES,
+  RIDE_ROUTE_TYPES,
   RIDE_STATUSES,
 } from '../constants/rideOptions'
 import { RIDE_LEVELS } from '../constants/rideLevels'
@@ -24,4 +25,8 @@ export function isRideAudience(value: string): value is RideAudience {
 
 export function isRideStatus(value: string): value is RideStatus {
   return RIDE_STATUSES.some((item) => item === value)
+}
+
+export function isRideRouteType(value: string): value is RideRouteType {
+  return RIDE_ROUTE_TYPES.some((item) => item === value)
 }

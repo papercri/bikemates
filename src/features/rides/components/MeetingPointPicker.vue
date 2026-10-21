@@ -54,7 +54,6 @@ function handleSelectPlace(place: GeocodingResult): void {
           v-model="query"
           type="search"
           name="meetingPointSearch"
-          placeholder="Ej. Monistrol de Montserrat"
           autocomplete="off"
           class="h-10"
           :aria-invalid="Boolean(errorMessage)"
