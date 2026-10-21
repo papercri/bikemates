@@ -108,7 +108,8 @@ const features = [
   {
     icon: IconRoutes,
     title: 'Descubre rutas',
-    description: 'Explora las próximas salidas y encuentra rutas que encajen con tu nivel y tu forma de pedalear.',
+    description:
+      'Explora las próximas salidas y encuentra rutas que encajen con tu nivel y tu forma de pedalear.',
   },
   {
     icon: IconCyclists,
@@ -118,16 +119,19 @@ const features = [
   {
     icon: IconMeetup,
     title: 'Organiza salidas',
-    description: 'Crea una quedada, comparte los detalles de la ruta e invita a otros ciclistas a unirse..',
+    description:
+      'Crea una quedada, comparte los detalles de la ruta e invita a otros ciclistas a unirse..',
   },
 ]
 
 const { rides: publishedRides, isLoading: isLoadingRides } = useRideList()
 
-// Tres últimas salidas publicadas, de la más reciente a la más antigua.
-const latestRides = computed(() =>
+// Próximas salidas (aún no empezadas), de la más cercana a la más lejana.
+// La sección del listado solo se muestra con al menos dos salidas futuras.
+const futureRides = computed(() =>
   [...publishedRides.value]
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .filter((ride) => new Date(ride.startsAt).getTime() > Date.now())
+    .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime())
     .slice(0, 3),
 )
 
@@ -213,7 +217,8 @@ onBeforeUnmount(() => {
           </h1>
 
           <p class="mt-6 max-w-xl text-base leading-7 text-white/85 sm:text-lg">
-            Conecta con ciclistas cerca de ti, organiza salidas en grupo y encuentra nuevas rutas para tu próxima aventura en bici.
+            Conecta con ciclistas cerca de ti, organiza salidas en grupo y encuentra nuevas rutas
+            para tu próxima aventura en bici.
           </p>
 
           <div class="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -247,7 +252,8 @@ onBeforeUnmount(() => {
           </h2>
 
           <p class="mt-4 max-w-2xl leading-7 text-graphite">
-            Descubre nuevas rutas, conoce ciclistas cerca de ti y organiza salidas para disfrutar de la bici en compañía.
+            Descubre nuevas rutas, conoce ciclistas cerca de ti y organiza salidas para disfrutar de
+            la bici en compañía.
           </p>
         </motion.div>
 
@@ -282,7 +288,11 @@ onBeforeUnmount(() => {
       </div>
     </section>
 
-    <section class="-mx-4 bg-snow sm:-mx-6 lg:-mx-8" aria-labelledby="gallery-title">
+    <section
+      v-if="!isLoadingRides && futureRides.length >= 2"
+      class="-mx-4 bg-snow sm:-mx-6 lg:-mx-8"
+      aria-labelledby="gallery-title"
+    >
       <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8 lg:py-14">
         <motion.div
           :initial="{ opacity: 0, y: REVEAL_Y }"
@@ -295,35 +305,17 @@ onBeforeUnmount(() => {
             class="max-w-xl font-display text-3xl leading-[1.05] font-medium tracking-[-0.025em] text-ink sm:text-4xl"
           >
             Encuentra una excursión a tu ritmo
-
           </h2>
 
           <p class="mt-3 max-w-xl leading-7 text-graphite">
-            Desde paseos tranquilos hasta rutas de montaña con desnivel. Consulta la distancia, la dificultad y el nivel de cada salida para elegir la que mejor se adapte a ti.
+            Desde paseos tranquilos hasta rutas de montaña con desnivel. Consulta la distancia, la
+            dificultad y el nivel de cada salida para elegir la que mejor se adapte a ti.
           </p>
         </motion.div>
 
-        <div
-          v-if="isLoadingRides"
-          class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-          role="status"
-          aria-live="polite"
-        >
-          <span class="sr-only">Cargando salidas…</span>
-          <div
-            v-for="n in 3"
-            :key="n"
-            class="h-[13.5rem] rounded-photo bg-surface motion-safe:animate-pulse"
-            aria-hidden="true"
-          />
-        </div>
-
-        <div
-          v-else-if="latestRides.length > 0"
-          class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-        >
+        <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <motion.div
-            v-for="(ride, index) in latestRides"
+            v-for="(ride, index) in futureRides"
             :key="ride.id"
             :initial="{ opacity: 0, y: REVEAL_Y }"
             :while-in-view="{ opacity: 1, y: 0 }"
@@ -404,7 +396,8 @@ onBeforeUnmount(() => {
             Encuentra tu próxima grupeta
           </h2>
           <p class="mt-4 max-w-xl leading-7 text-graphite">
-            Regístrate, descubre las próximas salidas y únete a otros ciclistas para compartir nuevos recorridos.
+            Regístrate, descubre las próximas salidas y únete a otros ciclistas para compartir
+            nuevos recorridos.
           </p>
         </motion.div>
 

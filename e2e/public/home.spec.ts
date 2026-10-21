@@ -24,7 +24,11 @@ test.describe('home', () => {
     page,
     supabase,
   }) => {
-    supabase.state.rides = [makeRide({ title: 'Ruta de prueba' })]
+    // La sección de salidas solo se renderiza con al menos dos rutas futuras.
+    supabase.state.rides = [
+      makeRide({ title: 'Ruta de prueba' }),
+      makeRide({ id: 'ride-2', title: 'Segunda salida' }),
+    ]
 
     await page.goto('/')
 
@@ -78,7 +82,9 @@ test.describe('home', () => {
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /\/$/)
   })
 
-  test('renders the feature and CTA sections', async ({ page }) => {
+  test('renders the feature and CTA sections', async ({ page, supabase }) => {
+    supabase.state.rides = [makeRide(), makeRide({ id: 'ride-2' })]
+
     await page.goto('/')
 
     await expect(
