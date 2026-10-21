@@ -4,6 +4,7 @@ export type ButtonVariant =
   | 'sun-outline'
   | 'sun-quiet'
   | 'outline'
+  | 'quiet'
   | 'destructive'
   | 'quiet-destructive'
   | 'link'

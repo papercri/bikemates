@@ -133,14 +133,14 @@ describe('AppHeader', () => {
       .find((link) => link.find('[role="tooltip"]').exists())
     expect(profile).toBeDefined()
     expect(profile!.text()).toContain('Mi perfil')
-    expect(profile!.classes()).toContain('size-10')
+    expect(profile!.classes()).toContain('size-9')
 
     const logout = wrapper
       .findAll('button')
       .find((button) => button.find('[role="tooltip"]').exists())
     expect(logout).toBeDefined()
     expect(logout!.text()).toContain('Cerrar sesión')
-    expect(logout!.classes()).toContain('size-10')
+    expect(logout!.classes()).toContain('size-9')
 
     // El nombre accesible vive en un texto para lectores, no en el globo oculto.
     expect(profile!.get('.sr-only').text()).toBe('Mi perfil')

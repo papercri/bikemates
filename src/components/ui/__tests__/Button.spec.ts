@@ -91,6 +91,15 @@ describe('Button', () => {
     expect(sunQuiet.classes()).not.toContain('hover:bg-canvas')
   })
 
+  it('renders the quiet variant without a visible border', () => {
+    const wrapper = mount(Button, { props: { variant: 'quiet' } })
+
+    expect(wrapper.classes()).toContain('text-graphite')
+    expect(wrapper.classes()).toContain('border-transparent')
+    expect(wrapper.classes()).toContain('hover:bg-surface')
+    expect(wrapper.classes()).not.toContain('border-line-strong')
+  })
+
   it('renders the quiet-destructive variant as a discreet action', () => {
     const wrapper = mount(Button, { props: { variant: 'quiet-destructive', size: 'sm' } })
 

@@ -43,6 +43,9 @@ const classes = createVariant({
       // Acción secundaria: filete neutro fino, sin borde negro.
       outline:
         'border border-line-strong bg-white text-ink hover:border-graphite hover:bg-snow focus-visible:outline-ink',
+      // Acción discreta sin filete, para chrome compacto (p. ej. la cabecera).
+      quiet:
+        'border border-transparent bg-transparent text-graphite hover:bg-surface hover:text-ink focus-visible:outline-ink',
       destructive:
         'border border-red-300 bg-white text-red-700 hover:bg-red-700 hover:text-white focus-visible:outline-red-700',
       // Acción destructiva de bajo peso: el color solo aparece al interactuar.

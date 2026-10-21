@@ -57,7 +57,7 @@ const isDarkChrome = computed(() => isOverlay.value && !isScrolled.value)
 // ink en overlay, así que el color de texto depende del modo.
 function menuLinkClasses(path?: string): string {
   const base =
-    'flex items-center gap-3 rounded-btn px-3 py-3 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2'
+    'flex items-center gap-3 rounded-btn px-3 py-2.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2'
   const isActive = path !== undefined && isNavActive(path)
 
   if (isDarkChrome.value) {
@@ -156,11 +156,11 @@ onBeforeUnmount(() => {
 <template>
   <header :class="headerClasses">
     <div
-      class="mx-auto flex max-w-7xl items-center justify-between gap-x-4 px-4 py-3 sm:px-6 lg:px-8"
+      class="mx-auto flex max-w-7xl items-center justify-between gap-x-3 px-4 py-2 sm:gap-x-4 sm:px-6 sm:py-3 lg:px-8"
     >
       <RouterLink
         to="/"
-        class="flex shrink-0 items-center gap-2.5 text-xl font-bold tracking-tight focus-visible:outline-2 focus-visible:outline-offset-2"
+        class="flex shrink-0 items-center gap-2 text-lg font-bold tracking-tight focus-visible:outline-2 focus-visible:outline-offset-2 sm:gap-2.5 sm:text-xl"
         :class="
           isDarkChrome
             ? 'text-white focus-visible:outline-canvas'
@@ -198,9 +198,9 @@ onBeforeUnmount(() => {
           <!-- Acciones de sesión compactas: solo icono, nombre accesible propio y globo de ayuda. -->
           <Button
             to="/profile"
-            :variant="isDarkChrome ? 'sun-quiet' : 'outline'"
+            :variant="isDarkChrome ? 'sun-quiet' : 'quiet'"
             size="xs"
-            class="group relative size-10"
+            class="group relative size-9 sm:size-10"
           >
             <span class="sr-only">Mi perfil</span>
             <FontAwesomeIcon
@@ -223,9 +223,9 @@ onBeforeUnmount(() => {
           </Button>
 
           <Button
-            :variant="isDarkChrome ? 'sun-quiet' : 'outline'"
+            :variant="isDarkChrome ? 'sun-quiet' : 'quiet'"
             size="xs"
-            class="group relative size-10"
+            class="group relative size-9 sm:size-10"
             :loading="isLoggingOut"
             @click="handleLogout"
           >
@@ -252,7 +252,7 @@ onBeforeUnmount(() => {
         </template>
 
         <template v-else>
-          <Button to="/login" :variant="isDarkChrome ? 'sun-outline' : 'outline'" size="xs">
+          <Button to="/login" :variant="isDarkChrome ? 'sun-outline' : 'quiet'" size="xs">
             <FontAwesomeIcon :icon="faRightToBracket" aria-hidden="true" />
             Iniciar sesión
           </Button>
@@ -267,7 +267,7 @@ onBeforeUnmount(() => {
       <button
         ref="menuButton"
         type="button"
-        class="-mr-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-btn border border-transparent text-lg transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 sm:hidden"
+        class="-mr-1.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-btn border border-transparent text-base transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 sm:hidden"
         :class="
           isDarkChrome
             ? 'text-white hover:border-white/20 hover:bg-white/10 focus-visible:outline-canvas'
@@ -295,7 +295,7 @@ onBeforeUnmount(() => {
         class="border-t sm:hidden"
         :class="isDarkChrome ? 'border-white/10 bg-ink' : 'border-line bg-canvas'"
       >
-        <nav aria-label="Navegación principal" class="mx-auto max-w-7xl px-4 py-3 sm:px-6">
+        <nav aria-label="Navegación principal" class="mx-auto max-w-7xl px-4 py-2 sm:px-6">
           <ul class="flex flex-col">
             <li>
               <RouterLink to="/rides" :class="menuLinkClasses('/rides')">
