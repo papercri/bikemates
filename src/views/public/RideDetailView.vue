@@ -461,13 +461,29 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
               <Typography
                 v-if="participantCount !== null"
                 as="span"
-                variant="numeric-inline"
-                class="text-ink"
+                variant="body-sm"
+                tone="muted"
                 aria-live="polite"
               >
                 {{ participantCount }}
-                {{ participantCount === 1 ? 'inscrito' : 'inscritos' }}
+                {{ participantCount === 1 ? 'ciclista' : 'ciclistas' }}
               </Typography>
+            </div>
+
+            <div class="mt-3">
+              <Typography variant="body-sm" tone="muted">
+                Para participar en la ruta tienes que iniciar sesión.
+              </Typography>
+
+              <div class="mt-3 flex flex-wrap items-center gap-2">
+                <Button to="/login" variant="outline" size="xs" class="font-bold">
+                  Iniciar sesión
+                </Button>
+
+                <Button to="/register" variant="outline" size="xs" class="font-bold">
+                  Regístrate
+                </Button>
+              </div>
             </div>
           </section>
         </div>

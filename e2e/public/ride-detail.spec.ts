@@ -24,7 +24,10 @@ test.describe('ride detail', () => {
 
     // Sin sesión solo se ve el número: el listado de nombres es privado.
     await expect(page.locator('#participants-title')).toBeVisible()
-    await expect(page.getByText('1 inscrito')).toBeVisible()
+    await expect(page.getByText('1 ciclista')).toBeVisible()
+    await expect(page.getByText('Para participar en la ruta tienes que iniciar sesión.')).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Iniciar sesión' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Regístrate' })).toBeVisible()
     await expect(page.locator('#main-content ul li')).toHaveCount(0)
   })
 
