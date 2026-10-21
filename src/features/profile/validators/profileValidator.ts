@@ -1,4 +1,5 @@
 import { validateImageFile } from '@/utils/imageValidation'
+import { canUseReservedAdminName, isReservedAdminName } from '@/utils/adminAccount'
 
 // oxlint-disable-next-line no-control-regex -- La detección de caracteres de control es intencional.
 const CONTROL_CHARACTERS = new RegExp('[\u0000-\u001F\u007F]')
@@ -10,8 +11,18 @@ export const DISPLAY_NAME_MAX_LENGTH = 60
  * Valida el nombre visible del perfil. Las mismas reglas que el registro.
  * Devuelve `null` cuando el nombre es válido.
  */
-export function validateDisplayName(name: string): string | null {
+export function validateDisplayName(
+  name: string,
+  options: { allowAdminName?: string | null } = {},
+): string | null {
   const trimmed = name.trim()
+
+  if (
+    isReservedAdminName(trimmed) &&
+    !canUseReservedAdminName(options.allowAdminName)
+  ) {
+    return 'Solo la cuenta administradora puede usar ese nombre.'
+  }
 
   if (!trimmed) {
     return 'El nombre es obligatorio.'

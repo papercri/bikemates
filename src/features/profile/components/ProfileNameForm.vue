@@ -8,10 +8,15 @@ import Input from '@/components/ui/Input.vue'
 import { updateMyProfile } from '@/features/profile/services/profileService'
 import type { Profile } from '@/features/profile/types'
 import { validateDisplayName } from '@/features/profile/validators/profileValidator'
+import { useAuthStore } from '@/features/auth/stores/authStore'
+import { storeToRefs } from 'pinia'
 
 const props = defineProps<{
   displayName: string
 }>()
+
+const authStore = useAuthStore()
+const { user } = storeToRefs(authStore)
 
 const emit = defineEmits<{
   updated: [profile: Profile]
@@ -42,7 +47,9 @@ async function handleSubmit(): Promise<void> {
   saveError.value = ''
   successMessage.value = ''
 
-  const validationError = validateDisplayName(name.value)
+  const validationError = validateDisplayName(name.value, {
+    allowAdminName: user.value?.email ?? null,
+  })
 
   if (validationError) {
     fieldError.value = validationError

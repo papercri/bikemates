@@ -1,3 +1,4 @@
+import { canUseReservedAdminName, isReservedAdminName } from '@/utils/adminAccount'
 import { validatePassword } from './passwordValidator'
 
 export interface RegisterForm {
@@ -42,6 +43,8 @@ export function validateRegisterForm(form: RegisterForm): RegisterErrors {
     errors.name = 'El nombre contiene caracteres no permitidos.'
   } else if (/[<>]/.test(name)) {
     errors.name = 'El nombre no puede contener etiquetas HTML.'
+  } else if (isReservedAdminName(name) && !canUseReservedAdminName(email)) {
+    errors.name = 'Solo la cuenta administradora puede usar ese nombre.'
   }
 
   if (!email) {

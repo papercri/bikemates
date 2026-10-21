@@ -84,3 +84,15 @@ export interface RideParticipant {
 }
 
 export type UpdateRideInput = Omit<CreateRideInput, 'status'>
+
+export interface RideMessage {
+  id: string
+  rideId: string
+  content: string
+  createdAt: string
+  author: {
+    id: string
+    displayName: string
+    avatarUrl: string | null
+  }
+}

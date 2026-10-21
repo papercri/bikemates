@@ -1,4 +1,5 @@
 import { supabase } from '@/services/supabase'
+import { canUseReservedAdminName, isReservedAdminName } from '@/utils/adminAccount'
 import {
   INVALID_IMAGE_TYPE_MESSAGE,
   getImageFileExtension,
@@ -105,6 +106,14 @@ export async function getMyProfile(): Promise<Profile> {
 export async function updateMyProfile(displayName: string): Promise<Profile> {
   const userId = await requireUserId()
   const trimmed = displayName.trim()
+
+  if (isReservedAdminName(trimmed)) {
+    const { data } = await supabase.auth.getUser()
+
+    if (!canUseReservedAdminName(data.user?.email)) {
+      throw new Error('Solo la cuenta administradora puede usar ese nombre.')
+    }
+  }
 
   const { data, error } = await supabase
     .from('profiles')

@@ -1,4 +1,5 @@
 import { supabase } from '@/services/supabase'
+import { getCurrentUserRole } from '@/features/profile/services/userRoleService'
 import type { CreateRideInput, UpdateRideInput, Ride, RideParticipant } from '../types'
 import {
   isBikeType,
@@ -226,13 +227,15 @@ export async function deleteRide(id: string): Promise<void> {
     throw new Error('Debes iniciar sesión para eliminar una ruta.')
   }
 
-  const { data, error } = await supabase
-    .from('rides')
-    .delete()
-    .eq('id', id)
-    .eq('organizer_id', user.id)
-    .select('id')
-    .maybeSingle()
+  const role = await getCurrentUserRole()
+
+  let query = supabase.from('rides').delete().eq('id', id)
+
+  if (role !== 'admin') {
+    query = query.eq('organizer_id', user.id)
+  }
+
+  const { data, error } = await query.select('id').maybeSingle()
 
   if (error) {
     throw new Error(`No se pudo eliminar la ruta: ${error.message}`)

@@ -1,4 +1,5 @@
 import { supabase } from '@/services/supabase'
+import { canUseReservedAdminName, isReservedAdminName } from '@/utils/adminAccount'
 
 interface RegisterCredentials {
   name: string
@@ -11,6 +12,13 @@ interface LoginCredentials {
 }
 
 export async function registerUser(credentials: RegisterCredentials) {
+  const name = credentials.name.trim()
+  const email = credentials.email.trim()
+
+  if (isReservedAdminName(name) && !canUseReservedAdminName(email)) {
+    throw new Error('Solo la cuenta administradora puede usar ese nombre.')
+  }
+
   const { data, error } = await supabase.auth.signUp({
     email: credentials.email.trim(),
     password: credentials.password,
