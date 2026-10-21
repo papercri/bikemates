@@ -57,7 +57,7 @@ const isDarkChrome = computed(() => isOverlay.value && !isScrolled.value)
 // ink en overlay, así que el color de texto depende del modo.
 function menuLinkClasses(path?: string): string {
   const base =
-    'flex items-center gap-3 rounded-btn px-3 py-2.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2'
+    'flex items-center gap-3 rounded-btn px-3 py-2.5 text-xs font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2'
   const isActive = path !== undefined && isNavActive(path)
 
   if (isDarkChrome.value) {
@@ -73,15 +73,15 @@ function menuLinkClasses(path?: string): string {
 
 const navIdleClasses = computed(() =>
   isDarkChrome.value
-    ? 'inline-flex items-center gap-2 rounded-btn px-3 py-1.5 text-sm font-medium text-white/90 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-canvas'
-    : 'inline-flex items-center gap-2 rounded-btn px-3 py-1.5 text-sm font-medium text-graphite transition-colors hover:bg-surface hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink',
+    ? 'inline-flex items-center gap-2 rounded-btn px-3 py-1.5 text-xs font-bold text-white/90 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-canvas'
+    : 'inline-flex items-center gap-2 rounded-btn px-3 py-1.5 text-xs font-bold text-graphite transition-colors hover:bg-surface hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink',
 )
 
 /** Estado activo con tinte verde de marca: el enlace de la sección actual se resalta sin depender solo del color. */
 const navActiveClasses = computed(() =>
   isDarkChrome.value
-    ? 'inline-flex items-center gap-2 rounded-btn px-3 py-1.5 bg-white/15 text-sm font-semibold text-white transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-canvas'
-    : 'inline-flex items-center gap-2 rounded-btn px-3 py-1.5 bg-trail/10 text-sm font-semibold text-trail-ink transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink',
+    ? 'inline-flex items-center gap-2 rounded-btn px-3 py-1.5 bg-white/15 text-xs font-bold text-white transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-canvas'
+    : 'inline-flex items-center gap-2 rounded-btn px-3 py-1.5 bg-trail/10 text-xs font-bold text-trail-ink transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink',
 )
 
 /** La sección activa abarca sus subrutas, excepto la creación de rutas. */
@@ -200,7 +200,7 @@ onBeforeUnmount(() => {
             to="/profile"
             :variant="isDarkChrome ? 'sun-quiet' : 'quiet'"
             size="xs"
-            class="group relative size-9 sm:size-10"
+            class="group relative size-9 font-bold sm:size-10"
           >
             <span class="sr-only">Mi perfil</span>
             <FontAwesomeIcon
@@ -252,12 +252,12 @@ onBeforeUnmount(() => {
         </template>
 
         <template v-else>
-          <Button to="/login" :variant="isDarkChrome ? 'sun-quiet' : 'quiet'" size="xs">
+          <Button to="/login" :variant="isDarkChrome ? 'sun-quiet' : 'quiet'" size="xs" class="font-bold">
             <FontAwesomeIcon :icon="faRightToBracket" aria-hidden="true" />
             Iniciar sesión
           </Button>
 
-          <Button to="/register" :variant="isDarkChrome ? 'sun-quiet' : 'quiet'" size="xs">
+          <Button to="/register" :variant="isDarkChrome ? 'sun-quiet' : 'quiet'" size="xs" class="font-bold">
             <FontAwesomeIcon :icon="faUserPlus" aria-hidden="true" />
             Registrarse
           </Button>
@@ -352,7 +352,8 @@ onBeforeUnmount(() => {
               <Button
                 to="/register"
                 :variant="isDarkChrome ? 'sun-quiet' : 'quiet'"
-                size="sm"
+                size="xs"
+                class="font-bold"
                 block
               >
                 <FontAwesomeIcon :icon="faUserPlus" aria-hidden="true" />
