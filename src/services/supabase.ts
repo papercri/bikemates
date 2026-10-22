@@ -36,7 +36,7 @@ function isServiceRoleKey(key: string): boolean {
 }
 
 if (!supabaseUrl || !supabasePublicKey) {
-  throw new Error('Falta la configuración de Supabase.')
+  throw new Error('La aplicación no está configurada correctamente.')
 }
 
 if (isServiceRoleKey(supabasePublicKey)) {

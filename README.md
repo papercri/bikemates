@@ -1,234 +1,203 @@
 # BikeMates
 
-A web application for cyclists in Spain: discover routes, find riding partners, and organize group rides.
+**Find group rides, meet cyclists, and publish your own routes.**
 
-BikeMates is a **mobile-first** SPA built with Vue 3 and strict TypeScript, backed by **Supabase** (authentication, database, and Edge Functions), technical SEO on public pages, and a minimal editorial interface.
+BikeMates is a mobile-first web application for cyclists in Spain. Organizers publish rides
+(title, meeting point, distance, elevation, pace…); riders discover them, filter by level and
+bike type, join with one click, save favourites, and talk in the ride's comment thread. Every
+public page is SEO-friendly; every private action is enforced by database row-level security.
 
-## Features
+Live at **[bikemates.vercel.app](https://bikemates.vercel.app/)**.
 
-### Route discovery
+---
 
-- Route listing with one card per ride: short date (`dd/MM`), title, level, bike type, and
-  audience. Distance and elevation live on the detail page.
-- Compact filters with screen-reader-only labels: title search (case- and accent-insensitive),
-  level, bike type, audience, sort (a leading `Ordenar por` default that follows the date of
-  departure, plus `Date of departure`, `Creation date`, `Distance`, `Elevation`), and, for
-  signed-in cyclists, an icon-only `Voy` toggle that narrows the list to the rides they have
-  joined.
-- Cards mark the rides the current user participates in with a green cyclist icon; the
-  `Participaré` label stays available to screen readers.
-- Two tabs on the listing: `Upcoming` and `Past`, each with its count; past rides are
-  sorted from most to least recent and dimmed on the card.
-- Two-column route detail layout (2/3 + 1/3): cover image with the
-  description below it, and the meeting-point map plus participants in the narrow
-  column. The date, with a clock icon, sits under the title next to the icon-only
-  **Add to calendar** menu (Google Calendar, Outlook, and a generated `.ics`
-  download in `src/features/rides/utils/rideCalendar.ts`) and, on the right, the
-  **Share** menu (WhatsApp, Telegram, X, Facebook, Gmail, system mail, and copy
-  link; `src/features/rides/utils/rideShare.ts`). The page exposes Open Graph and
-  Twitter metadata (`og:title`, `og:image`, `og:url`…) so links show a social
-  preview.
-- Empty state and back link when the route does not exist.
-- **Joining a ride** requires explicitly accepting the community rules: the `Participar en esta
-  ruta` CTA stays disabled until the checkbox is ticked, and `Ver normas de la comunidad` opens
-  the same rules dialog used when publishing. Visitors without a session always see the CTA and
-  it opens a sign-in/sign-up dialog that returns them to the very same route.
-- **Content screening**: the title and description are rejected when they contain offensive or
-  sexual words (`BLOCKED_WORDS` in `src/features/rides/validators/rideFormValidator.ts`), matched
-  on normalized, accent-free whole words to avoid false positives.
-- Route data is sample data (`src/features/rides/data/mockRides.ts`) until connected to the database.
+## What the app does
 
-### User account
+### Discover rides
 
-- **Registration** with form validation: name (2–60 characters, no HTML or control characters), a valid email, and an 8–128 character password containing a letter and a number.
-- **Sign in and sign out** with Supabase Auth; the header reflects the session state in real time.
-- **Email confirmation** at `/auth/confirm`.
-- **Password recovery and reset** (`/forgot-password` and `/reset-password` flows, with recovery-session detection).
-- **Authenticated profile** with two tabs synced to the URL (`/profile` and
-  `/profile?tab=my-rides`): **My details** (avatar, name, read-only email,
-  password change, and **account deletion** via the `delete-account` Edge Function)
-  and **My rides** (accent- and case-insensitive search, sort by date/distance/elevation,
-  a grid of cards with **Edit**/**Delete** actions built into each card,
-  with a modal confirmation before deleting).
+- Public catalogue (`/rides`) with **Upcoming** and **Past** tabs, live counts, and infinite
+  scroll.
+- Filters: free-text title search (accent- and case-insensitive), difficulty level, bike type
+  (road / MTB / gravel / urban), audience, and sort order (date, creation, distance, elevation).
+- Signed-in cyclists get a **«Voy»** toggle to narrow the list to rides they have joined, and a
+  **star** to save rides to their favourites.
+- Each card shows date, title, level, bike type, audience, and marks rides the user participates
+  in.
 
-### Pages and infrastructure
+### Ride detail
 
-- Public landing page with a full-screen hero (entrance zoom and scroll parallax), an overlaid transparent header, CTAs, a **privacy policy**, and a **404** with `noindex`.
-- Header with primary navigation and a global footer on all shell views.
-- Auxiliary navigation: a **breadcrumb** (`AppBreadcrumb`, fed by the router's
-  `meta.breadcrumb` and overridden by the view with the **route title** on detail and
-  edit, truncated with an ellipsis; the profile's active tab is reflected in the URL) and a
-  **back bar** (`AppBackBar`, browser history with a fallback exit) on internal
-  views; a shared graphical preloader (`BikeLoader`, animated bike with a trail)
-  for route and profile loading states.
-- Per-route title and meta via `@unhead/vue`: the detail route generates a dynamic title and the profile is `noindex`.
-- Custom SVG favicon (mark without text) in `public/favicon.svg`.
+- Cover image, full description, meeting point, distance, elevation, duration, and route type
+  (circular / out-and-back).
+- **Interactive map** of the meeting point (see [Maps & external services](#maps--external-services)).
+- **Participants list** (organizer highlighted, capacity enforced server-side).
+- **Comments**: a plain-text thread visible to the organizer and participants; authors can edit
+  or delete their own messages and the admin can moderate any of them.
+- **Share menu**: WhatsApp, Telegram, X, Facebook, Gmail, system mail, and copy-link.
+- **Add to calendar**: Google Calendar, Outlook, or a generated `.ics` file.
+- Links to the full route on **Wikiloc** (or any HTTPS route URL) and to the meeting point in
+  **Google Maps**.
+- Open Graph and Twitter metadata for rich social previews.
 
-## Stack
+### Participate
 
-| Layer       | Technology                                                                             |
-| ----------- | -------------------------------------------------------------------------------------- |
-| Frontend    | Vue 3 (Composition API, `<script setup lang="ts">`), Vite, Vue Router, Pinia            |
-| Animations  | `motion-v` (Motion for Vue): parallax with `useScroll`/`useTransform`, `whileInView` reveals |
-| Language    | Strict TypeScript (no `any`, `noUncheckedIndexedAccess`)                                |
-| Styles      | Tailwind CSS v4 (tokens in `src/assets/main.css` via `@theme`)                          |
-| SEO         | `@unhead/vue`                                                                            |
-| Icons       | Font Awesome free-solid (`@fortawesome/vue-fontawesome`)                                 |
-| Backend     | Supabase: Auth, PostgreSQL with RLS, Edge Functions                                      |
-| Tests       | Vitest + Vue Test Utils, Playwright                                                      |
-| Quality     | ESLint, oxlint, Prettier                                                                 |
+- Join or leave a ride («Participar en esta ruta» / «Dejar de participar»), with capacity limits
+  and duplicate-join protection enforced by database functions.
+- Joining requires explicitly accepting the **community rules** and **privacy policy**.
+- Anonymous visitors see the participant count and clear sign-in/sign-up prompts.
 
-## Plugins and libraries
+### Publish and manage rides
 
-Runtime packages:
+- Full ride form: title, future date/time, description, meeting point (**searched on a map**),
+  distance, elevation, duration, bike type, level, audience, optional participant cap, route
+  type, optional route URL, and a cover image (JPEG/PNG/WebP/AVIF, ≤ 5 MB).
+- Content screening rejects offensive words in title and description before publishing.
+- **Publish as new**: from the editor of any ride — including past ones — organizers can publish
+  a fresh copy with a new date. The copy starts without comments or sign-ups (the organizer is
+  enrolled automatically) and the original stays untouched.
+- Edit or delete your own rides from the profile or the editor, with confirmation.
 
-| Package | Purpose |
-| ------- | ------- |
-| `vue`, `vue-router`, `pinia` | App framework, routing, and shared client state |
-| `@supabase/supabase-js` | Supabase client (Auth, PostgREST, Storage, RPC, Edge Functions) |
-| `@unhead/vue` | Per-route `<head>` management (titles, meta, Open Graph, canonical) |
-| `motion-v` | Scroll parallax (`useScroll`/`useTransform`), `whileInView` reveals, hero zoom |
-| `@vueuse/core` | Composable utilities |
-| `leaflet` | Meeting-point map in the ride detail (`RideMap.vue`) |
-| `@fortawesome/vue-fontawesome` + `free-solid`/`free-brands` | Navigation and action icons |
-| `@fontsource-variable/{inter,archivo,jetbrains-mono}` | Self-hosted variable fonts (no external font requests) |
-| `tailwindcss` + `@tailwindcss/vite` | Utility-first styling and design tokens |
+### Account
 
-Tooling / dev plugins:
+- Registration (name, email, password with letter + number), sign-in/out, email confirmation,
+  and password recovery — all error messages in plain Spanish.
+- Profile with three tabs: **My details** (avatar upload, display name, password change, account
+  deletion via Edge Function), **My rides** (search, sort, upcoming/past, edit/delete), and
+  **Saved rides** (favourites).
+- Moderation: a reserved admin account can delete any ride and moderate comments.
 
-| Package | Purpose |
-| ------- | ------- |
-| `vite`, `@vitejs/plugin-vue`, `vite-plugin-vue-devtools` | Build and dev server |
-| `vue-tsc`, `typescript` | Strict type checking (`noUncheckedIndexedAccess`) |
-| `vitest`, `@vue/test-utils`, `jsdom` | Unit tests |
-| `@playwright/test` | End-to-end tests (Chromium + mobile) |
-| `eslint` (with `eslint-plugin-vue`, `@vue/eslint-config-typescript`, `eslint-plugin-playwright`, `eslint-config-prettier`), `oxlint`, `prettier` | Linting and formatting |
+---
 
-## APIs used
+## Maps & external services
 
-- **Supabase Auth** — registration, sign-in/out, session resolution, email confirmation, and password recovery/reset (`authService.ts`).
-- **Supabase PostgREST (PostgreSQL + RLS)** — rides, profiles, and participation, always through the RLS boundary.
-- **Supabase RPC (database functions)** — `join_ride`, `leave_ride`, and `get_ride_participant_count` (`rideService.ts`).
-- **Supabase Storage** — public buckets for avatars (`avatars`) and ride covers (`ride-images`).
-- **Supabase Edge Functions** — `delete-account`, invoked server-side from `authService.ts`.
-- **External share/calendar links** — Google Calendar, Outlook, and generated `.ics` (`rideCalendar.ts`); WhatsApp, Telegram, X, Facebook, Gmail, and mailto (`rideShare.ts`). No third-party trackers or analytics are loaded.
+| Service | Used for | Notes |
+| ------- | -------- | ----- |
+| **Leaflet** + **OpenStreetMap tiles** | Meeting-point map on the ride detail page | Custom bike-pin marker, popup with the address, `scrollWheelZoom` disabled |
+| **Nominatim** (OpenStreetMap geocoding) | Meeting-point search in the ride form | `nominatim.openstreetmap.org/search`, Spain-only (`countrycodes=es`), min. 3 characters, abortable requests |
+| **Google Maps** | «Abrir en Google Maps» button | Keyless deep link built from the ride coordinates |
+| **Wikiloc / route URLs** | «Ver ruta» button on the detail page | Any HTTPS route URL (Wikiloc, Strava, Meetup…) |
+| **Google Calendar / Outlook / RFC 5545 `.ics`** | Add-to-calendar menu | Client-side URL and file generation |
+| **WhatsApp / Telegram / X / Facebook / Gmail** | Share menu | Standard share intents |
+| **Vercel Analytics** | Anonymous usage analytics | Loaded via `@vercel/analytics`; a cookie notice is displayed |
 
-## Requirements
+No advertising or third-party trackers are loaded.
 
-- Node.js `^22.18.0 || >=24.12.0` and npm.
-- A Supabase project with Auth enabled and, for account deletion, the `delete-account` Edge Function.
+---
 
-## Scripts
+## Tech stack
+
+| Layer    | Technology |
+| -------- | ---------- |
+| Frontend | Vue 3 (Composition API, `<script setup lang="ts">`), Vite, Vue Router, Pinia |
+| Language | Strict TypeScript (no `any`, `noUncheckedIndexedAccess`) |
+| Styling  | Tailwind CSS v4 (design tokens in `src/assets/main.css`) |
+| Maps     | Leaflet + OpenStreetMap; Nominatim geocoding |
+| Motion   | `motion-v` (hero parallax, in-view reveals; respects `prefers-reduced-motion`) |
+| SEO      | `@unhead/vue` (titles, Open Graph, canonical, JSON-LD, robots/sitemap) |
+| Backend  | Supabase — Auth, PostgreSQL with RLS, Storage, RPCs, Edge Functions |
+| Tests    | Vitest + Vue Test Utils (629 unit tests); Playwright (164 e2e tests, Chromium + mobile) |
+| Quality  | ESLint, oxlint, Prettier, `vue-tsc` |
+
+### Supabase APIs
+
+- **Auth** — registration, sign-in/out, email confirmation, password recovery/reset.
+- **PostgREST + Row Level Security** — the authorization boundary for `profiles`, `rides`,
+  `ride_participants`, `ride_messages`, and `saved_rides`.
+- **RPCs** — `join_ride`, `leave_ride`, and `get_ride_participant_count` (capacity and
+  duplicate-join rules live in the database).
+- **Storage** — public buckets for ride covers and avatars.
+- **Edge Functions** — `delete-account` (server-side account removal).
+
+---
+
+### Scripts
 
 ```bash
 npm run dev        # development server
 npm run build      # type-check + production build
-npm run preview    # preview the build
-npm run type-check # vue-tsc --build
+npm run preview    # preview the production build
+npm run type-check # vue-tsc
 npm run lint       # oxlint + eslint (with --fix)
 npm run format     # prettier --write src/
 npm run test:unit  # vitest
-npm run test:e2e   # playwright
+npm run test:e2e   # playwright (Chromium + mobile profiles)
 ```
+
+---
 
 ## Routes
 
-| Route              | View                        | Access       |
-| ------------------ | --------------------------- | ------------ |
-| `/`                | HomeView                    | public       |
-| `/rides`           | RidesView                   | public       |
-| `/rides/:id`       | RideDetailView              | public       |
-| `/register`        | RegisterView                | public       |
-| `/login`           | LoginView                   | public       |
-| `/forgot-password` | ForgotPasswordView          | public       |
-| `/reset-password`  | ResetPasswordView           | public       |
-| `/auth/confirm`    | EmailConfirmedView          | public       |
-| `/privacy`         | PrivacyView                 | public       |
-| `/profile`         | ProfileView                 | authenticated|
-| any other          | NotFoundView (404, noindex) | public       |
+| Route              | Access        | Purpose |
+| ------------------ | ------------- | ------- |
+| `/`                | public        | Landing page (hero, ride preview, CTAs) |
+| `/rides`           | public        | Ride catalogue with filters |
+| `/rides/:id`       | public        | Ride detail (map, participants, comments) |
+| `/rides/create`    | authenticated | Publish a new ride |
+| `/rides/:id/edit`  | authenticated | Edit / publish-as-new / delete a ride |
+| `/register`        | public        | Sign up |
+| `/login`           | public        | Sign in (supports `?redirect=`) |
+| `/forgot-password` | public        | Password recovery request |
+| `/reset-password`  | public        | Password reset |
+| `/auth/confirm`    | public        | Email confirmation |
+| `/profile`         | authenticated | Profile: details, my rides, saved rides |
+| `/community-rules` | public        | Community rules |
+| `/privacy`         | public        | Privacy policy |
+| any other          | public        | 404 (`noindex`) |
 
-The router guard resolves the session before navigating and redirects to `/login?redirect=…` when the route requires authentication. **The guard is not a security boundary**: real authorization is enforced by the PostgreSQL RLS policies.
+The router guard resolves the session and redirects unauthenticated users to `/login`. **The
+guard is not a security boundary** — authorization is enforced by PostgreSQL RLS policies.
+Private routes (`/profile`, create/edit) are `noindex`.
+
+---
 
 ## Architecture
 
 ```text
 src/
-  assets/                  # main.css (@theme tokens)
-  composables/              # useInView…
-  design-system/           # cn(), createVariant (minimal CVA equivalent) and types
-  app/router/              # routes and guards
+  app/router/           # routes, guards, per-route metadata
+  assets/               # design tokens (@theme)
   components/
-    ui/                    # primitives: Button, Input, Textarea, Card, Badge, Alert,
-                           # Typography, EmptyState, ConfirmDialog (confirmation
-                           # modal), FormLabel, FormError, FormHelp,
-                           # FormSelect, FormSelectField, PasswordInput, BikeLoader
-    layout/                # AppHeader, AppFooter, AppPage (page shell),
-                           # AppBreadcrumb, AppBackBar, CookieBanner
-    icons/                 # BrandLogo, RidgeStrip, CyclistScene, RidgeDivider,
-                           # HeroBackdrop, Icon*
+    ui/                 # primitives: Button, Input, Badge, ConfirmDialog, DropdownMenu…
+    layout/             # AppHeader, AppFooter, AppBreadcrumb, AppBackBar…
+    icons/              # brand and decorative SVGs
   features/
-    auth/                  # components (AuthCard), composables (useAuthForm),
-                           # services (Supabase Auth), stores (authStore),
-                           # utils (emailLinkParams), validators
-    profile/               # components (ProfileDetailsTab, ProfileMyRidesTab,
-                           # ProfileAvatarField, ProfileNameForm, ProfilePasswordForm,
-                           # ProfileDeleteAccount), composables, services
-                           # (profileService), validators and types
-    rides/                 # types, components (RideCard, RideFilters,
-                           # RideTimeframeTabs, RideForm…), composables
-                           # (useRideFilters, useRideList, useRideDetail…),
-                           # constants (rideFilters), data, services, utils
-                           # (rideOrdering), validators
-  services/                # Supabase client (single access point)
-  utils/                   # pure utilities (dates, validators…)
-  views/                   # public/ and private/
-e2e/                       # Playwright tests
-docs/log.md                # change log
+    auth/               # authService, authStore, validators, error messages
+    profile/            # profile tabs, profileService, userRoleService
+    rides/              # catalogue, detail, form, comments, favourites,
+                        # geocoding (Nominatim), calendar/share utils, validators
+  services/             # single Supabase client
+  utils/                # pure helpers (dates, search normalization…)
+  views/                # public/ and private/ pages
+e2e/                    # Playwright suite with a Supabase mock
+backup/db.md            # documented schema and RLS policies
+docs/log.md             # dated change log
 ```
 
-Separation of concerns: views orchestrate, components present, services access data, and UI primitives know nothing about Supabase.
+Separation of concerns: views orchestrate, components present, services access data, and UI
+primitives know nothing about Supabase.
 
-## Design System
-
-- Visual components live in `src/components/` and contain no business logic.
-- Decorative and iconographic SVGs live in `src/components/icons/` as their own components (`CyclistScene`, `RidgeDivider`, `HeroBackdrop`, `Icon*`); views and components only compose them.
-- Tokens (colors, radii, shadows, typography) are defined once in `src/assets/main.css`.
-- Clean Alpine & Light style: porcelain background (`canvas` `#FFFFFF`, `snow`
-  `#F7F8F6`, `surface` `#F0F2EE`), meadow-green hairlines (`line` `#E4E8E1`,
-  `line-strong` `#D5DBD2`) and text (`ink` `#1A1D20`, `graphite` `#5C6560`).
-  Brand green for primary actions and active states (`trail` `#22C55E`,
-  `trail-deep` `#10B981` on hover, `trail-ink` `#15803D` for text and CTAs with
-  white text, `trail-dark` `#166534`) and route orange for route highlights
-  (`route` `#F97316`, `route-ink` `#C2410C`): map pin, Wikiloc link, and Google
-  Maps button. Green and orange do not compete as primaries on the same screen.
-  `moss` and `signal-blue` are reserved for semantic states (field focus uses
-  `signal-blue`). Structure uses 1px hairlines with no card shadows; only
-  `ConfirmDialog` keeps elevation. Radii: 8px on cards, photos, fields, and
-  buttons (`--radius-card`, `--radius-photo`, `--radius-field`, `--radius-btn`);
-  pill shape only on badges.
-- Typography: Inter (SuisseIntl substitute) for all UI; headings at weight 500
-  with negative tracking (`-0.025em` on display), body at 400, and JetBrains Mono
-  for labels and tabular data.
-- Single container: `AppPage` wraps every page with `max-w-7xl` (same as the header
-  and footer); the `bleed` prop is reserved for full-bleed landing bands, and reading
-  width is controlled inside each view (`max-w-lg`, `max-w-3xl`…).
-- The form-field recipe (`FIELD_CLASSES` in `src/design-system/field.ts`) is shared by `Input`, `Textarea`, and `FormSelect` to keep border, radius, focus, and states identical.
-- Primitives expose homogeneous variants (`variant`, `size`, `tone`, `loading`, `block`, `dot`…) built with `createVariant`, with no external dependencies.
-- `Button` includes sizes `xs`–`lg` (all `text-sm` except `xs`; reduced paddings) and, besides `primary`/`outline`/`destructive`, the `sun`/`sun-outline` variants (over photos and dark backgrounds: a white button with ink text, or a white outline) and `quiet-destructive` (discreet dangerous action, color only appears on interaction). `primary` is a deep brand-green button (`bg-trail-ink`) with white text (AA); `outline` uses the neutral `line-strong` hairline with no black border.
-- `ConfirmDialog` is the standard modal for confirmations and irreversible actions (`role="dialog"`, `aria-modal`, focus trap, Escape, and backdrop click to cancel). Form messages remain inline `Alert` with `role="alert"`.
-- Navigation and action icons use Font Awesome (free-solid) with `FontAwesomeIcon`; illustrative and data SVGs stay in `src/components/icons/`.
-- Motion with `motion-v` (Motion for Vue): the home uses `useScroll`/`useTransform` for the hero parallax (per-section offset, 12% range) and `motion.div` components with `whileInView` (`opacity` + `y`) to reveal blocks; the hero's entrance zoom is an animated `scale` on mount. `MotionConfig reduced-motion="user"` in `App.vue` respects `prefers-reduced-motion` across the app. The home header is transparent (`meta.overlayHeader` in the router) and overlays the full-screen hero.
-- UI components receive data via props and emit events; shared state lives in Pinia (`authStore`).
+---
 
 ## Security
 
-- Single Supabase client in `src/services/supabase.ts` with the public key; RLS as the authorization boundary.
-- Untrusted inputs validated at the boundaries (registration, route query params, external responses).
-- No `v-html`, no new validation dependencies, no hand-persisted tokens.
-- Privileged fields and sensitive operations (account deletion) resolved on the server.
+- Single Supabase client with the public key; **RLS is the authorization boundary** for every
+  table (owner checks, capacity limits, admin moderation).
+- Secrets are never shipped to the browser: the client rejects service-role/secret keys.
+- All user input is validated at the boundaries (forms, query params, external API responses).
+- Passwords require 8–128 characters with a letter and a number; auth errors are mapped to
+  friendly Spanish messages.
+- Account deletion and privileged moderation run server-side (Edge Function / RLS).
+- No `v-html`; comments are stripped of HTML before saving and rendered as plain text.
 
-## Quality and tests
+---
 
-- **Unit**: `npm run test:unit` — 609 tests in 85 files (design system, validators, services and route composables, auth service, session store, UI primitives, listing filters and combo boxes, SVG icons, profile tabs, private views, and navigation components).
-- **E2E**: `npm run test:e2e` — Playwright on Chromium and mobile (152 passing, 2 skipped; authentication, profile, ride creation, listing, detail, and navigation).
-- Gates before considering a task complete: `npm run test:unit -- --run`, `npm run type-check`, `npx eslint .`, `npx oxlint .`, Prettier, and, when relevant, `npm run build`.
+## Testing & quality gates
+
+- **Unit** — `npm run test:unit` (629 tests): validators, services, composables, UI primitives.
+- **E2E** — `npm run test:e2e` (164 tests, desktop + mobile): auth flows, ride catalogue,
+  detail, participation, comments, favourites, profile, and navigation.
+- Before considering a change complete: unit tests, `npm run type-check`, `npm run lint`, and
+  `npm run build`.
+
+---
+
+Made by [Cristiana Sollini](https://bikemates.vercel.app/).

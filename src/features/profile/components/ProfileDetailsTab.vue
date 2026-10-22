@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import Alert from '@/components/ui/Alert.vue'
 import BikeLoader from '@/components/ui/BikeLoader.vue'
@@ -10,11 +11,19 @@ import ProfileDeleteAccount from '@/features/profile/components/ProfileDeleteAcc
 import ProfileNameForm from '@/features/profile/components/ProfileNameForm.vue'
 import ProfilePasswordForm from '@/features/profile/components/ProfilePasswordForm.vue'
 import { useProfile } from '@/features/profile/composables/useProfile'
+import { getCurrentUserRole } from '@/features/profile/services/userRoleService'
 import type { Profile } from '@/features/profile/types'
 
 const { profile, isLoading, errorMessage, loadProfile } = useProfile()
 const authStore = useAuthStore()
 const { user } = storeToRefs(authStore)
+
+/** La cuenta administradora no puede eliminarse desde la interfaz. */
+const isAdmin = ref(false)
+
+onMounted(async () => {
+  isAdmin.value = (await getCurrentUserRole()) === 'admin'
+})
 
 function applyUpdate(updated: Profile): void {
   profile.value = updated
@@ -82,7 +91,7 @@ const sectionTitleClasses =
         </section>
       </div>
 
-      <ProfileDeleteAccount />
+      <ProfileDeleteAccount v-if="!isAdmin" />
     </template>
   </div>
 </template>

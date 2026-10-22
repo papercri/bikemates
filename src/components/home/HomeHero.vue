@@ -98,24 +98,25 @@ onBeforeUnmount(() => {
       class="relative mx-auto grid max-w-7xl gap-10 px-4 pb-20 pt-28 sm:px-6 sm:pb-24 sm:pt-32 lg:grid-cols-[1.06fr_0.94fr] lg:items-center lg:gap-12 lg:px-8 lg:pb-28 lg:pt-36"
     >
       <motion.div
+        class="text-center sm:text-left"
         :initial="{ opacity: 0, y: REVEAL_Y }"
         :animate="{ opacity: 1, y: 0 }"
         :transition="{ duration: REVEAL_DURATION, ease: EASE, delay: 0.15 }"
       >
         <h1
           id="hero-title"
-          class="max-w-3xl font-display text-[clamp(2.4rem,6vw,4.4rem)] leading-[0.95] font-medium tracking-[-0.025em] text-white"
+          class="mx-auto max-w-3xl font-display text-[2.75rem] leading-[0.95] font-medium tracking-[-0.025em] text-white sm:text-[clamp(2.4rem,6vw,4.4rem)]"
         >
           <span class="block">Encuentra tu grupeta.</span>
           <span class="block">Descubre nuevas rutas.</span>
         </h1>
 
-        <p class="mt-6 max-w-xl text-base leading-7 text-white/85 sm:text-lg">
+        <p class="mx-auto mt-6 max-w-xl text-base leading-7 text-white/85 sm:text-lg">
           Conecta con ciclistas cerca de ti, organiza salidas en grupo y encuentra nuevas rutas para
           tu próxima aventura en bici.
         </p>
 
-        <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+        <div class="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:items-start">
           <Button v-for="cta in ctas" :key="cta.to" :to="cta.to" :variant="cta.variant" size="lg">
             {{ cta.label }}
           </Button>

@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { faBicycle, faCalendar, faUser } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import Badge from '@/components/ui/Badge.vue'
 import IconArrow from '@/components/icons/IconArrow.vue'
+import IconStar from '@/components/icons/IconStar.vue'
 import RideAudienceBadge from '@/features/rides/components/RideAudienceBadge.vue'
 import { RIDE_LEVEL_BADGE_COLORS } from '@/features/rides/constants/rideLevels'
 import { RIDE_BIKE_TYPE_LABELS } from '@/features/rides/constants/rideOptions'
@@ -18,7 +19,36 @@ const props = defineProps<{
   bare?: boolean
   /** El usuario actual participa en esta salida: muestra la insignia "Participaré". */
   participating?: boolean
+  /** La ruta está en favoritos del usuario actual. */
+  saved?: boolean
+  /** Muestra el botón de favoritos (solo donde el gestor de guardados está disponible). */
+  showSaveToggle?: boolean
 }>()
+
+const emit = defineEmits<{
+  'toggle-save': []
+}>()
+
+/** Confirmación efímera tras alternar favoritos: desaparece sola y respeta movimiento reducido. */
+const showSavedToast = ref(false)
+const toastMessage = ref('')
+let toastTimer: ReturnType<typeof setTimeout> | undefined
+
+function showToast(message: string): void {
+  toastMessage.value = message
+  showSavedToast.value = true
+  clearTimeout(toastTimer)
+  toastTimer = setTimeout(() => {
+    showSavedToast.value = false
+  }, 2000)
+}
+
+/** El clic del usuario dispara la confirmación sin esperar al servidor (optimismo). */
+function onToggleSave(): void {
+  showToast(props.saved ? 'Se ha quitado de tus favoritos' : 'Agregado a tus favoritos')
+  emit('toggle-save')
+}
+
 
 /** Fotografías propias del proyecto para las salidas sin imagen en la base de datos. */
 const FALLBACK_COVERS = [
@@ -40,7 +70,7 @@ const shortDate = computed(() => formatRideShortDate(props.ride.startsAt))
 
 <template>
   <article
-    class="h-full overflow-hidden sm:aspect-square"
+    class="relative h-full overflow-hidden sm:aspect-square"
     :class="[props.bare ? '' : 'rounded-photo border border-line', past ? 'opacity-75' : '']"
   >
     <RouterLink
@@ -68,14 +98,6 @@ const shortDate = computed(() => formatRideShortDate(props.ride.startsAt))
           <FontAwesomeIcon :icon="faCalendar" aria-hidden="true" class="size-3" />
           {{ shortDate }}
         </time>
-
-        <FontAwesomeIcon
-          v-if="participating"
-          :icon="faUser"
-          aria-hidden="true"
-          class="size-4 text-trail"
-        />
-        <span v-if="participating" class="sr-only">Participaré</span>
       </div>
 
       <!-- Entrada: capa oscura a sangre, pegada a los bordes de la foto -->
@@ -108,6 +130,49 @@ const shortDate = computed(() => formatRideShortDate(props.ride.startsAt))
           <span class="sr-only">Ver detalles</span>
         </div>
       </div>
+
+      <!-- Confirmación efímera al activar favoritos. -->
+      <Transition
+        enter-active-class="motion-safe:transition-all motion-safe:duration-200"
+        enter-from-class="translate-y-1 opacity-0"
+        leave-active-class="motion-safe:transition-all motion-safe:duration-300"
+        leave-to-class="opacity-0"
+      >
+        <p
+          v-if="showSavedToast"
+          class="pointer-events-none absolute bottom-20 left-1/2 z-10 -translate-x-1/2 rounded-full bg-ink/90 px-3 py-1 text-xs font-semibold whitespace-nowrap text-canvas"
+          role="status"
+        >
+          <IconStar :filled="saved" class="me-1 inline-block size-3.5" :class="saved ? 'text-star' : 'text-canvas'" />
+          {{ toastMessage }}
+        </p>
+      </Transition>
     </RouterLink>
+
+    <!-- Pila de acciones fuera del enlace: un <button> dentro de un <a> no es HTML válido.
+         Corazón de favoritos arriba; debajo, el círculo de participación. -->
+    <div
+      v-if="showSaveToggle || participating"
+      class="absolute top-4 right-4 z-10 flex flex-col items-end gap-1 sm:top-5 sm:right-5"
+    >
+      <button
+        v-if="showSaveToggle"
+        type="button"
+        class="flex size-6 items-center justify-center rounded-full bg-ink/40 text-canvas backdrop-blur-sm transition-colors hover:bg-ink/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-star"
+        :aria-pressed="saved ?? false"
+        :aria-label="saved ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+        @click.stop.prevent="onToggleSave"
+      >
+        <IconStar :filled="saved" class="size-3.5" :class="saved ? 'text-star' : 'text-canvas'" />
+      </button>
+
+      <span
+        v-if="participating"
+        class="grid size-6 place-items-center rounded-full bg-ink/40 text-trail-deep backdrop-blur-sm"
+      >
+        <FontAwesomeIcon :icon="faUser" aria-hidden="true" class="block size-1" />
+        <span class="sr-only">Participaré</span>
+      </span>
+    </div>
   </article>
 </template>

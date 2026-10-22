@@ -1,4 +1,5 @@
 import { supabase } from '@/services/supabase'
+import { describeAuthError } from '@/features/auth/utils/authErrorMessages'
 import { canUseReservedAdminName, isReservedAdminName } from '@/utils/adminAccount'
 
 interface RegisterCredentials {
@@ -31,7 +32,7 @@ export async function registerUser(credentials: RegisterCredentials) {
   })
 
   if (error) {
-    throw error
+    throw new Error(describeAuthError(error))
   }
 
   if (data.user && data.user.identities?.length === 0) {
@@ -50,7 +51,7 @@ export async function loginUser(credentials: LoginCredentials) {
   })
 
   if (error) {
-    throw error
+    throw new Error(describeAuthError(error))
   }
 
   return data
@@ -60,7 +61,7 @@ export async function requestPasswordReset(email: string, redirectTo: string): P
   const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo })
 
   if (error) {
-    throw error
+    throw new Error(describeAuthError(error))
   }
 }
 
@@ -70,7 +71,7 @@ export async function updatePassword(newPassword: string): Promise<void> {
   })
 
   if (error) {
-    throw error
+    throw new Error(describeAuthError(error))
   }
 }
 
@@ -115,7 +116,7 @@ export async function isEmailConfirmed(): Promise<boolean> {
   } = await supabase.auth.getSession()
 
   if (error) {
-    throw error
+    throw new Error(describeAuthError(error))
   }
 
   return Boolean(session?.user.email_confirmed_at)
@@ -126,6 +127,6 @@ export async function requestAccountDeletion(): Promise<void> {
   })
 
   if (error) {
-    throw error
+    throw new Error(describeAuthError(error))
   }
 }

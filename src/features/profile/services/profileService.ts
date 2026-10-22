@@ -67,7 +67,8 @@ export async function getMyProfile(): Promise<Profile> {
     .maybeSingle()
 
   if (error) {
-    throw new Error(`No se ha podido cargar el perfil: ${error.message}`)
+    console.error('Error al cargar el perfil:', error.message)
+    throw new Error('No se ha podido cargar tu perfil. Inténtalo de nuevo.')
   }
 
   if (data) {

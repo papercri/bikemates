@@ -23,7 +23,7 @@ interface MessageRow {
 
 function mapMessage(row: MessageRow): RideMessage {
   if (!row.author) {
-    throw new Error('Un comentario no tiene autor válido.')
+    throw new Error('No se ha podido publicar el comentario. Inténtalo de nuevo.')
   }
 
   return {

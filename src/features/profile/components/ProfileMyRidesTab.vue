@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
-import { faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons'
+import { faArrowDownWideShort, faMagnifyingGlass, faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import IconMeetup from '@/components/icons/IconMeetup.vue'
 import Alert from '@/components/ui/Alert.vue'
@@ -9,8 +9,8 @@ import BikeLoader from '@/components/ui/BikeLoader.vue'
 import Button from '@/components/ui/Button.vue'
 import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
-import FormSelectField from '@/components/ui/FormSelectField.vue'
 import Input from '@/components/ui/Input.vue'
+import SelectMenu from '@/components/ui/SelectMenu.vue'
 import Typography from '@/components/ui/Typography.vue'
 import RideCard from '@/features/rides/components/RideCard.vue'
 import { RIDE_SORT_OPTIONS, type RideSortOption } from '@/features/rides/constants/rideFilters'
@@ -137,28 +137,33 @@ async function confirmRideDeletion(): Promise<void> {
           {{ visibleRides.length === 1 ? 'ruta publicada' : 'rutas publicadas' }}
         </Typography>
 
-        <div class="flex flex-wrap items-end gap-2">
-          <div class="w-56">
+        <div class="flex flex-wrap items-center gap-2">
+          <div class="relative w-56">
             <label for="my-rides-search" class="sr-only"> Buscar por título </label>
+
+            <FontAwesomeIcon
+              :icon="faMagnifyingGlass"
+              aria-hidden="true"
+              class="pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-graphite"
+            />
 
             <Input
               id="my-rides-search"
               v-model="query"
               type="search"
               name="my-rides-search"
-              placeholder="Buscar por título"
+              subtle
+              class="pl-9"
             />
           </div>
 
-          <div class="w-48">
-            <FormSelectField
-              id="my-rides-sort"
-              v-model="sortBy"
-              label="Ordenar por"
-              label-hidden
-              :options="RIDE_SORT_OPTIONS"
-            />
-          </div>
+          <SelectMenu
+            v-model="sortBy"
+            class="w-48"
+            label="Ordenar por"
+            :icon="faArrowDownWideShort"
+            :options="RIDE_SORT_OPTIONS"
+          />
         </div>
       </div>
 

@@ -58,7 +58,7 @@ export async function searchPlaces(
   const results: unknown = await response.json()
 
   if (!Array.isArray(results)) {
-    throw new Error('El servicio de búsqueda ha devuelto una respuesta inválida.')
+    throw new Error('No se ha podido completar la búsqueda. Inténtalo de nuevo.')
   }
 
   return results.flatMap((item: unknown): GeocodingResult[] => {

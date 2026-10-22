@@ -51,7 +51,7 @@ describe('buildRideIcs', () => {
 
   it('throws when the start date is not a valid date', () => {
     expect(() => buildRideIcs({ ...ENTRY, startsAt: 'no-es-una-fecha' })).toThrow(
-      'Fecha de salida no válida para el calendario',
+      'La fecha de esta ruta no es válida para añadirla al calendario.',
     )
   })
 })
@@ -69,7 +69,7 @@ describe('buildGoogleCalendarUrl', () => {
 
   it('throws when the start date is not a valid date', () => {
     expect(() => buildGoogleCalendarUrl({ ...ENTRY, startsAt: 'no-es-una-fecha' })).toThrow(
-      'Fecha de salida no válida para el calendario',
+      'La fecha de esta ruta no es válida para añadirla al calendario.',
     )
   })
 })
@@ -89,7 +89,7 @@ describe('buildOutlookCalendarUrl', () => {
 
   it('throws when the start date is not a valid date', () => {
     expect(() => buildOutlookCalendarUrl({ ...ENTRY, startsAt: 'no-es-una-fecha' })).toThrow(
-      'Fecha de salida no válida para el calendario',
+      'La fecha de esta ruta no es válida para añadirla al calendario.',
     )
   })
 })

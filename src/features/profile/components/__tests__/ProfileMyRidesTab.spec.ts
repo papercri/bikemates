@@ -156,7 +156,12 @@ describe('ProfileMyRidesTab', () => {
     // Por defecto: fecha ascendente (la de mayo antes que la de julio).
     expect(cardTitles(wrapper)).toEqual(['Ruta corta', 'Ruta larga'])
 
-    await wrapper.get('select').setValue('distance')
+    // El orden ahora vive en un menú desplegable (misma UI que la página de rutas).
+    await wrapper.get('button[aria-haspopup="menu"]').trigger('click')
+    await wrapper
+      .findAll('[role="menuitemradio"]')
+      .find((item) => item.text() === 'Distancia')
+      ?.trigger('click')
     await flushPromises()
 
     // Por distancia descendente: la larga primero.

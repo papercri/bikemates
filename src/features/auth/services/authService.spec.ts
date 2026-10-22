@@ -97,11 +97,13 @@ describe('authService', () => {
       await expect(registerUser(credentials)).resolves.toBe(data)
     })
 
-    it('throws the supabase error when sign up fails', async () => {
-      const error = new Error('sign up failed')
+    it('translates the sign up error into a user-facing message', async () => {
+      const error = new Error('User already registered')
       mocks.signUp.mockResolvedValue({ data: { user: null }, error })
 
-      await expect(registerUser(credentials)).rejects.toThrow('sign up failed')
+      await expect(registerUser(credentials)).rejects.toThrow(
+        'Ya existe una cuenta con ese correo. Inicia sesión o prueba con otro.',
+      )
     })
 
     it('rejects when the email is already registered', async () => {
@@ -128,13 +130,13 @@ describe('authService', () => {
       })
     })
 
-    it('throws the supabase error when sign in fails', async () => {
-      const error = new Error('invalid credentials')
+    it('translates the sign in error into a user-facing message', async () => {
+      const error = new Error('Invalid login credentials')
       mocks.signInWithPassword.mockResolvedValue({ data: { session: null }, error })
 
       await expect(
         loginUser({ email: credentials.email, password: credentials.password }),
-      ).rejects.toThrow('invalid credentials')
+      ).rejects.toThrow('El correo o la contraseña no son correctos.')
     })
   })
 
@@ -149,11 +151,13 @@ describe('authService', () => {
       })
     })
 
-    it('throws the supabase error when the request fails', async () => {
+    it('translates the reset request error into a user-facing message', async () => {
       const error = new Error('rate limited')
       mocks.resetPasswordForEmail.mockResolvedValue({ data: null, error })
 
-      await expect(requestPasswordReset('a@b.com', '/reset')).rejects.toThrow('rate limited')
+      await expect(requestPasswordReset('a@b.com', '/reset')).rejects.toThrow(
+        'Demasiados intentos. Espera unos minutos y vuelve a probar.',
+      )
     })
   })
 
@@ -166,11 +170,13 @@ describe('authService', () => {
       expect(mocks.updateUser).toHaveBeenCalledWith({ password: 'nuevaClave123' })
     })
 
-    it('throws the supabase error when the update fails', async () => {
+    it('translates the password update error into a user-facing message', async () => {
       const error = new Error('weak password')
       mocks.updateUser.mockResolvedValue({ data: null, error })
 
-      await expect(updatePassword('123')).rejects.toThrow('weak password')
+      await expect(updatePassword('123')).rejects.toThrow(
+        'La contraseña no cumple los requisitos. Prueba con otra.',
+      )
     })
   })
 
@@ -212,10 +218,12 @@ describe('authService', () => {
       await expect(isEmailConfirmed()).resolves.toBe(false)
     })
 
-    it('throws the supabase error when the session cannot be read', async () => {
+    it('translates the session error into a user-facing message', async () => {
       mocks.getSession.mockResolvedValue({ data: { session: null }, error: new Error('offline') })
 
-      await expect(isEmailConfirmed()).rejects.toThrow('offline')
+      await expect(isEmailConfirmed()).rejects.toThrow(
+        'No se ha podido completar la operación. Inténtalo de nuevo.',
+      )
     })
   })
 
@@ -270,11 +278,13 @@ describe('authService', () => {
       expect(mocks.invoke).toHaveBeenCalledWith('delete-account', { method: 'POST' })
     })
 
-    it('throws the supabase error when the invocation fails', async () => {
+    it('translates the function error into a user-facing message', async () => {
       const error = new Error('not allowed')
       mocks.invoke.mockResolvedValue({ data: null, error })
 
-      await expect(requestAccountDeletion()).rejects.toThrow('not allowed')
+      await expect(requestAccountDeletion()).rejects.toThrow(
+        'No se ha podido completar la operación. Inténtalo de nuevo.',
+      )
     })
   })
 })

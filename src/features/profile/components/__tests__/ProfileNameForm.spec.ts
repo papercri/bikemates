@@ -1,4 +1,5 @@
 import { flushPromises, mount } from '@vue/test-utils'
+import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import ProfileNameForm from '../ProfileNameForm.vue'
 import type { Profile } from '../../types'
@@ -22,6 +23,7 @@ function profileOf(displayName: string): Profile {
 }
 
 function mountForm(displayName = 'Ana Pedal') {
+  setActivePinia(createPinia())
   return mount(ProfileNameForm, { props: { displayName } })
 }
 

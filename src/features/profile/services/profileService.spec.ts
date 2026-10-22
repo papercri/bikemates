@@ -150,7 +150,7 @@ describe('getMyProfile', () => {
   it('surfaces a select error', async () => {
     mocks.from.mockReturnValue(createQueryChain({ data: null, error: { message: 'rls' } }))
 
-    await expect(getMyProfile()).rejects.toThrow('No se ha podido cargar el perfil: rls')
+    await expect(getMyProfile()).rejects.toThrow('No se ha podido cargar tu perfil. Inténtalo de nuevo.')
   })
 })
 

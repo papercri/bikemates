@@ -330,7 +330,7 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
           </Typography>
 
           <div class="flex w-full flex-col items-start gap-2 sm:w-auto sm:shrink-0 sm:items-end">
-            <div class="flex items-center gap-2">
+            <div class="flex w-full items-center justify-end gap-2 sm:w-auto">
               <RideCalendarMenu
                 v-if="calendarEntry"
                 :entry="calendarEntry"

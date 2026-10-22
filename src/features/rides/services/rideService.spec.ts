@@ -226,7 +226,7 @@ describe('rideService', () => {
     it('wraps insertion errors with a user-facing message', async () => {
       mocks.from.mockReturnValue(createQueryChain({ data: null, error: { message: 'denied' } }))
 
-      await expect(createRide(createInput())).rejects.toThrow('No se pudo crear la ruta: denied')
+      await expect(createRide(createInput())).rejects.toThrow('No se ha podido crear la ruta. Inténtalo de nuevo.')
     })
 
     it('rejects rows whose domain values fall outside the known unions', async () => {
@@ -259,7 +259,7 @@ describe('rideService', () => {
     it('wraps query errors with a user-facing message', async () => {
       mocks.from.mockReturnValue(createQueryChain({ data: null, error: { message: 'offline' } }))
 
-      await expect(getPublishedRides()).rejects.toThrow('No se pudieron cargar las rutas: offline')
+      await expect(getPublishedRides()).rejects.toThrow('No se han podido cargar las rutas. Inténtalo de nuevo.')
     })
   })
 
@@ -279,7 +279,7 @@ describe('rideService', () => {
     it('wraps query errors with a user-facing message', async () => {
       mocks.from.mockReturnValue(createQueryChain({ data: null, error: { message: 'gone' } }))
 
-      await expect(getRideById('ride-1')).rejects.toThrow('No se pudo cargar la ruta: gone')
+      await expect(getRideById('ride-1')).rejects.toThrow('No se ha podido cargar la ruta. Inténtalo de nuevo.')
     })
   })
 
@@ -315,7 +315,7 @@ describe('rideService', () => {
     it('wraps query errors with a user-facing message', async () => {
       mocks.from.mockReturnValue(createQueryChain({ data: null, error: { message: 'denied' } }))
 
-      await expect(getRideForEdit('ride-1')).rejects.toThrow('No se pudo cargar la ruta: denied')
+      await expect(getRideForEdit('ride-1')).rejects.toThrow('No se ha podido cargar la ruta. Inténtalo de nuevo.')
     })
   })
 
@@ -340,7 +340,7 @@ describe('rideService', () => {
     it('wraps query errors with a user-facing message', async () => {
       mocks.from.mockReturnValue(createQueryChain({ data: null, error: { message: 'offline' } }))
 
-      await expect(getMyRides()).rejects.toThrow('No se pudieron cargar tus rutas: offline')
+      await expect(getMyRides()).rejects.toThrow('No se han podido cargar tus rutas. Inténtalo de nuevo.')
     })
   })
 
@@ -376,7 +376,7 @@ describe('rideService', () => {
     it('wraps query errors with a user-facing message', async () => {
       mocks.from.mockReturnValue(createQueryChain({ data: null, error: { message: 'denied' } }))
 
-      await expect(deleteRide('ride-1')).rejects.toThrow('No se pudo eliminar la ruta: denied')
+      await expect(deleteRide('ride-1')).rejects.toThrow('No se ha podido eliminar la ruta. Inténtalo de nuevo.')
     })
   })
 
@@ -448,7 +448,7 @@ describe('rideService', () => {
       mocks.from.mockReturnValue(createQueryChain({ data: null, error: { message: 'denied' } }))
 
       await expect(updateRide('ride-1', input)).rejects.toThrow(
-        'No se pudo actualizar la ruta: denied',
+        'No se han podido guardar los cambios. Inténtalo de nuevo.',
       )
     })
   })
@@ -495,7 +495,7 @@ describe('rideService', () => {
       mocks.from.mockReturnValue(createQueryChain({ data: null, error: { message: 'offline' } }))
 
       await expect(getRideParticipants('ride-1', 'user-1')).rejects.toThrow(
-        'No se pudieron cargar los participantes: offline',
+        'No se han podido cargar los participantes. Inténtalo de nuevo.',
       )
     })
   })
@@ -512,7 +512,7 @@ describe('rideService', () => {
       mocks.rpc.mockResolvedValue({ data: null, error: { message: 'offline' } })
 
       await expect(getRideParticipantCount('ride-1')).rejects.toThrow(
-        'No se pudo cargar el número de participantes: offline',
+        'No se ha podido cargar el número de participantes. Inténtalo de nuevo.',
       )
     })
   })
@@ -540,7 +540,7 @@ describe('rideService', () => {
       mocks.from.mockReturnValue(createQueryChain({ data: null, error: { message: 'offline' } }))
 
       await expect(getMyParticipatingRideIds()).rejects.toThrow(
-        'No se pudieron cargar tus inscripciones: offline',
+        'No se han podido cargar tus inscripciones. Inténtalo de nuevo.',
       )
     })
   })
@@ -554,11 +554,13 @@ describe('rideService', () => {
       expect(mocks.rpc).toHaveBeenCalledWith('join_ride', { p_ride_id: 'ride-1' })
     })
 
-    it('rethrows the raw supabase error', async () => {
+    it('wraps the rpc error with a user-facing message', async () => {
       const error = { message: 'full', code: 'P0001' }
       mocks.rpc.mockResolvedValue({ data: null, error })
 
-      await expect(joinRide('ride-1')).rejects.toBe(error)
+      await expect(joinRide('ride-1')).rejects.toThrow(
+        'No se ha podido completar la inscripción. Inténtalo de nuevo.',
+      )
     })
   })
 
@@ -575,7 +577,7 @@ describe('rideService', () => {
       mocks.rpc.mockResolvedValue({ data: null, error: { message: 'not found' } })
 
       await expect(leaveRide('ride-1')).rejects.toThrow(
-        'No se pudo cancelar la inscripción: not found',
+        'No se ha podido cancelar la inscripción. Inténtalo de nuevo.',
       )
     })
   })
