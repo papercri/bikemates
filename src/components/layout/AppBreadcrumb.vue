@@ -51,7 +51,7 @@ const items = computed<BreadcrumbItem[]>(() => {
           v-if="item.to"
           :to="item.to"
           :title="item.label"
-          class="max-w-[9rem] truncate transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink sm:max-w-[20rem]"
+          class="max-w-[14rem] truncate transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink sm:max-w-[24rem]"
         >
           {{ item.label }}
         </RouterLink>
@@ -61,7 +61,7 @@ const items = computed<BreadcrumbItem[]>(() => {
           :aria-current="index === items.length - 1 ? 'page' : undefined"
           :class="index === items.length - 1 ? 'text-ink' : 'text-graphite'"
           :title="item.label"
-          class="max-w-[9rem] truncate sm:max-w-[20rem]"
+          class="max-w-[14rem] truncate sm:max-w-[24rem]"
         >
           {{ item.label }}
         </span>
