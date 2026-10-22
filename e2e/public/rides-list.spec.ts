@@ -186,10 +186,10 @@ test.describe('rides list', () => {
     await expect(page.getByRole('button', { name: 'Quitar de favoritos' })).toBeVisible()
     expect(supabase.state.savedRides).toHaveLength(1)
 
-    // Quitar de favoritos vuelve al estado off.
+    // Quitar de favoritos vuelve al estado off; el borrado llega al servidor después.
     await page.getByRole('button', { name: 'Quitar de favoritos' }).click()
     await expect(page.getByRole('button', { name: 'Agregar a favoritos' })).toBeVisible()
-    expect(supabase.state.savedRides).toHaveLength(0)
+    await expect.poll(() => supabase.state.savedRides.length).toBe(0)
   })
 
   test('hides the save star for anonymous visitors', async ({ page }) => {

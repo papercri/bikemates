@@ -12,21 +12,21 @@ interface Feature {
 // Cada bloque se apoya en una fotografía real de la comunidad, con revelado suave.
 const features: readonly Feature[] = [
   {
-    image: '/photos/salida-amanecer.webp',
-    alt: 'Salida en bici al amanecer por una pista forestal',
+    image: '/photos/descubre-rutas.webp',
+    alt: 'Excursión por una pista forestal',
     title: 'Descubre rutas',
     description:
       'Explora las próximas salidas y encuentra rutas que encajen con tu nivel y tu forma de pedalear.',
   },
   {
-    image: '/photos/grupeta-sepia.webp',
+    image: '/photos/conecta-con-ciclistas.webp',
     alt: 'Grupo de ciclistas pedaleando juntos por el campo',
     title: 'Conecta con ciclistas',
     description: 'Encuentra personas que comparten tu afición y tus ganas de salir en bici.',
   },
   {
-    image: '/photos/salida-pista.webp',
-    alt: 'Bicicleta sobre una pista de montaña con desnivel',
+    image: '/photos/organiza-salidas.webp',
+    alt: 'Ciclistas durante una parada en la ruta, charlando y descansando',
     title: 'Organiza salidas',
     description:
       'Crea una quedada, comparte los detalles de la ruta e invita a otros ciclistas a unirse.',

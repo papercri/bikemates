@@ -90,9 +90,14 @@ test.describe('profile', () => {
       'true',
     )
 
-    // Con dos pestañas, ArrowRight en la última vuelve a la primera.
+    // Con tres pestañas, la última flecha a la derecha vuelve a la primera.
     await page.keyboard.press('ArrowRight')
+    await expect(page.getByRole('tab', { name: 'Rutas guardadas' })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    )
 
+    await page.keyboard.press('ArrowRight')
     await expect(detailsTab).toHaveAttribute('aria-selected', 'true')
   })
 

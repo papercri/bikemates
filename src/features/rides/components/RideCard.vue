@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { faBicycle, faCalendar, faUser } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import Badge from '@/components/ui/Badge.vue'
@@ -29,22 +29,25 @@ const emit = defineEmits<{
   'toggle-save': []
 }>()
 
-/** Confirmación efímera tras guardar: desaparece sola y respeta movimiento reducido. */
+/** Confirmación efímera tras alternar favoritos: desaparece sola y respeta movimiento reducido. */
 const showSavedToast = ref(false)
+const toastMessage = ref('')
 let toastTimer: ReturnType<typeof setTimeout> | undefined
 
-watch(
-  () => props.saved,
-  (saved, previous) => {
-    if (saved === previous || !saved) return
+function showToast(message: string): void {
+  toastMessage.value = message
+  showSavedToast.value = true
+  clearTimeout(toastTimer)
+  toastTimer = setTimeout(() => {
+    showSavedToast.value = false
+  }, 2000)
+}
 
-    showSavedToast.value = true
-    clearTimeout(toastTimer)
-    toastTimer = setTimeout(() => {
-      showSavedToast.value = false
-    }, 2000)
-  },
-)
+/** El clic del usuario dispara la confirmación sin esperar al servidor (optimismo). */
+function onToggleSave(): void {
+  showToast(props.saved ? 'Se ha quitado de tus favoritos' : 'Agregado a tus favoritos')
+  emit('toggle-save')
+}
 
 
 /** Fotografías propias del proyecto para las salidas sin imagen en la base de datos. */
@@ -140,8 +143,8 @@ const shortDate = computed(() => formatRideShortDate(props.ride.startsAt))
           class="pointer-events-none absolute bottom-20 left-1/2 z-10 -translate-x-1/2 rounded-full bg-ink/90 px-3 py-1 text-xs font-semibold whitespace-nowrap text-canvas"
           role="status"
         >
-          <IconStar filled class="me-1 inline-block size-3.5 text-star" />
-          Agregado a tus favoritos
+          <IconStar :filled="saved" class="me-1 inline-block size-3.5" :class="saved ? 'text-star' : 'text-canvas'" />
+          {{ toastMessage }}
         </p>
       </Transition>
     </RouterLink>
@@ -158,14 +161,14 @@ const shortDate = computed(() => formatRideShortDate(props.ride.startsAt))
         class="flex size-6 items-center justify-center rounded-full bg-ink/40 text-canvas backdrop-blur-sm transition-colors hover:bg-ink/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-star"
         :aria-pressed="saved ?? false"
         :aria-label="saved ? 'Quitar de favoritos' : 'Agregar a favoritos'"
-        @click.stop.prevent="emit('toggle-save')"
+        @click.stop.prevent="onToggleSave"
       >
         <IconStar :filled="saved" class="size-3.5" :class="saved ? 'text-star' : 'text-canvas'" />
       </button>
 
       <span
         v-if="participating"
-        class="grid size-6 place-items-center rounded-full bg-ink/40 text-ink backdrop-blur-sm"
+        class="grid size-6 place-items-center rounded-full bg-ink/40 text-trail-deep backdrop-blur-sm"
       >
         <FontAwesomeIcon :icon="faUser" aria-hidden="true" class="block size-1" />
         <span class="sr-only">Participaré</span>
