@@ -170,11 +170,13 @@ describe('authService', () => {
       expect(mocks.updateUser).toHaveBeenCalledWith({ password: 'nuevaClave123' })
     })
 
-    it('throws the supabase error when the update fails', async () => {
+    it('translates the password update error into a user-facing message', async () => {
       const error = new Error('weak password')
       mocks.updateUser.mockResolvedValue({ data: null, error })
 
-      await expect(updatePassword('123')).rejects.toThrow('weak password')
+      await expect(updatePassword('123')).rejects.toThrow(
+        'La contraseña no cumple los requisitos. Prueba con otra.',
+      )
     })
   })
 
