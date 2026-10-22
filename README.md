@@ -109,35 +109,6 @@ No advertising or third-party trackers are loaded.
 
 ---
 
-## Getting started
-
-### Requirements
-
-- Node.js `^22.18.0 || >=24.12.0` and npm
-- A Supabase project (Auth enabled; schema documented in `backup/db.md`)
-- The `delete-account` Edge Function deployed for account deletion
-
-### Environment variables
-
-Create a `.env` file in the project root:
-
-```bash
-VITE_SUPABASE_URL=            # your Supabase project URL
-VITE_SUPABASE_PUBLISHABLE_KEY=  # public/publishable key (sb_publishable_…)
-# optional alias:
-VITE_SUPABASE_ANON_KEY=
-```
-
-The browser client only accepts public keys; service-role or secret keys are rejected at
-startup. The service-role key, if needed by Edge Functions, must never be prefixed with `VITE_`.
-
-### Setup
-
-```bash
-npm install --legacy-peer-deps
-npm run dev        # http://localhost:5173
-```
-
 ### Scripts
 
 ```bash
@@ -226,13 +197,6 @@ primitives know nothing about Supabase.
   detail, participation, comments, favourites, profile, and navigation.
 - Before considering a change complete: unit tests, `npm run type-check`, `npm run lint`, and
   `npm run build`.
-
----
-
-## Docs
-
-- `docs/log.md` — dated change log (every logical and design-system change).
-- `backup/db.md` — database schema, RPCs, and RLS policies.
 
 ---
 
