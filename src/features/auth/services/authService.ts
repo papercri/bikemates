@@ -71,7 +71,7 @@ export async function updatePassword(newPassword: string): Promise<void> {
   })
 
   if (error) {
-    throw error
+    throw new Error(describeAuthError(error))
   }
 }
 
