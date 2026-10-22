@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, ref } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 import Button from '@/components/ui/Button.vue'
 import type { ButtonSize, ButtonVariant } from '@/design-system'
@@ -31,18 +31,75 @@ const props = withDefaults(defineProps<Props>(), {
   menuAlign: 'end',
 })
 
+const VIEWPORT_MARGIN_PX = 8
+const MENU_GAP_PX = 4
+
 const isOpen = ref(false)
 const rootRef = ref<HTMLElement | null>(null)
 const triggerRef = ref<HTMLElement | null>(null)
 const menuRef = ref<HTMLElement | null>(null)
+/** Posición calculada: en móvil el menú se ancla a la ventana para no salirse de la pantalla. */
+const menuStyle = ref<Record<string, string>>({})
 
 onClickOutside(rootRef, () => {
   isOpen.value = false
 })
 
+/**
+ * Coloca el menú con `position: fixed` dentro del viewport. Sin esto, los menús
+ * anclados al disparador se salen de la pantalla en móvil (catálogo, compartir, calendario).
+ */
+function positionMenu(): void {
+  const trigger = triggerRef.value
+  const menu = menuRef.value
+  if (trigger === null || menu === null) return
+
+  const triggerRect = trigger.getBoundingClientRect()
+  const menuWidth = Math.min(menu.offsetWidth, window.innerWidth - VIEWPORT_MARGIN_PX * 2)
+  const menuHeight = menu.offsetHeight
+
+  const preferredLeft =
+    props.menuAlign === 'end' ? triggerRect.right - menuWidth : triggerRect.left
+  const left = Math.min(
+    Math.max(preferredLeft, VIEWPORT_MARGIN_PX),
+    Math.max(VIEWPORT_MARGIN_PX, window.innerWidth - menuWidth - VIEWPORT_MARGIN_PX),
+  )
+
+  let top = triggerRect.bottom + MENU_GAP_PX
+  if (top + menuHeight > window.innerHeight - VIEWPORT_MARGIN_PX) {
+    const above = triggerRect.top - MENU_GAP_PX - menuHeight
+    top =
+      above >= VIEWPORT_MARGIN_PX
+        ? above
+        : Math.max(VIEWPORT_MARGIN_PX, window.innerHeight - menuHeight - VIEWPORT_MARGIN_PX)
+  }
+
+  menuStyle.value = {
+    position: 'fixed',
+    left: `${Math.round(left)}px`,
+    top: `${Math.round(top)}px`,
+    width: `${Math.round(menuWidth)}px`,
+  }
+}
+
+function onViewportChange(): void {
+  if (isOpen.value) positionMenu()
+}
+
+onMounted(() => {
+  window.addEventListener('resize', onViewportChange)
+  window.addEventListener('scroll', onViewportChange, true)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', onViewportChange)
+  window.removeEventListener('scroll', onViewportChange, true)
+})
+
 async function open(): Promise<void> {
   isOpen.value = true
   await nextTick()
+  positionMenu()
   const first = menuRef.value?.querySelector<HTMLElement>('[role^="menuitem"]')
   first?.focus()
 }
@@ -182,9 +239,10 @@ function setTriggerRef(element: unknown): void {
       ref="menuRef"
       role="menu"
       :aria-label="props.label"
+      :style="menuStyle"
       :class="[
         props.menuAlign === 'start' ? 'left-0' : 'right-0',
-        'absolute z-[500] mt-1 min-w-56 overflow-hidden rounded-field border border-line bg-white py-1 shadow-lift',
+        'absolute z-[500] mt-1 min-w-56 max-w-[calc(100vw-1rem)] overflow-hidden rounded-field border border-line bg-white py-1 shadow-lift',
       ]"
       @keydown="onMenuKeydown"
       @click="onMenuClick"
