@@ -118,7 +118,7 @@ describe('searchPlaces', () => {
     fetchMock.mockResolvedValue(jsonResponse({ error: 'rate limited' }))
 
     await expect(searchPlaces('Barcelona')).rejects.toThrow(
-      'El servicio de búsqueda ha devuelto una respuesta inválida.',
+      'No se ha podido completar la búsqueda. Inténtalo de nuevo.',
     )
   })
 

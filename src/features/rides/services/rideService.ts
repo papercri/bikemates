@@ -117,7 +117,8 @@ export async function createRide(input: CreateRideInput): Promise<Ride> {
     .single()
 
   if (error) {
-    throw new Error(`No se pudo crear la ruta: ${error.message}`)
+    console.error("Error en rideService:", error.message)
+    throw new Error('No se ha podido crear la ruta. Inténtalo de nuevo.')
   }
 
   // El organizador participa siempre: se inscribe con la misma RPC que el
@@ -146,7 +147,8 @@ export async function getPublishedRides(): Promise<Ride[]> {
     .order('starts_at', { ascending: true })
 
   if (error) {
-    throw new Error(`No se pudieron cargar las rutas: ${error.message}`)
+    console.error("Error en rideService:", error.message)
+    throw new Error('No se han podido cargar las rutas. Inténtalo de nuevo.')
   }
 
   return data.map(mapRide)
@@ -161,7 +163,8 @@ export async function getRideById(id: string): Promise<Ride> {
     .single()
 
   if (error) {
-    throw new Error(`No se pudo cargar la ruta: ${error.message}`)
+    console.error("Error en rideService:", error.message)
+    throw new Error('No se ha podido cargar la ruta. Inténtalo de nuevo.')
   }
 
   return mapRide(data)
@@ -184,7 +187,8 @@ export async function getRideForEdit(id: string): Promise<Ride> {
     .maybeSingle()
 
   if (error) {
-    throw new Error(`No se pudo cargar la ruta: ${error.message}`)
+    console.error("Error en rideService:", error.message)
+    throw new Error('No se ha podido cargar la ruta. Inténtalo de nuevo.')
   }
 
   if (!data) {
@@ -211,7 +215,8 @@ export async function getMyRides(): Promise<Ride[]> {
     .order('starts_at', { ascending: true })
 
   if (error) {
-    throw new Error(`No se pudieron cargar tus rutas: ${error.message}`)
+    console.error("Error en rideService:", error.message)
+    throw new Error('No se han podido cargar tus rutas. Inténtalo de nuevo.')
   }
 
   return data.map(mapRide)
@@ -238,7 +243,8 @@ export async function deleteRide(id: string): Promise<void> {
   const { data, error } = await query.select('id').maybeSingle()
 
   if (error) {
-    throw new Error(`No se pudo eliminar la ruta: ${error.message}`)
+    console.error("Error en rideService:", error.message)
+    throw new Error('No se ha podido eliminar la ruta. Inténtalo de nuevo.')
   }
 
   if (!data) {
@@ -282,7 +288,8 @@ export async function updateRide(id: string, input: UpdateRideInput): Promise<Ri
     .maybeSingle()
 
   if (error) {
-    throw new Error(`No se pudo actualizar la ruta: ${error.message}`)
+    console.error("Error en rideService:", error.message)
+    throw new Error('No se han podido guardar los cambios. Inténtalo de nuevo.')
   }
 
   if (!data) {
@@ -312,7 +319,8 @@ export async function getRideParticipants(
     .order('joined_at', { ascending: true })
 
   if (error) {
-    throw new Error(`No se pudieron cargar los participantes: ${error.message}`)
+    console.error("Error en rideService:", error.message)
+    throw new Error('No se han podido cargar los participantes. Inténtalo de nuevo.')
   }
 
   return data.map((participant) => {
@@ -352,7 +360,8 @@ export async function getMyParticipatingRideIds(): Promise<string[]> {
     .eq('user_id', user.id)
 
   if (error) {
-    throw new Error(`No se pudieron cargar tus inscripciones: ${error.message}`)
+    console.error("Error en rideService:", error.message)
+    throw new Error('No se han podido cargar tus inscripciones. Inténtalo de nuevo.')
   }
 
   return data.map((row) => row.ride_id)
@@ -362,7 +371,8 @@ export async function getRideParticipantCount(rideId: string): Promise<number> {
   const { data, error } = await supabase.rpc('get_ride_participant_count', { p_ride_id: rideId })
 
   if (error) {
-    throw new Error(`No se pudo cargar el número de participantes: ${error.message}`)
+    console.error("Error en rideService:", error.message)
+    throw new Error('No se ha podido cargar el número de participantes. Inténtalo de nuevo.')
   }
 
   return Number(data)
@@ -373,7 +383,8 @@ export async function joinRide(rideId: string): Promise<void> {
   })
 
   if (error) {
-    throw error
+    console.error('Error al inscribirse:', error.message)
+    throw new Error('No se ha podido completar la inscripción. Inténtalo de nuevo.')
   }
 }
 
@@ -383,6 +394,7 @@ export async function leaveRide(rideId: string): Promise<void> {
   })
 
   if (error) {
-    throw new Error(`No se pudo cancelar la inscripción: ${error.message}`)
+    console.error("Error en rideService:", error.message)
+    throw new Error('No se ha podido cancelar la inscripción. Inténtalo de nuevo.')
   }
 }

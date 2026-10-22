@@ -31,7 +31,7 @@ function resolveWindow(entry: RideCalendarEntry): { start: Date; end: Date } {
   const start = new Date(entry.startsAt)
 
   if (Number.isNaN(start.getTime())) {
-    throw new Error('Fecha de salida no válida para el calendario')
+    throw new Error('La fecha de esta ruta no es válida para añadirla al calendario.')
   }
 
   const end = new Date(start.getTime() + Math.max(entry.durationMinutes, 0) * 60_000)

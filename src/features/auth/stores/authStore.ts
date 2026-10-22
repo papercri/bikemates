@@ -31,7 +31,10 @@ export const useAuthStore = defineStore('auth', () => {
   async function initializeSession(): Promise<void> {
     const { data, error } = await supabase.auth.getSession()
 
-    if (error) throw error
+    if (error) {
+      console.error('Error al leer la sesión:', error.message)
+      throw new Error('No se ha podido recuperar tu sesión. Inténtalo de nuevo.')
+    }
 
     session.value = data.session
     user.value = data.session?.user ?? null

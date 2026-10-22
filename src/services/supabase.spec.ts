@@ -25,7 +25,7 @@ describe('supabase client', () => {
     vi.stubEnv('VITE_SUPABASE_PUBLISHABLE_KEY', '')
     vi.stubEnv('VITE_SUPABASE_ANON_KEY', '')
 
-    await expect(importClient()).rejects.toThrow('Falta la configuración de Supabase.')
+    await expect(importClient()).rejects.toThrow('La aplicación no está configurada correctamente.')
   })
 
   it('fails fast when only the public key is missing', async () => {
@@ -33,7 +33,7 @@ describe('supabase client', () => {
     vi.stubEnv('VITE_SUPABASE_PUBLISHABLE_KEY', '')
     vi.stubEnv('VITE_SUPABASE_ANON_KEY', '')
 
-    await expect(importClient()).rejects.toThrow('Falta la configuración de Supabase.')
+    await expect(importClient()).rejects.toThrow('La aplicación no está configurada correctamente.')
   })
 
   it('creates a scoped client with the database and auth APIs when configured', async () => {
