@@ -64,7 +64,7 @@ describe('createEmptyRideFormValues', () => {
       bikeType: 'all',
       level: 'Iniciación',
       distanceKm: '',
-      elevationM: '',
+      elevationM: '0',
       durationMinutes: '',
       wikilocUrl: '',
       audience: 'everyone',

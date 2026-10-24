@@ -253,13 +253,12 @@ function handleDuplicate(): void {
           </div>
 
           <div>
-            <FormLabel id="elevationM">Desnivel positivo (m)</FormLabel>
+            <FormLabel id="elevationM">Desnivel positivo (m, opcional)</FormLabel>
             <Input
               id="elevationM"
               v-model="form.elevationM"
               name="elevationM"
               inputmode="numeric"
-              required
               :aria-invalid="Boolean(fieldErrors.elevationM)"
               aria-describedby="elevationM-error"
             />

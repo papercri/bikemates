@@ -129,10 +129,8 @@ describe('validateRideForm', () => {
     )
   })
 
-  it('requires an elevation between 0 and 20000 m', () => {
-    expect(validateRideForm(validValues({ elevationM: '' }))).toBe(
-      'Introduce el desnivel positivo.',
-    )
+  it('accepts an empty elevation and bounds it between 0 and 20000 m when given', () => {
+    expect(validateRideForm(validValues({ elevationM: '' }))).toBeNull()
     expect(validateRideForm(validValues({ elevationM: '-5' }))).toBe(
       'El desnivel debe estar entre 0 y 20000 metros.',
     )

@@ -25,7 +25,7 @@ test.describe('create ride', () => {
     await expect(page.locator('#bikeType')).toHaveValue('all')
     await expect(page.locator('#level')).toHaveValue('Iniciación')
     await expect(page.locator('#distanceKm')).toHaveValue('')
-    await expect(page.locator('#elevationM')).toHaveValue('')
+    await expect(page.locator('#elevationM')).toHaveValue('0')
     await expect(page.locator('#durationMinutes')).toHaveValue('')
     await expect(page.getByRole('switch', { name: 'Ruta circular' })).not.toBeChecked()
 

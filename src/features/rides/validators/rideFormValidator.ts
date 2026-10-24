@@ -136,8 +136,9 @@ function validateDistanceKm(value: string): string | null {
 }
 
 function validateElevationM(value: string): string | null {
+  // Campo opcional: en vacío se persiste como 0 m de desnivel.
   if (!value.trim()) {
-    return 'Introduce el desnivel positivo.'
+    return null
   }
 
   const elevationM = Number(value)
