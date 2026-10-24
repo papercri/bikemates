@@ -57,7 +57,7 @@ const isDarkChrome = computed(() => isOverlay.value && !isScrolled.value)
 // ink en overlay, así que el color de texto depende del modo.
 function menuLinkClasses(path?: string): string {
   const base =
-    'flex items-center gap-3 rounded-btn px-3 py-2.5 text-xs font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2'
+    'flex items-center gap-3 rounded-btn px-3 py-3 text-sm font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2'
   const isActive = path !== undefined && isNavActive(path)
 
   if (isDarkChrome.value) {

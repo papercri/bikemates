@@ -180,7 +180,7 @@ describe('AppHeader', () => {
     // El cierre de sesión comparte estilo con los enlaces del panel: sin filete.
     const logout = panel.findAll('button').find((button) => button.text().includes('Cerrar sesión'))
     expect(logout).toBeDefined()
-    expect(logout!.classes()).toContain('text-xs')
+    expect(logout!.classes()).toContain('text-sm')
     expect(logout!.classes()).toContain('font-bold')
     expect(logout!.classes()).not.toContain('border-line-strong')
     expect(logout!.classes()).not.toContain('bg-white')
