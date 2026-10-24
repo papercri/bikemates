@@ -22,8 +22,8 @@ test.describe('create ride', () => {
     await expect(page.getByRole('group', { name: 'Imagen de portada' })).toBeVisible()
 
     // Valores por defecto del formulario.
-    await expect(page.locator('#bikeType')).toHaveValue('gravel')
-    await expect(page.locator('#level')).toHaveValue('Intermedio')
+    await expect(page.locator('#bikeType')).toHaveValue('all')
+    await expect(page.locator('#level')).toHaveValue('Iniciación')
     await expect(page.locator('#distanceKm')).toHaveValue('')
     await expect(page.locator('#elevationM')).toHaveValue('')
     await expect(page.locator('#durationMinutes')).toHaveValue('')

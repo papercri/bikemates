@@ -61,7 +61,7 @@ describe('createEmptyRideFormValues', () => {
       meetingPoint: '',
       latitude: null,
       longitude: null,
-      bikeType: 'road',
+      bikeType: 'all',
       level: 'Iniciación',
       distanceKm: '',
       elevationM: '',

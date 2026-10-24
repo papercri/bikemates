@@ -1,6 +1,6 @@
 export type RideLevel = 'Iniciación' | 'Intermedio' | 'Avanzado'
 
-export type BikeType = 'road' | 'mtb' | 'gravel' | 'urban' | 'other'
+export type BikeType = 'all' | 'road' | 'mtb' | 'gravel' | 'urban' | 'other'
 
 export type RideAudience = 'everyone' | 'women' | 'men' | 'lgbt'
 

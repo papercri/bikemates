@@ -22,10 +22,7 @@ useHead({
   ],
 })
 
-const initialValues = createEmptyRideFormValues({
-  bikeType: 'gravel',
-  level: 'Intermedio',
-})
+const initialValues = createEmptyRideFormValues()
 
 const { isSubmitting, errorMessage, createPublishedRide } = useRideCreator()
 

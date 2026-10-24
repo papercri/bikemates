@@ -39,13 +39,16 @@ describe('rideFilters', () => {
     ])
   })
 
-  it('offers one bike option per selectable type, labelled with its visible name', () => {
-    expect(RIDE_BIKE_FILTER_OPTIONS).toHaveLength(RIDE_BIKE_TYPES.length + 1)
+  it('offers one bike option per concrete type, labelled with its visible name', () => {
+    // `all` (abierta a cualquier bici) y `other` (legado) no son filtros concretos.
+    const concreteTypes = RIDE_BIKE_TYPES.filter((bike) => bike !== 'all')
+
+    expect(RIDE_BIKE_FILTER_OPTIONS).toHaveLength(concreteTypes.length + 1)
     expect(RIDE_BIKE_FILTER_OPTIONS.slice(1).map((option) => option.value)).toEqual([
-      ...RIDE_BIKE_TYPES,
+      ...concreteTypes,
     ])
     expect(RIDE_BIKE_FILTER_OPTIONS.slice(1).map((option) => option.label)).toEqual(
-      RIDE_BIKE_TYPES.map((bike) => RIDE_BIKE_TYPE_LABELS[bike]),
+      concreteTypes.map((bike) => RIDE_BIKE_TYPE_LABELS[bike]),
     )
   })
 

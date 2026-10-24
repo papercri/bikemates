@@ -34,10 +34,16 @@ export const RIDE_LEVEL_FILTER_OPTIONS: readonly RideFilterOption<RideLevelFilte
   ...RIDE_LEVELS.map((level) => ({ value: level, label: level })),
 ]
 
-/** Solo los tipos ofertables en formularios (`other` queda excluido). */
+/**
+ * Solo los tipos concretos de bici: `other` (legado) y `all` (salida abierta a
+ * cualquier bici) quedan fuera del filtro, que se ocupa del tipo guardado.
+ */
 export const RIDE_BIKE_FILTER_OPTIONS: readonly RideFilterOption<RideBikeFilter>[] = [
   { value: RIDE_FILTER_ALL, label: 'Todos los tipos de bici' },
-  ...RIDE_BIKE_TYPES.map((bike) => ({ value: bike, label: RIDE_BIKE_TYPE_LABELS[bike] })),
+  ...RIDE_BIKE_TYPES.filter((bike) => bike !== 'all').map((bike) => ({
+    value: bike,
+    label: RIDE_BIKE_TYPE_LABELS[bike],
+  })),
 ]
 
 /** El filtro de público excluye `everyone`: ese valor es "Todos los públicos". */
