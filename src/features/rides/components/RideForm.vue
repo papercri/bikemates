@@ -186,6 +186,7 @@ function handleDuplicate(): void {
             v-model="form.startsAt"
             name="startsAt"
             type="datetime-local"
+            step="900"
             required
             :aria-invalid="Boolean(fieldErrors.startsAt)"
             aria-describedby="startsAt-error"

@@ -97,6 +97,12 @@ describe('RideForm', () => {
     expect(fieldValue(wrapper, '#audience')).toBe('everyone')
   })
 
+  it('offers the departure time in 15-minute steps', () => {
+    const wrapper = mountForm()
+
+    expect(wrapper.get('#startsAt').attributes('step')).toBe('900')
+  })
+
   it('emits a valid submission with the current values and no image', async () => {
     const wrapper = mountForm()
 
