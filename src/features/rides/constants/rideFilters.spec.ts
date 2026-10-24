@@ -39,9 +39,9 @@ describe('rideFilters', () => {
     expect(RIDE_LEVEL_FILTER_OPTIONS.slice(1).map((option) => option.value)).toEqual([
       ...RIDE_LEVELS,
     ])
-    expect(RIDE_LEVEL_FILTER_OPTIONS.slice(1).map((option) => option.label)).toEqual([
-      ...RIDE_LEVELS.map((level) => RIDE_LEVEL_LABELS[level]),
-    ])
+    expect(RIDE_LEVEL_FILTER_OPTIONS.slice(1).map((option) => option.label)).toEqual(
+      RIDE_LEVELS.map((level) => RIDE_LEVEL_LABELS[level]),
+    )
   })
 
   it('offers one bike option per concrete type, labelled with its visible name', () => {
