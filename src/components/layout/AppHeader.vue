@@ -349,16 +349,10 @@ onBeforeUnmount(() => {
                 Iniciar sesión
               </RouterLink>
 
-              <Button
-                to="/register"
-                :variant="isDarkChrome ? 'sun-quiet' : 'quiet'"
-                size="xs"
-                class="font-bold"
-                block
-              >
+              <RouterLink to="/register" :class="menuLinkClasses('/register')">
                 <FontAwesomeIcon :icon="faUserPlus" aria-hidden="true" />
                 Registrarse
-              </Button>
+              </RouterLink>
             </template>
           </div>
 
