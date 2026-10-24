@@ -33,7 +33,7 @@ import {
   RIDE_BIKE_TYPES,
   RIDE_BIKE_TYPE_LABELS,
 } from '@/features/rides/constants/rideOptions'
-import { RIDE_LEVELS } from '@/features/rides/constants/rideLevels'
+import { RIDE_LEVELS, RIDE_LEVEL_LABELS } from '@/features/rides/constants/rideLevels'
 
 const props = defineProps<{
   initialValues: RideFormValues
@@ -322,7 +322,7 @@ function handleDuplicate(): void {
           <FormLabel id="level">Nivel</FormLabel>
           <FormSelect id="level" v-model="form.level" name="level" required>
             <option v-for="level in RIDE_LEVELS" :key="level" :value="level">
-              {{ level }}
+              {{ RIDE_LEVEL_LABELS[level] }}
             </option>
           </FormSelect>
         </div>

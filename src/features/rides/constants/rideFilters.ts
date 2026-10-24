@@ -1,5 +1,5 @@
 import type { BikeType, RideAudience, RideLevel } from '../types'
-import { RIDE_LEVELS } from './rideLevels'
+import { RIDE_LEVELS, RIDE_LEVEL_LABELS } from './rideLevels'
 import {
   RIDE_AUDIENCES,
   RIDE_AUDIENCE_LABELS,
@@ -31,7 +31,7 @@ export interface RideFilterOption<T> {
  */
 export const RIDE_LEVEL_FILTER_OPTIONS: readonly RideFilterOption<RideLevelFilter>[] = [
   { value: RIDE_FILTER_ALL, label: 'Todos los niveles' },
-  ...RIDE_LEVELS.map((level) => ({ value: level, label: level })),
+  ...RIDE_LEVELS.map((level) => ({ value: level, label: RIDE_LEVEL_LABELS[level] })),
 ]
 
 /**

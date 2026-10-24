@@ -6,7 +6,7 @@ import Badge from '@/components/ui/Badge.vue'
 import IconArrow from '@/components/icons/IconArrow.vue'
 import IconStar from '@/components/icons/IconStar.vue'
 import RideAudienceBadge from '@/features/rides/components/RideAudienceBadge.vue'
-import { RIDE_LEVEL_BADGE_COLORS } from '@/features/rides/constants/rideLevels'
+import { RIDE_LEVEL_BADGE_COLORS, RIDE_LEVEL_LABELS } from '@/features/rides/constants/rideLevels'
 import { RIDE_BIKE_TYPE_LABELS } from '@/features/rides/constants/rideOptions'
 import type { Ride } from '@/features/rides/types'
 import { formatRideShortDate } from '@/utils/dates'
@@ -48,7 +48,6 @@ function onToggleSave(): void {
   showToast(props.saved ? 'Se ha quitado de tus favoritos' : 'Agregado a tus favoritos')
   emit('toggle-save')
 }
-
 
 /** Fotografías propias del proyecto para las salidas sin imagen en la base de datos. */
 const FALLBACK_COVERS = [
@@ -114,7 +113,7 @@ const shortDate = computed(() => formatRideShortDate(props.ride.startsAt))
 
         <div class="mt-3 flex flex-wrap items-center gap-1.5">
           <Badge variant="inverse" :color="RIDE_LEVEL_BADGE_COLORS[ride.level]" dot>
-            {{ ride.level }}
+            {{ RIDE_LEVEL_LABELS[ride.level] }}
           </Badge>
           <Badge variant="inverse">
             <FontAwesomeIcon :icon="faBicycle" aria-hidden="true" class="size-3" />
@@ -143,7 +142,11 @@ const shortDate = computed(() => formatRideShortDate(props.ride.startsAt))
           class="pointer-events-none absolute bottom-20 left-1/2 z-10 -translate-x-1/2 rounded-full bg-ink/90 px-3 py-1 text-xs font-semibold whitespace-nowrap text-canvas"
           role="status"
         >
-          <IconStar :filled="saved" class="me-1 inline-block size-3.5" :class="saved ? 'text-star' : 'text-canvas'" />
+          <IconStar
+            :filled="saved"
+            class="me-1 inline-block size-3.5"
+            :class="saved ? 'text-star' : 'text-canvas'"
+          />
           {{ toastMessage }}
         </p>
       </Transition>

@@ -77,7 +77,7 @@ describe('RideFilters', () => {
   it('emits the level, bike, audience and sort selections', async () => {
     const wrapper = mountFilters()
 
-    await chooseOption(wrapper, 0, 'Intermedio')
+    await chooseOption(wrapper, 0, 'Moderado')
     await chooseOption(wrapper, 1, 'Gravel')
     await chooseOption(wrapper, 2, 'LGBT')
     await chooseOption(wrapper, 3, 'Distancia')
@@ -97,7 +97,7 @@ describe('RideFilters', () => {
     const checked = items.filter((item) => item.attributes('aria-checked') === 'true')
 
     expect(checked).toHaveLength(1)
-    expect(checked[0]!.text()).toContain('Intermedio')
+    expect(checked[0]!.text()).toContain('Moderado')
   })
 
   it('preselects the values received through the models', () => {
@@ -113,12 +113,12 @@ describe('RideFilters', () => {
 
     const triggers = wrapper.findAll('button[aria-haspopup="menu"]')
     expect(triggers.map((trigger) => trigger.text())).toEqual([
-      'Intermedio',
+      'Moderado',
       'Gravel',
       'Mujeres',
       'Desnivel',
     ])
-    expect(triggers[0]!.attributes('aria-label')).toBe('Nivel: Intermedio')
+    expect(triggers[0]!.attributes('aria-label')).toBe('Nivel: Moderado')
   })
 
   it('folds the controls behind the mobile toggle and expands them on demand', async () => {

@@ -26,8 +26,11 @@ import { useAuthStore } from '@/features/auth/stores/authStore'
 import RideMap from '@/features/rides/components/RideMap.vue'
 import RideAudienceBadge from '@/features/rides/components/RideAudienceBadge.vue'
 import { useRideDetail } from '@/features/rides/composables/useRideDetail'
-import { RIDE_LEVEL_BADGE_COLORS } from '@/features/rides/constants/rideLevels'
-import { RIDE_BIKE_TYPE_LABELS, RIDE_ROUTE_TYPE_LABELS } from '@/features/rides/constants/rideOptions'
+import { RIDE_LEVEL_BADGE_COLORS, RIDE_LEVEL_LABELS } from '@/features/rides/constants/rideLevels'
+import {
+  RIDE_BIKE_TYPE_LABELS,
+  RIDE_ROUTE_TYPE_LABELS,
+} from '@/features/rides/constants/rideOptions'
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 import type { RideRouteType } from '@/features/rides/types'
 
@@ -95,9 +98,7 @@ async function confirmDeleteRide(): Promise<void> {
     await deleteRide(ride.value.id)
     await router.push({ name: 'rides' })
   } catch (error: unknown) {
-    setActionStatus(
-      error instanceof Error ? error.message : 'No se ha podido eliminar la ruta.',
-    )
+    setActionStatus(error instanceof Error ? error.message : 'No se ha podido eliminar la ruta.')
   }
 }
 
@@ -286,7 +287,7 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
         <div class="flex flex-wrap items-start justify-between gap-x-6 gap-y-2">
           <div class="flex flex-wrap items-center gap-2">
             <Badge variant="muted" :color="RIDE_LEVEL_BADGE_COLORS[ride.level]" dot>
-              {{ ride.level }}
+              {{ RIDE_LEVEL_LABELS[ride.level] }}
             </Badge>
 
             <Badge variant="muted" color="trail">

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { RIDE_LEVELS } from './rideLevels'
+import { RIDE_LEVELS, RIDE_LEVEL_LABELS } from './rideLevels'
 import {
   RIDE_AUDIENCE_FILTER_OPTIONS,
   RIDE_BIKE_FILTER_OPTIONS,
@@ -7,7 +7,12 @@ import {
   RIDE_LEVEL_FILTER_OPTIONS,
   RIDE_SORT_OPTIONS,
 } from './rideFilters'
-import { RIDE_AUDIENCES, RIDE_AUDIENCE_LABELS, RIDE_BIKE_TYPES, RIDE_BIKE_TYPE_LABELS } from './rideOptions'
+import {
+  RIDE_AUDIENCES,
+  RIDE_AUDIENCE_LABELS,
+  RIDE_BIKE_TYPES,
+  RIDE_BIKE_TYPE_LABELS,
+} from './rideOptions'
 
 describe('rideFilters', () => {
   it('starts every filter list with the sentinel option', () => {
@@ -29,13 +34,13 @@ describe('rideFilters', () => {
     })
   })
 
-  it('offers one level option per domain level, labelled with the level itself', () => {
+  it('offers one level option per domain level, labelled with its visible name', () => {
     expect(RIDE_LEVEL_FILTER_OPTIONS).toHaveLength(RIDE_LEVELS.length + 1)
     expect(RIDE_LEVEL_FILTER_OPTIONS.slice(1).map((option) => option.value)).toEqual([
       ...RIDE_LEVELS,
     ])
     expect(RIDE_LEVEL_FILTER_OPTIONS.slice(1).map((option) => option.label)).toEqual([
-      ...RIDE_LEVELS,
+      ...RIDE_LEVELS.map((level) => RIDE_LEVEL_LABELS[level]),
     ])
   })
 
