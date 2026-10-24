@@ -30,6 +30,7 @@ const logoutError = ref('')
 const isMenuOpen = ref(false)
 const menuId = 'primary-mobile-nav'
 const menuButton = ref<HTMLButtonElement | null>(null)
+const headerElement = ref<HTMLElement | null>(null)
 
 const isOverlay = computed(() => route.meta.overlayHeader === true)
 
@@ -131,13 +132,25 @@ function handleKeydown(event: KeyboardEvent): void {
   menuButton.value?.focus()
 }
 
+// Un clic fuera del header cierra el panel móvil; dentro (p. ej. el propio
+// botón hamburguesa) lo gestiona toggleMenu.
+function handleDocumentClick(event: MouseEvent): void {
+  const target = event.target
+  if (!(target instanceof Node)) return
+  if (headerElement.value?.contains(target) !== false) return
+
+  isMenuOpen.value = false
+}
+
 watch(isMenuOpen, (isOpen) => {
   if (isOpen) {
     document.addEventListener('keydown', handleKeydown)
+    document.addEventListener('click', handleDocumentClick)
     return
   }
 
   document.removeEventListener('keydown', handleKeydown)
+  document.removeEventListener('click', handleDocumentClick)
 })
 
 // Navegar desde el menú lo cierra, sin repetir el cierre en cada enlace.
@@ -150,11 +163,12 @@ watch(
 
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', handleKeydown)
+  document.removeEventListener('click', handleDocumentClick)
 })
 </script>
 
 <template>
-  <header :class="headerClasses">
+  <header ref="headerElement" :class="headerClasses">
     <div
       class="mx-auto flex max-w-7xl items-center justify-between gap-x-3 px-4 py-1.5 sm:gap-x-4 sm:px-6 sm:py-3 lg:px-8"
     >
