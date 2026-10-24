@@ -416,69 +416,72 @@ function handleDuplicate(): void {
         {{ summaryError }}
       </Alert>
 
-      <div>
-        <Checkbox
-          id="acceptedRules"
-          v-model="acceptedRules"
-          :aria-describedby="rulesError ? 'accepted-rules-error' : undefined"
-          :aria-invalid="Boolean(rulesError)"
-          size="xs"
-          >He leído y acepto las
-          <button
-            type="button"
-            class="text-graphite underline underline-offset-2 transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
-            @click.stop.prevent="showRulesDialog = true"
+      <!-- Consentimiento y acciones comparten fila en sm+: el checkbox queda a la altura del botón. -->
+      <div class="grid grid-cols-1 items-center gap-3 sm:grid-cols-2 sm:gap-4">
+        <div>
+          <Checkbox
+            id="acceptedRules"
+            v-model="acceptedRules"
+            :aria-describedby="rulesError ? 'accepted-rules-error' : undefined"
+            :aria-invalid="Boolean(rulesError)"
+            size="xs"
+            >He leído y acepto las
+            <button
+              type="button"
+              class="text-graphite underline underline-offset-2 transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+              @click.stop.prevent="showRulesDialog = true"
+            >
+              normas de la comunidad
+            </button>
+            y la
+            <button
+              type="button"
+              class="text-graphite underline underline-offset-2 transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+              @click.stop.prevent="showPrivacyDialog = true"
+            >
+              política de privacidad
+            </button></Checkbox
           >
-            normas de la comunidad
-          </button>
-          y la
-          <button
-            type="button"
-            class="text-graphite underline underline-offset-2 transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
-            @click.stop.prevent="showPrivacyDialog = true"
+          <p
+            v-if="rulesError"
+            id="accepted-rules-error"
+            role="alert"
+            class="mt-2 pl-7 text-sm text-red-700"
           >
-            política de privacidad
-          </button></Checkbox
-        >
-        <p
-          v-if="rulesError"
-          id="accepted-rules-error"
-          role="alert"
-          class="mt-2 pl-7 text-sm text-red-700"
-        >
-          {{ rulesError }}
-        </p>
-      </div>
+            {{ rulesError }}
+          </p>
+        </div>
 
-      <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
-        <Button
-          type="submit"
-          :loading="isSubmitting"
-          :disabled="isSubmitting || !acceptedRules"
-          block
-          class="sm:w-auto"
-        >
-          {{
-            isSubmitting
-              ? isEditMode
-                ? 'Guardando…'
-                : 'Publicando…'
-              : isEditMode
-                ? 'Guardar cambios'
-                : 'Publicar ruta'
-          }}
-        </Button>
+        <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
+          <Button
+            type="submit"
+            :loading="isSubmitting"
+            :disabled="isSubmitting || !acceptedRules"
+            block
+            class="sm:w-auto"
+          >
+            {{
+              isSubmitting
+                ? isEditMode
+                  ? 'Guardando…'
+                  : 'Publicando…'
+                : isEditMode
+                  ? 'Guardar cambios'
+                  : 'Publicar ruta'
+            }}
+          </Button>
 
-        <Button
-          v-if="isEditMode"
-          type="button"
-          variant="outline"
-          :disabled="isSubmitting"
-          class="sm:w-auto"
-          @click="handleDuplicate"
-        >
-          Publicar como nueva
-        </Button>
+          <Button
+            v-if="isEditMode"
+            type="button"
+            variant="outline"
+            :disabled="isSubmitting"
+            class="sm:w-auto"
+            @click="handleDuplicate"
+          >
+            Publicar como nueva
+          </Button>
+        </div>
       </div>
     </div>
 

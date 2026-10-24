@@ -103,6 +103,15 @@ describe('RideForm', () => {
     expect(wrapper.get('#startsAt').attributes('step')).toBe('900')
   })
 
+  it('keeps the consent checkbox on the same grid row as the submit button', () => {
+    const wrapper = mountForm()
+
+    const row = wrapper.get('#acceptedRules').element.closest('.sm\\:grid-cols-2')
+
+    expect(row).not.toBeNull()
+    expect(row?.contains(wrapper.get('button[type="submit"]').element)).toBe(true)
+  })
+
   it('emits a valid submission with the current values and no image', async () => {
     const wrapper = mountForm()
 
