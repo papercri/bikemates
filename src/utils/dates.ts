@@ -57,15 +57,21 @@ export function formatRideShortDate(dateString: string): string {
 }
 
 /**
- * `true` cuando la fecha de salida ya ha pasado respecto a `now` (por defecto, el momento
- * actual). Las fechas inválidas se consideran futuras para no atenuar la tarjeta.
+ * `true` cuando la salida ya ha pasado respecto a `now` (por defecto, el momento
+ * actual). Una salida se considera pasada cuando termina su día calendario
+ * (medianoche local), no en cuanto arranca la hora de salida: así las tarjetas
+ * del listado siguen en «Próximas» durante el día del encuentro.
+ * Las fechas inválidas se consideran futuras para no atenuar la tarjeta.
  */
 export function isRidePast(dateString: string, now: Date = new Date()): boolean {
   const date = new Date(dateString)
 
   if (Number.isNaN(date.getTime())) return false
 
-  return date.getTime() <= now.getTime()
+  const endOfDay = new Date(date)
+  endOfDay.setHours(24, 0, 0, 0)
+
+  return endOfDay.getTime() <= now.getTime()
 }
 
 /**
