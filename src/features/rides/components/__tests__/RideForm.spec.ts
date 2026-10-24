@@ -112,6 +112,16 @@ describe('RideForm', () => {
     expect(row?.contains(wrapper.get('button[type="submit"]').element)).toBe(true)
   })
 
+  it('gives the description a taller textarea on mobile', () => {
+    const wrapper = mountForm()
+
+    // La clase llega al contenedor del editor enriquecido y estira su textarea.
+    const frame = wrapper.get('#description').element.parentElement
+
+    expect(frame?.className).toContain('[&_textarea]:min-h-40')
+    expect(frame?.className).toContain('sm:[&_textarea]:min-h-0')
+  })
+
   it('emits a valid submission with the current values and no image', async () => {
     const wrapper = mountForm()
 

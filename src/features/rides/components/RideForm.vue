@@ -209,6 +209,7 @@ function handleDuplicate(): void {
             placeholder="Describe el recorrido, el terreno y qué deben llevar los participantes..."
             :aria-invalid="Boolean(fieldErrors.description)"
             :aria-describedby="fieldErrors.description ? 'description-error' : undefined"
+            class="[&_textarea]:min-h-40 sm:[&_textarea]:min-h-0"
           />
           <FormError v-if="fieldErrors.description" id="description-error">
             {{ fieldErrors.description }}
