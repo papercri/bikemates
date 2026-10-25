@@ -3,6 +3,7 @@ import { defineComponent } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Ride, RideFormSubmission, RideFormValues } from '../types'
 import { useRideEditor } from './useRideEditor'
+import { MEETING_POINT_ERROR } from '../validators/rideFormValidator'
 
 const mocks = vi.hoisted(() => ({
   push: vi.fn<(location: unknown) => Promise<unknown>>(),
@@ -34,6 +35,7 @@ function rideOf(overrides: Partial<Ride> = {}): Ride {
     description: 'Recorrido sencillo por pista forestal.',
     startsAt: '2026-06-10T09:30:00.000Z',
     meetingPoint: 'Plaça de l’Església, Barcelona',
+    meetingPointDetails: null,
     latitude: 41.4,
     longitude: 2.17,
     bikeType: 'gravel',
@@ -60,6 +62,7 @@ function formValues(overrides: Partial<RideFormValues> = {}): RideFormValues {
     description: 'Recorrido sencillo por pista forestal.',
     startsAt: '2026-06-10T11:30',
     meetingPoint: 'Plaça de l’Església, Barcelona',
+    meetingPointDetails: '',
     latitude: 41.4,
     longitude: 2.17,
     bikeType: 'gravel',
@@ -217,7 +220,7 @@ describe('useRideEditor', () => {
       await wrapper.vm.saveRide(submission({ values: formValues({ longitude: null }) }))
 
       expect(mocks.updateRide).not.toHaveBeenCalled()
-      expect(wrapper.vm.errorMessage).toBe('Selecciona un punto de encuentro válido.')
+      expect(wrapper.vm.errorMessage).toBe(MEETING_POINT_ERROR)
     })
 
     it('ignores the save when the ride has not been loaded yet', async () => {

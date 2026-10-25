@@ -15,12 +15,7 @@ export interface TextEdit {
  * Envuelve la selección con un marcador por delante y por detrás. Sin selección
  * deja el cursor entre los dos marcadores para seguir escribiendo.
  */
-export function wrapInline(
-  value: string,
-  start: number,
-  end: number,
-  marker: string,
-): TextEdit {
+export function wrapInline(value: string, start: number, end: number, marker: string): TextEdit {
   const selected = value.slice(start, end)
   const inserted = `${marker}${selected}${marker}`
   const next = value.slice(0, start) + inserted + value.slice(end)
@@ -34,12 +29,7 @@ export function wrapInline(
 }
 
 /** Añade un prefijo al comienzo de cada línea tocada por la selección. */
-export function prefixLines(
-  value: string,
-  start: number,
-  end: number,
-  prefix: string,
-): TextEdit {
+export function prefixLines(value: string, start: number, end: number, prefix: string): TextEdit {
   const selected = value.slice(start, end)
 
   if (selected === '') {
@@ -57,12 +47,26 @@ export function prefixLines(
   return { value: next, selectionStart: start, selectionEnd: start + prefixed.length }
 }
 
+/** URL completa seleccionable como destino de enlace (sin espacios). */
+const URL_SELECTION = /^https?:\/\/\S+$/
+
 /**
- * Convierte la selección en un enlace marcado y deja seleccionada la URL para
- * sustituirla: `[texto](https://)`.
+ * Convierte la selección en un enlace marcado. Si la selección ya es la URL se
+ * usa como destino y no queda nada que completar: `[https://…](https://…)`.
+ * En el resto de casos se deja seleccionada la URL de relleno para sustituirla:
+ * `[texto](https://)`.
  */
 export function wrapLink(value: string, start: number, end: number): TextEdit {
   const selected = value.slice(start, end)
+  const trimmed = selected.trim()
+
+  if (URL_SELECTION.test(trimmed)) {
+    const linked = `[${trimmed}](${trimmed})`
+    const next = value.slice(0, start) + linked + value.slice(end)
+    const caret = start + linked.length
+    return { value: next, selectionStart: caret, selectionEnd: caret }
+  }
+
   const inserted = `[${selected}](${LINK_URL_PLACEHOLDER})`
   const next = value.slice(0, start) + inserted + value.slice(end)
 

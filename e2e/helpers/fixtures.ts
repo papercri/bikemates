@@ -16,6 +16,9 @@ async function installMock(page: Page): Promise<SupabaseMock> {
     return existing
   }
 
+  // El aviso de cookies tapa elementos fijos en móvil; lo damos por aceptado.
+  await page.addInitScript(() => localStorage.setItem('bm-cookie-consent', 'accepted'))
+
   const created = await mockSupabase(page)
   mocksByPage.set(page, created)
 

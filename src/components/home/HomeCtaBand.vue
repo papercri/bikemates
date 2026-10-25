@@ -62,11 +62,10 @@ defineProps<{
           id="cta-title"
           class="font-display text-3xl leading-[1.05] font-medium tracking-[-0.025em] text-ink sm:text-4xl"
         >
-          Encuentra tu próxima grupeta
+          ¿Te vienes a la próxima?
         </h2>
         <p class="mt-4 max-w-xl leading-7 text-graphite">
-          Regístrate, descubre las próximas salidas y únete a otros ciclistas para compartir nuevos
-          recorridos.
+          Crea tu cuenta, elige una salida y pedalea con ciclistas de tu zona.
         </p>
       </motion.div>
 

@@ -27,13 +27,14 @@ import FormSelect from '@/components/ui/FormSelect.vue'
 import Input from '@/components/ui/Input.vue'
 import RichTextarea from '@/components/ui/RichTextarea.vue'
 import Switch from '@/components/ui/Switch.vue'
+import Textarea from '@/components/ui/Textarea.vue'
 import {
   RIDE_AUDIENCES,
   RIDE_AUDIENCE_LABELS,
   RIDE_BIKE_TYPES,
   RIDE_BIKE_TYPE_LABELS,
 } from '@/features/rides/constants/rideOptions'
-import { RIDE_LEVELS } from '@/features/rides/constants/rideLevels'
+import { RIDE_LEVELS, RIDE_LEVEL_LABELS } from '@/features/rides/constants/rideLevels'
 
 const props = defineProps<{
   initialValues: RideFormValues
@@ -186,6 +187,7 @@ function handleDuplicate(): void {
             v-model="form.startsAt"
             name="startsAt"
             type="datetime-local"
+            step="900"
             required
             :aria-invalid="Boolean(fieldErrors.startsAt)"
             aria-describedby="startsAt-error"
@@ -208,6 +210,7 @@ function handleDuplicate(): void {
             placeholder="Describe el recorrido, el terreno y qué deben llevar los participantes..."
             :aria-invalid="Boolean(fieldErrors.description)"
             :aria-describedby="fieldErrors.description ? 'description-error' : undefined"
+            class="[&_textarea]:min-h-40 sm:[&_textarea]:min-h-0"
           />
           <FormError v-if="fieldErrors.description" id="description-error">
             {{ fieldErrors.description }}
@@ -232,6 +235,21 @@ function handleDuplicate(): void {
           <FormHelp v-else-if="form.meetingPoint">
             Punto seleccionado: {{ form.meetingPoint }}
           </FormHelp>
+
+          <div class="mt-3">
+            <FormLabel id="meetingPointDetails">Más detalles del punto de encuentro</FormLabel>
+            <Textarea
+              id="meetingPointDetails"
+              v-model="form.meetingPointDetails"
+              name="meetingPointDetails"
+              :rows="3"
+              placeholder="Ej.: junto a la fuente de la plaza, frente a la panadería…"
+              aria-describedby="meetingPointDetails-help"
+            />
+            <FormHelp id="meetingPointDetails-help">
+              Obligatorio solo si no has fijado el punto en el mapa.
+            </FormHelp>
+          </div>
         </div>
 
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
@@ -252,13 +270,12 @@ function handleDuplicate(): void {
           </div>
 
           <div>
-            <FormLabel id="elevationM">Desnivel positivo (m)</FormLabel>
+            <FormLabel id="elevationM">Desnivel positivo (m, opcional)</FormLabel>
             <Input
               id="elevationM"
               v-model="form.elevationM"
               name="elevationM"
               inputmode="numeric"
-              required
               :aria-invalid="Boolean(fieldErrors.elevationM)"
               aria-describedby="elevationM-error"
             />
@@ -321,7 +338,7 @@ function handleDuplicate(): void {
           <FormLabel id="level">Nivel</FormLabel>
           <FormSelect id="level" v-model="form.level" name="level" required>
             <option v-for="level in RIDE_LEVELS" :key="level" :value="level">
-              {{ level }}
+              {{ RIDE_LEVEL_LABELS[level] }}
             </option>
           </FormSelect>
         </div>
@@ -416,69 +433,72 @@ function handleDuplicate(): void {
         {{ summaryError }}
       </Alert>
 
-      <div>
-        <Checkbox
-          id="acceptedRules"
-          v-model="acceptedRules"
-          :aria-describedby="rulesError ? 'accepted-rules-error' : undefined"
-          :aria-invalid="Boolean(rulesError)"
-          size="xs"
-          >He leído y acepto las
-          <button
-            type="button"
-            class="text-graphite underline underline-offset-2 transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
-            @click.stop.prevent="showRulesDialog = true"
+      <!-- Consentimiento y acciones comparten fila en sm+: el checkbox queda a la altura del botón. -->
+      <div class="grid grid-cols-1 items-center gap-3 sm:grid-cols-2 sm:gap-4">
+        <div>
+          <Checkbox
+            id="acceptedRules"
+            v-model="acceptedRules"
+            :aria-describedby="rulesError ? 'accepted-rules-error' : undefined"
+            :aria-invalid="Boolean(rulesError)"
+            size="xs"
+            >He leído y acepto las
+            <button
+              type="button"
+              class="text-graphite underline underline-offset-2 transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+              @click.stop.prevent="showRulesDialog = true"
+            >
+              normas de la comunidad
+            </button>
+            y la
+            <button
+              type="button"
+              class="text-graphite underline underline-offset-2 transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+              @click.stop.prevent="showPrivacyDialog = true"
+            >
+              política de privacidad
+            </button></Checkbox
           >
-            normas de la comunidad
-          </button>
-          y la
-          <button
-            type="button"
-            class="text-graphite underline underline-offset-2 transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
-            @click.stop.prevent="showPrivacyDialog = true"
+          <p
+            v-if="rulesError"
+            id="accepted-rules-error"
+            role="alert"
+            class="mt-2 pl-7 text-sm text-red-700"
           >
-            política de privacidad
-          </button></Checkbox
-        >
-        <p
-          v-if="rulesError"
-          id="accepted-rules-error"
-          role="alert"
-          class="mt-2 pl-7 text-sm text-red-700"
-        >
-          {{ rulesError }}
-        </p>
-      </div>
+            {{ rulesError }}
+          </p>
+        </div>
 
-      <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
-        <Button
-          type="submit"
-          :loading="isSubmitting"
-          :disabled="isSubmitting || !acceptedRules"
-          block
-          class="sm:w-auto"
-        >
-          {{
-            isSubmitting
-              ? isEditMode
-                ? 'Guardando…'
-                : 'Publicando…'
-              : isEditMode
-                ? 'Guardar cambios'
-                : 'Publicar ruta'
-          }}
-        </Button>
+        <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
+          <Button
+            type="submit"
+            :loading="isSubmitting"
+            :disabled="isSubmitting || !acceptedRules"
+            block
+            class="sm:w-auto"
+          >
+            {{
+              isSubmitting
+                ? isEditMode
+                  ? 'Guardando…'
+                  : 'Publicando…'
+                : isEditMode
+                  ? 'Guardar cambios'
+                  : 'Publicar ruta'
+            }}
+          </Button>
 
-        <Button
-          v-if="isEditMode"
-          type="button"
-          variant="outline"
-          :disabled="isSubmitting"
-          class="sm:w-auto"
-          @click="handleDuplicate"
-        >
-          Publicar como nueva
-        </Button>
+          <Button
+            v-if="isEditMode"
+            type="button"
+            variant="outline"
+            :disabled="isSubmitting"
+            class="sm:w-auto"
+            @click="handleDuplicate"
+          >
+            Publicar como nueva
+          </Button>
+        </div>
       </div>
     </div>
 

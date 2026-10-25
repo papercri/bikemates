@@ -30,6 +30,7 @@ const ride = {
   description: 'Recorrido sencillo por pista forestal.',
   startsAt: '2027-06-10T09:30:00.000Z',
   meetingPoint: 'Plaça de l’Església, Barcelona',
+  meetingPointDetails: null,
   latitude: 41.4,
   longitude: 2.17,
   bikeType: 'gravel',

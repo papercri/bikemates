@@ -21,6 +21,14 @@ export const STRANGER: E2eSeedUser = {
   password: 'pedaleando123',
 }
 
+/** Cuenta administradora: su perfil tiene rol `admin` (permisos ampliados). */
+export const ADMIN: E2eSeedUser = {
+  id: 'user-9',
+  email: 'admin@example.com',
+  displayName: 'Admin',
+  password: 'pedaleando123',
+}
+
 /** Fecha futura fija: evita que los tests caduquen con el tiempo. */
 function futureDate(daysFromNow: number): string {
   const date = new Date(Date.now() + daysFromNow * 24 * 60 * 60 * 1000)
@@ -36,6 +44,7 @@ export function makeRide(overrides: Partial<DbRide> = {}): DbRide {
       'Recorrido sencillo por pista forestal con parada de café. Trae agua y cámara antipinchazos.',
     starts_at: futureDate(7),
     meeting_point: 'Plaça de l’Església, Barcelona',
+    meeting_point_details: null,
     latitude: 41.4036,
     longitude: 2.1744,
     bike_type: 'gravel',

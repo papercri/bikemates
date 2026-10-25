@@ -85,6 +85,32 @@ describe('AppHeader', () => {
     expect(document.activeElement).toBe(button.element)
   })
 
+  it('closes the menu when clicking outside the header', async () => {
+    const { wrapper } = await mountHeader()
+    const button = menuButton(wrapper)
+
+    await button.trigger('click')
+    expect(button.attributes('aria-expanded')).toBe('true')
+
+    document.body.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    await flushPromises()
+
+    expect(button.attributes('aria-expanded')).toBe('false')
+    expect(wrapper.get('#primary-mobile-nav').isVisible()).toBe(false)
+  })
+
+  it('keeps the menu open when clicking inside the panel', async () => {
+    const { wrapper } = await mountHeader()
+    const button = menuButton(wrapper)
+
+    await button.trigger('click')
+    await wrapper.get('#primary-mobile-nav').trigger('click')
+    await flushPromises()
+
+    expect(button.attributes('aria-expanded')).toBe('true')
+    expect(wrapper.get('#primary-mobile-nav').isVisible()).toBe(true)
+  })
+
   it('closes the menu when the route changes', async () => {
     const { wrapper, router } = await mountHeader()
     const button = menuButton(wrapper)
@@ -180,7 +206,7 @@ describe('AppHeader', () => {
     // El cierre de sesión comparte estilo con los enlaces del panel: sin filete.
     const logout = panel.findAll('button').find((button) => button.text().includes('Cerrar sesión'))
     expect(logout).toBeDefined()
-    expect(logout!.classes()).toContain('text-xs')
+    expect(logout!.classes()).toContain('text-sm')
     expect(logout!.classes()).toContain('font-bold')
     expect(logout!.classes()).not.toContain('border-line-strong')
     expect(logout!.classes()).not.toContain('bg-white')

@@ -1,6 +1,6 @@
 export type RideLevel = 'Iniciación' | 'Intermedio' | 'Avanzado'
 
-export type BikeType = 'road' | 'mtb' | 'gravel' | 'urban' | 'other'
+export type BikeType = 'all' | 'road' | 'mtb' | 'gravel' | 'urban' | 'other'
 
 export type RideAudience = 'everyone' | 'women' | 'men' | 'lgbt'
 
@@ -15,8 +15,9 @@ export interface Ride {
   description: string
   startsAt: string
   meetingPoint: string
-  latitude: number
-  longitude: number
+  meetingPointDetails: string | null
+  latitude: number | null
+  longitude: number | null
   bikeType: BikeType
   level: RideLevel
   distanceKm: number
@@ -38,8 +39,9 @@ export interface CreateRideInput {
   description: string
   startsAt: string
   meetingPoint: string
-  latitude: number
-  longitude: number
+  meetingPointDetails: string | null
+  latitude: number | null
+  longitude: number | null
   bikeType: BikeType
   level: RideLevel
   distanceKm: number
@@ -57,6 +59,7 @@ export interface RideFormValues {
   description: string
   startsAt: string
   meetingPoint: string
+  meetingPointDetails: string
   latitude: number | null
   longitude: number | null
   bikeType: BikeType

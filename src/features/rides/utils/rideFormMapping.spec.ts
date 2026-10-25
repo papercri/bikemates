@@ -11,6 +11,7 @@ function rideOf(overrides: Partial<Ride> = {}): Ride {
     description: 'Recorrido sencillo por pista forestal.',
     startsAt: '2026-06-10T09:30:00.000Z',
     meetingPoint: 'Plaça de l’Església, Barcelona',
+    meetingPointDetails: null,
     latitude: 41.4,
     longitude: 2.17,
     bikeType: 'gravel',
@@ -37,6 +38,7 @@ function validFormValues(overrides: Partial<RideFormValues> = {}): RideFormValue
     description: '  Recorrido sencillo por pista forestal.  ',
     startsAt: '2026-06-10T11:30',
     meetingPoint: '  Plaça de l’Església, Barcelona  ',
+    meetingPointDetails: 'Junto a la fuente de la plaza.',
     latitude: 41.4,
     longitude: 2.17,
     bikeType: 'gravel',
@@ -59,12 +61,13 @@ describe('createEmptyRideFormValues', () => {
       description: '',
       startsAt: '',
       meetingPoint: '',
+      meetingPointDetails: '',
       latitude: null,
       longitude: null,
-      bikeType: 'road',
+      bikeType: 'all',
       level: 'Iniciación',
       distanceKm: '',
-      elevationM: '',
+      elevationM: '0',
       durationMinutes: '',
       wikilocUrl: '',
       audience: 'everyone',
@@ -90,6 +93,7 @@ describe('mapRideToFormValues', () => {
       description: 'Recorrido sencillo por pista forestal.',
       startsAt: toLocalDateTime('2026-06-10T09:30:00.000Z'),
       meetingPoint: 'Plaça de l’Església, Barcelona',
+      meetingPointDetails: '',
       latitude: 41.4,
       longitude: 2.17,
       bikeType: 'gravel',
@@ -125,6 +129,7 @@ describe('buildRideInput', () => {
       description: 'Recorrido sencillo por pista forestal.',
       startsAt: new Date('2026-06-10T11:30').toISOString(),
       meetingPoint: 'Plaça de l’Església, Barcelona',
+      meetingPointDetails: 'Junto a la fuente de la plaza.',
       latitude: 41.4,
       longitude: 2.17,
       bikeType: 'gravel',
@@ -146,9 +151,40 @@ describe('buildRideInput', () => {
     expect(input?.routeType).toBe('round_trip')
   })
 
-  it('returns null when the meeting point has no coordinates', () => {
-    expect(buildRideInput(validFormValues({ latitude: null }), null)).toBeNull()
-    expect(buildRideInput(validFormValues({ longitude: null }), null)).toBeNull()
+  it('returns null when there is neither a map point nor meeting point details', () => {
+    const noDetails = { meetingPointDetails: '   ' }
+
+    expect(buildRideInput(validFormValues({ latitude: null, ...noDetails }), null)).toBeNull()
+    expect(buildRideInput(validFormValues({ longitude: null, ...noDetails }), null)).toBeNull()
+    expect(
+      buildRideInput(
+        validFormValues({ latitude: null, longitude: null, meetingPointDetails: '' }),
+        null,
+      ),
+    ).toBeNull()
+  })
+
+  it('builds a payload with null coordinates when only the details are filled', () => {
+    const input = buildRideInput(
+      validFormValues({ latitude: null, longitude: null, meetingPointDetails: '  Fuente.  ' }),
+      null,
+    )
+
+    expect(input).not.toBeNull()
+    expect(input?.latitude).toBeNull()
+    expect(input?.longitude).toBeNull()
+    expect(input?.meetingPointDetails).toBe('Fuente.')
+  })
+
+  it('trims the meeting point details and turns empty text into null', () => {
+    const withDetails = buildRideInput(
+      validFormValues({ meetingPointDetails: '  Fuente.  ' }),
+      null,
+    )
+    const withoutDetails = buildRideInput(validFormValues({ meetingPointDetails: '   ' }), null)
+
+    expect(withDetails?.meetingPointDetails).toBe('Fuente.')
+    expect(withoutDetails?.meetingPointDetails).toBeNull()
   })
 
   it('maps an empty wikiloc url and participant limit to null', () => {

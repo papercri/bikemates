@@ -49,6 +49,24 @@ describe('parseInline', () => {
     ])
   })
 
+  it('repairs an empty https:// target using the URL written as the label', () => {
+    const url = 'https://ca.wikiloc.com/rutas-gravel-bike/granollers-152285859'
+
+    expect(parseInline(`[${url}](https://)`)).toEqual([
+      {
+        type: 'link',
+        href: url,
+        content: [{ type: 'text', value: url }],
+      },
+    ])
+  })
+
+  it('shows links with no usable destination as literal text', () => {
+    expect(parseInline('[más info](https://)')).toEqual([
+      { type: 'text', value: '[más info](https://)' },
+    ])
+  })
+
   it('leaves unmatched markers untouched', () => {
     expect(parseInline('un **cierre que falta')).toEqual([
       { type: 'text', value: 'un **cierre que falta' },
@@ -86,7 +104,15 @@ describe('parseMarkdown', () => {
 
     expect(blocks[0]).toEqual({
       type: 'ul',
-      items: [{ type: 'li', content: [{ type: 'strong', content: [{ type: 'text', value: 'casco' }] }, { type: 'text', value: ' siempre' }] }],
+      items: [
+        {
+          type: 'li',
+          content: [
+            { type: 'strong', content: [{ type: 'text', value: 'casco' }] },
+            { type: 'text', value: ' siempre' },
+          ],
+        },
+      ],
     })
   })
 })

@@ -26,8 +26,11 @@ import { useAuthStore } from '@/features/auth/stores/authStore'
 import RideMap from '@/features/rides/components/RideMap.vue'
 import RideAudienceBadge from '@/features/rides/components/RideAudienceBadge.vue'
 import { useRideDetail } from '@/features/rides/composables/useRideDetail'
-import { RIDE_LEVEL_BADGE_COLORS } from '@/features/rides/constants/rideLevels'
-import { RIDE_BIKE_TYPE_LABELS, RIDE_ROUTE_TYPE_LABELS } from '@/features/rides/constants/rideOptions'
+import { RIDE_LEVEL_BADGE_COLORS, RIDE_LEVEL_LABELS } from '@/features/rides/constants/rideLevels'
+import {
+  RIDE_BIKE_TYPE_LABELS,
+  RIDE_ROUTE_TYPE_LABELS,
+} from '@/features/rides/constants/rideOptions'
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 import type { RideRouteType } from '@/features/rides/types'
 
@@ -95,9 +98,7 @@ async function confirmDeleteRide(): Promise<void> {
     await deleteRide(ride.value.id)
     await router.push({ name: 'rides' })
   } catch (error: unknown) {
-    setActionStatus(
-      error instanceof Error ? error.message : 'No se ha podido eliminar la ruta.',
-    )
+    setActionStatus(error instanceof Error ? error.message : 'No se ha podido eliminar la ruta.')
   }
 }
 
@@ -110,11 +111,14 @@ const durationHours = computed(() => (ride.value ? Math.floor(ride.value.duratio
 const durationMinutesRemainder = computed(() => (ride.value ? ride.value.durationMinutes % 60 : 0))
 
 // Enlace directo a Google Maps por coordenadas, sin API key.
-const googleMapsUrl = computed(() =>
-  ride.value
-    ? `https://www.google.com/maps?q=${ride.value.latitude},${ride.value.longitude}`
-    : null,
-)
+// Las rutas sin punto fijado en el mapa (solo detalles) no lo ofrecen.
+const googleMapsUrl = computed(() => {
+  const current = ride.value
+
+  if (current === null || current.latitude === null || current.longitude === null) return null
+
+  return `https://www.google.com/maps?q=${current.latitude},${current.longitude}`
+})
 
 const descriptionWords = computed(() =>
   (ride.value?.description ?? '').trim().split(/\s+/).filter(Boolean),
@@ -198,7 +202,9 @@ useHead(
     if (current === null) return {}
 
     const url = rideUrl.value
-    const image = current.imageUrl
+    // Sin foto propia se usa la imagen del sitio: el scraper nunca debe ver
+    // una salida sin og:image.
+    const image = current.imageUrl ?? `${window.location.origin}/photos/grupeta-camino.webp`
 
     return {
       title: `${current.title} | BikeMates`,
@@ -210,12 +216,13 @@ useHead(
         { property: 'og:description', content: rideSocialDescription.value },
         { property: 'og:site_name', content: 'BikeMates' },
         ...(url !== null ? [{ property: 'og:url', content: url }] : []),
-        ...(image !== null ? [{ property: 'og:image', content: image }] : []),
-        // Twitter/X: sin imagen propia de la app se usa la de la salida.
-        { name: 'twitter:card', content: image !== null ? 'summary_large_image' : 'summary' },
+        { property: 'og:image', content: image },
+        // Twitter/X
+        { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:title', content: current.title },
         { name: 'twitter:description', content: rideSocialDescription.value },
-        ...(image !== null ? [{ name: 'twitter:image', content: image }] : []),
+        ...(url !== null ? [{ name: 'twitter:url', content: url }] : []),
+        { name: 'twitter:image', content: image },
       ],
       link: url !== null ? [{ rel: 'canonical', href: url }] : [],
     }
@@ -286,7 +293,7 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
         <div class="flex flex-wrap items-start justify-between gap-x-6 gap-y-2">
           <div class="flex flex-wrap items-center gap-2">
             <Badge variant="muted" :color="RIDE_LEVEL_BADGE_COLORS[ride.level]" dot>
-              {{ ride.level }}
+              {{ RIDE_LEVEL_LABELS[ride.level] }}
             </Badge>
 
             <Badge variant="muted" color="trail">
@@ -440,6 +447,7 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
 
             <Card>
               <RideMap
+                v-if="ride.latitude !== null && ride.longitude !== null"
                 compact
                 :latitude="ride.latitude"
                 :longitude="ride.longitude"
@@ -447,8 +455,17 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
               />
 
               <div class="flex flex-col gap-2 p-3">
-                <Typography as="h3" variant="body-sm" class="font-semibold">
+                <Typography
+                  v-if="ride.meetingPoint"
+                  as="h3"
+                  variant="body-sm"
+                  class="font-semibold"
+                >
                   {{ ride.meetingPoint }}
+                </Typography>
+
+                <Typography v-if="ride.meetingPointDetails" as="p" variant="body-sm" tone="muted">
+                  {{ ride.meetingPointDetails }}
                 </Typography>
 
                 <a
@@ -520,7 +537,7 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
       <div
         class="mt-8 flex flex-col items-center gap-3 border-t border-line pt-6 sm:flex-row sm:justify-center"
       >
-        <Button v-if="isOrganizer" :to="{ name: 'ride-edit', params: { id: ride.id } }">
+        <Button v-if="isOrganizer || isAdmin" :to="{ name: 'ride-edit', params: { id: ride.id } }">
           <FontAwesomeIcon :icon="faPen" aria-hidden="true" class="size-3.5" />
           Editar ruta
         </Button>

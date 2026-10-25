@@ -25,6 +25,7 @@ function validValues(overrides: Partial<RideFormValues> = {}): RideFormValues {
     description: 'Recorrido sencillo por pista forestal con parada de café.',
     startsAt: futureDate(),
     meetingPoint: 'Plaça de l’Església, Barcelona',
+    meetingPointDetails: '',
     latitude: 41.4,
     longitude: 2.17,
     bikeType: 'gravel',
@@ -95,6 +96,31 @@ describe('RideForm', () => {
     expect(fieldValue(wrapper, '#bikeType')).toBe('gravel')
     expect(fieldValue(wrapper, '#level')).toBe('Intermedio')
     expect(fieldValue(wrapper, '#audience')).toBe('everyone')
+  })
+
+  it('offers the departure time in 15-minute steps', () => {
+    const wrapper = mountForm()
+
+    expect(wrapper.get('#startsAt').attributes('step')).toBe('900')
+  })
+
+  it('keeps the consent checkbox on the same grid row as the submit button', () => {
+    const wrapper = mountForm()
+
+    const row = wrapper.get('#acceptedRules').element.closest('.sm\\:grid-cols-2')
+
+    expect(row).not.toBeNull()
+    expect(row?.contains(wrapper.get('button[type="submit"]').element)).toBe(true)
+  })
+
+  it('gives the description a taller textarea on mobile', () => {
+    const wrapper = mountForm()
+
+    // La clase llega al contenedor del editor enriquecido y estira su textarea.
+    const frame = wrapper.get('#description').element.parentElement
+
+    expect(frame?.className).toContain('[&_textarea]:min-h-40')
+    expect(frame?.className).toContain('sm:[&_textarea]:min-h-0')
   })
 
   it('emits a valid submission with the current values and no image', async () => {
@@ -251,8 +277,29 @@ describe('RideForm', () => {
 
     expect(wrapper.emitted('submit')).toBeUndefined()
     expect(wrapper.get('[role="alert"]').text()).toBe(
-      'Busca y selecciona un punto de encuentro válido.',
+      'Selecciona un punto de encuentro en el mapa o describe cómo llegar.',
     )
+  })
+
+  it('submits meeting point details when the map point is cleared', async () => {
+    const wrapper = mountForm({
+      initialValues: validValues({
+        latitude: null,
+        longitude: null,
+        meetingPointDetails: 'Junto a la fuente de la plaza.',
+      }),
+    })
+
+    await wrapper.getComponent(MeetingPointPicker).vm.$emit('select', null)
+    await acceptRules(wrapper)
+    await wrapper.get('form').trigger('submit')
+
+    const payload = wrapper.emitted('submit')?.[0]?.[0] as { values: RideFormValues }
+    expect(payload.values).toMatchObject({
+      latitude: null,
+      longitude: null,
+      meetingPointDetails: 'Junto a la fuente de la plaza.',
+    })
   })
 
   it('counts the description characters as they grow', async () => {

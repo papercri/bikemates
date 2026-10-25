@@ -168,8 +168,7 @@ src/
   utils/                # pure helpers (dates, search normalization…)
   views/                # public/ and private/ pages
 e2e/                    # Playwright suite with a Supabase mock
-backup/db.md            # documented schema and RLS policies
-docs/log.md             # dated change log
+
 ```
 
 Separation of concerns: views orchestrate, components present, services access data, and UI

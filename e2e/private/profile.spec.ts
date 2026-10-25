@@ -117,7 +117,7 @@ test.describe('profile', () => {
 
     await expect(page).toHaveURL('/')
     // Tras volver al inicio, el usuario ya no tiene sesión activa.
-    await expect(page.getByRole('heading', { level: 1 })).toContainText('Encuentra tu grupeta.')
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Sal en grupo.')
   })
 
   test('cancels the account deletion', async ({ page, supabase }) => {

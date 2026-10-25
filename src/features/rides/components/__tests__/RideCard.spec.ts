@@ -14,6 +14,7 @@ function rideOf(overrides: Partial<Ride> = {}): Ride {
     description: 'Recorrido sencillo por pista forestal.',
     startsAt: departure.toISOString(),
     meetingPoint: 'Plaça de l’Església, Barcelona',
+    meetingPointDetails: null,
     latitude: 41.4,
     longitude: 2.17,
     bikeType: 'gravel',
@@ -74,7 +75,7 @@ describe('RideCard', () => {
   it('shows the level, bike type and audience badges', () => {
     const wrapper = mountCard(rideOf({ level: 'Avanzado', bikeType: 'mtb', audience: 'women' }))
 
-    expect(wrapper.text()).toContain('Avanzado')
+    expect(wrapper.text()).toContain('Difícil')
     expect(wrapper.text()).toContain('MTB')
     expect(wrapper.text()).toContain('Mujeres')
   })

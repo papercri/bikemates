@@ -3,6 +3,7 @@ import { useRouter } from 'vue-router'
 import { deleteRideImage, uploadRideImage } from '../services/rideImageService'
 import { createRide } from '../services/rideService'
 import { buildRideInput } from '../utils/rideFormMapping'
+import { MEETING_POINT_ERROR } from '../validators/rideFormValidator'
 import type { CreateRideInput, RideFormSubmission } from '../types'
 
 /**
@@ -25,7 +26,7 @@ export function useRideCreator() {
     const rideInput = buildRideInput(payload.values, null)
 
     if (!rideInput) {
-      errorMessage.value = 'Selecciona un punto de encuentro válido.'
+      errorMessage.value = MEETING_POINT_ERROR
       return
     }
 

@@ -97,10 +97,16 @@ function validateDescription(value: string): string | null {
     : null
 }
 
+/** Error compartido cuando falta el punto de encuentro (mapa o detalles). */
+export const MEETING_POINT_ERROR =
+  'Selecciona un punto de encuentro en el mapa o describe cómo llegar.'
+
 function validateMeetingPoint(values: RideFormValues): string | null {
   const { latitude, longitude } = values
 
-  const hasPlace = values.meetingPoint.trim().length > 0
+  // Basta con cualquiera de las dos formas de indicar el punto: el lugar
+  // elegido en el mapa (con coordenadas) o los detalles escritos a mano.
+  const hasDetails = values.meetingPointDetails.trim().length > 0
   const hasCoordinates =
     latitude !== null &&
     longitude !== null &&
@@ -111,7 +117,7 @@ function validateMeetingPoint(values: RideFormValues): string | null {
     longitude >= -180 &&
     longitude <= 180
 
-  return hasPlace && hasCoordinates ? null : 'Busca y selecciona un punto de encuentro válido.'
+  return hasCoordinates || hasDetails ? null : MEETING_POINT_ERROR
 }
 
 function validateStartsAt(value: string): string | null {
@@ -136,8 +142,9 @@ function validateDistanceKm(value: string): string | null {
 }
 
 function validateElevationM(value: string): string | null {
+  // Campo opcional: en vacío se persiste como 0 m de desnivel.
   if (!value.trim()) {
-    return 'Introduce el desnivel positivo.'
+    return null
   }
 
   const elevationM = Number(value)

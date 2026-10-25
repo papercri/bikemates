@@ -93,6 +93,7 @@ function rideRow(overrides: Partial<Record<string, unknown>> = {}): Record<strin
     description: 'Recorrido sencillo por pista forestal.',
     starts_at: '2026-06-10T09:30:00.000Z',
     meeting_point: 'Plaça de l’Església, Barcelona',
+    meeting_point_details: null,
     latitude: 41.4,
     longitude: 2.17,
     bike_type: 'gravel',
@@ -118,6 +119,7 @@ function createInput(overrides: Partial<CreateRideInput> = {}): CreateRideInput 
     description: 'Recorrido sencillo por pista forestal.',
     startsAt: '2026-06-10T09:30:00.000Z',
     meetingPoint: 'Plaça de l’Església, Barcelona',
+    meetingPointDetails: null,
     latitude: 41.4,
     longitude: 2.17,
     bikeType: 'gravel',
@@ -141,6 +143,14 @@ function authenticatedAs(id = 'user-1'): void {
 
 function anonymous(): void {
   mocks.getUser.mockResolvedValue({ data: { user: null }, error: null })
+}
+
+/** Reparte las consultas: el rol sale de `profiles` y las rutas de su cadena. */
+function mockRole(role: 'admin' | 'user'): QueryChain {
+  const profiles = createQueryChain({ data: { role }, error: null })
+  const rides = createQueryChain({ data: rideRow(), error: null })
+  mocks.from.mockImplementation((table) => (table === 'profiles' ? profiles : rides))
+  return rides
 }
 
 describe('rideService', () => {
@@ -167,6 +177,7 @@ describe('rideService', () => {
         description: 'Recorrido sencillo por pista forestal.',
         starts_at: '2026-06-10T09:30:00.000Z',
         meeting_point: 'Plaça de l’Església, Barcelona',
+        meeting_point_details: null,
         latitude: 41.4,
         longitude: 2.17,
         bike_type: 'gravel',
@@ -226,7 +237,9 @@ describe('rideService', () => {
     it('wraps insertion errors with a user-facing message', async () => {
       mocks.from.mockReturnValue(createQueryChain({ data: null, error: { message: 'denied' } }))
 
-      await expect(createRide(createInput())).rejects.toThrow('No se ha podido crear la ruta. Inténtalo de nuevo.')
+      await expect(createRide(createInput())).rejects.toThrow(
+        'No se ha podido crear la ruta. Inténtalo de nuevo.',
+      )
     })
 
     it('rejects rows whose domain values fall outside the known unions', async () => {
@@ -259,7 +272,9 @@ describe('rideService', () => {
     it('wraps query errors with a user-facing message', async () => {
       mocks.from.mockReturnValue(createQueryChain({ data: null, error: { message: 'offline' } }))
 
-      await expect(getPublishedRides()).rejects.toThrow('No se han podido cargar las rutas. Inténtalo de nuevo.')
+      await expect(getPublishedRides()).rejects.toThrow(
+        'No se han podido cargar las rutas. Inténtalo de nuevo.',
+      )
     })
   })
 
@@ -279,7 +294,9 @@ describe('rideService', () => {
     it('wraps query errors with a user-facing message', async () => {
       mocks.from.mockReturnValue(createQueryChain({ data: null, error: { message: 'gone' } }))
 
-      await expect(getRideById('ride-1')).rejects.toThrow('No se ha podido cargar la ruta. Inténtalo de nuevo.')
+      await expect(getRideById('ride-1')).rejects.toThrow(
+        'No se ha podido cargar la ruta. Inténtalo de nuevo.',
+      )
     })
   })
 
@@ -293,6 +310,16 @@ describe('rideService', () => {
       expect(chain.eq).toHaveBeenCalledWith('id', 'ride-1')
       expect(chain.eq).toHaveBeenCalledWith('organizer_id', 'user-1')
       expect(chain.maybeSingle).toHaveBeenCalled()
+      expect(ride.organizerId).toBe('user-1')
+    })
+
+    it('lets the admin open any ride without the ownership filter', async () => {
+      const rides = mockRole('admin')
+
+      const ride = await getRideForEdit('ride-1')
+
+      expect(rides.eq).toHaveBeenCalledWith('id', 'ride-1')
+      expect(rides.eq).not.toHaveBeenCalledWith('organizer_id', 'user-1')
       expect(ride.organizerId).toBe('user-1')
     })
 
@@ -315,7 +342,9 @@ describe('rideService', () => {
     it('wraps query errors with a user-facing message', async () => {
       mocks.from.mockReturnValue(createQueryChain({ data: null, error: { message: 'denied' } }))
 
-      await expect(getRideForEdit('ride-1')).rejects.toThrow('No se ha podido cargar la ruta. Inténtalo de nuevo.')
+      await expect(getRideForEdit('ride-1')).rejects.toThrow(
+        'No se ha podido cargar la ruta. Inténtalo de nuevo.',
+      )
     })
   })
 
@@ -340,7 +369,9 @@ describe('rideService', () => {
     it('wraps query errors with a user-facing message', async () => {
       mocks.from.mockReturnValue(createQueryChain({ data: null, error: { message: 'offline' } }))
 
-      await expect(getMyRides()).rejects.toThrow('No se han podido cargar tus rutas. Inténtalo de nuevo.')
+      await expect(getMyRides()).rejects.toThrow(
+        'No se han podido cargar tus rutas. Inténtalo de nuevo.',
+      )
     })
   })
 
@@ -376,7 +407,9 @@ describe('rideService', () => {
     it('wraps query errors with a user-facing message', async () => {
       mocks.from.mockReturnValue(createQueryChain({ data: null, error: { message: 'denied' } }))
 
-      await expect(deleteRide('ride-1')).rejects.toThrow('No se ha podido eliminar la ruta. Inténtalo de nuevo.')
+      await expect(deleteRide('ride-1')).rejects.toThrow(
+        'No se ha podido eliminar la ruta. Inténtalo de nuevo.',
+      )
     })
   })
 
@@ -386,6 +419,7 @@ describe('rideService', () => {
       description: 'Recorrido sencillo por pista forestal.',
       startsAt: '2026-06-10T09:30:00.000Z',
       meetingPoint: 'Plaça de l’Església, Barcelona',
+      meetingPointDetails: null,
       latitude: 41.4,
       longitude: 2.17,
       bikeType: 'gravel',
@@ -411,6 +445,7 @@ describe('rideService', () => {
         description: 'Recorrido sencillo por pista forestal.',
         starts_at: '2026-06-10T09:30:00.000Z',
         meeting_point: 'Plaça de l’Església, Barcelona',
+        meeting_point_details: null,
         latitude: 41.4,
         longitude: 2.17,
         bike_type: 'gravel',
@@ -425,6 +460,17 @@ describe('rideService', () => {
         route_type: 'circular',
       })
       expect(chain.eq).toHaveBeenCalledWith('organizer_id', 'user-1')
+      expect(ride.id).toBe('ride-1')
+    })
+
+    it('lets the admin save a foreign ride', async () => {
+      const rides = mockRole('admin')
+
+      const ride = await updateRide('ride-1', input)
+
+      expect(rides.update).toHaveBeenCalled()
+      expect(rides.eq).toHaveBeenCalledWith('id', 'ride-1')
+      expect(rides.eq).not.toHaveBeenCalledWith('organizer_id', 'user-1')
       expect(ride.id).toBe('ride-1')
     })
 

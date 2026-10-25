@@ -21,6 +21,37 @@ export function isSafeUrl(href: string): boolean {
   return /^(?:https?:\/\/|mailto:|[/#])/i.test(href.trim())
 }
 
+/**
+ * Comprueba que una URL segura es navegable de verdad: `https://` (el marcador
+ * que deja el editor de enlaces) pasa el filtro de esquema pero no abre nada y
+ * el navegador lo bloquea como `about:blank#blocked`.
+ */
+function isNavigableUrl(href: string): boolean {
+  if (!isSafeUrl(href)) return false
+
+  if (/^https?:\/\//i.test(href)) {
+    try {
+      return new URL(href).hostname !== ''
+    } catch {
+      return false
+    }
+  }
+
+  return true
+}
+
+/**
+ * Resuelve el destino de un enlace markdown. Si la URL guardada no es
+ * navegable (p. ej. `[https://…](https://)` sin completar) se recupera la del
+ * texto, que es donde quien escribe pega la dirección.
+ */
+function resolveLinkHref(href: string, label: string): string | null {
+  if (isNavigableUrl(href)) return href
+
+  const candidate = label.trim()
+  return isNavigableUrl(candidate) ? candidate : null
+}
+
 export function parseInline(text: string): InlineNode[] {
   const nodes: InlineNode[] = []
   let plain = ''
@@ -52,16 +83,16 @@ export function parseInline(text: string): InlineNode[] {
         const paren = text.indexOf(')', bracket + 2)
         if (paren !== -1) {
           const label = text.slice(i + 1, bracket)
-          const href = text.slice(bracket + 2, paren).trim()
+          const href = resolveLinkHref(text.slice(bracket + 2, paren).trim(), label)
 
-          if (isSafeUrl(href)) {
+          if (href !== null) {
             flush()
             nodes.push({ type: 'link', href, content: parseInline(label) })
             i = paren + 1
             continue
           }
 
-          // URL insegura: se muestra como texto literal, sin enlazar.
+          // Destino inutilizable: se muestra como texto literal, sin enlazar.
           plain += text.slice(i, paren + 1)
           i = paren + 1
           continue

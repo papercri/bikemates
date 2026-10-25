@@ -68,14 +68,20 @@ describe('toLocalDateTime', () => {
 describe('isRidePast', () => {
   const now = new Date('2026-06-10T12:00:00Z')
 
-  it('detects departures that already happened', () => {
-    expect(isRidePast('2026-06-09T09:00:00Z', now)).toBe(true)
-    expect(isRidePast('2026-06-10T12:00:00Z', now)).toBe(true)
+  it('keeps rides from the same calendar day as upcoming until midnight', () => {
+    // 09:00 y 23:45 del propio día, hora local.
+    expect(isRidePast(new Date(2026, 5, 10, 9, 0).toISOString(), now)).toBe(false)
+    expect(isRidePast(new Date(2026, 5, 10, 23, 45).toISOString(), now)).toBe(false)
   })
 
-  it('keeps upcoming departures as future', () => {
-    expect(isRidePast('2026-06-10T12:00:01Z', now)).toBe(false)
-    expect(isRidePast('2027-05-15T09:00:00+02:00', now)).toBe(false)
+  it('marks rides from previous days as past', () => {
+    expect(isRidePast(new Date(2026, 5, 9, 23, 0).toISOString(), now)).toBe(true)
+  })
+
+  it('marks a ride as past once its day has ended at midnight', () => {
+    const justPastMidnight = new Date(2026, 5, 11, 0, 0)
+
+    expect(isRidePast(new Date(2026, 5, 10, 9, 0).toISOString(), justPastMidnight)).toBe(true)
   })
 
   it('treats unparseable dates as future so the card is never dimmed', () => {

@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures'
-import { makeParticipant, makeRide, MEMBER, ORGANIZER } from '../helpers/seeds'
+import { ADMIN, makeParticipant, makeRide, MEMBER, ORGANIZER } from '../helpers/seeds'
 
 test.describe('ride detail', () => {
   test('shows the ride data for anonymous visitors', async ({ page, supabase }) => {
@@ -25,9 +25,13 @@ test.describe('ride detail', () => {
     // Sin sesión solo se ve el número: el listado de nombres es privado.
     await expect(page.locator('#participants-title')).toBeVisible()
     await expect(page.getByText('1 ciclista')).toBeVisible()
-    await expect(page.getByText('Para participar en la ruta tienes que iniciar sesión.')).toBeVisible()
-    await expect(page.getByRole('link', { name: 'Iniciar sesión' })).toBeVisible()
-    await expect(page.getByRole('link', { name: 'Regístrate' })).toBeVisible()
+    await expect(
+      page.getByText('Para participar en la ruta tienes que iniciar sesión.'),
+    ).toBeVisible()
+    // Cabecera y pie repiten los mismos enlaces: se acota al contenido.
+    const main = page.locator('#main-content')
+    await expect(main.getByRole('link', { name: 'Iniciar sesión' })).toBeVisible()
+    await expect(main.getByRole('link', { name: 'Regístrate' })).toBeVisible()
     await expect(page.locator('#main-content ul li')).toHaveCount(0)
   })
 
@@ -104,6 +108,7 @@ test.describe('ride detail', () => {
 
     await page.goto('/rides/ride-1')
 
+    await expect(page).toHaveTitle('Vuelta por Collserola | BikeMates')
     await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
       'content',
       'Vuelta por Collserola',
@@ -113,7 +118,16 @@ test.describe('ride detail', () => {
       /\/rides\/ride-1$/,
     )
     await expect(page.locator('meta[property="og:description"]')).toHaveAttribute('content', /.+/)
-    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', /summary/)
+    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', /.+/)
+    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
+      'content',
+      'summary_large_image',
+    )
+    await expect(page.locator('meta[name="twitter:url"]')).toHaveAttribute(
+      'content',
+      /\/rides\/ride-1$/,
+    )
+    await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute('content', /.+/)
   })
 
   test('lets an authenticated non-participant join the ride', async ({ page, supabase }) => {
@@ -173,7 +187,7 @@ test.describe('ride detail', () => {
 
     await page.goto('/rides/ride-1')
 
-    await page.getByText('Comentarios', { exact: true }).click()
+    await page.locator('section[aria-label="Comentarios"] summary').click()
     await expect(page.getByText('Nos vemos en el punto de encuentro.')).toBeVisible()
 
     await page.getByLabel('Escribe un comentario').fill('Llevo cámara antipinchazos.')
@@ -240,6 +254,26 @@ test.describe('ride detail', () => {
     await expect(page.getByText('Eres el organizador')).toHaveCount(0)
     await expect(page.getByRole('button', { name: 'Participar en esta ruta' })).toHaveCount(0)
     await expect(page.getByRole('link', { name: 'Editar ruta' })).toBeVisible()
+  })
+
+  test('lets the admin open the editor of a foreign ride', async ({ page, supabase }) => {
+    supabase.state.rides = [makeRide({ id: 'ride-1', organizer_id: ORGANIZER.id })]
+    supabase.state.users.push(ADMIN)
+    supabase.state.profiles.push({
+      id: ADMIN.id,
+      role: 'admin',
+      display_name: ADMIN.displayName,
+      avatar_url: null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    await supabase.signInAs(ADMIN)
+
+    await page.goto('/rides/ride-1')
+
+    // La ruta es de otra persona, pero el rol admin puede editarla y eliminarla.
+    await expect(page.getByRole('link', { name: 'Editar ruta' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Eliminar ruta' })).toBeVisible()
   })
 
   test('shows the participant list to authenticated visitors', async ({ page, supabase }) => {

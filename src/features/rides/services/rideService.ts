@@ -24,8 +24,9 @@ export function mapRide(data: {
   description: string
   starts_at: string
   meeting_point: string
-  latitude: number
-  longitude: number
+  meeting_point_details?: string | null
+  latitude: number | null
+  longitude: number | null
   bike_type: string
   level: string
   distance_km: number
@@ -62,6 +63,9 @@ export function mapRide(data: {
     description: data.description,
     startsAt: data.starts_at,
     meetingPoint: data.meeting_point,
+    // `meeting_point_details` puede ser undefined en bases de datos donde la
+    // columna aún no se ha añadido; se trata igual que null.
+    meetingPointDetails: data.meeting_point_details ?? null,
     latitude: data.latitude,
     longitude: data.longitude,
     bikeType: data.bike_type,
@@ -99,6 +103,7 @@ export async function createRide(input: CreateRideInput): Promise<Ride> {
       description: input.description,
       starts_at: input.startsAt,
       meeting_point: input.meetingPoint,
+      meeting_point_details: input.meetingPointDetails,
       latitude: input.latitude,
       longitude: input.longitude,
       bike_type: input.bikeType,
@@ -117,7 +122,7 @@ export async function createRide(input: CreateRideInput): Promise<Ride> {
     .single()
 
   if (error) {
-    console.error("Error en rideService:", error.message)
+    console.error('Error en rideService:', error.message)
     throw new Error('No se ha podido crear la ruta. Inténtalo de nuevo.')
   }
 
@@ -147,7 +152,7 @@ export async function getPublishedRides(): Promise<Ride[]> {
     .order('starts_at', { ascending: true })
 
   if (error) {
-    console.error("Error en rideService:", error.message)
+    console.error('Error en rideService:', error.message)
     throw new Error('No se han podido cargar las rutas. Inténtalo de nuevo.')
   }
 
@@ -163,7 +168,7 @@ export async function getRideById(id: string): Promise<Ride> {
     .single()
 
   if (error) {
-    console.error("Error en rideService:", error.message)
+    console.error('Error en rideService:', error.message)
     throw new Error('No se ha podido cargar la ruta. Inténtalo de nuevo.')
   }
 
@@ -179,15 +184,20 @@ export async function getRideForEdit(id: string): Promise<Ride> {
     throw new Error('Debes iniciar sesión para editar una ruta.')
   }
 
-  const { data, error } = await supabase
-    .from('rides')
-    .select('*')
-    .eq('id', id)
-    .eq('organizer_id', user.id)
-    .maybeSingle()
+  const role = await getCurrentUserRole()
+
+  let query = supabase.from('rides').select('*').eq('id', id)
+
+  // El admin abre cualquier ruta; el resto solo las propias (RLS es la barrera
+  // real, aquí se evita un fallo tardío al guardar).
+  if (role !== 'admin') {
+    query = query.eq('organizer_id', user.id)
+  }
+
+  const { data, error } = await query.maybeSingle()
 
   if (error) {
-    console.error("Error en rideService:", error.message)
+    console.error('Error en rideService:', error.message)
     throw new Error('No se ha podido cargar la ruta. Inténtalo de nuevo.')
   }
 
@@ -215,7 +225,7 @@ export async function getMyRides(): Promise<Ride[]> {
     .order('starts_at', { ascending: true })
 
   if (error) {
-    console.error("Error en rideService:", error.message)
+    console.error('Error en rideService:', error.message)
     throw new Error('No se han podido cargar tus rutas. Inténtalo de nuevo.')
   }
 
@@ -243,7 +253,7 @@ export async function deleteRide(id: string): Promise<void> {
   const { data, error } = await query.select('id').maybeSingle()
 
   if (error) {
-    console.error("Error en rideService:", error.message)
+    console.error('Error en rideService:', error.message)
     throw new Error('No se ha podido eliminar la ruta. Inténtalo de nuevo.')
   }
 
@@ -262,13 +272,16 @@ export async function updateRide(id: string, input: UpdateRideInput): Promise<Ri
     throw new Error('Debes iniciar sesión para editar una ruta.')
   }
 
-  const { data, error } = await supabase
+  const role = await getCurrentUserRole()
+
+  let query = supabase
     .from('rides')
     .update({
       title: input.title,
       description: input.description,
       starts_at: input.startsAt,
       meeting_point: input.meetingPoint,
+      meeting_point_details: input.meetingPointDetails,
       latitude: input.latitude,
       longitude: input.longitude,
       bike_type: input.bikeType,
@@ -283,12 +296,17 @@ export async function updateRide(id: string, input: UpdateRideInput): Promise<Ri
       route_type: input.routeType,
     })
     .eq('id', id)
-    .eq('organizer_id', user.id)
-    .select()
-    .maybeSingle()
+
+  // El admin guarda rutas ajenas; el resto solo las propias (RLS es la barrera
+  // real, aquí se detecta el caso antes para dar un error claro).
+  if (role !== 'admin') {
+    query = query.eq('organizer_id', user.id)
+  }
+
+  const { data, error } = await query.select().maybeSingle()
 
   if (error) {
-    console.error("Error en rideService:", error.message)
+    console.error('Error en rideService:', error.message)
     throw new Error('No se han podido guardar los cambios. Inténtalo de nuevo.')
   }
 
@@ -319,7 +337,7 @@ export async function getRideParticipants(
     .order('joined_at', { ascending: true })
 
   if (error) {
-    console.error("Error en rideService:", error.message)
+    console.error('Error en rideService:', error.message)
     throw new Error('No se han podido cargar los participantes. Inténtalo de nuevo.')
   }
 
@@ -360,7 +378,7 @@ export async function getMyParticipatingRideIds(): Promise<string[]> {
     .eq('user_id', user.id)
 
   if (error) {
-    console.error("Error en rideService:", error.message)
+    console.error('Error en rideService:', error.message)
     throw new Error('No se han podido cargar tus inscripciones. Inténtalo de nuevo.')
   }
 
@@ -371,7 +389,7 @@ export async function getRideParticipantCount(rideId: string): Promise<number> {
   const { data, error } = await supabase.rpc('get_ride_participant_count', { p_ride_id: rideId })
 
   if (error) {
-    console.error("Error en rideService:", error.message)
+    console.error('Error en rideService:', error.message)
     throw new Error('No se ha podido cargar el número de participantes. Inténtalo de nuevo.')
   }
 
@@ -394,7 +412,7 @@ export async function leaveRide(rideId: string): Promise<void> {
   })
 
   if (error) {
-    console.error("Error en rideService:", error.message)
+    console.error('Error en rideService:', error.message)
     throw new Error('No se ha podido cancelar la inscripción. Inténtalo de nuevo.')
   }
 }

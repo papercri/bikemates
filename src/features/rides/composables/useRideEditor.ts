@@ -7,6 +7,7 @@ import {
   createEmptyRideFormValues,
   mapRideToFormValues,
 } from '../utils/rideFormMapping'
+import { MEETING_POINT_ERROR } from '../validators/rideFormValidator'
 import type { Ride, RideFormSubmission } from '../types'
 
 /**
@@ -71,7 +72,7 @@ export function useRideEditor(rideId: string | null) {
       const input = buildRideInput(payload.values, imagePath)
 
       if (!input) {
-        errorMessage.value = 'Selecciona un punto de encuentro válido.'
+        errorMessage.value = MEETING_POINT_ERROR
         return
       }
 

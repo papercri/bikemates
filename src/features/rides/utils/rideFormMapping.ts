@@ -8,12 +8,13 @@ export function createEmptyRideFormValues(overrides: Partial<RideFormValues> = {
     description: '',
     startsAt: '',
     meetingPoint: '',
+    meetingPointDetails: '',
     latitude: null,
     longitude: null,
-    bikeType: 'road',
+    bikeType: 'all',
     level: 'Iniciación',
     distanceKm: '',
-    elevationM: '',
+    elevationM: '0',
     durationMinutes: '',
     wikilocUrl: '',
     audience: 'everyone',
@@ -30,6 +31,7 @@ export function mapRideToFormValues(ride: Ride): RideFormValues {
     description: ride.description,
     startsAt: toLocalDateTime(ride.startsAt),
     meetingPoint: ride.meetingPoint,
+    meetingPointDetails: ride.meetingPointDetails ?? '',
     latitude: ride.latitude,
     longitude: ride.longitude,
     bikeType: ride.bikeType,
@@ -46,8 +48,8 @@ export function mapRideToFormValues(ride: Ride): RideFormValues {
 
 /**
  * Transforma los valores del formulario en el payload de persistencia.
- * Devuelve `null` si falta el punto de encuentro válido (defensa compartida
- * entre crear y editar; la validación completa vive en rideFormValidator).
+ * Devuelve `null` si no hay ningún punto de encuentro (ni coordenadas del mapa
+ * ni detalles escritos); la validación completa vive en rideFormValidator.
  */
 export function buildRideInput(
   values: RideFormValues,
@@ -55,7 +57,10 @@ export function buildRideInput(
 ): UpdateRideInput | null {
   const { latitude, longitude } = values
 
-  if (latitude === null || longitude === null) {
+  const hasCoordinates = latitude !== null && longitude !== null
+  const hasDetails = values.meetingPointDetails.trim().length > 0
+
+  if (!hasCoordinates && !hasDetails) {
     return null
   }
 
@@ -64,6 +69,7 @@ export function buildRideInput(
     description: values.description.trim(),
     startsAt: new Date(values.startsAt).toISOString(),
     meetingPoint: values.meetingPoint.trim(),
+    meetingPointDetails: values.meetingPointDetails.trim() || null,
     latitude,
     longitude,
     bikeType: values.bikeType,

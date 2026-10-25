@@ -19,6 +19,7 @@ import Typography from '@/components/ui/Typography.vue'
 import { getRideImageUrl, uploadRideImage } from '@/features/rides/services/rideImageService'
 import { createRide, deleteRide } from '@/features/rides/services/rideService'
 import { buildRideInput } from '@/features/rides/utils/rideFormMapping'
+import { MEETING_POINT_ERROR } from '@/features/rides/validators/rideFormValidator'
 import { useRideEditor } from '@/features/rides/composables/useRideEditor'
 import type { RideFormSubmission } from '@/features/rides/types'
 
@@ -63,7 +64,7 @@ async function handleDuplicate(payload: RideFormSubmission): Promise<void> {
     const input = buildRideInput(payload.values, imagePath)
 
     if (!input) {
-      duplicateError.value = 'Selecciona un punto de encuentro válido.'
+      duplicateError.value = MEETING_POINT_ERROR
       return
     }
 

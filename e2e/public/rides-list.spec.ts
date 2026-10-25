@@ -59,12 +59,12 @@ test.describe('rides list', () => {
 
     // La tarjeta no muestra distancia ni desnivel: lleva fecha corta, título, nivel, bici y público.
     await expect(collserola).toContainText(/\d{2}\/\d{2}/)
-    await expect(collserola).toContainText('Intermedio')
+    await expect(collserola).toContainText('Moderado')
     await expect(collserola).toContainText('Gravel')
     await expect(collserola).toContainText('Todos')
     await expect(collserola).not.toContainText('32')
     await expect(collserola).not.toContainText('650')
-    await expect(montseny).toContainText('Avanzado')
+    await expect(montseny).toContainText('Difícil')
     await expect(montseny).toContainText('MTB')
   })
 
@@ -84,7 +84,7 @@ test.describe('rides list', () => {
 
     await page.goto('/rides')
     await openFilters(page, isMobile)
-    await chooseFilter(page, 'Nivel', 'Avanzado')
+    await chooseFilter(page, 'Nivel', 'Difícil')
 
     await expect(page.getByRole('link', { name: /Ruta dura/ })).toBeVisible()
     await expect(page.getByRole('link', { name: /Ruta fácil/ })).toHaveCount(0)

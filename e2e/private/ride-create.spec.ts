@@ -22,10 +22,10 @@ test.describe('create ride', () => {
     await expect(page.getByRole('group', { name: 'Imagen de portada' })).toBeVisible()
 
     // Valores por defecto del formulario.
-    await expect(page.locator('#bikeType')).toHaveValue('gravel')
-    await expect(page.locator('#level')).toHaveValue('Intermedio')
+    await expect(page.locator('#bikeType')).toHaveValue('all')
+    await expect(page.locator('#level')).toHaveValue('Iniciación')
     await expect(page.locator('#distanceKm')).toHaveValue('')
-    await expect(page.locator('#elevationM')).toHaveValue('')
+    await expect(page.locator('#elevationM')).toHaveValue('0')
     await expect(page.locator('#durationMinutes')).toHaveValue('')
     await expect(page.getByRole('switch', { name: 'Ruta circular' })).not.toBeChecked()
 
@@ -66,7 +66,7 @@ test.describe('create ride', () => {
 
     await page.goto('/rides/create')
 
-    await page.getByLabel('Punto de encuentro').fill('Monistrol')
+    await page.getByLabel('Punto de encuentro', { exact: true }).fill('Monistrol')
     await page.getByRole('button', { name: 'Buscar' }).click()
 
     await expect(page.getByRole('button', { name: /Monistrol de Montserrat/ })).toBeVisible()
@@ -83,7 +83,7 @@ test.describe('create ride', () => {
 
     await page.goto('/rides/create')
 
-    await page.getByLabel('Punto de encuentro').fill('zzzzzzzz')
+    await page.getByLabel('Punto de encuentro', { exact: true }).fill('zzzzzzzz')
     await page.getByRole('button', { name: 'Buscar' }).click()
 
     await expect(page.getByRole('alert')).toHaveText('No se han encontrado lugares.')
@@ -100,7 +100,7 @@ test.describe('create ride', () => {
     await page
       .getByLabel('Descripción')
       .fill('Recorrido de prueba por el Montseny con parada de café al final.')
-    await page.getByLabel('Punto de encuentro').fill('Monistrol')
+    await page.getByLabel('Punto de encuentro', { exact: true }).fill('Monistrol')
     await page.getByRole('button', { name: 'Buscar' }).click()
     await page.getByRole('button', { name: /Monistrol de Montserrat/ }).click()
 
@@ -147,7 +147,7 @@ test.describe('create ride', () => {
     await page
       .getByLabel('Descripción')
       .fill('Recorrido que tarda en guardarse para poder observar el estado de carga.')
-    await page.getByLabel('Punto de encuentro').fill('Monistrol')
+    await page.getByLabel('Punto de encuentro', { exact: true }).fill('Monistrol')
     await page.getByRole('button', { name: 'Buscar' }).click()
     await page.getByRole('button', { name: /Monistrol de Montserrat/ }).click()
 
@@ -176,7 +176,7 @@ test.describe('create ride', () => {
     await page
       .getByLabel('Descripción')
       .fill('Recorrido con enlace a Wikiloc para seguir la traza del trayecto.')
-    await page.getByLabel('Punto de encuentro').fill('Monistrol')
+    await page.getByLabel('Punto de encuentro', { exact: true }).fill('Monistrol')
     await page.getByRole('button', { name: 'Buscar' }).click()
     await page.getByRole('button', { name: /Monistrol de Montserrat/ }).click()
 
