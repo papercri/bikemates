@@ -184,12 +184,17 @@ export async function getRideForEdit(id: string): Promise<Ride> {
     throw new Error('Debes iniciar sesión para editar una ruta.')
   }
 
-  const { data, error } = await supabase
-    .from('rides')
-    .select('*')
-    .eq('id', id)
-    .eq('organizer_id', user.id)
-    .maybeSingle()
+  const role = await getCurrentUserRole()
+
+  let query = supabase.from('rides').select('*').eq('id', id)
+
+  // El admin abre cualquier ruta; el resto solo las propias (RLS es la barrera
+  // real, aquí se evita un fallo tardío al guardar).
+  if (role !== 'admin') {
+    query = query.eq('organizer_id', user.id)
+  }
+
+  const { data, error } = await query.maybeSingle()
 
   if (error) {
     console.error('Error en rideService:', error.message)
@@ -267,7 +272,9 @@ export async function updateRide(id: string, input: UpdateRideInput): Promise<Ri
     throw new Error('Debes iniciar sesión para editar una ruta.')
   }
 
-  const { data, error } = await supabase
+  const role = await getCurrentUserRole()
+
+  let query = supabase
     .from('rides')
     .update({
       title: input.title,
@@ -289,9 +296,14 @@ export async function updateRide(id: string, input: UpdateRideInput): Promise<Ri
       route_type: input.routeType,
     })
     .eq('id', id)
-    .eq('organizer_id', user.id)
-    .select()
-    .maybeSingle()
+
+  // El admin guarda rutas ajenas; el resto solo las propias (RLS es la barrera
+  // real, aquí se detecta el caso antes para dar un error claro).
+  if (role !== 'admin') {
+    query = query.eq('organizer_id', user.id)
+  }
+
+  const { data, error } = await query.select().maybeSingle()
 
   if (error) {
     console.error('Error en rideService:', error.message)

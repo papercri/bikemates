@@ -145,6 +145,14 @@ function anonymous(): void {
   mocks.getUser.mockResolvedValue({ data: { user: null }, error: null })
 }
 
+/** Reparte las consultas: el rol sale de `profiles` y las rutas de su cadena. */
+function mockRole(role: 'admin' | 'user'): QueryChain {
+  const profiles = createQueryChain({ data: { role }, error: null })
+  const rides = createQueryChain({ data: rideRow(), error: null })
+  mocks.from.mockImplementation((table) => (table === 'profiles' ? profiles : rides))
+  return rides
+}
+
 describe('rideService', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -305,6 +313,16 @@ describe('rideService', () => {
       expect(ride.organizerId).toBe('user-1')
     })
 
+    it('lets the admin open any ride without the ownership filter', async () => {
+      const rides = mockRole('admin')
+
+      const ride = await getRideForEdit('ride-1')
+
+      expect(rides.eq).toHaveBeenCalledWith('id', 'ride-1')
+      expect(rides.eq).not.toHaveBeenCalledWith('organizer_id', 'user-1')
+      expect(ride.organizerId).toBe('user-1')
+    })
+
     it('requires an authenticated user', async () => {
       anonymous()
 
@@ -442,6 +460,17 @@ describe('rideService', () => {
         route_type: 'circular',
       })
       expect(chain.eq).toHaveBeenCalledWith('organizer_id', 'user-1')
+      expect(ride.id).toBe('ride-1')
+    })
+
+    it('lets the admin save a foreign ride', async () => {
+      const rides = mockRole('admin')
+
+      const ride = await updateRide('ride-1', input)
+
+      expect(rides.update).toHaveBeenCalled()
+      expect(rides.eq).toHaveBeenCalledWith('id', 'ride-1')
+      expect(rides.eq).not.toHaveBeenCalledWith('organizer_id', 'user-1')
       expect(ride.id).toBe('ride-1')
     })
 

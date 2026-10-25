@@ -534,7 +534,7 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
       <div
         class="mt-8 flex flex-col items-center gap-3 border-t border-line pt-6 sm:flex-row sm:justify-center"
       >
-        <Button v-if="isOrganizer" :to="{ name: 'ride-edit', params: { id: ride.id } }">
+        <Button v-if="isOrganizer || isAdmin" :to="{ name: 'ride-edit', params: { id: ride.id } }">
           <FontAwesomeIcon :icon="faPen" aria-hidden="true" class="size-3.5" />
           Editar ruta
         </Button>
