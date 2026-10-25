@@ -41,6 +41,7 @@ useHead(
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:title', content: RIDES_TITLE },
         { name: 'twitter:description', content: RIDES_DESCRIPTION },
+        { name: 'twitter:url', content: url },
         { name: 'twitter:image', content: image },
       ],
       link: [{ rel: 'canonical', href: url }],
@@ -136,7 +137,8 @@ onBeforeUnmount(() => {
       <Typography as="h1" variant="heading-xl">Explorar rutas</Typography>
 
       <Typography class="mt-3 max-w-2xl" tone="muted">
-      Descubre salidas que se adapten a tu nivel y encuentra ciclistas con quienes compartir el camino.
+        Descubre salidas que se adapten a tu nivel y encuentra ciclistas con quienes compartir el
+        camino.
       </Typography>
     </div>
 

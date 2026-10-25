@@ -56,6 +56,7 @@ useHead(
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:title', content: HOME_TITLE },
         { name: 'twitter:description', content: HOME_DESCRIPTION },
+        { name: 'twitter:url', content: url },
         { name: 'twitter:image', content: image },
       ],
       link: [{ rel: 'canonical', href: url }],

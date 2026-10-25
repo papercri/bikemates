@@ -202,7 +202,9 @@ useHead(
     if (current === null) return {}
 
     const url = rideUrl.value
-    const image = current.imageUrl
+    // Sin foto propia se usa la imagen del sitio: el scraper nunca debe ver
+    // una salida sin og:image.
+    const image = current.imageUrl ?? `${window.location.origin}/photos/grupeta-camino.webp`
 
     return {
       title: `${current.title} | BikeMates`,
@@ -214,12 +216,13 @@ useHead(
         { property: 'og:description', content: rideSocialDescription.value },
         { property: 'og:site_name', content: 'BikeMates' },
         ...(url !== null ? [{ property: 'og:url', content: url }] : []),
-        ...(image !== null ? [{ property: 'og:image', content: image }] : []),
-        // Twitter/X: sin imagen propia de la app se usa la de la salida.
-        { name: 'twitter:card', content: image !== null ? 'summary_large_image' : 'summary' },
+        { property: 'og:image', content: image },
+        // Twitter/X
+        { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:title', content: current.title },
         { name: 'twitter:description', content: rideSocialDescription.value },
-        ...(image !== null ? [{ name: 'twitter:image', content: image }] : []),
+        ...(url !== null ? [{ name: 'twitter:url', content: url }] : []),
+        { name: 'twitter:image', content: image },
       ],
       link: url !== null ? [{ rel: 'canonical', href: url }] : [],
     }
