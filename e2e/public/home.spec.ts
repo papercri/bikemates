@@ -10,9 +10,10 @@ test.describe('home', () => {
     // Un único H1 de página; el texto de marketing puede cambiar sin tocar el test.
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
 
-    // CTAs para visitantes anónimos, localizados por destino.
-    await expect(page.locator('header a[href="/rides"]').first()).toBeVisible()
-    await expect(page.getByRole('link', { href: '/register' }).first()).toBeVisible()
+    // CTAs para visitantes anónimos, localizados por destino en el hero: la
+    // cabecera enlaza también, pero su link vive en el menú plegado en móvil.
+    await expect(page.locator('main a[href="/rides"]').first()).toBeVisible()
+    await expect(page.locator('main a[href="/register"]').first()).toBeVisible()
   })
 
   test('shows the published ride preview when at least two future rides exist', async ({
@@ -30,7 +31,7 @@ test.describe('home', () => {
     await expect(page.locator('a[href^="/rides/"]').first()).toBeVisible()
 
     // El CTA del listado apunta a la página pública de rutas.
-    await expect(page.locator('a[href="/rides"]').first()).toBeVisible()
+    await expect(page.locator('main a[href="/rides"]').first()).toBeVisible()
   })
 
   test('hides the rides preview section when fewer than two future rides exist', async ({
@@ -42,6 +43,22 @@ test.describe('home', () => {
     await page.goto('/')
 
     await expect(page.locator('a[href^="/rides/"]')).toHaveCount(0)
+  })
+
+  test('fills the preview with recent rides when none are in the future', async ({
+    page,
+    supabase,
+  }) => {
+    const past = (days: number) => new Date(Date.now() - days * 86_400_000).toISOString()
+    supabase.state.rides = [
+      makeRide({ id: 'ride-1', title: 'Ruta celebrada', starts_at: past(2) }),
+      makeRide({ id: 'ride-2', title: 'Otra celebrada', starts_at: past(9) }),
+    ]
+
+    await page.goto('/')
+
+    // La portada no se queda sin escaparate aunque las salidas ya hayan pasado.
+    await expect(page.locator('a[href^="/rides/"]')).toHaveCount(2)
   })
 
   test('offers the publish CTA once the session is active', async ({ page, supabase }) => {
@@ -85,7 +102,9 @@ test.describe('home', () => {
 
     await page.goto('/')
 
-    // Estructura de secciones (tres H2), sin atar el texto de marketing.
-    await expect(page.getByRole('heading', { level: 2 })).toHaveCount(3)
+    // Las tres secciones de la portada, identificadas por su heading asociado.
+    await expect(page.locator('#features-title')).toBeVisible()
+    await expect(page.locator('#gallery-title')).toBeVisible()
+    await expect(page.locator('#cta-title')).toBeVisible()
   })
 })

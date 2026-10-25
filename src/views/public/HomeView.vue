@@ -9,6 +9,7 @@ import HomeHero from '@/components/home/HomeHero.vue'
 import HomeRidesPreview from '@/components/home/HomeRidesPreview.vue'
 import { useAuthStore } from '@/features/auth/stores/authStore'
 import { useRideList } from '@/features/rides/composables/useRideList'
+import type { Ride } from '@/features/rides/types'
 import type { ButtonVariant } from '@/design-system'
 
 const HOME_TITLE = 'BikeMates | Encuentra ciclistas y rutas'
@@ -98,21 +99,25 @@ const bandCta = computed(() =>
 
 const { rides: publishedRides, isLoading: isLoadingRides } = useRideList()
 
-// Próximas salidas (aún no empezadas), de la más cercana a la más lejana.
-// La sección del listado solo se muestra con al menos dos salidas futuras.
-const futureRides = computed(() =>
-  [...publishedRides.value]
-    .filter((ride) => new Date(ride.startsAt).getTime() > Date.now())
-    .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime())
-    .slice(0, 3),
-)
+// Escaparate de la portada: las próximas salidas primero (de la más cercana a
+// la más lejana) y, si ya no queda ninguna en el futuro, las más recientes
+// celebradas completan la rejilla para que la home no se quede vacía.
+const previewRides = computed(() => {
+  const now = Date.now()
+  const timestamp = (ride: Ride) => new Date(ride.startsAt).getTime()
+  const sorted = [...publishedRides.value].sort((a, b) => timestamp(a) - timestamp(b))
+  const future = sorted.filter((ride) => timestamp(ride) > now)
+  const past = sorted.filter((ride) => timestamp(ride) <= now).reverse()
+
+  return [...future, ...past].slice(0, 3)
+})
 </script>
 
 <template>
   <AppPage bleed spacing="none">
     <HomeHero :ctas="heroCtas" />
     <HomeFeatures />
-    <HomeRidesPreview v-if="!isLoadingRides && futureRides.length >= 2" :rides="futureRides" />
+    <HomeRidesPreview v-if="!isLoadingRides && previewRides.length >= 2" :rides="previewRides" />
     <HomeCtaBand :cta="bandCta" />
   </AppPage>
 </template>
