@@ -167,6 +167,7 @@ src/
   services/             # single Supabase client
   utils/                # pure helpers (dates, search normalization…)
   views/                # public/ and private/ pages
+e2e/                    # Playwright suite with a Supabase mock
 
 ```
 
