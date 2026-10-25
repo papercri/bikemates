@@ -8,6 +8,14 @@ import ProfileView from '@/views/private/ProfileView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
+  // Cada navegación empieza arriba: sin esta función la posición de scroll se
+  // arrastra desde la página anterior y enlaces como el CTA de la home caen al
+  // final del destino. `behavior: 'auto'` pisa el scroll suave del CSS.
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition !== null) return savedPosition
+    if (to.hash !== '') return { el: to.hash, behavior: 'auto' }
+    return { top: 0, left: 0, behavior: 'auto' }
+  },
   routes: [
     {
       path: '/',
