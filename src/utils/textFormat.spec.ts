@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { BOLD_MARKER, ITALIC_MARKER, LIST_PREFIX, prefixLines, wrapInline, wrapLink } from './textFormat'
+import {
+  BOLD_MARKER,
+  ITALIC_MARKER,
+  LIST_PREFIX,
+  prefixLines,
+  wrapInline,
+  wrapLink,
+} from './textFormat'
 
 describe('textFormat', () => {
   describe('wrapInline', () => {
@@ -63,6 +70,18 @@ describe('textFormat', () => {
 
       expect(edit.value).toBe('ver [ruta](https://)')
       expect(edit.value.slice(edit.selectionStart, edit.selectionEnd)).toBe('https://')
+    })
+
+    it('uses a selected URL as the link destination with nothing left to fill', () => {
+      const value = 'ver https://es.wikiloc.com/rutas/3382246'
+      const start = 'ver '.length
+      const edit = wrapLink(value, start, value.length)
+
+      expect(edit.value).toBe(
+        'ver [https://es.wikiloc.com/rutas/3382246](https://es.wikiloc.com/rutas/3382246)',
+      )
+      expect(edit.selectionStart).toBe(edit.value.length)
+      expect(edit.selectionStart).toBe(edit.selectionEnd)
     })
   })
 })
