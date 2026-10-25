@@ -14,6 +14,7 @@ function rideOf(overrides: Partial<Ride> = {}): Ride {
     description: 'Recorrido sencillo por pista forestal.',
     startsAt: departure.toISOString(),
     meetingPoint: 'Plaça de l’Església, Barcelona',
+    meetingPointDetails: null,
     latitude: 41.4,
     longitude: 2.17,
     bikeType: 'gravel',

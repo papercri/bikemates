@@ -118,11 +118,12 @@ export type Database = {
           elevation_m: number
           id: string
           image_path: string | null
-          latitude: number
+          latitude: number | null
           level: string
-          longitude: number
+          longitude: number | null
           max_participants: number | null
           meeting_point: string
+          meeting_point_details: string | null
           organizer_id: string
           route_type: string | null
           starts_at: string
@@ -141,11 +142,12 @@ export type Database = {
           elevation_m: number
           id?: string
           image_path?: string | null
-          latitude: number
+          latitude?: number | null
           level: string
-          longitude: number
+          longitude?: number | null
           max_participants?: number | null
           meeting_point: string
+          meeting_point_details?: string | null
           organizer_id: string
           route_type?: string | null
           starts_at: string
@@ -164,11 +166,12 @@ export type Database = {
           elevation_m?: number
           id?: string
           image_path?: string | null
-          latitude?: number
+          latitude?: number | null
           level?: string
-          longitude?: number
+          longitude?: number | null
           max_participants?: number | null
           meeting_point?: string
+          meeting_point_details?: string | null
           organizer_id?: string
           route_type?: string | null
           starts_at?: string

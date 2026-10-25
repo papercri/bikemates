@@ -111,11 +111,14 @@ const durationHours = computed(() => (ride.value ? Math.floor(ride.value.duratio
 const durationMinutesRemainder = computed(() => (ride.value ? ride.value.durationMinutes % 60 : 0))
 
 // Enlace directo a Google Maps por coordenadas, sin API key.
-const googleMapsUrl = computed(() =>
-  ride.value
-    ? `https://www.google.com/maps?q=${ride.value.latitude},${ride.value.longitude}`
-    : null,
-)
+// Las rutas sin punto fijado en el mapa (solo detalles) no lo ofrecen.
+const googleMapsUrl = computed(() => {
+  const current = ride.value
+
+  if (current === null || current.latitude === null || current.longitude === null) return null
+
+  return `https://www.google.com/maps?q=${current.latitude},${current.longitude}`
+})
 
 const descriptionWords = computed(() =>
   (ride.value?.description ?? '').trim().split(/\s+/).filter(Boolean),
@@ -441,6 +444,7 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
 
             <Card>
               <RideMap
+                v-if="ride.latitude !== null && ride.longitude !== null"
                 compact
                 :latitude="ride.latitude"
                 :longitude="ride.longitude"
@@ -448,8 +452,17 @@ const calendarEntry = computed<RideCalendarEntry | null>(() => {
               />
 
               <div class="flex flex-col gap-2 p-3">
-                <Typography as="h3" variant="body-sm" class="font-semibold">
+                <Typography
+                  v-if="ride.meetingPoint"
+                  as="h3"
+                  variant="body-sm"
+                  class="font-semibold"
+                >
                   {{ ride.meetingPoint }}
+                </Typography>
+
+                <Typography v-if="ride.meetingPointDetails" as="p" variant="body-sm" tone="muted">
+                  {{ ride.meetingPointDetails }}
                 </Typography>
 
                 <a

@@ -18,8 +18,9 @@ export interface DbRide {
   description: string
   starts_at: string
   meeting_point: string
-  latitude: number
-  longitude: number
+  meeting_point_details?: string | null
+  latitude: number | null
+  longitude: number | null
   bike_type: string
   level: string
   distance_km: number

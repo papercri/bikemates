@@ -36,6 +36,7 @@ export function makeRide(overrides: Partial<DbRide> = {}): DbRide {
       'Recorrido sencillo por pista forestal con parada de café. Trae agua y cámara antipinchazos.',
     starts_at: futureDate(7),
     meeting_point: 'Plaça de l’Església, Barcelona',
+    meeting_point_details: null,
     latitude: 41.4036,
     longitude: 2.1744,
     bike_type: 'gravel',

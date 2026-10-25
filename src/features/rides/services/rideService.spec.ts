@@ -93,6 +93,7 @@ function rideRow(overrides: Partial<Record<string, unknown>> = {}): Record<strin
     description: 'Recorrido sencillo por pista forestal.',
     starts_at: '2026-06-10T09:30:00.000Z',
     meeting_point: 'Plaça de l’Església, Barcelona',
+    meeting_point_details: null,
     latitude: 41.4,
     longitude: 2.17,
     bike_type: 'gravel',
@@ -118,6 +119,7 @@ function createInput(overrides: Partial<CreateRideInput> = {}): CreateRideInput 
     description: 'Recorrido sencillo por pista forestal.',
     startsAt: '2026-06-10T09:30:00.000Z',
     meetingPoint: 'Plaça de l’Església, Barcelona',
+    meetingPointDetails: null,
     latitude: 41.4,
     longitude: 2.17,
     bikeType: 'gravel',
@@ -167,6 +169,7 @@ describe('rideService', () => {
         description: 'Recorrido sencillo por pista forestal.',
         starts_at: '2026-06-10T09:30:00.000Z',
         meeting_point: 'Plaça de l’Església, Barcelona',
+        meeting_point_details: null,
         latitude: 41.4,
         longitude: 2.17,
         bike_type: 'gravel',
@@ -226,7 +229,9 @@ describe('rideService', () => {
     it('wraps insertion errors with a user-facing message', async () => {
       mocks.from.mockReturnValue(createQueryChain({ data: null, error: { message: 'denied' } }))
 
-      await expect(createRide(createInput())).rejects.toThrow('No se ha podido crear la ruta. Inténtalo de nuevo.')
+      await expect(createRide(createInput())).rejects.toThrow(
+        'No se ha podido crear la ruta. Inténtalo de nuevo.',
+      )
     })
 
     it('rejects rows whose domain values fall outside the known unions', async () => {
@@ -259,7 +264,9 @@ describe('rideService', () => {
     it('wraps query errors with a user-facing message', async () => {
       mocks.from.mockReturnValue(createQueryChain({ data: null, error: { message: 'offline' } }))
 
-      await expect(getPublishedRides()).rejects.toThrow('No se han podido cargar las rutas. Inténtalo de nuevo.')
+      await expect(getPublishedRides()).rejects.toThrow(
+        'No se han podido cargar las rutas. Inténtalo de nuevo.',
+      )
     })
   })
 
@@ -279,7 +286,9 @@ describe('rideService', () => {
     it('wraps query errors with a user-facing message', async () => {
       mocks.from.mockReturnValue(createQueryChain({ data: null, error: { message: 'gone' } }))
 
-      await expect(getRideById('ride-1')).rejects.toThrow('No se ha podido cargar la ruta. Inténtalo de nuevo.')
+      await expect(getRideById('ride-1')).rejects.toThrow(
+        'No se ha podido cargar la ruta. Inténtalo de nuevo.',
+      )
     })
   })
 
@@ -315,7 +324,9 @@ describe('rideService', () => {
     it('wraps query errors with a user-facing message', async () => {
       mocks.from.mockReturnValue(createQueryChain({ data: null, error: { message: 'denied' } }))
 
-      await expect(getRideForEdit('ride-1')).rejects.toThrow('No se ha podido cargar la ruta. Inténtalo de nuevo.')
+      await expect(getRideForEdit('ride-1')).rejects.toThrow(
+        'No se ha podido cargar la ruta. Inténtalo de nuevo.',
+      )
     })
   })
 
@@ -340,7 +351,9 @@ describe('rideService', () => {
     it('wraps query errors with a user-facing message', async () => {
       mocks.from.mockReturnValue(createQueryChain({ data: null, error: { message: 'offline' } }))
 
-      await expect(getMyRides()).rejects.toThrow('No se han podido cargar tus rutas. Inténtalo de nuevo.')
+      await expect(getMyRides()).rejects.toThrow(
+        'No se han podido cargar tus rutas. Inténtalo de nuevo.',
+      )
     })
   })
 
@@ -376,7 +389,9 @@ describe('rideService', () => {
     it('wraps query errors with a user-facing message', async () => {
       mocks.from.mockReturnValue(createQueryChain({ data: null, error: { message: 'denied' } }))
 
-      await expect(deleteRide('ride-1')).rejects.toThrow('No se ha podido eliminar la ruta. Inténtalo de nuevo.')
+      await expect(deleteRide('ride-1')).rejects.toThrow(
+        'No se ha podido eliminar la ruta. Inténtalo de nuevo.',
+      )
     })
   })
 
@@ -386,6 +401,7 @@ describe('rideService', () => {
       description: 'Recorrido sencillo por pista forestal.',
       startsAt: '2026-06-10T09:30:00.000Z',
       meetingPoint: 'Plaça de l’Església, Barcelona',
+      meetingPointDetails: null,
       latitude: 41.4,
       longitude: 2.17,
       bikeType: 'gravel',
@@ -411,6 +427,7 @@ describe('rideService', () => {
         description: 'Recorrido sencillo por pista forestal.',
         starts_at: '2026-06-10T09:30:00.000Z',
         meeting_point: 'Plaça de l’Església, Barcelona',
+        meeting_point_details: null,
         latitude: 41.4,
         longitude: 2.17,
         bike_type: 'gravel',

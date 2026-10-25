@@ -3,6 +3,7 @@ import type { RideFormValues } from '../types'
 import {
   emptyRideFormErrors,
   firstRideFormError,
+  MEETING_POINT_ERROR,
   validateRideForm,
   validateRideFormFields,
   validateRouteUrl,
@@ -21,6 +22,7 @@ function validValues(overrides: Partial<RideFormValues> = {}): RideFormValues {
     description: 'Recorrido sencillo por pista forestal con parada de café.',
     startsAt: futureDate(),
     meetingPoint: 'Plaça de l’Església, Barcelona',
+    meetingPointDetails: '',
     latitude: 41.4,
     longitude: 2.17,
     bikeType: 'gravel',
@@ -90,19 +92,34 @@ describe('validateRideForm', () => {
     expect(validateRideForm(validValues({ title: 'Ruta por la sierra de Guadarrama' }))).toBeNull()
   })
 
-  it('requires a meeting point with coordinates inside the valid ranges', () => {
-    expect(validateRideForm(validValues({ meetingPoint: '   ' }))).toBe(
-      'Busca y selecciona un punto de encuentro válido.',
-    )
-    expect(validateRideForm(validValues({ latitude: null }))).toBe(
-      'Busca y selecciona un punto de encuentro válido.',
-    )
-    expect(validateRideForm(validValues({ longitude: 200 }))).toBe(
-      'Busca y selecciona un punto de encuentro válido.',
-    )
-    expect(validateRideForm(validValues({ latitude: -91 }))).toBe(
-      'Busca y selecciona un punto de encuentro válido.',
-    )
+  it('accepts a meeting point with valid coordinates even without details', () => {
+    expect(validateRideForm(validValues({ meetingPoint: '   ' }))).toBeNull()
+    expect(validateRideForm(validValues({ meetingPointDetails: '   ' }))).toBeNull()
+  })
+
+  it('accepts meeting point details when there are no coordinates', () => {
+    const values = validValues({
+      latitude: null,
+      longitude: null,
+      meetingPointDetails: 'Junto a la fuente de la plaza.',
+    })
+
+    expect(validateRideForm(values)).toBeNull()
+  })
+
+  it('requires coordinates or details for the meeting point', () => {
+    expect(validateRideForm(validValues({ latitude: null }))).toBe(MEETING_POINT_ERROR)
+    expect(validateRideForm(validValues({ longitude: null }))).toBe(MEETING_POINT_ERROR)
+    expect(
+      validateRideForm(
+        validValues({ latitude: null, longitude: null, meetingPointDetails: '   ' }),
+      ),
+    ).toBe(MEETING_POINT_ERROR)
+  })
+
+  it('rejects coordinates outside the valid ranges when there are no details', () => {
+    expect(validateRideForm(validValues({ longitude: 200 }))).toBe(MEETING_POINT_ERROR)
+    expect(validateRideForm(validValues({ latitude: -91 }))).toBe(MEETING_POINT_ERROR)
   })
 
   it('requires a future start date', () => {

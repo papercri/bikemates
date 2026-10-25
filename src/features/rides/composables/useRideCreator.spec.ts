@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Ride, RideFormSubmission, RideFormValues } from '../types'
 import { useRideCreator } from './useRideCreator'
+import { MEETING_POINT_ERROR } from '../validators/rideFormValidator'
 
 const mocks = vi.hoisted(() => ({
   push: vi.fn<(location: unknown) => Promise<unknown>>(),
@@ -28,6 +29,7 @@ function formValues(overrides: Partial<RideFormValues> = {}): RideFormValues {
     description: 'Recorrido sencillo por pista forestal.',
     startsAt: '2026-06-10T11:30',
     meetingPoint: 'Plaça de l’Església, Barcelona',
+    meetingPointDetails: '',
     latitude: 41.4,
     longitude: 2.17,
     bikeType: 'gravel',
@@ -97,7 +99,7 @@ describe('useRideCreator', () => {
 
     await createPublishedRide(submission({ values: formValues({ latitude: null }) }))
 
-    expect(errorMessage.value).toBe('Selecciona un punto de encuentro válido.')
+    expect(errorMessage.value).toBe(MEETING_POINT_ERROR)
     expect(mocks.uploadRideImage).not.toHaveBeenCalled()
     expect(mocks.createRide).not.toHaveBeenCalled()
   })

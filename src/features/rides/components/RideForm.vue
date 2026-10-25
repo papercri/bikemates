@@ -27,6 +27,7 @@ import FormSelect from '@/components/ui/FormSelect.vue'
 import Input from '@/components/ui/Input.vue'
 import RichTextarea from '@/components/ui/RichTextarea.vue'
 import Switch from '@/components/ui/Switch.vue'
+import Textarea from '@/components/ui/Textarea.vue'
 import {
   RIDE_AUDIENCES,
   RIDE_AUDIENCE_LABELS,
@@ -234,6 +235,21 @@ function handleDuplicate(): void {
           <FormHelp v-else-if="form.meetingPoint">
             Punto seleccionado: {{ form.meetingPoint }}
           </FormHelp>
+
+          <div class="mt-3">
+            <FormLabel id="meetingPointDetails">Más detalles del punto de encuentro</FormLabel>
+            <Textarea
+              id="meetingPointDetails"
+              v-model="form.meetingPointDetails"
+              name="meetingPointDetails"
+              :rows="3"
+              placeholder="Ej.: junto a la fuente de la plaza, frente a la panadería…"
+              aria-describedby="meetingPointDetails-help"
+            />
+            <FormHelp id="meetingPointDetails-help">
+              Obligatorio solo si no has fijado el punto en el mapa.
+            </FormHelp>
+          </div>
         </div>
 
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">

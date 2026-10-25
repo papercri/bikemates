@@ -15,6 +15,7 @@ function rideOf(overrides: Partial<Ride> & { id: string }): Ride {
     description: 'Descripción de prueba para la ruta.',
     startsAt: daysFromNow(7),
     meetingPoint: 'Plaça de l’Església, Barcelona',
+    meetingPointDetails: null,
     latitude: 41.4,
     longitude: 2.17,
     bikeType: 'gravel',

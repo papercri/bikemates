@@ -25,6 +25,7 @@ function validValues(overrides: Partial<RideFormValues> = {}): RideFormValues {
     description: 'Recorrido sencillo por pista forestal con parada de café.',
     startsAt: futureDate(),
     meetingPoint: 'Plaça de l’Església, Barcelona',
+    meetingPointDetails: '',
     latitude: 41.4,
     longitude: 2.17,
     bikeType: 'gravel',
@@ -276,8 +277,29 @@ describe('RideForm', () => {
 
     expect(wrapper.emitted('submit')).toBeUndefined()
     expect(wrapper.get('[role="alert"]').text()).toBe(
-      'Busca y selecciona un punto de encuentro válido.',
+      'Selecciona un punto de encuentro en el mapa o describe cómo llegar.',
     )
+  })
+
+  it('submits meeting point details when the map point is cleared', async () => {
+    const wrapper = mountForm({
+      initialValues: validValues({
+        latitude: null,
+        longitude: null,
+        meetingPointDetails: 'Junto a la fuente de la plaza.',
+      }),
+    })
+
+    await wrapper.getComponent(MeetingPointPicker).vm.$emit('select', null)
+    await acceptRules(wrapper)
+    await wrapper.get('form').trigger('submit')
+
+    const payload = wrapper.emitted('submit')?.[0]?.[0] as { values: RideFormValues }
+    expect(payload.values).toMatchObject({
+      latitude: null,
+      longitude: null,
+      meetingPointDetails: 'Junto a la fuente de la plaza.',
+    })
   })
 
   it('counts the description characters as they grow', async () => {
