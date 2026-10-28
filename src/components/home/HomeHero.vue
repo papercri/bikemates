@@ -111,7 +111,7 @@ onBeforeUnmount(() => {
           <span class="block">Descubre nuevas rutas.</span>
         </h1>
 
-        <p class="mx-auto mt-6 max-w-xl text-base leading-7 text-white/85 sm:text-lg">
+        <p class="mt-6 max-w-xl text-base leading-7 text-white/85 sm:text-lg">
           Conecta con ciclistas cerca de ti, organiza salidas en grupo y encuentra nuevas rutas para
           tu próxima aventura en bici.
         </p>
