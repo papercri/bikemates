@@ -25,6 +25,13 @@ const mocks = vi.hoisted(() => ({
     >(),
   resetPasswordForEmail:
     vi.fn<(email: string, options: { redirectTo: string }) => Promise<AuthResult<null>>>(),
+  resend: vi.fn<
+    (params: {
+      type: string
+      email: string
+      options?: { emailRedirectTo?: string }
+    }) => Promise<AuthResult<null>>
+  >(),
   updateUser: vi.fn<(payload: { password: string }) => Promise<AuthResult<null>>>(),
   invoke: vi.fn<(name: string, options: { method: string }) => Promise<AuthResult<null>>>(),
   verifyOtp: vi.fn<(payload: { token_hash: string; type: string }) => Promise<AuthResult<null>>>(),
@@ -41,6 +48,7 @@ vi.mock('@/services/supabase', () => ({
       signUp: mocks.signUp,
       signInWithPassword: mocks.signInWithPassword,
       resetPasswordForEmail: mocks.resetPasswordForEmail,
+      resend: mocks.resend,
       updateUser: mocks.updateUser,
       verifyOtp: mocks.verifyOtp,
       getSession: mocks.getSession,
@@ -53,11 +61,13 @@ vi.mock('@/services/supabase', () => ({
 }))
 
 import {
+  EmailNotConfirmedError,
   isEmailConfirmed,
   loginUser,
   registerUser,
   requestAccountDeletion,
   requestPasswordReset,
+  resendConfirmationEmail,
   updatePassword,
   verifyCurrentUserPassword,
   verifyRecoveryToken,
@@ -67,6 +77,16 @@ const credentials = {
   name: '  Cristiana  ',
   email: '  ciclista@example.com  ',
   password: 'bicicleta123',
+}
+
+/** Réplica mínima del AuthError del SDK, que expone además un `code`. */
+class AuthErrorWithCode extends Error {
+  readonly code: string
+
+  constructor(message: string, code: string) {
+    super(message)
+    this.code = code
+  }
 }
 
 describe('authService', () => {
@@ -137,6 +157,38 @@ describe('authService', () => {
       await expect(
         loginUser({ email: credentials.email, password: credentials.password }),
       ).rejects.toThrow('El correo o la contraseña no son correctos.')
+    })
+
+    it('throws EmailNotConfirmedError when the email is still unconfirmed', async () => {
+      const error = new AuthErrorWithCode('Email not confirmed', 'email_not_confirmed')
+      mocks.signInWithPassword.mockResolvedValue({ data: { session: null }, error })
+
+      await expect(
+        loginUser({ email: credentials.email, password: credentials.password }),
+      ).rejects.toBeInstanceOf(EmailNotConfirmedError)
+    })
+  })
+
+  describe('resendConfirmationEmail', () => {
+    it('requests the signup resend with a trimmed email and the confirmation redirect', async () => {
+      mocks.resend.mockResolvedValue({ data: null, error: null })
+
+      await resendConfirmationEmail('  ciclista@example.com  ')
+
+      expect(mocks.resend).toHaveBeenCalledWith({
+        type: 'signup',
+        email: 'ciclista@example.com',
+        options: { emailRedirectTo: `${window.location.origin}/auth/confirm` },
+      })
+    })
+
+    it('translates the resend error into a user-facing message', async () => {
+      const error = new Error('rate limit')
+      mocks.resend.mockResolvedValue({ data: null, error })
+
+      await expect(resendConfirmationEmail('ciclista@example.com')).rejects.toThrow(
+        'Demasiados intentos. Espera unos minutos y vuelve a probar.',
+      )
     })
   })
 

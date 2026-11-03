@@ -12,6 +12,23 @@ interface LoginCredentials {
   password: string
 }
 
+/**
+ * El email de la cuenta existe pero aún no está confirmado
+ * (estado "waiting for verification" en Supabase). Se lanza con un tipo
+ * propio para que la vista de login pueda ofrecer el reenvío del correo.
+ */
+export class EmailNotConfirmedError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'EmailNotConfirmedError'
+  }
+}
+
+/** Mismo destino de redirección que usa el registro para confirmar la cuenta. */
+function confirmationRedirectUrl(): string {
+  return `${window.location.origin}/auth/confirm`
+}
+
 export async function registerUser(credentials: RegisterCredentials) {
   const name = credentials.name.trim()
   const email = credentials.email.trim()
@@ -24,7 +41,7 @@ export async function registerUser(credentials: RegisterCredentials) {
     email: credentials.email.trim(),
     password: credentials.password,
     options: {
-      emailRedirectTo: `${window.location.origin}/auth/confirm`,
+      emailRedirectTo: confirmationRedirectUrl(),
       data: {
         display_name: credentials.name.trim(),
       },
@@ -51,10 +68,31 @@ export async function loginUser(credentials: LoginCredentials) {
   })
 
   if (error) {
+    if (error.code === 'email_not_confirmed') {
+      throw new EmailNotConfirmedError(describeAuthError(error))
+    }
     throw new Error(describeAuthError(error))
   }
 
   return data
+}
+
+/**
+ * Reenvía el correo de confirmación de una cuenta recién registrada y aún
+ * sin verificar.
+ */
+export async function resendConfirmationEmail(email: string): Promise<void> {
+  const { error } = await supabase.auth.resend({
+    type: 'signup',
+    email: email.trim(),
+    options: {
+      emailRedirectTo: confirmationRedirectUrl(),
+    },
+  })
+
+  if (error) {
+    throw new Error(describeAuthError(error))
+  }
 }
 
 export async function requestPasswordReset(email: string, redirectTo: string): Promise<void> {

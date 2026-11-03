@@ -80,4 +80,37 @@ test.describe('login', () => {
     await expect(page).toHaveURL('/register')
     await expect(page.getByRole('heading', { level: 1, name: 'Únete a BikeMates' })).toBeVisible()
   })
+
+  test('offers resending the confirmation when the email is unconfirmed', async ({
+    page,
+    supabase,
+  }) => {
+    supabase.state.users.push({
+      id: 'user-1',
+      email: 'pendiente@example.com',
+      displayName: 'Ana Pedal',
+      password: 'pedaleando123',
+      emailConfirmed: false,
+    })
+
+    await page.goto('/login')
+    await page.getByLabel('Correo electrónico').fill('pendiente@example.com')
+    await page.getByLabel('Contraseña', { exact: true }).fill('pedaleando123')
+    await page.getByRole('button', { name: 'Iniciar sesión' }).click()
+
+    await expect(page.getByRole('alert')).toContainText(
+      'Tu cuenta existe pero tu correo aún no está confirmado.',
+    )
+    await expect(
+      page.getByRole('button', { name: 'Reenviar correo de confirmación' }),
+    ).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Restablecer contraseña' })).toBeVisible()
+
+    await page.getByRole('button', { name: 'Reenviar correo de confirmación' }).click()
+
+    await expect(page.getByRole('status')).toHaveText(
+      'Correo de confirmación reenviado. Revisa tu bandeja de entrada y el correo no deseado.',
+    )
+    expect(supabase.state.lastResendEmail).toBe('pendiente@example.com')
+  })
 })
