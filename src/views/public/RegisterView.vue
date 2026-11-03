@@ -14,7 +14,7 @@ import CommunityRulesDialog from '@/components/community/CommunityRulesDialog.vu
 import PrivacyDialog from '@/components/legal/PrivacyDialog.vue'
 import Input from '@/components/ui/Input.vue'
 import Typography from '@/components/ui/Typography.vue'
-import { registerUser } from '@/features/auth/services/authService'
+import { registerUser, resendConfirmationEmail } from '@/features/auth/services/authService'
 import { useAuthForm } from '@/features/auth/composables/useAuthForm'
 import {
   validateRegisterForm,
@@ -51,6 +51,9 @@ function validateForm(): boolean {
 }
 
 const submitted = ref(false)
+const confirmationPending = ref(false)
+const registeredEmail = ref('')
+const isResending = ref(false)
 const showRulesDialog = ref(false)
 const showPrivacyDialog = ref(false)
 const {
@@ -62,6 +65,10 @@ const {
 } = useAuthForm()
 
 async function handleSubmit(): Promise<void> {
+  if (confirmationPending.value) {
+    return
+  }
+
   submitted.value = true
   clearMessages()
 
@@ -78,6 +85,8 @@ async function handleSubmit(): Promise<void> {
       })
 
       if (data.user && !data.session) {
+        confirmationPending.value = true
+        registeredEmail.value = form.email
         successMessage.value = 'Cuenta creada. Revisa tu correo para confirmar tu dirección.'
       } else if (data.user && data.session) {
         successMessage.value = 'Registro completado. Ya tienes una sesión activa.'
@@ -90,6 +99,24 @@ async function handleSubmit(): Promise<void> {
         ? error.message
         : 'No se ha podido completar el registro. Inténtalo de nuevo.',
   )
+}
+
+async function handleResendConfirmation(): Promise<void> {
+  submitError.value = ''
+  isResending.value = true
+
+  try {
+    await resendConfirmationEmail(registeredEmail.value)
+    successMessage.value =
+      'Correo de confirmación reenviado. Revisa tu bandeja de entrada y el correo no deseado.'
+  } catch (error: unknown) {
+    submitError.value =
+      error instanceof Error
+        ? error.message
+        : 'No se ha podido reenviar el correo. Inténtalo de nuevo.'
+  } finally {
+    isResending.value = false
+  }
 }
 </script>
 
@@ -227,8 +254,19 @@ async function handleSubmit(): Promise<void> {
           {{ submitError }}
         </Alert>
 
-        <Button type="submit" block :loading="isSubmitting">
+        <Button v-if="!confirmationPending" type="submit" block :loading="isSubmitting">
           {{ isSubmitting ? 'Creando cuenta…' : 'Crear cuenta' }}
+        </Button>
+
+        <Button
+          v-else
+          type="button"
+          variant="outline"
+          block
+          :loading="isResending"
+          @click="handleResendConfirmation"
+        >
+          {{ isResending ? 'Reenviando…' : 'Reenviar correo de confirmación' }}
         </Button>
       </form>
 

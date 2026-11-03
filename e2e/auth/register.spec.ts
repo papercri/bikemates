@@ -82,6 +82,28 @@ test.describe('register', () => {
     )
     // No se navega: la vista permanece en el formulario.
     await expect(page).toHaveURL('/register')
+    // El botón de alta desaparece y queda el reenvío de la confirmación.
+    await expect(page.getByRole('button', { name: 'Crear cuenta' })).toBeHidden()
+    await expect(
+      page.getByRole('button', { name: 'Reenviar correo de confirmación' }),
+    ).toBeVisible()
+  })
+
+  test('resends the confirmation email from the pending state', async ({ page, supabase }) => {
+    await page.goto('/register')
+    await page.getByLabel('Nombre').fill('Ana Pedal')
+    await page.getByLabel('Correo electrónico').fill('ana.nueva@example.com')
+    await page.getByLabel('Contraseña', { exact: true }).fill('pedaleando123')
+    await page.getByLabel('Confirmar contraseña').fill('pedaleando123')
+    await page.getByRole('checkbox').check()
+    await page.getByRole('button', { name: 'Crear cuenta' }).click()
+
+    await page.getByRole('button', { name: 'Reenviar correo de confirmación' }).click()
+
+    await expect(page.getByRole('status')).toHaveText(
+      'Correo de confirmación reenviado. Revisa tu bandeja de entrada y el correo no deseado.',
+    )
+    expect(supabase.state.lastResendEmail).toBe('ana.nueva@example.com')
   })
 
   test('reports an already registered email', async ({ page, supabase }) => {

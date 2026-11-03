@@ -9,6 +9,8 @@ export interface E2eUser {
 
 export interface E2eSeedUser extends E2eUser {
   password: string
+  /** `false` simula el estado "waiting for verification" de Supabase. */
+  emailConfirmed?: boolean
 }
 
 export interface DbRide {
@@ -103,6 +105,8 @@ export interface MockState {
   authDelayMs: number
   /** Última petición de inserción de ruta recibida (para asserts). */
   lastInsertedRide: Record<string, unknown> | null
+  /** Último email al que se pidió reenviar la confirmación (para asserts). */
+  lastResendEmail: string | null
 }
 
 export interface SupabaseMock {
@@ -190,8 +194,8 @@ function json(body: unknown, status = 200): FulfillBody {
   }
 }
 
-function authError(message: string, status = 400): FulfillBody {
-  return json({ code: status, error_code: 'invalid_credentials', msg: message }, status)
+function authError(message: string, status = 400, errorCode = 'invalid_credentials'): FulfillBody {
+  return json({ code: status, error_code: errorCode, msg: message }, status)
 }
 
 /** Cumple la ruta y devuelve `true` para que el caller sepa que ya está atendida. */
@@ -228,6 +232,7 @@ export async function mockSupabase(page: Page): Promise<SupabaseMock> {
     deleteAccountError: null,
     authDelayMs: 0,
     lastInsertedRide: null,
+    lastResendEmail: null,
   }
 
   function findUser(email: string): E2eSeedUser | undefined {
@@ -293,6 +298,7 @@ export async function mockSupabase(page: Page): Promise<SupabaseMock> {
         email,
         displayName: payload.data?.display_name?.trim() || 'Ciclista',
         password: payload.password,
+        emailConfirmed: state.signUpCreatesSession,
       }
       state.users.push(created)
 
@@ -302,6 +308,12 @@ export async function mockSupabase(page: Page): Promise<SupabaseMock> {
       }
 
       return fulfill(route, json({ user: buildUser(created, false), session: null }))
+    }
+
+    if (method === 'POST' && path === `${AUTH_PATH}resend`) {
+      const payload = body as { email?: string } | null
+      state.lastResendEmail = payload?.email?.trim().toLowerCase() ?? null
+      return fulfill(route, json({}))
     }
 
     if (method === 'POST' && path === `${AUTH_PATH}token`) {
@@ -314,6 +326,10 @@ export async function mockSupabase(page: Page): Promise<SupabaseMock> {
 
         if (!user || user.password !== payload?.password) {
           return fulfill(route, authError('Correo o contraseña incorrectos.'))
+        }
+
+        if (user.emailConfirmed === false) {
+          return fulfill(route, authError('Email not confirmed', 400, 'email_not_confirmed'))
         }
 
         state.currentUser = user
