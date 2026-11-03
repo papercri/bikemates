@@ -108,7 +108,7 @@ onBeforeUnmount(() => {
           class="mx-auto max-w-3xl font-display text-[2.75rem] leading-[0.95] font-medium tracking-[-0.025em] text-white sm:text-[clamp(2.4rem,6vw,4.4rem)]"
         >
           <span class="block">Sal en grupo.</span>
-          <span class="block">Descubre nuevas rutas.</span>
+          <span class="block">Descubre nuevas rutas.</span>  
         </h1>
 
         <p class="mt-6 max-w-xl text-base leading-7 text-white/85 sm:text-lg">
