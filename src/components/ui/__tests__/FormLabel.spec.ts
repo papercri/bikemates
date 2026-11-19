@@ -15,15 +15,22 @@ describe('FormLabel', () => {
     expect(label.text()).toBe('Correo electrónico')
   })
 
-  it('reserves the bottom margin by default', () => {
+  it('renders compact uppercase-free text without bottom margin', () => {
     const wrapper = mount(FormLabel, { props: { id: 'email' } })
 
-    expect(wrapper.get('label').classes()).toContain('mb-2')
+    expect(wrapper.get('label').classes()).toContain('block')
+    expect(wrapper.get('label').classes()).toContain('text-xs')
+    expect(wrapper.get('label').classes()).toContain('font-semibold')
+    expect(wrapper.get('label').classes()).not.toContain('mb-2')
   })
 
-  it('drops the margin when it is disabled', () => {
-    const wrapper = mount(FormLabel, { props: { id: 'email', margin: false } })
+  it('shows the required marker and sr-only hint when required', () => {
+    const wrapper = mount(FormLabel, {
+      props: { id: 'email', required: true },
+      slots: { default: 'Correo electrónico' },
+    })
 
-    expect(wrapper.get('label').classes()).not.toContain('mb-2')
+    expect(wrapper.get('label').text()).toContain('*')
+    expect(wrapper.get('label').text()).toContain('(obligatorio)')
   })
 })

@@ -72,7 +72,8 @@ export function buildRideInput(
     meetingPointDetails: values.meetingPointDetails.trim() || null,
     latitude,
     longitude,
-    bikeType: values.bikeType,
+    // No obligatorio: si va vacío se publica como «Todas».
+    bikeType: values.bikeType.trim() ? values.bikeType : 'all',
     level: values.level,
     distanceKm: Number(values.distanceKm),
     elevationM: Number(values.elevationM),

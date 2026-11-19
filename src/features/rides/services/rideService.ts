@@ -1,6 +1,12 @@
 import { supabase } from '@/services/supabase'
 import { getCurrentUserRole } from '@/features/profile/services/userRoleService'
-import type { CreateRideInput, UpdateRideInput, Ride, RideParticipant } from '../types'
+import type {
+  CreateRideInput,
+  RideFormServerError,
+  UpdateRideInput,
+  Ride,
+  RideParticipant,
+} from '../types'
 import {
   isBikeType,
   isRideAudience,
@@ -8,6 +14,47 @@ import {
   isRideRouteType,
   isRideStatus,
 } from '../validators/rideValueGuards'
+
+/**
+ * Error de escritura de rides con el campo del formulario que lo ha provocado,
+ * para que la UI pueda marcarlo en rojo junto al control.
+ */
+export class RideServiceError extends Error {
+  readonly field: RideFormServerError['field'] | null
+
+  constructor(message: string, field: RideFormServerError['field'] | null = null) {
+    super(message)
+    this.name = 'RideServiceError'
+    this.field = field
+  }
+}
+
+/** Traduce violaciones de CHECK de rides a un error con campo y mensaje claro. */
+function mapRideWriteError(
+  error: { code?: string; message: string },
+  fallbackMessage: string,
+): Error {
+  const isCheckViolation =
+    error.code === '23514' || error.message.includes('violates check constraint')
+
+  if (isCheckViolation) {
+    if (error.message.includes('rides_meeting_point_check')) {
+      return new RideServiceError(
+        'Selecciona un punto de encuentro en el mapa y opcionalmente describe cómo llegar en el campo de detalles.',
+        'meetingPoint',
+      )
+    }
+
+    if (error.message.includes('rides_bike_type_check')) {
+      return new RideServiceError(
+        'Tipo de bicicleta no válido. Selecciona una opción de la lista.',
+        'bikeType',
+      )
+    }
+  }
+
+  return new Error(fallbackMessage)
+}
 function getRideImageUrl(imagePath: string | null): string | null {
   if (!imagePath) {
     return null
@@ -123,7 +170,7 @@ export async function createRide(input: CreateRideInput): Promise<Ride> {
 
   if (error) {
     console.error('Error en rideService:', error.message)
-    throw new Error('No se ha podido crear la ruta. Inténtalo de nuevo.')
+    throw mapRideWriteError(error, 'No se ha podido crear la ruta. Inténtalo de nuevo.')
   }
 
   // El organizador participa siempre: se inscribe con la misma RPC que el
@@ -307,7 +354,7 @@ export async function updateRide(id: string, input: UpdateRideInput): Promise<Ri
 
   if (error) {
     console.error('Error en rideService:', error.message)
-    throw new Error('No se han podido guardar los cambios. Inténtalo de nuevo.')
+    throw mapRideWriteError(error, 'No se han podido guardar los cambios. Inténtalo de nuevo.')
   }
 
   if (!data) {

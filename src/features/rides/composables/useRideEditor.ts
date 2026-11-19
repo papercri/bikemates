@@ -1,14 +1,14 @@
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { deleteRideImage, uploadRideImage } from '../services/rideImageService'
-import { getRideForEdit, updateRide } from '../services/rideService'
+import { getRideForEdit, updateRide, RideServiceError } from '../services/rideService'
 import {
   buildRideInput,
   createEmptyRideFormValues,
   mapRideToFormValues,
 } from '../utils/rideFormMapping'
 import { MEETING_POINT_ERROR } from '../validators/rideFormValidator'
-import type { Ride, RideFormSubmission } from '../types'
+import type { Ride, RideFormServerError, RideFormSubmission } from '../types'
 
 /**
  * Edita una ruta existente: la carga al montar y la guarda al enviar
@@ -22,6 +22,7 @@ export function useRideEditor(rideId: string | null) {
   const isLoading = ref(true)
   const isSubmitting = ref(false)
   const errorMessage = ref<string | null>(null)
+  const fieldError = ref<RideFormServerError | null>(null)
   const initialValues = ref(createEmptyRideFormValues())
 
   async function loadRide(): Promise<void> {
@@ -50,6 +51,7 @@ export function useRideEditor(rideId: string | null) {
 
     isSubmitting.value = true
     errorMessage.value = null
+    fieldError.value = null
 
     const currentRide = ride.value
 
@@ -72,7 +74,7 @@ export function useRideEditor(rideId: string | null) {
       const input = buildRideInput(payload.values, imagePath)
 
       if (!input) {
-        errorMessage.value = MEETING_POINT_ERROR
+        fieldError.value = { field: 'meetingPoint', message: MEETING_POINT_ERROR }
         return
       }
 
@@ -105,7 +107,11 @@ export function useRideEditor(rideId: string | null) {
         }
       }
 
-      errorMessage.value = 'No se han podido guardar los cambios. Inténtalo de nuevo.'
+      if (error instanceof RideServiceError && error.field) {
+        fieldError.value = { field: error.field, message: error.message }
+      } else {
+        errorMessage.value = 'No se han podido guardar los cambios. Inténtalo de nuevo.'
+      }
     } finally {
       isSubmitting.value = false
     }
@@ -118,6 +124,7 @@ export function useRideEditor(rideId: string | null) {
     isLoading,
     isSubmitting,
     errorMessage,
+    fieldError,
     initialValues,
     saveRide,
   }

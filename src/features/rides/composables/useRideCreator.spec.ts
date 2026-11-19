@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Ride, RideFormSubmission, RideFormValues } from '../types'
 import { useRideCreator } from './useRideCreator'
+import { RideServiceError } from '../services/rideService'
 import { MEETING_POINT_ERROR } from '../validators/rideFormValidator'
 
 const mocks = vi.hoisted(() => ({
@@ -19,9 +20,13 @@ vi.mock('../services/rideImageService', () => ({
   deleteRideImage: mocks.deleteRideImage,
 }))
 
-vi.mock('../services/rideService', () => ({
-  createRide: mocks.createRide,
-}))
+vi.mock('../services/rideService', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../services/rideService')>()
+  return {
+    ...actual,
+    createRide: mocks.createRide,
+  }
+})
 
 function formValues(overrides: Partial<RideFormValues> = {}): RideFormValues {
   return {
@@ -95,13 +100,33 @@ describe('useRideCreator', () => {
   })
 
   it('rejects a payload without a valid meeting point before touching the services', async () => {
-    const { createPublishedRide, errorMessage } = useRideCreator()
+    const { createPublishedRide, fieldError } = useRideCreator()
 
     await createPublishedRide(submission({ values: formValues({ latitude: null }) }))
 
-    expect(errorMessage.value).toBe(MEETING_POINT_ERROR)
+    expect(fieldError.value).toEqual({ field: 'meetingPoint', message: MEETING_POINT_ERROR })
     expect(mocks.uploadRideImage).not.toHaveBeenCalled()
     expect(mocks.createRide).not.toHaveBeenCalled()
+  })
+
+  it('exposes a field error when the service rejects a check constraint', async () => {
+    mocks.createRide.mockRejectedValue(
+      new RideServiceError(
+        'Selecciona un punto de encuentro en el mapa y opcionalmente describe cómo llegar en el campo de detalles.',
+        'meetingPoint',
+      ),
+    )
+
+    const { createPublishedRide, fieldError, errorMessage } = useRideCreator()
+
+    await createPublishedRide(submission())
+
+    expect(fieldError.value).toEqual({
+      field: 'meetingPoint',
+      message:
+        'Selecciona un punto de encuentro en el mapa y opcionalmente describe cómo llegar en el campo de detalles.',
+    })
+    expect(errorMessage.value).toBeNull()
   })
 
   it('deletes the uploaded image when the ride could not be created', async () => {

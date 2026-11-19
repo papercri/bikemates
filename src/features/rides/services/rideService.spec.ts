@@ -3,7 +3,7 @@ import type { CreateRideInput, UpdateRideInput } from '../types'
 
 interface SupabaseResult {
   data: unknown
-  error: { message: string } | null
+  error: { message: string; code?: string } | null
 }
 
 const mocks = vi.hoisted(() => ({
@@ -39,6 +39,7 @@ import {
   joinRide,
   leaveRide,
   updateRide,
+  RideServiceError,
 } from './rideService'
 
 /** Cadena consultable que devuelve el resultado al esperarse (single, maybeSingle o await). */
@@ -240,6 +241,43 @@ describe('rideService', () => {
       await expect(createRide(createInput())).rejects.toThrow(
         'No se ha podido crear la ruta. Inténtalo de nuevo.',
       )
+    })
+
+    it('maps a meeting_point check violation to a field error', async () => {
+      mocks.from.mockReturnValue(
+        createQueryChain({
+          data: null,
+          error: {
+            code: '23514',
+            message:
+              'new row for relation "rides" violates check constraint "rides_meeting_point_check"',
+          },
+        }),
+      )
+
+      const error = await createRide(createInput()).catch((e: unknown) => e)
+
+      expect(error).toBeInstanceOf(RideServiceError)
+      expect((error as RideServiceError).field).toBe('meetingPoint')
+      expect((error as Error).message).toContain('Selecciona un punto de encuentro')
+    })
+
+    it('maps a bike_type check violation to a field error', async () => {
+      mocks.from.mockReturnValue(
+        createQueryChain({
+          data: null,
+          error: {
+            code: '23514',
+            message: 'new row for relation "rides" violates check constraint "rides_bike_type_check"',
+          },
+        }),
+      )
+
+      const error = await createRide(createInput()).catch((e: unknown) => e)
+
+      expect(error).toBeInstanceOf(RideServiceError)
+      expect((error as RideServiceError).field).toBe('bikeType')
+      expect((error as Error).message).toContain('Tipo de bicicleta no válido')
     })
 
     it('rejects rows whose domain values fall outside the known unions', async () => {

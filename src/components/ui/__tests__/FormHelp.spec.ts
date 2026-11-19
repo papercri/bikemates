@@ -26,9 +26,10 @@ describe('FormHelp', () => {
     const help = mount(FormHelp, { slots: { default: 'Ayuda' } }).get('p')
     const error = mount(FormError, { slots: { default: 'Error' } }).get('p')
 
-    expect(help.classes()).toContain('mt-2')
-    expect(help.classes()).toContain('text-sm')
+    expect(help.classes()).toContain('text-xs')
     expect(help.classes()).toContain('text-graphite')
+    expect(help.classes()).not.toContain('mt-2')
+    expect(help.classes()).not.toContain('text-sm')
     expect(error.classes()).toContain('text-red-700')
   })
 })

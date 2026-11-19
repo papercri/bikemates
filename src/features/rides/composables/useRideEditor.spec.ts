@@ -22,10 +22,14 @@ vi.mock('../services/rideImageService', () => ({
   deleteRideImage: mocks.deleteRideImage,
 }))
 
-vi.mock('../services/rideService', () => ({
-  getRideForEdit: mocks.getRideForEdit,
-  updateRide: mocks.updateRide,
-}))
+vi.mock('../services/rideService', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../services/rideService')>()
+  return {
+    ...actual,
+    getRideForEdit: mocks.getRideForEdit,
+    updateRide: mocks.updateRide,
+  }
+})
 
 function rideOf(overrides: Partial<Ride> = {}): Ride {
   return {
@@ -220,7 +224,11 @@ describe('useRideEditor', () => {
       await wrapper.vm.saveRide(submission({ values: formValues({ longitude: null }) }))
 
       expect(mocks.updateRide).not.toHaveBeenCalled()
-      expect(wrapper.vm.errorMessage).toBe(MEETING_POINT_ERROR)
+      expect(wrapper.vm.fieldError).toEqual({
+        field: 'meetingPoint',
+        message: MEETING_POINT_ERROR,
+      })
+      expect(wrapper.vm.errorMessage).toBeNull()
     })
 
     it('ignores the save when the ride has not been loaded yet', async () => {

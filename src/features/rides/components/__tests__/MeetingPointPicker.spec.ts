@@ -32,8 +32,13 @@ describe('MeetingPointPicker', () => {
   it('renders the field, the help text and the search button', () => {
     const wrapper = mountPicker()
 
-    expect(wrapper.get('label[for="meeting-point-search"]').text()).toBe('Punto de encuentro')
-    expect(wrapper.get('#meeting-point-help').text()).toContain('Busca un lugar')
+    expect(wrapper.get('label[for="meeting-point-search"]').text()).toContain(
+      'Punto de encuentro',
+    )
+    expect(wrapper.get('label[for="meeting-point-search"]').text()).toContain('*')
+    expect(wrapper.get('#meeting-point-help').text()).toContain(
+      'Busca un punto aproximado para el encuentro',
+    )
     expect(wrapper.get('button').text()).toBe('Buscar')
   })
 
