@@ -1,5 +1,6 @@
 import type { RideFormValues } from '../types'
 import { validateRideImage } from './rideImageValidator'
+import { isBikeType } from './rideValueGuards'
 
 const TITLE_MIN = 5
 const TITLE_MAX = 100
@@ -90,7 +91,12 @@ function validateDescription(value: string): string | null {
     return 'La descripción contiene palabras no permitidas.'
   }
 
+  // Campo opcional: vacío es válido. Si se escribe, se exige el mínimo.
   const length = value.trim().length
+
+  if (length === 0) {
+    return null
+  }
 
   return length < DESCRIPTION_MIN || length > DESCRIPTION_MAX
     ? `La descripción debe tener entre ${DESCRIPTION_MIN} y ${DESCRIPTION_MAX} caracteres.`
@@ -217,6 +223,15 @@ function validateRouteLink(value: string): string | null {
     : 'Introduce una URL HTTPS válida (Wikiloc, Strava, Meetup…).'
 }
 
+function validateBikeType(value: string): string | null {
+  // Campo no obligatorio: vacío equivale a «Todas» (`all`).
+  if (!value.trim()) {
+    return null
+  }
+
+  return isBikeType(value) ? null : 'Selecciona un tipo de bicicleta válido.'
+}
+
 function validateImage(image: File | null): string | null {
   return image ? validateRideImage(image) : null
 }
@@ -232,6 +247,7 @@ export type RideFormField =
   | 'durationMinutes'
   | 'maxParticipants'
   | 'wikilocUrl'
+  | 'bikeType'
   | 'image'
 
 /** Error de cada campo, o `null` cuando el campo es válido. */
@@ -248,6 +264,7 @@ const FIELD_ORDER: readonly RideFormField[] = [
   'durationMinutes',
   'maxParticipants',
   'wikilocUrl',
+  'bikeType',
   'image',
 ]
 
@@ -278,6 +295,7 @@ export function validateRideFormFields(
     durationMinutes: validateDurationMinutes(values.durationMinutes),
     maxParticipants: validateMaxParticipants(values.maxParticipants),
     wikilocUrl: validateRouteLink(values.wikilocUrl),
+    bikeType: validateBikeType(values.bikeType),
     image: validateImage(image),
   }
 }

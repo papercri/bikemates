@@ -17,11 +17,11 @@ import ConfirmDialog from '@/components/ui/ConfirmDialog.vue'
 import Typography from '@/components/ui/Typography.vue'
 
 import { getRideImageUrl, uploadRideImage } from '@/features/rides/services/rideImageService'
-import { createRide, deleteRide } from '@/features/rides/services/rideService'
+import { createRide, deleteRide, RideServiceError } from '@/features/rides/services/rideService'
 import { buildRideInput } from '@/features/rides/utils/rideFormMapping'
 import { MEETING_POINT_ERROR } from '@/features/rides/validators/rideFormValidator'
 import { useRideEditor } from '@/features/rides/composables/useRideEditor'
-import type { RideFormSubmission } from '@/features/rides/types'
+import type { RideFormServerError, RideFormSubmission } from '@/features/rides/types'
 
 useHead({
   title: 'Editar ruta | BikeMates',
@@ -42,9 +42,8 @@ const rideId = computed(() => {
   return typeof id === 'string' ? id : null
 })
 
-const { ride, isLoading, isSubmitting, errorMessage, initialValues, saveRide } = useRideEditor(
-  rideId.value,
-)
+const { ride, isLoading, isSubmitting, errorMessage, fieldError, initialValues, saveRide } =
+  useRideEditor(rideId.value)
 
 async function handleSubmit(payload: RideFormSubmission): Promise<void> {
   await saveRide(payload)
@@ -52,26 +51,32 @@ async function handleSubmit(payload: RideFormSubmission): Promise<void> {
 
 const isDuplicating = ref(false)
 const duplicateError = ref('')
+const duplicateFieldError = ref<RideFormServerError | null>(null)
 
 /** Crea una ruta nueva con los datos del formulario y abre su detalle. */
 async function handleDuplicate(payload: RideFormSubmission): Promise<void> {
   if (isDuplicating.value) return
   isDuplicating.value = true
   duplicateError.value = ''
+  duplicateFieldError.value = null
 
   try {
     const imagePath = payload.image ? await uploadRideImage(payload.image) : null
     const input = buildRideInput(payload.values, imagePath)
 
     if (!input) {
-      duplicateError.value = MEETING_POINT_ERROR
+      duplicateFieldError.value = { field: 'meetingPoint', message: MEETING_POINT_ERROR }
       return
     }
 
     const created = await createRide({ ...input, status: 'published' })
     await router.push({ name: 'ride-detail', params: { id: created.id } })
-  } catch {
-    duplicateError.value = 'No se ha podido publicar la copia. Inténtalo de nuevo.'
+  } catch (error: unknown) {
+    if (error instanceof RideServiceError && error.field) {
+      duplicateFieldError.value = { field: error.field, message: error.message }
+    } else {
+      duplicateError.value = 'No se ha podido publicar la copia. Inténtalo de nuevo.'
+    }
   } finally {
     isDuplicating.value = false
   }
@@ -144,6 +149,7 @@ async function confirmRideDeletion(): Promise<void> {
           mode="edit"
           :is-submitting="isSubmitting || isDuplicating"
           :error-message="duplicateError || errorMessage"
+          :field-error="duplicateFieldError || fieldError"
           @submit="handleSubmit"
           @duplicate="handleDuplicate"
         />

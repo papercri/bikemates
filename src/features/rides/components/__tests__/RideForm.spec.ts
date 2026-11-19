@@ -211,10 +211,84 @@ describe('RideForm', () => {
     expect(wrapper.find('[role="alert"]').exists()).toBe(false)
   })
 
-  it('shows the server error reported by the parent', () => {
+  it('shows the server error reported by the parent next to the submit button', () => {
     const wrapper = mountForm({ errorMessage: 'No se ha podido publicar la ruta.' })
 
     expect(wrapper.text()).toContain('No se ha podido publicar la ruta.')
+
+    // Nunca al principio del formulario: el alert vive en el bloque del CTA.
+    const alerts = wrapper.findAll('[role="alert"]')
+    expect(alerts).toHaveLength(1)
+    const formChildren = wrapper.get('form').element.children
+    const alertIndex = Array.from(formChildren).findIndex(
+      (el) => el.querySelector?.('[role="alert"]') ?? el.matches?.('[role="alert"]'),
+    )
+    const ctaIndex = Array.from(formChildren).findIndex((el) =>
+      el.querySelector?.('button[type="submit"]'),
+    )
+    expect(alertIndex).toBeGreaterThan(-1)
+    expect(ctaIndex).toBeGreaterThan(-1)
+    expect(alertIndex).toBeGreaterThan(ctaIndex - 2)
+    expect(alertIndex).toBeLessThan(ctaIndex + 1)
+  })
+
+  it('marks the server field error on the meeting point control', async () => {
+    const wrapper = mountForm({
+      fieldError: {
+        field: 'meetingPoint',
+        message:
+          'Selecciona un punto de encuentro en el mapa y opcionalmente describe cómo llegar en el campo de detalles.',
+      },
+    })
+
+    expect(wrapper.get('#meetingPoint-error').text()).toContain(
+      'Selecciona un punto de encuentro en el mapa',
+    )
+    expect(wrapper.get('[role="alert"]').text()).toContain(
+      'Selecciona un punto de encuentro en el mapa',
+    )
+  })
+
+  it('allows an empty description', async () => {
+    const wrapper = mountForm({ initialValues: validValues({ description: '' }) })
+
+    await acceptRules(wrapper)
+    await wrapper.get('form').trigger('submit')
+
+    expect(wrapper.emitted('submit')).toHaveLength(1)
+  })
+
+  it('shows a red asterisk on required field labels only', () => {
+    const wrapper = mountForm()
+
+    const requiredLabels = [
+      'Nombre de la ruta',
+      'Fecha y hora de salida',
+      'Distancia (km)',
+      'Duración estimada (min)',
+      'Nivel',
+      '¿Para quién es esta ruta?',
+    ]
+    const optionalLabels = [
+      'Descripción',
+      'Desnivel positivo (m)',
+      'Enlace del recorrido',
+      'Tipo de bicicleta',
+      'Máximo de participantes',
+    ]
+
+    for (const text of requiredLabels) {
+      const label = wrapper.findAll('label').find((l) => l.text().startsWith(text))
+      expect(label, `falta label obligatorio: ${text}`).toBeDefined()
+      expect(label!.text()).toContain('*')
+    }
+
+    for (const text of optionalLabels) {
+      const label = wrapper.findAll('label').find((l) => l.text().startsWith(text))
+      expect(label, `falta label opcional: ${text}`).toBeDefined()
+      expect(label!.text()).not.toContain('*')
+      expect(label!.text()).not.toContain('(opcional)')
+    }
   })
 
   it('ignores the submit while the parent is already submitting', async () => {

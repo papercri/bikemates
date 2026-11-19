@@ -69,15 +69,15 @@ Live at **[bikemates.vercel.app](https://bikemates.vercel.app/)**.
 
 ## Maps & external services
 
-| Service | Used for | Notes |
-| ------- | -------- | ----- |
-| **Leaflet** + **OpenStreetMap tiles** | Meeting-point map on the ride detail page | Custom bike-pin marker, popup with the address, `scrollWheelZoom` disabled |
-| **Nominatim** (OpenStreetMap geocoding) | Meeting-point search in the ride form | `nominatim.openstreetmap.org/search`, Spain-only (`countrycodes=es`), min. 3 characters, abortable requests |
-| **Google Maps** | «Abrir en Google Maps» button | Keyless deep link built from the ride coordinates |
-| **Wikiloc / route URLs** | «Ver ruta» button on the detail page | Any HTTPS route URL (Wikiloc, Strava, Meetup…) |
-| **Google Calendar / Outlook / RFC 5545 `.ics`** | Add-to-calendar menu | Client-side URL and file generation |
-| **WhatsApp / Telegram / X / Facebook / Gmail** | Share menu | Standard share intents |
-| **Vercel Analytics** | Anonymous usage analytics | Loaded via `@vercel/analytics`; a cookie notice is displayed |
+| Service                                         | Used for                                  | Notes                                                                                                       |
+| ----------------------------------------------- | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Leaflet** + **OpenStreetMap tiles**           | Meeting-point map on the ride detail page | Custom bike-pin marker, popup with the address, `scrollWheelZoom` disabled                                  |
+| **Nominatim** (OpenStreetMap geocoding)         | Meeting-point search in the ride form     | `nominatim.openstreetmap.org/search`, Spain-only (`countrycodes=es`), min. 3 characters, abortable requests |
+| **Google Maps**                                 | «Abrir en Google Maps» button             | Keyless deep link built from the ride coordinates                                                           |
+| **Wikiloc / route URLs**                        | «Ver ruta» button on the detail page      | Any HTTPS route URL (Wikiloc, Strava, Meetup…)                                                              |
+| **Google Calendar / Outlook / RFC 5545 `.ics`** | Add-to-calendar menu                      | Client-side URL and file generation                                                                         |
+| **WhatsApp / Telegram / X / Facebook / Gmail**  | Share menu                                | Standard share intents                                                                                      |
+| **Vercel Analytics**                            | Anonymous usage analytics                 | Loaded via `@vercel/analytics`; a cookie notice is displayed                                                |
 
 No advertising or third-party trackers are loaded.
 
@@ -85,17 +85,17 @@ No advertising or third-party trackers are loaded.
 
 ## Tech stack
 
-| Layer    | Technology |
-| -------- | ---------- |
-| Frontend | Vue 3 (Composition API, `<script setup lang="ts">`), Vite, Vue Router, Pinia |
-| Language | Strict TypeScript (no `any`, `noUncheckedIndexedAccess`) |
-| Styling  | Tailwind CSS v4 (design tokens in `src/assets/main.css`) |
-| Maps     | Leaflet + OpenStreetMap; Nominatim geocoding |
-| Motion   | `motion-v` (hero parallax, in-view reveals; respects `prefers-reduced-motion`) |
-| SEO      | `@unhead/vue` (titles, Open Graph, canonical, JSON-LD, robots/sitemap) |
-| Backend  | Supabase — Auth, PostgreSQL with RLS, Storage, RPCs, Edge Functions |
+| Layer    | Technology                                                                              |
+| -------- | --------------------------------------------------------------------------------------- |
+| Frontend | Vue 3 (Composition API, `<script setup lang="ts">`), Vite, Vue Router, Pinia            |
+| Language | Strict TypeScript (no `any`, `noUncheckedIndexedAccess`)                                |
+| Styling  | Tailwind CSS v4 (design tokens in `src/assets/main.css`)                                |
+| Maps     | Leaflet + OpenStreetMap; Nominatim geocoding                                            |
+| Motion   | `motion-v` (hero parallax, in-view reveals; respects `prefers-reduced-motion`)          |
+| SEO      | `@unhead/vue` (titles, Open Graph, canonical, JSON-LD, robots/sitemap)                  |
+| Backend  | Supabase — Auth, PostgreSQL with RLS, Storage, RPCs, Edge Functions                     |
 | Tests    | Vitest + Vue Test Utils (629 unit tests); Playwright (164 e2e tests, Chromium + mobile) |
-| Quality  | ESLint, oxlint, Prettier, `vue-tsc` |
+| Quality  | ESLint, oxlint, Prettier, `vue-tsc`                                                     |
 
 ### Supabase APIs
 
@@ -106,6 +106,10 @@ No advertising or third-party trackers are loaded.
   duplicate-join rules live in the database).
 - **Storage** — public buckets for ride covers and avatars.
 - **Edge Functions** — `delete-account` (server-side account removal).
+- **Migrations** — SQL files under `supabase/migrations/` are applied manually in the
+  Supabase SQL editor when the project does not use the CLI. Run pending migrations before
+  testing form writes (e.g. `20261119_fix_rides_check_constraints.sql` relaxes the rides
+  `bike_type`, `meeting_point`, and `description` CHECK constraints).
 
 ---
 
@@ -126,22 +130,22 @@ npm run test:e2e   # playwright (Chromium + mobile profiles)
 
 ## Routes
 
-| Route              | Access        | Purpose |
-| ------------------ | ------------- | ------- |
-| `/`                | public        | Landing page (hero, ride preview, CTAs) |
-| `/rides`           | public        | Ride catalogue with filters |
+| Route              | Access        | Purpose                                   |
+| ------------------ | ------------- | ----------------------------------------- |
+| `/`                | public        | Landing page (hero, ride preview, CTAs)   |
+| `/rides`           | public        | Ride catalogue with filters               |
 | `/rides/:id`       | public        | Ride detail (map, participants, comments) |
-| `/rides/create`    | authenticated | Publish a new ride |
-| `/rides/:id/edit`  | authenticated | Edit / publish-as-new / delete a ride |
-| `/register`        | public        | Sign up |
-| `/login`           | public        | Sign in (supports `?redirect=`) |
-| `/forgot-password` | public        | Password recovery request |
-| `/reset-password`  | public        | Password reset |
-| `/auth/confirm`    | public        | Email confirmation |
-| `/profile`         | authenticated | Profile: details, my rides, saved rides |
-| `/community-rules` | public        | Community rules |
-| `/privacy`         | public        | Privacy policy |
-| any other          | public        | 404 (`noindex`) |
+| `/rides/create`    | authenticated | Publish a new ride                        |
+| `/rides/:id/edit`  | authenticated | Edit / publish-as-new / delete a ride     |
+| `/register`        | public        | Sign up                                   |
+| `/login`           | public        | Sign in (supports `?redirect=`)           |
+| `/forgot-password` | public        | Password recovery request                 |
+| `/reset-password`  | public        | Password reset                            |
+| `/auth/confirm`    | public        | Email confirmation                        |
+| `/profile`         | authenticated | Profile: details, my rides, saved rides   |
+| `/community-rules` | public        | Community rules                           |
+| `/privacy`         | public        | Privacy policy                            |
+| any other          | public        | 404 (`noindex`)                           |
 
 The router guard resolves the session and redirects unauthenticated users to `/login`. **The
 guard is not a security boundary** — authorization is enforced by PostgreSQL RLS policies.

@@ -26,7 +26,6 @@ const model = defineModel<T>({ required: true })
   <div class="min-w-0">
     <FormLabel
       :id="id"
-      :margin="false"
       :class="labelHidden ? 'sr-only' : 'mb-1.5 text-xs font-semibold text-graphite'"
     >
       {{ label }}

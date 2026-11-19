@@ -3,7 +3,11 @@ import { computed, reactive, ref, watch } from 'vue'
 import { faImage } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-import type { RideFormSubmission, RideFormValues } from '@/features/rides/types'
+import type {
+  RideFormServerError,
+  RideFormSubmission,
+  RideFormValues,
+} from '@/features/rides/types'
 import type { GeocodingResult } from '@/features/rides/services/geocodingService'
 
 import {
@@ -40,6 +44,7 @@ const props = defineProps<{
   initialValues: RideFormValues
   isSubmitting: boolean
   errorMessage: string | null
+  fieldError?: RideFormServerError | null
   mode?: 'create' | 'edit'
   initialImageUrl?: string | null
 }>()
@@ -65,8 +70,27 @@ const form = reactive<RideFormValues>({
 
 const fieldErrors = ref<RideFormErrors>(emptyRideFormErrors())
 
+/** Error devuelto por el servidor para un campo concreto (check constraints). */
+const serverFieldError = ref<RideFormServerError | null>(props.fieldError ?? null)
+
+watch(
+  () => props.fieldError,
+  (value) => {
+    serverFieldError.value = value ?? null
+  },
+)
+
+/** Errores visibles: validación local más los del servidor, por campo. */
+const displayErrors = computed<RideFormErrors>(() => {
+  const errors = { ...fieldErrors.value }
+  if (serverFieldError.value) {
+    errors[serverFieldError.value.field] = serverFieldError.value.message
+  }
+  return errors
+})
+
 /** Primer error del formulario, en orden de visualización: resumen junto al botón. */
-const summaryError = computed(() => firstRideFormError(fieldErrors.value))
+const summaryError = computed(() => firstRideFormError(displayErrors.value))
 
 /** Requisito para publicar: aceptar explícitamente las normas de la comunidad. */
 const acceptedRules = ref(false)
@@ -101,6 +125,7 @@ watch(
   form,
   () => {
     fieldErrors.value = emptyRideFormErrors()
+    serverFieldError.value = null
   },
   { deep: true },
 )
@@ -113,6 +138,8 @@ function handlePlaceSelect(place: GeocodingResult | null): void {
 
 function handleSubmit(): void {
   if (props.isSubmitting) return
+
+  serverFieldError.value = null
 
   const errors = validateRideFormFields(form, selectedImage.value)
 
@@ -138,6 +165,8 @@ function handleSubmit(): void {
 function handleDuplicate(): void {
   if (props.isSubmitting) return
 
+  serverFieldError.value = null
+
   const errors = validateRideFormFields(form, selectedImage.value)
   fieldErrors.value = imageError.value ? { ...errors, image: imageError.value } : errors
   rulesError.value = acceptedRules.value
@@ -155,33 +184,29 @@ function handleDuplicate(): void {
 
 <template>
   <form novalidate class="space-y-6" @submit.prevent="handleSubmit">
-    <Alert v-if="errorMessage" boxed>
-      {{ errorMessage }}
-    </Alert>
-
     <fieldset class="min-w-0 border-0 p-0">
       <legend :class="legendClasses">Datos básicos</legend>
 
       <div class="mt-3.5 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
         <div>
-          <FormLabel id="title">Nombre de la ruta</FormLabel>
+          <FormLabel id="title" required>Nombre de la ruta</FormLabel>
           <Input
             id="title"
             v-model="form.title"
             name="title"
             required
             maxlength="100"
-            :aria-invalid="Boolean(fieldErrors.title)"
-            :aria-describedby="fieldErrors.title ? 'title-error' : 'title-help'"
+            :aria-invalid="Boolean(displayErrors.title)"
+            :aria-describedby="displayErrors.title ? 'title-error' : 'title-help'"
           />
-          <FormError v-if="fieldErrors.title" id="title-error">
-            {{ fieldErrors.title }}
+          <FormError v-if="displayErrors.title" id="title-error">
+            {{ displayErrors.title }}
           </FormError>
           <FormHelp v-else id="title-help">Entre 5 y 100 caracteres.</FormHelp>
         </div>
 
         <div>
-          <FormLabel id="startsAt">Fecha y hora de salida</FormLabel>
+          <FormLabel id="startsAt" required>Fecha y hora de salida</FormLabel>
           <Input
             id="startsAt"
             v-model="form.startsAt"
@@ -189,11 +214,11 @@ function handleDuplicate(): void {
             type="datetime-local"
             step="900"
             required
-            :aria-invalid="Boolean(fieldErrors.startsAt)"
+            :aria-invalid="Boolean(displayErrors.startsAt)"
             aria-describedby="startsAt-error"
           />
-          <FormError v-if="fieldErrors.startsAt" id="startsAt-error">
-            {{ fieldErrors.startsAt }}
+          <FormError v-if="displayErrors.startsAt" id="startsAt-error">
+            {{ displayErrors.startsAt }}
           </FormError>
         </div>
 
@@ -204,16 +229,14 @@ function handleDuplicate(): void {
             v-model="form.description"
             name="description"
             :rows="6"
-            :minlength="10"
             :maxlength="DESCRIPTION_MAX_LENGTH"
-            required
             placeholder="Describe el recorrido, el terreno y qué deben llevar los participantes..."
-            :aria-invalid="Boolean(fieldErrors.description)"
-            :aria-describedby="fieldErrors.description ? 'description-error' : undefined"
+            :aria-invalid="Boolean(displayErrors.description)"
+            :aria-describedby="displayErrors.description ? 'description-error' : undefined"
             class="[&_textarea]:min-h-40 sm:[&_textarea]:min-h-0"
           />
-          <FormError v-if="fieldErrors.description" id="description-error">
-            {{ fieldErrors.description }}
+          <FormError v-if="displayErrors.description" id="description-error">
+            {{ displayErrors.description }}
           </FormError>
           <p class="mt-1 text-right text-xs text-graphite tabular-nums">
             {{ form.description.length }}/{{ DESCRIPTION_MAX_LENGTH }}
@@ -229,8 +252,8 @@ function handleDuplicate(): void {
         <div>
           <MeetingPointPicker :initial-value="form.meetingPoint" @select="handlePlaceSelect" />
 
-          <FormError v-if="fieldErrors.meetingPoint" id="meetingPoint-error">
-            {{ fieldErrors.meetingPoint }}
+          <FormError v-if="displayErrors.meetingPoint" id="meetingPoint-error">
+            {{ displayErrors.meetingPoint }}
           </FormError>
           <FormHelp v-else-if="form.meetingPoint">
             Punto seleccionado: {{ form.meetingPoint }}
@@ -247,72 +270,72 @@ function handleDuplicate(): void {
               aria-describedby="meetingPointDetails-help"
             />
             <FormHelp id="meetingPointDetails-help">
-              Obligatorio solo si no has fijado el punto en el mapa.
+              Si necesitas explicar cómo llegar o dar más referencias, escríbelas aquí.
             </FormHelp>
           </div>
         </div>
 
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
           <div>
-            <FormLabel id="distanceKm">Distancia (km)</FormLabel>
+            <FormLabel id="distanceKm" required>Distancia (km)</FormLabel>
             <Input
               id="distanceKm"
               v-model="form.distanceKm"
               name="distanceKm"
               inputmode="decimal"
               required
-              :aria-invalid="Boolean(fieldErrors.distanceKm)"
+              :aria-invalid="Boolean(displayErrors.distanceKm)"
               aria-describedby="distanceKm-error"
             />
-            <FormError v-if="fieldErrors.distanceKm" id="distanceKm-error">
-              {{ fieldErrors.distanceKm }}
+            <FormError v-if="displayErrors.distanceKm" id="distanceKm-error">
+              {{ displayErrors.distanceKm }}
             </FormError>
           </div>
 
           <div>
-            <FormLabel id="elevationM">Desnivel positivo (m, opcional)</FormLabel>
+            <FormLabel id="elevationM">Desnivel positivo (m)</FormLabel>
             <Input
               id="elevationM"
               v-model="form.elevationM"
               name="elevationM"
               inputmode="numeric"
-              :aria-invalid="Boolean(fieldErrors.elevationM)"
+              :aria-invalid="Boolean(displayErrors.elevationM)"
               aria-describedby="elevationM-error"
             />
-            <FormError v-if="fieldErrors.elevationM" id="elevationM-error">
-              {{ fieldErrors.elevationM }}
+            <FormError v-if="displayErrors.elevationM" id="elevationM-error">
+              {{ displayErrors.elevationM }}
             </FormError>
           </div>
 
           <div>
-            <FormLabel id="durationMinutes">Duración estimada (min)</FormLabel>
+            <FormLabel id="durationMinutes" required>Duración estimada (min)</FormLabel>
             <Input
               id="durationMinutes"
               v-model="form.durationMinutes"
               name="durationMinutes"
               inputmode="numeric"
               required
-              :aria-invalid="Boolean(fieldErrors.durationMinutes)"
+              :aria-invalid="Boolean(displayErrors.durationMinutes)"
               aria-describedby="durationMinutes-error"
             />
-            <FormError v-if="fieldErrors.durationMinutes" id="durationMinutes-error">
-              {{ fieldErrors.durationMinutes }}
+            <FormError v-if="displayErrors.durationMinutes" id="durationMinutes-error">
+              {{ displayErrors.durationMinutes }}
             </FormError>
           </div>
         </div>
 
         <div>
-          <FormLabel id="wikilocUrl">Enlace del recorrido (opcional)</FormLabel>
+          <FormLabel id="wikilocUrl">Enlace del recorrido</FormLabel>
           <Input
             id="wikilocUrl"
             v-model="form.wikilocUrl"
             name="wikilocUrl"
             placeholder="https://www.wikiloc.com/… o https://www.strava.com/…"
-            :aria-invalid="Boolean(fieldErrors.wikilocUrl)"
+            :aria-invalid="Boolean(displayErrors.wikilocUrl)"
             aria-describedby="wikilocUrl-error wikilocUrl-help"
           />
-          <FormError v-if="fieldErrors.wikilocUrl" id="wikilocUrl-error">
-            {{ fieldErrors.wikilocUrl }}
+          <FormError v-if="displayErrors.wikilocUrl" id="wikilocUrl-error">
+            {{ displayErrors.wikilocUrl }}
           </FormError>
           <FormHelp id="wikilocUrl-help">
             Enlace a Wikiloc, Strava, Meetup u otra plataforma con el recorrido.
@@ -327,15 +350,24 @@ function handleDuplicate(): void {
       <div class="mt-3.5 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
         <div>
           <FormLabel id="bikeType">Tipo de bicicleta</FormLabel>
-          <FormSelect id="bikeType" v-model="form.bikeType" name="bikeType" required>
+          <FormSelect
+            id="bikeType"
+            v-model="form.bikeType"
+            name="bikeType"
+            :aria-invalid="Boolean(displayErrors.bikeType)"
+            :aria-describedby="displayErrors.bikeType ? 'bikeType-error' : undefined"
+          >
             <option v-for="bikeType in RIDE_BIKE_TYPES" :key="bikeType" :value="bikeType">
               {{ RIDE_BIKE_TYPE_LABELS[bikeType] }}
             </option>
           </FormSelect>
+          <FormError v-if="displayErrors.bikeType" id="bikeType-error">
+            {{ displayErrors.bikeType }}
+          </FormError>
         </div>
 
         <div>
-          <FormLabel id="level">Nivel</FormLabel>
+          <FormLabel id="level" required>Nivel</FormLabel>
           <FormSelect id="level" v-model="form.level" name="level" required>
             <option v-for="level in RIDE_LEVELS" :key="level" :value="level">
               {{ RIDE_LEVEL_LABELS[level] }}
@@ -351,16 +383,16 @@ function handleDuplicate(): void {
             name="maxParticipants"
             inputmode="numeric"
             placeholder="Sin límite"
-            :aria-invalid="Boolean(fieldErrors.maxParticipants)"
+            :aria-invalid="Boolean(displayErrors.maxParticipants)"
             aria-describedby="maxParticipants-error"
           />
-          <FormError v-if="fieldErrors.maxParticipants" id="maxParticipants-error">
-            {{ fieldErrors.maxParticipants }}
+          <FormError v-if="displayErrors.maxParticipants" id="maxParticipants-error">
+            {{ displayErrors.maxParticipants }}
           </FormError>
         </div>
 
         <div>
-          <FormLabel id="audience">¿Para quién es esta ruta?</FormLabel>
+          <FormLabel id="audience" required>¿Para quién es esta ruta?</FormLabel>
           <FormSelect id="audience" v-model="form.audience" name="audience" required>
             <option v-for="audience in RIDE_AUDIENCES" :key="audience" :value="audience">
               {{ RIDE_AUDIENCE_LABELS[audience] }}
@@ -385,7 +417,7 @@ function handleDuplicate(): void {
       <legend :class="legendClasses">Imagen de portada</legend>
 
       <div class="mt-3.5">
-        <FormLabel id="ride-image" :margin="false" class="sr-only">Imagen de portada</FormLabel>
+        <FormLabel id="ride-image" class="sr-only">Imagen de portada</FormLabel>
 
         <!-- Zona de selección: el label estilizado abre el diálogo de archivos. -->
         <label
@@ -429,7 +461,10 @@ function handleDuplicate(): void {
     </fieldset>
 
     <div class="space-y-3 border-t border-line pt-5">
-      <Alert v-if="summaryError" boxed>
+      <Alert v-if="errorMessage" boxed>
+        {{ errorMessage }}
+      </Alert>
+      <Alert v-else-if="summaryError" boxed>
         {{ summaryError }}
       </Alert>
 

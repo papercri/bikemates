@@ -4,18 +4,20 @@ import { cn } from '@/design-system'
 withDefaults(
   defineProps<{
     id: string
-    margin?: boolean
+    required?: boolean
   }>(),
   {
-    margin: true,
+    required: false,
   },
 )
 
-const classes = cn('block text-sm font-medium')
+const classes = cn('block text-xs font-semibold')
 </script>
 
 <template>
-  <label :for="id" :class="[classes, margin ? 'mb-2' : undefined]">
+  <label :for="id" :class="classes">
     <slot />
+    <span v-if="required" class="ml-0.5 text-red-600" aria-hidden="true">*</span>
+    <span v-if="required" class="sr-only"> (obligatorio)</span>
   </label>
 </template>

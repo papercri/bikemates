@@ -100,7 +100,7 @@ async function handleResendConfirmation(): Promise<void> {
 
         <div>
           <div class="mb-2 flex items-center justify-between gap-3">
-            <FormLabel id="password" :margin="false">Contraseña</FormLabel>
+            <FormLabel id="password">Contraseña</FormLabel>
 
             <RouterLink
               to="/forgot-password"

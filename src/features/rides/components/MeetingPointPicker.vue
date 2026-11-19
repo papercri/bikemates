@@ -45,7 +45,7 @@ function handleSelectPlace(place: GeocodingResult): void {
 
 <template>
   <section class="space-y-2">
-    <FormLabel id="meeting-point-search"> Punto de encuentro </FormLabel>
+    <FormLabel id="meeting-point-search" required> Punto de encuentro </FormLabel>
 
     <div class="flex items-stretch gap-2">
       <div class="min-w-0 flex-1">
@@ -75,7 +75,8 @@ function handleSelectPlace(place: GeocodingResult): void {
     </div>
 
     <FormHelp id="meeting-point-help">
-      Busca un lugar y selecciona un resultado para guardar sus coordenadas.
+      Busca un punto aproximado para el encuentro y selecciona un resultado del mapa. Si hace
+      falta, añade más indicaciones en el campo siguiente.
     </FormHelp>
 
     <p v-if="errorMessage" role="alert" class="text-sm text-red-700">

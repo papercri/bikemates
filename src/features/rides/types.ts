@@ -79,6 +79,12 @@ export interface RideFormSubmission {
   removeCurrentImage: boolean
 }
 
+/** Error de validación del servidor asociado a un campo concreto del formulario. */
+export type RideFormServerError = {
+  field: 'meetingPoint' | 'bikeType'
+  message: string
+}
+
 export interface RideParticipant {
   id: string
   displayName: string

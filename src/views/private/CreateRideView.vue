@@ -24,7 +24,7 @@ useHead({
 
 const initialValues = createEmptyRideFormValues()
 
-const { isSubmitting, errorMessage, createPublishedRide } = useRideCreator()
+const { isSubmitting, errorMessage, fieldError, createPublishedRide } = useRideCreator()
 
 async function handleSubmit(payload: RideFormSubmission): Promise<void> {
   await createPublishedRide(payload)
@@ -49,6 +49,7 @@ async function handleSubmit(payload: RideFormSubmission): Promise<void> {
           :initial-values="initialValues"
           :is-submitting="isSubmitting"
           :error-message="errorMessage"
+          :field-error="fieldError"
           @submit="handleSubmit"
         />
       </Card>
